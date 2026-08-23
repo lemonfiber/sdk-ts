@@ -59,17 +59,140 @@ const parts = [
   "",
 ];
 
-for (const kind of kinds) {
-  // The schema's own `title` would name every kind's envelope `Envelope`, so
-  // six kinds would emit six colliding declarations. The kind names it instead.
-  const { title: _ignored, ...schema } = artefact.kinds[kind];
+/** Where a definition is pointed at from inside a schema. */
+const POINTS_AT = "#/$defs/";
 
-  const compiled = await compile(schema, `${typeName(kind)}Envelope`, {
-    bannerComment: "",
-    additionalProperties: false,
-    style: { singleQuote: false },
-  });
-  parts.push(compiled.trim(), "");
+/** Every definition a schema reaches, however deeply. */
+function* reaches(node) {
+  if (Array.isArray(node)) {
+    for (const item of node) yield* reaches(item);
+    return;
+  }
+  if (node === null || typeof node !== "object") return;
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "$ref" && typeof value === "string" && value.startsWith(POINTS_AT)) {
+      yield value.slice(POINTS_AT.length);
+    } else {
+      yield* reaches(value);
+    }
+  }
+}
+
+/** The same schema with the named definitions pointed at under new names. */
+const renamed = (node, naming) => {
+  if (Array.isArray(node)) return node.map((item) => renamed(item, naming));
+  if (node === null || typeof node !== "object") return node;
+  return Object.fromEntries(
+    Object.entries(node).map(([key, value]) => {
+      if (key === "$ref" && typeof value === "string" && value.startsWith(POINTS_AT)) {
+        const to = naming.get(value.slice(POINTS_AT.length));
+        return [key, to === undefined ? value : `${POINTS_AT}${to}`];
+      }
+      return [key, renamed(value, naming)];
+    }),
+  );
+};
+
+const definitionsOf = (kind) => artefact.kinds[kind].$defs ?? {};
+
+/**
+ * Which definitions cannot be shared between kinds.
+ *
+ * Most can: `Remedy` means the same thing wherever it appears, so one
+ * declaration serves every kind that carries it. A few do not — `State` is five
+ * different shapes across five kinds — and those must be kept apart or one kind
+ * silently gets another's.
+ *
+ * A definition that *reaches* one of those is in the same position: its own
+ * shape looks identical across kinds because the pointer reads the same, while
+ * what it points at does not. So this closes over references until it stops
+ * growing, rather than comparing shapes alone.
+ */
+const apart = new Set();
+const shapes = new Map();
+
+for (const kind of kinds) {
+  for (const [name, definition] of Object.entries(definitionsOf(kind))) {
+    const written = JSON.stringify(definition);
+    const before = shapes.get(name);
+    if (before === undefined) shapes.set(name, written);
+    else if (before !== written) apart.add(name);
+  }
+}
+
+for (let growing = true; growing;) {
+  growing = false;
+  for (const kind of kinds) {
+    for (const [name, definition] of Object.entries(definitionsOf(kind))) {
+      if (apart.has(name)) continue;
+      for (const reached of reaches(definition)) {
+        if (apart.has(reached)) {
+          apart.add(name);
+          growing = true;
+          break;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Every kind compiled together, rather than one at a time.
+ *
+ * Compiled separately, a definition two kinds both carry is emitted once per
+ * kind — a duplicate identifier, and the result does not build. Compiled
+ * together the generator sees every name at once.
+ */
+const shared = {};
+const carried = {};
+
+for (const kind of kinds) {
+  // The schema's own `title` would name every kind's envelope `Envelope`; the
+  // property name carries the kind instead. Its definitions are hoisted to the
+  // one shared set, so they do not travel with the body either.
+  const body = Object.fromEntries(
+    Object.entries(artefact.kinds[kind]).filter(
+      ([named]) => named !== "title" && named !== "$defs",
+    ),
+  );
+
+  const naming = new Map(
+    Object.keys(definitionsOf(kind))
+      .filter((name) => apart.has(name))
+      .map((name) => [name, `${typeName(kind)}${name}`]),
+  );
+
+  for (const [name, definition] of Object.entries(definitionsOf(kind))) {
+    shared[naming.get(name) ?? name] = renamed(definition, naming);
+  }
+  carried[kind] = renamed(body, naming);
+}
+
+parts.push(
+  (
+    await compile(
+      {
+        title: "Contract",
+        type: "object",
+        properties: carried,
+        required: kinds,
+        additionalProperties: false,
+        $defs: shared,
+      },
+      "Contract",
+      { bannerComment: "", additionalProperties: false, style: { singleQuote: false } },
+    )
+  ).trim(),
+  "",
+);
+
+/** The envelope each kind carries, under the name this package has always used. */
+for (const kind of kinds) {
+  parts.push(
+    `/** The envelope carrying \`${kind}\`. */`,
+    `export type ${typeName(kind)}Envelope = Contract[${JSON.stringify(kind)}];`,
+    "",
+  );
 }
 
 parts.push(
