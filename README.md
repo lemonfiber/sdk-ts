@@ -20,8 +20,9 @@
 
 ---
 
-> **Status: unreleased.** The request half and the generated types are in; the
-> package is not on npm yet. Full account in the spec:
+> **Status: unreleased.** The typed calls, the event stream and the generated
+> types are all in and exported; the package is not on npm yet. Full account in
+> the spec:
 > [`30-repos/sdk-ts.md`](https://github.com/lemonfiber/spec/blob/main/30-repos/sdk-ts.md).
 
 ## What it is
@@ -66,8 +67,12 @@ if (status.ok) {
   status.value.data; // the payload, shaped by kind
 }
 
-await opened.client.act("retry-import", { service: "sonarr" });
+await opened.client.act("restart", { forms: ["tv"], services: ["sonarr"] });
 ```
+
+An action's name and its arguments are the command line's own. A name this
+surface does not offer is refused rather than invented, and a field no action
+takes is refused rather than ignored.
 
 Live updates arrive as envelopes. Anything gathered before a break in the
 connection is marked out of date rather than shown as current:
