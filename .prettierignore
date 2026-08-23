@@ -1,0 +1,8 @@
+dist/
+coverage/
+node_modules/
+
+# Written by `contract:generate` and `contract:sync`. Their correctness is
+# checked by regeneration producing no diff, not by formatting.
+src/generated/
+contract/

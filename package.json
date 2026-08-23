@@ -1,0 +1,73 @@
+{
+  "name": "@lemonfiber/sdk-ts",
+  "version": "0.0.0",
+  "description": "The TypeScript client for lemonfiber's local web API.",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/lemonfiber/sdk-ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lemonfiber/sdk-ts.git"
+  },
+  "bugs": "https://github.com/lemonfiber/sdk-ts/issues",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=26"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "keywords": [
+    "lemonfiber",
+    "sdk",
+    "client",
+    "self-hosted"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "guard": "node scripts/guards.mjs",
+    "unused": "knip",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "package:check": "publint && attw --pack . --profile esm-only",
+    "contract:generate": "node scripts/contract-generate.mjs",
+    "ci": "npm run format:check && npm run lint && npm run types && npm run guard && npm run unused && npm run contract:check && npm run coverage && npm run build && npm run package:check",
+    "contract:sync": "node scripts/contract-sync.mjs",
+    "contract:check": "node scripts/contract-generate.mjs && git diff --exit-code -- src/generated contract"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/eslint-plugin": "^1.6.27",
+    "eslint": "^10.9.0",
+    "eslint-plugin-unicorn": "^73.0.0",
+    "globals": "^17.11.0",
+    "json-schema-to-typescript": "^15.0.4",
+    "knip": "^6.32.2",
+    "prettier": "^3.9.6",
+    "publint": "^0.3.24",
+    "tsdown": "^0.22.14",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.11"
+  }
+}

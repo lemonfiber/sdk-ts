@@ -1,0 +1,24 @@
+{
+  "api_version": 1,
+  "kinds": {
+    "word": {
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "type": "integer"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ]
+    }
+  }
+}
