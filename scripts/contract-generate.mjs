@@ -147,9 +147,14 @@ const shared = {};
 const carried = {};
 
 for (const kind of kinds) {
-  // The schema's own `title` would name every kind's envelope `Envelope`. The
-  // property name carries the kind instead.
-  const { title: _ignored, $defs: _own, ...body } = artefact.kinds[kind];
+  // The schema's own `title` would name every kind's envelope `Envelope`; the
+  // property name carries the kind instead. Its definitions are hoisted to the
+  // one shared set, so they do not travel with the body either.
+  const body = Object.fromEntries(
+    Object.entries(artefact.kinds[kind]).filter(
+      ([named]) => named !== "title" && named !== "$defs",
+    ),
+  );
 
   const naming = new Map(
     Object.keys(definitionsOf(kind))
