@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: v0.9.0-unreleased  ·  api_version 1
+// Source: d2bf74b950a9f6fb73f2bcd60e2d8adf85337cd6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
