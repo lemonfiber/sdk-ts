@@ -30,6 +30,9 @@ export default tseslint.config(
       "unicorn/no-null": "off",
       // Public API reads first; helpers follow what uses them.
       "unicorn/consistent-class-member-order": "off",
+      // lemonfiber serves plain HTTP on loopback: C6-R7 forbids self-signed TLS
+      // by default, and C6-R6 requires saying so rather than papering over it.
+      "unicorn/prefer-https": "off",
     },
   },
 
