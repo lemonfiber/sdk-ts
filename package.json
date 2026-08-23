@@ -48,11 +48,11 @@
     "coverage": "vitest run --coverage",
     "package:check": "publint && attw --pack . --profile esm-only",
     "contract:generate": "node scripts/contract-generate.mjs",
+    "changelog": "git-cliff -o CHANGELOG.md && prettier --write CHANGELOG.md",
     "ci": "npm run format:check && npm run lint && npm run types && npm run guard && npm run unused && npm run contract:check && npm run coverage && npm run build && npm run package:check",
     "contract:sync": "node scripts/contract-sync.mjs",
     "contract:check": "node scripts/contract-generate.mjs && git diff --exit-code -- src/generated contract"
   },
-  "dependencies": {},
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
@@ -60,6 +60,7 @@
     "@vitest/eslint-plugin": "^1.6.27",
     "eslint": "^10.9.0",
     "eslint-plugin-unicorn": "^73.0.0",
+    "git-cliff": "^2.13.1",
     "globals": "^17.11.0",
     "json-schema-to-typescript": "^15.0.4",
     "knip": "^6.32.2",
