@@ -6,3 +6,8 @@ node_modules/
 # checked by regeneration producing no diff, not by formatting.
 src/generated/
 contract/
+
+# Shared verbatim with the other lemonfiber repos. Byte-identity is the point —
+# reformatting them here would fork a file that is meant to have one home.
+.markdownlint.jsonc
+.github/labeler.yml
