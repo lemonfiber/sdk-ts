@@ -113,9 +113,8 @@ npm ci
 npm run ci
 ```
 
-That is `format:check`, `lint`, `types`, `guard`, `unused`, `contract:check`,
-`coverage`, `build` and `package:check` in order. Each is runnable on its own
-while you work — `npm test` for the fast loop.
+The individual steps are the `scripts` in [`package.json`](package.json), and each
+runs on its own while you work — `npm test` for the fast loop.
 
 The bar is the Rust workspace's, in its TypeScript equivalents: **100% coverage**
 across lines, statements, branches and functions; `strict` with
