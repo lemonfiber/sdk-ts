@@ -52,7 +52,7 @@
     "ci": "npm run format:check && npm run lint && npm run types && npm run guard && npm run unused && npm run contract:check && npm run coverage && npm run build && npm run package:check",
     "contract:sync": "node scripts/contract-sync.mjs",
     "contract:check": "node scripts/contract-generate.mjs && git diff --exit-code -- src/generated contract",
-    "prepare": "npm run build"
+    "prepare": "npm run build && git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
