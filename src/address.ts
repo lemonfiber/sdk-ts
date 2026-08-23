@@ -1,8 +1,7 @@
 /**
  * Where lemonfiber is, and the refusal to talk anywhere else.
  *
- * Spec: 20-architecture/contracts/web-api.md — ARCH-R60, and C6-R1's loopback
- * policy that it serves.
+ * Spec: 20-architecture/contracts/web-api.md
  */
 import { problem, type Problem } from "./problem.js";
 

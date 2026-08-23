@@ -1,8 +1,7 @@
 /**
  * The live stream, and the three things about it that are easy to get wrong.
  *
- * Spec: 20-architecture/contracts/web-api.md — ARCH-R50, ARCH-R51, ARCH-R59,
- * ARCH-R61, ARCH-R62.
+ * Spec: 20-architecture/contracts/web-api.md
  */
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";

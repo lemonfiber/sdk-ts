@@ -35,7 +35,7 @@ describe("read", () => {
     expect(read(value)).toMatchObject({ ok: false, problem: { kind: "malformed" } });
   });
 
-  // ARCH-R55: name both versions, render nothing.
+  // Name both versions, render nothing.
   it("refuses a wire version it cannot speak, naming both", () => {
     const got = read({ ...good, api_version: API_VERSION + 1 });
     expect(got.ok).toBe(false);

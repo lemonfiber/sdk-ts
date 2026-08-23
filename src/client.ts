@@ -1,8 +1,7 @@
 /**
  * Asking lemonfiber for something, and telling it to do something.
  *
- * Spec: 20-architecture/contracts/web-api.md — ARCH-R47, ARCH-R48, ARCH-R52,
- * ARCH-R59, ARCH-R60.
+ * Spec: 20-architecture/contracts/web-api.md
  */
 import { address } from "./address.js";
 import { parse, type Envelope, type Reading } from "./envelope.js";

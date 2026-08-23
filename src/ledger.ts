@@ -1,7 +1,7 @@
 /**
  * What the stream has said, and how much of it can still be believed.
  *
- * Spec: 20-architecture/contracts/web-api.md (ARCH-R50, ARCH-R51)
+ * Spec: 20-architecture/contracts/web-api.md
  */
 
 /**
