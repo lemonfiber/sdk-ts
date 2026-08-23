@@ -77,7 +77,7 @@ describe("follow", () => {
     expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 412 } });
   });
 
-  // ARCH-R59: the token is a header, never a query parameter.
+  // The token is a header, never a query parameter.
   it("sends the token in its header", async () => {
     const seen: Seen = { headers: [] };
     await take(
@@ -154,7 +154,7 @@ describe("follow", () => {
     expect(got[0]).toMatchObject({ at: "lost", problem: { kind: "version" } });
   });
 
-  // ARCH-R50 / ARCH-R51: silence is a break, and what survives it is stale.
+  // Silence is a break, and what survives it is stale.
   it("calls the stream broken once silence outlasts what is allowed", async () => {
     const seen: Seen = { headers: [] };
     let clock = 1000;
@@ -192,7 +192,7 @@ describe("follow", () => {
     expect(afterBreak.every((a) => a.at !== "live")).toBe(true);
   });
 
-  // ARCH-R62: resumption sends the last id seen.
+  // Resumption sends the last id seen.
   it("resumes from the last event it saw", async () => {
     const seen: Seen = { headers: [] };
     await take(

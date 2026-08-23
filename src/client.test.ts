@@ -65,7 +65,7 @@ describe("read", () => {
     expect(seen[0]?.method).toBe("GET");
   });
 
-  // ARCH-R52 / ARCH-R59: the token is a header, never a URL.
+  // The token is a header, never a URL.
   it("sends the token in its header and nowhere else", async () => {
     const seen: Seen[] = [];
     await open(answering({}, seen)).read("status", { since: "yesterday" });

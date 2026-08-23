@@ -5,7 +5,7 @@
  * Offline and deterministic: same artefact in, same file out, so CI can
  * regenerate and fail on any difference.
  *
- * Spec: ARCH-R58, ARCH-R63, ARCH-R65, ARCH-R66, ARCH-R67.
+ * Spec: 20-architecture/contracts/web-api.md
  */
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -29,7 +29,7 @@ const artefact = JSON.parse(await readFile(VENDORED, "utf8")).valueOf();
 const stamp = (await readFile(STAMP, "utf8").catch(() => "unknown\n")).trim();
 
 /**
- * ARCH-R67: refuse a version this package does not implement.
+ * Refuses a version this package does not implement, naming both.
  *
  * Generating anyway would emit types that compile and lie.
  */

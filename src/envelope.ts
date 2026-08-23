@@ -1,7 +1,7 @@
 /**
  * The wire shape every reply carries.
  *
- * Spec: 20-architecture/contracts/web-api.md (ARCH-R46, ARCH-R55)
+ * Spec: 20-architecture/contracts/web-api.md
  */
 import { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/contract.js";
 import { malformed, wrongVersion, type Problem } from "./problem.js";

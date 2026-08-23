@@ -49,7 +49,7 @@ describe("Ledger", () => {
     expect(new Ledger().isBroken(999_999, 15_000)).toBe(false);
   });
 
-  // ARCH-R51: a value gathered before a gap is stale whatever the transport says.
+  // A value gathered before a gap is stale whatever the transport says.
   it("keeps a cooled value but stops calling it current", () => {
     const ledger = new Ledger();
     ledger.record("status", { free: 412 }, 1000);
