@@ -46,16 +46,17 @@ describe("SseParser", () => {
     ]);
   });
 
-  it("ignores a field it does not know", () => {
+  it.each([
+    {
+      what: "a field it does not know",
+      wire: "retry: 500\ndata: x\n\n",
+      data: "x",
+    },
+    { what: "a line with no colon", wire: "data\ndata: x\n\n", data: "\nx" },
+  ])("reads $what the way the format says to", ({ wire, data }) => {
     const parser = new SseParser();
-    expect(parser.push("retry: 500\ndata: x\n\n")[0]?.data).toBe("x");
+    expect(parser.push(wire)[0]?.data).toBe(data);
   });
-
-  it("treats a line with no colon as a valueless field", () => {
-    const parser = new SseParser();
-    expect(parser.push("data\ndata: x\n\n")[0]?.data).toBe("\nx");
-  });
-
   it("reads a value written with no space after the colon", () => {
     const parser = new SseParser();
     expect(parser.push("data:x\n\n")[0]?.data).toBe("x");

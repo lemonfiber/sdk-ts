@@ -25,16 +25,22 @@ const COMMIT = /^[0-9a-f]{40}$/;
 const asset = (revision) =>
   `https://raw.githubusercontent.com/lemonfiber/lemonfiber/${revision}/contract/web-api.contract.json`;
 
-const revision = process.argv[2];
+const asked = process.argv[2] ?? "";
 
 /** An abbreviated hash is refused: it names one artefact today and may not later. */
-if (revision === undefined || !(RELEASE_TAG.test(revision) || COMMIT.test(revision))) {
+const matched = RELEASE_TAG.exec(asked) ?? COMMIT.exec(asked);
+if (matched === null) {
   console.error(
     "contract:sync needs a release tag or a full 40-character commit hash,\n" +
       "e.g. `npm run contract:sync -- v1.0.0`",
   );
   process.exit(1);
 }
+
+// What travels on is the matched text rather than the argument: it can only be a
+// release tag or forty hex characters, which is what makes it safe to put in a
+// URL, a file and a log line.
+const revision = matched[0];
 
 const answer = await fetch(asset(revision));
 
