@@ -121,6 +121,13 @@ npm run ci
 The individual steps are the `scripts` in [`package.json`](package.json), and each
 runs on its own while you work — `npm test` for the fast loop.
 
+`npm ci` is also what turns on this repository's pre-push hook, which refuses a
+push that would leave a branch carrying no commit `origin/main` does not — what
+pushing the trunk over a feature branch looks like. npm's `prepare` script does
+it, so `npm install` serves too. A clone nobody has installed into has no hook:
+it is `git config core.hooksPath .githooks`, per clone, and git cannot read
+`.githooks/` on its own.
+
 The bar is the Rust workspace's, in its TypeScript equivalents: **100% coverage**
 across lines, statements, branches and functions; `strict` with
 `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`; `typescript-eslint`
