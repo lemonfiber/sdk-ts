@@ -41,7 +41,10 @@ if (artefact.api_version !== SPOKEN) {
   );
 }
 
-const kinds = Object.keys(artefact.kinds).sort();
+// By code point, not by locale. This order is the order of the declarations in
+// a file that is committed and diffed, so it has to be the same on every machine
+// that regenerates it — and `localeCompare` is the one comparison that is not.
+const kinds = Object.keys(artefact.kinds).sort((a, b) => (a < b ? -1 : 1));
 
 if (kinds.length === 0) stop("The vendored contract describes no kinds.");
 
@@ -51,6 +54,10 @@ const typeName = (kind) =>
     .split(/[-_]/)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join("");
+
+/** The `Kind` union, as one line of source. */
+const quoted = (names) =>
+  `export type Kind = ${names.map((name) => JSON.stringify(name)).join(" | ")};`;
 
 const parts = [
   "// Generated from the lemonfiber contract. Do not edit.",
@@ -197,7 +204,7 @@ for (const kind of kinds) {
 
 parts.push(
   "/** Every kind the server may send. */",
-  `export type Kind = ${kinds.map((k) => `"${k}"`).join(" | ")};`,
+  quoted(kinds),
   "",
   "/** The envelope carrying each kind, so a payload is typed by what it is. */",
   "export interface ByKind {",

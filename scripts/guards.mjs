@@ -23,8 +23,9 @@ async function walk(dir) {
 }
 
 const failures = [];
+const at = (line) => (line === null ? "" : `:${String(line)}`);
 const fail = (file, line, message) =>
-  failures.push(`${relative(ROOT, file)}${line === null ? "" : `:${line}`}  ${message}`);
+  failures.push(`${relative(ROOT, file)}${at(line)}  ${message}`);
 
 /**
 Markers that open an argument rather than state a fact.
