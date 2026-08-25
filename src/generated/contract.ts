@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 5911b3a5523129f9c5d09e04d1c60e5adc32edd2  ·  api_version 1
+// Source: b0101f0cc19b008d6a225cdc07515b6982fa4cc0  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -63,6 +63,30 @@ export type Next = "more-content" | "household" | "client-apps";
  * file and two.
  */
 export type Link = "hardlinked" | "copied";
+/**
+ * A step of setup, in the order the operator meets it.
+ *
+ * Some steps only inform (they detect and state, and the operator acknowledges);
+ * others ask a question whose answer the wizard records. The apply-and-onward
+ * steps — writing config, pulling images, wiring services — are not modelled
+ * here yet: they arrive with the features they drive, and this machine covers
+ * the read-only phase that precedes them.
+ */
+export type WizardStep =
+  | "welcome"
+  | "preflight"
+  | "prerequisites"
+  | "protocols"
+  | "vpn"
+  | "data-location"
+  | "credentials"
+  | "provider"
+  | "service-user"
+  | "library"
+  | "household"
+  | "notifications"
+  | "autostart"
+  | "review";
 
 export interface Contract {
   /**
@@ -402,6 +426,20 @@ export interface Contract {
      */
     api_version: number;
     data: SupervisionReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  wizard: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: WizardWizardReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -2073,7 +2111,7 @@ export interface WalkthroughWalkthroughReport {
    * Every line it said, in order — the same lines the operator watched arrive, kept so
    * a machine-readable run is not a silent one.
    */
-  lines: Line[];
+  lines: WalkthroughLine[];
   /**
    * What the import did with the file, where it got that far.
    */
@@ -2102,7 +2140,7 @@ export interface WalkthroughWalkthroughReport {
   /**
    * Where and why it stopped, where it did.
    */
-  stopped?: Stopped | null;
+  stopped?: WalkthroughStopped | null;
   /**
    * What could have been walked instead, where nothing was chosen — the safe first
    * attempts, so an operator with an empty library is not left guessing.
@@ -2121,7 +2159,7 @@ export interface Handover {
 /**
  * One narrated line: a step, and what was specifically true of it.
  */
-export interface Line {
+export interface WalkthroughLine {
   /**
    * What was specifically true — the evidence that makes the line worth reading
    * rather than a spinner. Empty where there is nothing particular to say.
@@ -2139,7 +2177,7 @@ export interface Line {
 /**
  * A walkthrough that stopped: where, why, what the services were saying, and what to do.
  */
-export interface Stopped {
+export interface WalkthroughStopped {
   /**
    * What the services involved were saying at the time, shown inline rather than left
    * for the operator to go and find — a fault report they have to research is a fault
@@ -2186,6 +2224,59 @@ export interface SupervisionReport {
    * Whether stopping the services succeeded.
    */
   stopped: boolean;
+}
+/**
+ * The payload.
+ */
+export interface WizardWizardReport {
+  /**
+   * Whether that step asks a question, as opposed to only informing.
+   */
+  asks: boolean;
+  /**
+   * The step the operator is on.
+   */
+  at:
+    | "welcome"
+    | "preflight"
+    | "prerequisites"
+    | "protocols"
+    | "vpn"
+    | "data-location"
+    | "credentials"
+    | "provider"
+    | "service-user"
+    | "library"
+    | "household"
+    | "notifications"
+    | "autostart"
+    | "review";
+  /**
+   * Whether this machine has setup left to do. False once configuration
+   * exists and nothing is part-way through, which is when a surface directs
+   * the operator to reconfiguration instead of asking the first question again.
+   */
+  offered: boolean;
+  /**
+   * Where this run stands in its lifecycle. `applying` read back here means an
+   * apply stopped part-way, because an apply that is still running is one this
+   * answer is waiting on.
+   */
+  phase: "in-progress" | "reviewing" | "applying" | "applied";
+  /**
+   * What applying will write, in the order it will be written, with any value
+   * whose name reads as a credential withheld.
+   */
+  plan: SettingReport[];
+  /**
+   * Whether every applicable question is answered, so the plan can be applied.
+   */
+  ready_for_review: boolean;
+  /**
+   * Every question that applies on this machine and has no answer yet, in the
+   * order they are put.
+   */
+  unanswered: WizardStep[];
 }
 /**
  * The payload.
@@ -2286,11 +2377,14 @@ export type WalkthroughEnvelope = Contract["walkthrough"];
 /** The envelope carrying `watch`. */
 export type WatchEnvelope = Contract["watch"];
 
+/** The envelope carrying `wizard`. */
+export type WizardEnvelope = Contract["wizard"];
+
 /** The envelope carrying `word`. */
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "config" | "dashboard" | "doctor" | "error" | "forms" | "household" | "job" | "lifecycle" | "log" | "music" | "preview" | "pull" | "quality" | "reset" | "seed" | "setup" | "start" | "status" | "stuck" | "trace" | "upgrade" | "version" | "walkthrough" | "watch" | "word";
+export type Kind = "config" | "dashboard" | "doctor" | "error" | "forms" | "household" | "job" | "lifecycle" | "log" | "music" | "preview" | "pull" | "quality" | "reset" | "seed" | "setup" | "start" | "status" | "stuck" | "trace" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -2318,6 +2412,7 @@ export interface ByKind {
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
   "watch": WatchEnvelope;
+  "wizard": WizardEnvelope;
   "word": WordEnvelope;
 }
 
