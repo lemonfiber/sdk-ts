@@ -108,7 +108,16 @@ describe("read", () => {
     expect(got).toMatchObject({ ok: false, problem: { kind: "version" } });
   });
 
-  it("reports a refusal as one", async () => {
+  // 403 is what lemonfiber answers a bad token with — it says so in `serve.rs`:
+  // 401 invites a browser to prompt for credentials it has no way to supply. The
+  // fixture used to send 401, which the binary never sends, so this passed while a
+  // rejected key arrived at a real page as "cannot reach it".
+  it("reports the refusal lemonfiber actually sends as one", async () => {
+    const got = await open(answering({ ok: false, status: 403 }, [])).read("status");
+    expect(got).toMatchObject({ ok: false, problem: { kind: "refused" } });
+  });
+
+  it("reports a refusal from something in front of it as one too", async () => {
     const got = await open(answering({ ok: false, status: 401 }, [])).read("status");
     expect(got).toMatchObject({ ok: false, problem: { kind: "refused" } });
   });
