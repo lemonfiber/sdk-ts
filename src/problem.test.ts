@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   malformed,
+  misasked,
+  missing,
   problem,
   refused,
   streamLost,
@@ -11,6 +13,8 @@ import {
 const every = [
   unreachable(),
   refused(),
+  missing("`kubernetes` is not one of the words this product explains"),
+  misasked("The `only` given is not a group of checks this stack knows."),
   malformed(),
   wrongVersion(1, 2),
   streamLost(30_000),
@@ -38,6 +42,15 @@ describe("problem", () => {
 
   it("names the key when the refusal carried no words", () => {
     expect(refused().message).toContain("reopen it from the address lemonfiber printed");
+  });
+
+  // Neither invents a sentence. Each is built from what lemonfiber said and from
+  // nothing else, so there is no wording here to keep in step with the binary's.
+  it.each([
+    ["missing", missing, "`kubernetes` is not one of the words this product explains"],
+    ["misasked", misasked, "The action `config-set` needs `key`, which was not given."],
+  ])("%s says lemonfiber's own words", (kind, build, said) => {
+    expect(build(said)).toEqual({ kind, message: said });
   });
 
   it("names both versions when they disagree", () => {

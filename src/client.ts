@@ -6,7 +6,7 @@
 import { address } from "./address.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
-import { refused, unreachable, type Problem } from "./problem.js";
+import { misasked, missing, refused, unreachable, type Problem } from "./problem.js";
 
 /**
  * What a query parameter may carry. A value that is `undefined` is not sent.
@@ -132,12 +132,29 @@ const wasTurnedAway = (status: number): boolean => status === 403 || status === 
 const OPENS_A_STRUCTURE = /^[<[{]/;
 
 /**
+ * What a status says a refusal is, where it says anything in particular.
+ *
+ * Two of them do. lemonfiber settles where a problem lies at the point the problem
+ * is raised — in what the request named, in how it asked, or in the answering —
+ * and answers with the status that carries that reading, so these two are read
+ * back rather than guessed at from the sentence. Every other refusal keeps the one
+ * kind it has always had.
+ */
+const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
+  [400, misasked],
+  [404, missing],
+]);
+
+/**
  * The problem an answer that was not a success is, given the body it arrived
  * with.
  *
- * A refusal lemonfiber wrote a sentence for is that sentence. A failure whose
- * body holds no sentence this package can read is reported as not answering: a
- * body it cannot read tells it no more than silence would.
+ * A refusal lemonfiber wrote a sentence for is that sentence, under the kind its
+ * status warrants. A failure whose body holds no sentence this package can read is
+ * reported as not answering: a body it cannot read tells it no more than silence
+ * would, whatever status carried it — so a name this package reports as missing is
+ * always one lemonfiber itself said was missing, never a proxy's page under a
+ * status that looked right.
  */
 function turnedDown(status: number, body: string): Problem {
   // 403, not 401: lemonfiber answers a bad token with the status that does not
@@ -150,7 +167,10 @@ function turnedDown(status: number, body: string): Problem {
   if (wasTurnedAway(status)) return refused();
 
   const sentence = saidIn(body);
-  return sentence === undefined ? unreachable() : refused(sentence);
+  if (sentence === undefined) return unreachable();
+
+  const meant = MEANT_BY.get(status) ?? refused;
+  return meant(sentence);
 }
 
 /**

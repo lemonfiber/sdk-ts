@@ -88,6 +88,21 @@ for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: 
 Nothing throws for an expected failure. A call returns either a value or a
 `Problem` carrying a sentence written for a person to read.
 
+`problem.kind` says which sort of refusal it was, so a caller need not read the
+sentence to know what to do with it:
+
+| `kind`        | What it means                                                                      |
+| ------------- | ---------------------------------------------------------------------------------- |
+| `missing`     | lemonfiber has nothing by the name the request gave                                |
+| `misasked`    | It could not answer the request as it was asked                                    |
+| `refused`     | It turned the request down — a key that is not this run's, or a failure of its own |
+| `unreachable` | Nothing lemonfiber wrote came back at all                                          |
+
+`missing` and `misasked` always carry lemonfiber's own sentence: a body this
+package cannot read is reported as `unreachable` whatever status carried it, so a
+page from something standing in front of lemonfiber is never passed off as its
+account of what there is.
+
 ## `src/generated/` is not yours to edit
 
 **Everything under [`src/generated/`](src/generated/) is written by
