@@ -60,13 +60,12 @@ export interface Following {
 /**
  * What one opening of the stream needs in order to be read.
  */
-interface Opening<T> {
+interface Opening {
   body: ReadableStream<Uint8Array>;
   ledger: Ledger;
   now: () => number;
   silenceAllowedMs: number;
   onId: (id: string) => void;
-  arrivals: Arrival<T>[];
   /**
    * Set when the stream fell silent longer than it is allowed to, which is the
    * difference between a stream that ended and one that died.
@@ -98,7 +97,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
       return;
     }
 
-    const opening: Opening<T> = {
+    const opening: Opening = {
       body,
       ledger,
       now,
@@ -106,12 +105,9 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
       onId: (id) => {
         lastEventId = id;
       },
-      arrivals: [],
       broke: false,
     };
-    await readOpening<T>(opening);
-
-    yield* opening.arrivals;
+    yield* readOpening<T>(opening);
 
     const quietForMs = ledger.quietForMs(now()) ?? 0;
     ledger.cool();
@@ -136,7 +132,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
 /**
  * Reads one opening to its end, collecting what arrives and whether it broke.
  */
-async function readOpening<T>(opening: Opening<T>): Promise<void> {
+async function* readOpening<T>(opening: Opening): AsyncGenerator<Arrival<T>> {
   const reader = opening.body.getReader();
   const parser = new SseParser();
   const decoder = new TextDecoder();
@@ -149,7 +145,7 @@ async function readOpening<T>(opening: Opening<T>): Promise<void> {
 
     for (const event of events) {
       if (event.id !== undefined) opening.onId(event.id);
-      opening.arrivals.push(received<T>(event.data, opening));
+      yield received<T>(event.data, opening);
     }
 
     if (opening.ledger.isBroken(opening.now(), opening.silenceAllowedMs)) {
@@ -162,7 +158,7 @@ async function readOpening<T>(opening: Opening<T>): Promise<void> {
 /**
  * One event's text, read and recorded.
  */
-function received<T>(text: string, opening: Opening<T>): Arrival<T> {
+function received<T>(text: string, opening: Opening): Arrival<T> {
   const read = parse<T>(text);
 
   if (!read.ok) return { at: "lost", problem: read.problem };
