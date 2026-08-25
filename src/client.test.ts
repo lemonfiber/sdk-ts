@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { Client, type Sending } from "./client.js";
+import { Client, refusalIn, type Sending } from "./client.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
-import { refused } from "./problem.js";
+import { refused, unreachable } from "./problem.js";
 
 /**
  * An `error` envelope carrying `data`, as lemonfiber answers a command that ran
@@ -235,7 +235,7 @@ describe("a refusal the caller can read", () => {
       "check-everything",
     );
 
-    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+    expect(got).toEqual({ ok: false, problem: { kind: "failed", message: said } });
   });
 
   // The key is what a page can do something about; either sentence lemonfiber
@@ -310,7 +310,33 @@ describe("a refusal the caller can tell apart", () => {
       answering({ ok: false, status: 500, text: wentWrong({ summary: broke }) }, []),
     ).read("status");
 
-    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: broke } });
+    expect(got).toEqual({ ok: false, problem: { kind: "failed", message: broke } });
+  });
+
+  // The defect this was written for. A console reading `refused` sends the
+  // operator to rotate a key, so a stopped container engine arriving under that
+  // kind asked for a credential that was never the problem while the thing that
+  // was went unsaid.
+  it("does not report a failure of lemonfiber's own as the key being wrong", async () => {
+    const broke = "The container engine is not answering.";
+    const got = await open(
+      answering({ ok: false, status: 500, text: wentWrong({ summary: broke }) }, []),
+    ).read("status");
+
+    expect(got).toMatchObject({ ok: false, problem: { kind: "failed" } });
+    expect(got).not.toMatchObject({ problem: { kind: refused().kind } });
+  });
+
+  // A status this package does not recognise says nothing about the key either.
+  // Reading it as one would send an operator after a credential on the word of a
+  // status nothing here claims to understand.
+  it("reads a status it does not recognise as the answering, not as the key", async () => {
+    const said = "Sonarr would not answer.";
+    const got = await open(
+      answering({ ok: false, status: 503, text: wentWrong({ summary: said }) }, []),
+    ).read("status");
+
+    expect(got).toEqual({ ok: false, problem: { kind: "failed", message: said } });
   });
 
   it("reports a request lemonfiber cannot answer as asked as neither", async () => {
@@ -343,5 +369,32 @@ describe("a refusal the caller can tell apart", () => {
     );
 
     expect(got).toEqual({ ok: false, problem: refused() });
+  });
+});
+
+// A caller whose answer is not one document reads the status itself, and reads it
+// through this rather than through a second copy of which status means which kind.
+describe("refusalIn", () => {
+  it.each([
+    [403, "no", "refused"],
+    [404, "There is no action named `retry-imprt`.", "missing"],
+    [400, "The action `config-set` needs `key`, which was not given.", "misasked"],
+    [500, "The container engine is not answering.", "failed"],
+    [503, "Sonarr would not answer.", "failed"],
+  ])("reads a %s carrying words as %s", (status, said, kind) => {
+    expect(refusalIn(status, said).kind).toBe(kind);
+  });
+
+  it("gives the same reading a read of one document gets", async () => {
+    const said = "The container engine is not answering.";
+    const got = await open(answering({ ok: false, status: 500, text: said }, [])).read(
+      "status",
+    );
+
+    expect(got).toEqual({ ok: false, problem: refusalIn(500, said) });
+  });
+
+  it("reports an answer holding no sentence as not answering", () => {
+    expect(refusalIn(500, " ".repeat(3))).toEqual(unreachable());
   });
 });

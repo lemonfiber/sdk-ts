@@ -1,5 +1,12 @@
 export { address, type Address } from "./address.js";
-export { Client, type Opened, type Query, type Sending, type Talking } from "./client.js";
+export {
+  Client,
+  refusalIn,
+  type Opened,
+  type Query,
+  type Sending,
+  type Talking,
+} from "./client.js";
 export { API_VERSION, isKind, parse, read, type Envelope, type Reading } from "./envelope.js";
 export { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/contract.js";
 export {
@@ -14,6 +21,7 @@ export {
 } from "./events.js";
 export { Ledger, type Held } from "./ledger.js";
 export {
+  failed,
   malformed,
   misasked,
   missing,
