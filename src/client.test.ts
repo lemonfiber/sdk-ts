@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest";
 import { Client, type Sending } from "./client.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
+import { refused } from "./problem.js";
+
+/**
+ * An `error` envelope carrying `data`, as lemonfiber answers a command that ran
+ * and failed.
+ */
+const wentWrong = (data: Record<string, unknown>): string =>
+  JSON.stringify({ api_version: API_VERSION, kind: "error", data });
 
 interface Seen {
   url: string;
@@ -143,6 +151,18 @@ describe("read", () => {
     const got = await open(broken).read("status");
     expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
   });
+
+  it("hands the caller the sentence a read was refused with", async () => {
+    const said = "That is not a group of checks lemonfiber knows.";
+    const got = await open(answering({ ok: false, status: 400, text: said }, [])).read(
+      "doctor",
+      {
+        only: "nope",
+      },
+    );
+
+    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+  });
 });
 
 describe("act", () => {
@@ -166,5 +186,91 @@ describe("act", () => {
     const seen: Seen[] = [];
     await open(answering({}, seen)).act("retry-import");
     expect(seen[0]?.headers[TOKEN_HEADER]).toBe("a-run-token");
+  });
+});
+
+// The defect these exist for. lemonfiber answers a refused action with a plain
+// sentence saying what was wrong with the request, and that sentence used to be
+// dropped: a caller got "lemonfiber is not answering" for a request lemonfiber
+// had just answered in words. A test that the call failed would have passed
+// throughout, so each of these asserts the sentence itself.
+describe("a refusal the caller can read", () => {
+  it.each([
+    [
+      "an action lemonfiber does not offer",
+      404,
+      "There is no action named `retry-imprt`. This surface offers what the command line offers, and nothing else.",
+    ],
+    [
+      "an argument that was not given",
+      400,
+      "The action `config-set` needs `key`, which was not given.",
+    ],
+    [
+      "an argument naming nothing",
+      400,
+      "The `preset` given is not one this stack knows: `platnum` — try balanced, high or maximum.",
+    ],
+  ])("says lemonfiber's own words about %s", async (_what, status, said) => {
+    const got = await open(answering({ ok: false, status, text: said }, [])).act("config-set");
+
+    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+  });
+
+  it("says the summary of a command that ran and failed", async () => {
+    const said = "Sonarr would not accept the API key this stack holds for it.";
+    const envelope = wentWrong({
+      code: "service-refused-key",
+      summary: said,
+      meaning: "Sonarr is running but will not answer for this stack.",
+      remedies: [],
+      severity: "error",
+      state: "actionable",
+    });
+
+    const got = await open(answering({ ok: false, status: 500, text: envelope }, [])).act(
+      "check-everything",
+    );
+
+    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+  });
+
+  // The key is what a page can do something about; either sentence lemonfiber
+  // says here names a symptom of it.
+  it("keeps the key's remedy when lemonfiber turns the request away", async () => {
+    const said = "This request carried no token, or not this run's.";
+    const got = await open(answering({ ok: false, status: 403, text: said }, [])).act("pull");
+
+    expect(got).toEqual({ ok: false, problem: refused() });
+  });
+
+  it("does not pass off a page from something in front of lemonfiber as its words", async () => {
+    const page = "<html><head><title>502 Bad Gateway</title></head><body>nginx</body></html>";
+    const got = await open(answering({ ok: false, status: 502, text: page }, [])).act("pull");
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "unreachable", message: expect.any(String) },
+    });
+  });
+
+  it("reports a failure that said nothing as not answering", async () => {
+    const got = await open(answering({ ok: false, status: 500, text: " ".repeat(3) }, [])).act(
+      "pull",
+    );
+
+    expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
+  });
+
+  it.each([
+    ["carries no summary", {}],
+    ["carries a summary that is not a sentence", { summary: 7 }],
+    ["carries a summary of nothing", { summary: " ".repeat(3) }],
+  ])("says nothing for an error envelope that %s", async (_what, data) => {
+    const got = await open(
+      answering({ ok: false, status: 500, text: wentWrong(data) }, []),
+    ).act("pull");
+
+    expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
   });
 });

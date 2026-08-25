@@ -19,10 +19,21 @@ export const problem = (kind: ProblemKind, message: string): Problem => ({ kind,
 export const unreachable = (): Problem =>
   problem("unreachable", "lemonfiber is not answering. It may have been stopped.");
 
-export const refused = (): Problem =>
+/**
+ * lemonfiber refused the request.
+ *
+ * Given the sentence lemonfiber answered with, that sentence is the message. It
+ * names what was wrong with this particular request — the action that does not
+ * exist, the argument that was not given — which no wording held here could.
+ *
+ * Without one, the message is the thing true of every refusal that carried no
+ * words: the key is not the one this run is expecting.
+ */
+export const refused = (said?: string): Problem =>
   problem(
     "refused",
-    "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
+    said ??
+      "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
   );
 
 export const malformed = (): Problem =>

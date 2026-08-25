@@ -4,7 +4,7 @@
  * Spec: 20-architecture/contracts/web-api.md
  */
 import { address } from "./address.js";
-import { parse, type Envelope, type Reading } from "./envelope.js";
+import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
 import { refused, unreachable, type Problem } from "./problem.js";
 
@@ -104,19 +104,16 @@ export class Client {
       return { ok: false, problem: unreachable() };
     }
 
-    if (!answer.ok) {
-      // 403, not 401: lemonfiber answers a bad token with the status that does not
-      // invite a browser to prompt for credentials it has no way to supply. Reading
-      // 401 here meant a rejected key arrived as "cannot reach it", so a page that
-      // should have asked for the key again reported the server down instead.
-      return { ok: false, problem: wasTurnedAway(answer.status) ? refused() : unreachable() };
-    }
-
+    let said: string;
     try {
-      return parse<T>(await answer.text());
+      said = await answer.text();
     } catch {
       return { ok: false, problem: unreachable() };
     }
+
+    if (!answer.ok) return { ok: false, problem: turnedDown(answer.status, said) };
+
+    return parse<T>(said);
   }
 }
 
@@ -127,6 +124,65 @@ export class Client {
  * it may answer with instead.
  */
 const wasTurnedAway = (status: number): boolean => status === 403 || status === 401;
+
+/**
+ * What opens something other than a sentence: a JSON body, or markup from
+ * whatever stands between the caller and lemonfiber.
+ */
+const OPENS_A_STRUCTURE = /^[<[{]/;
+
+/**
+ * The problem an answer that was not a success is, given the body it arrived
+ * with.
+ *
+ * A refusal lemonfiber wrote a sentence for is that sentence. A failure whose
+ * body holds no sentence this package can read is reported as not answering: a
+ * body it cannot read tells it no more than silence would.
+ */
+function turnedDown(status: number, body: string): Problem {
+  // 403, not 401: lemonfiber answers a bad token with the status that does not
+  // invite a browser to prompt for credentials it has no way to supply. Reading
+  // 401 here meant a rejected key arrived as "cannot reach it", so a page that
+  // should have asked for the key again reported the server down instead.
+  //
+  // Neither body is carried. Both sentences lemonfiber says here name a symptom,
+  // and the remedy for either is the one this message already gives.
+  if (wasTurnedAway(status)) return refused();
+
+  const sentence = saidIn(body);
+  return sentence === undefined ? unreachable() : refused(sentence);
+}
+
+/**
+ * The sentence lemonfiber refused with, or nothing where the body holds none.
+ *
+ * Two shapes arrive. An action lemonfiber does not offer, or an argument it does
+ * not know, is answered in prose. A command that ran and failed is answered with
+ * an `error` envelope, whose summary is that same one sentence. A body of any
+ * other shape did not come from lemonfiber and is not handed on as its words.
+ */
+function saidIn(body: string): string | undefined {
+  const words = body.trim();
+  if (words === "") return undefined;
+  if (OPENS_A_STRUCTURE.test(words)) return summaryIn(words);
+  return words;
+}
+
+/**
+ * The one plain sentence an `error` envelope carries.
+ *
+ * The kind names the payload; it does not prove its shape. The summary is read
+ * as something arriving off a wire, so an envelope labelled `error` that carries
+ * no sentence yields none.
+ */
+function summaryIn(body: string): string | undefined {
+  const envelope = parse<unknown>(body);
+  if (!envelope.ok || !isKind(envelope.value, "error")) return undefined;
+
+  const summary: unknown = envelope.value.data.summary;
+  if (typeof summary !== "string" || summary.trim() === "") return undefined;
+  return summary.trim();
+}
 
 /**
  * A query string, or nothing when there is nothing to ask for.
