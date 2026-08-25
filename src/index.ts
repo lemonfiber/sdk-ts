@@ -15,6 +15,8 @@ export {
 export { Ledger, type Held } from "./ledger.js";
 export {
   malformed,
+  misasked,
+  missing,
   problem,
   refused,
   streamLost,

@@ -161,7 +161,7 @@ describe("read", () => {
       },
     );
 
-    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+    expect(got).toEqual({ ok: false, problem: { kind: "misasked", message: said } });
   });
 });
 
@@ -199,22 +199,25 @@ describe("a refusal the caller can read", () => {
     [
       "an action lemonfiber does not offer",
       404,
+      "missing",
       "There is no action named `retry-imprt`. This surface offers what the command line offers, and nothing else.",
     ],
     [
       "an argument that was not given",
       400,
+      "misasked",
       "The action `config-set` needs `key`, which was not given.",
     ],
     [
       "an argument naming nothing",
       400,
+      "misasked",
       "The `preset` given is not one this stack knows: `platnum` — try balanced, high or maximum.",
     ],
-  ])("says lemonfiber's own words about %s", async (_what, status, said) => {
+  ])("says lemonfiber's own words about %s", async (_what, status, kind, said) => {
     const got = await open(answering({ ok: false, status, text: said }, [])).act("config-set");
 
-    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: said } });
+    expect(got).toEqual({ ok: false, problem: { kind, message: said } });
   });
 
   it("says the summary of a command that ran and failed", async () => {
@@ -272,5 +275,73 @@ describe("a refusal the caller can read", () => {
     ).act("pull");
 
     expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
+  });
+});
+
+// What a read could not say before. A word this product does not explain, a form
+// no stack declares and a container engine that is not answering were one answer,
+// so a caller holding all three had to word a message true of every one of them.
+describe("a refusal the caller can tell apart", () => {
+  /**
+   * The refusal a read carries, in the envelope machine-readable output gives it.
+   */
+  const said = "`kubernetes` is not one of the words this product explains";
+  const entry = wentWrong({
+    code: "WORD-1",
+    summary: said,
+    meaning: "What is explained here is this ecosystem's own vocabulary.",
+    remedies: [],
+    severity: "error",
+    state: "actionable",
+  });
+
+  it("reports a name lemonfiber does not have as missing", async () => {
+    const got = await open(answering({ ok: false, status: 404, text: entry }, [])).read(
+      "explain",
+      { word: "kubernetes" },
+    );
+
+    expect(got).toEqual({ ok: false, problem: { kind: "missing", message: said } });
+  });
+
+  it("does not report a failure of lemonfiber's own as missing", async () => {
+    const broke = "The container engine is not answering.";
+    const got = await open(
+      answering({ ok: false, status: 500, text: wentWrong({ summary: broke }) }, []),
+    ).read("status");
+
+    expect(got).toEqual({ ok: false, problem: { kind: "refused", message: broke } });
+  });
+
+  it("reports a request lemonfiber cannot answer as asked as neither", async () => {
+    const needs = "The action `config-set` needs `key`, which was not given.";
+    const got = await open(answering({ ok: false, status: 400, text: needs }, [])).act(
+      "config-set",
+    );
+
+    expect(got).toEqual({ ok: false, problem: { kind: "misasked", message: needs } });
+  });
+
+  // A status alone is not lemonfiber saying anything. Whatever stands in front of
+  // it answers 404 for a path it does not route, and its page is not this
+  // product's account of what there is.
+  it("does not pass off a page from something in front of it as a name it has", async () => {
+    const page = "<html><head><title>404 Not Found</title></head><body>nginx</body></html>";
+    const got = await open(answering({ ok: false, status: 404, text: page }, [])).read(
+      "explain",
+      { word: "kubernetes" },
+    );
+
+    expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
+  });
+
+  // The key is what a page can do something about, and it is not one of these.
+  it("keeps a rejected key a refusal and nothing else", async () => {
+    const got = await open(answering({ ok: false, status: 403, text: "no" }, [])).read(
+      "explain",
+      { word: "hardlink" },
+    );
+
+    expect(got).toEqual({ ok: false, problem: refused() });
   });
 });

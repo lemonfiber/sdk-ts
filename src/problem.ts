@@ -4,7 +4,8 @@
  * Spec: 10-functional/features/g-ux/g4-error-model.md
  */
 
-export type ProblemKind = "unreachable" | "refused" | "version" | "malformed" | "stream";
+export type ProblemKind =
+  "unreachable" | "refused" | "missing" | "misasked" | "version" | "malformed" | "stream";
 
 export interface Problem {
   kind: ProblemKind;
@@ -35,6 +36,31 @@ export const refused = (said?: string): Problem =>
     said ??
       "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
   );
+
+/**
+ * lemonfiber has nothing by the name the request gave.
+ *
+ * Separate from every other refusal, and separately actionable: a word this
+ * product does not explain and a container engine that is not running are both a
+ * read that came back with no answer, and only one of them is worth asking a
+ * different question about. Asking this one again, unchanged, will never succeed.
+ *
+ * The sentence is lemonfiber's own. It names what was asked for and, where the set
+ * is short enough to be the answer, what there is instead — which no wording held
+ * here could. Nothing is defaulted, since this is built from words that arrived
+ * and from nothing else.
+ */
+export const missing = (said: string): Problem => problem("missing", said);
+
+/**
+ * lemonfiber could not answer the request as it was asked.
+ *
+ * A parameter it needs and was not given, or a value outside a vocabulary the
+ * surface itself defines. What the request named may well exist; the request
+ * cannot be carried out in the shape it arrived in, and the sentence says which
+ * part of it cannot.
+ */
+export const misasked = (said: string): Problem => problem("misasked", said);
 
 export const malformed = (): Problem =>
   problem("malformed", "That reply did not come from lemonfiber.");
