@@ -105,7 +105,11 @@ export class Client {
     }
 
     if (!answer.ok) {
-      return { ok: false, problem: answer.status === 401 ? refused() : unreachable() };
+      // 403, not 401: lemonfiber answers a bad token with the status that does not
+      // invite a browser to prompt for credentials it has no way to supply. Reading
+      // 401 here meant a rejected key arrived as "cannot reach it", so a page that
+      // should have asked for the key again reported the server down instead.
+      return { ok: false, problem: wasTurnedAway(answer.status) ? refused() : unreachable() };
     }
 
     try {
@@ -115,6 +119,14 @@ export class Client {
     }
   }
 }
+
+/**
+ * Whether a status is lemonfiber saying the key is wrong.
+ *
+ * Both are read: 403 is what it answers with, and 401 is what a proxy in front of
+ * it may answer with instead.
+ */
+const wasTurnedAway = (status: number): boolean => status === 403 || status === 401;
 
 /**
  * A query string, or nothing when there is nothing to ask for.
