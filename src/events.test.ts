@@ -18,6 +18,28 @@ function streaming(chunks: string[]): ReadableStream<Uint8Array> {
   });
 }
 
+/**
+ * A stream that hands over `chunks` and then stays open, which is what a server
+ * gathering on a tick does between snapshots.
+ */
+function holding(chunks: string[]): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  let at = 0;
+  return new ReadableStream<Uint8Array>({
+    pull(controller) {
+      const chunk = chunks[at];
+      at += 1;
+      if (chunk !== undefined) {
+        controller.enqueue(encoder.encode(chunk));
+        return;
+      }
+      return new Promise<void>(() => {
+        // A server gathering on a tick never resolves this between snapshots.
+      });
+    },
+  });
+}
+
 const sent = (kind: string, data: unknown, id?: string): string =>
   `${id === undefined ? "" : `id: ${id}\n`}event: ${kind}\ndata: ${JSON.stringify({
     api_version: API_VERSION,
@@ -63,6 +85,23 @@ async function take<T>(
 const base = { url: "http://127.0.0.1:7777/api/events", token: "a-run-token" };
 
 describe("follow", () => {
+  // A server that gathers on a tick holds the connection open between snapshots,
+  // so an opening that never ends is the ordinary case rather than the edge one.
+  it("hands over an arrival before the opening has ended", async () => {
+    const following = follow<{ free: number }>({
+      ...base,
+      fetching: () =>
+        Promise.resolve({ ok: true, body: holding([sent("status", { free: 7 })]) }),
+      reconnectsAllowed: 0,
+    });
+
+    const first = await following.next();
+    await following.return(undefined);
+
+    expect(first.done).toBe(false);
+    expect(first.value).toEqual({ at: "live", kind: "status", data: { free: 7 } });
+  });
+
   it("hands over what arrives", async () => {
     const seen: Seen = { headers: [] };
     const got = await take(
