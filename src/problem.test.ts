@@ -31,6 +31,15 @@ describe("problem", () => {
     },
   );
 
+  it("carries the sentence lemonfiber refused with, where it sent one", () => {
+    const said = "The action `config-set` needs `key`, which was not given.";
+    expect(refused(said)).toEqual({ kind: "refused", message: said });
+  });
+
+  it("names the key when the refusal carried no words", () => {
+    expect(refused().message).toContain("reopen it from the address lemonfiber printed");
+  });
+
   it("names both versions when they disagree", () => {
     const message = wrongVersion(1, 4).message;
     expect(message).toContain("1");
