@@ -5,7 +5,14 @@
  */
 
 export type ProblemKind =
-  "unreachable" | "refused" | "missing" | "misasked" | "version" | "malformed" | "stream";
+  | "unreachable"
+  | "refused"
+  | "missing"
+  | "misasked"
+  | "failed"
+  | "version"
+  | "malformed"
+  | "stream";
 
 export interface Problem {
   kind: ProblemKind;
@@ -21,20 +28,21 @@ export const unreachable = (): Problem =>
   problem("unreachable", "lemonfiber is not answering. It may have been stopped.");
 
 /**
- * lemonfiber refused the request.
+ * The key this page is using is not the one this run is expecting.
  *
- * Given the sentence lemonfiber answered with, that sentence is the message. It
- * names what was wrong with this particular request — the action that does not
- * exist, the argument that was not given — which no wording held here could.
+ * This kind, and this message, and nothing else. A run mints a key once, so the
+ * remedy is always the same one and a caller reading this kind may act on it
+ * without reading anything further.
  *
- * Without one, the message is the thing true of every refusal that carried no
- * words: the key is not the one this run is expecting.
+ * It takes no sentence. What lemonfiber says when it turns a request away names a
+ * symptom of the key, and a sentence carried here would make this kind mean
+ * whatever the sentence happened to say — which is what it used to mean, and what
+ * left a stopped container engine asking an operator for a new key.
  */
-export const refused = (said?: string): Problem =>
+export const refused = (): Problem =>
   problem(
     "refused",
-    said ??
-      "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
+    "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
   );
 
 /**
@@ -61,6 +69,21 @@ export const missing = (said: string): Problem => problem("missing", said);
  * part of it cannot.
  */
 export const misasked = (said: string): Problem => problem("misasked", said);
+
+/**
+ * lemonfiber ran the request and could not answer it.
+ *
+ * Nothing about the request is wrong. What it named is there and the way it asked
+ * was understood; the machinery behind the answer is what did not work — a
+ * container engine that is not running, a file that could not be read, a service
+ * that would not reply. The same request may well succeed once that is put right,
+ * which is what tells this from `refused`: one is the key, and this is everything
+ * the key would have reached.
+ *
+ * The sentence is lemonfiber's own, naming what failed. Nothing is defaulted,
+ * since this is built from words that arrived and from nothing else.
+ */
+export const failed = (said: string): Problem => problem("failed", said);
 
 export const malformed = (): Problem =>
   problem("malformed", "That reply did not come from lemonfiber.");

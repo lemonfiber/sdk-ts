@@ -6,7 +6,7 @@
 import { address } from "./address.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
-import { misasked, missing, refused, unreachable, type Problem } from "./problem.js";
+import { failed, misasked, missing, refused, unreachable, type Problem } from "./problem.js";
 
 /**
  * What a query parameter may carry. A value that is `undefined` is not sent.
@@ -111,7 +111,7 @@ export class Client {
       return { ok: false, problem: unreachable() };
     }
 
-    if (!answer.ok) return { ok: false, problem: turnedDown(answer.status, said) };
+    if (!answer.ok) return { ok: false, problem: refusalIn(answer.status, said) };
 
     return parse<T>(said);
   }
@@ -132,13 +132,20 @@ const wasTurnedAway = (status: number): boolean => status === 403 || status === 
 const OPENS_A_STRUCTURE = /^[<[{]/;
 
 /**
- * What a status says a refusal is, where it says anything in particular.
+ * What a status says the request itself got wrong.
  *
- * Two of them do. lemonfiber settles where a problem lies at the point the problem
- * is raised — in what the request named, in how it asked, or in the answering —
- * and answers with the status that carries that reading, so these two are read
- * back rather than guessed at from the sentence. Every other refusal keeps the one
- * kind it has always had.
+ * lemonfiber settles where a problem lies at the point the problem is raised — in
+ * what the request named, in how it asked, or in the answering — and answers with
+ * the status that carries that reading, so this is read back rather than guessed
+ * at from the sentence. Two of the three are the request's, and they are the two
+ * listed. The third needs no entry: a status faulting neither what was named nor
+ * how it was asked leaves the answering, which is `failed`.
+ *
+ * Falling through to `failed` rather than listing 500 is deliberate. A status
+ * nothing here recognises is then read as a failure of the answering rather than
+ * as the key, which is the safe direction of the two: a caller told its key is
+ * wrong rotates a credential that was working, while a caller told the answering
+ * failed is given the sentence, which names what actually broke.
  */
 const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
   [400, misasked],
@@ -149,14 +156,24 @@ const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
  * The problem an answer that was not a success is, given the body it arrived
  * with.
  *
+ * Offered rather than kept private. A caller that reads a status itself — because
+ * what it asked for is not one document, and so is not something `read` can parse
+ * — would otherwise write this reading a second time, and a second copy of which
+ * status means which kind is a second place to remember when a status is added.
+ *
  * A refusal lemonfiber wrote a sentence for is that sentence, under the kind its
  * status warrants. A failure whose body holds no sentence this package can read is
  * reported as not answering: a body it cannot read tells it no more than silence
  * would, whatever status carried it — so a name this package reports as missing is
  * always one lemonfiber itself said was missing, never a proxy's page under a
  * status that looked right.
+ *
+ * The key is the one refusal read from the status alone, and it is the only one
+ * `refused` is ever built from. Everything else that answered in words is the
+ * request's fault or the answering's, and a caller acting on `refused` is
+ * therefore acting on the key and on nothing that merely arrived beside it.
  */
-function turnedDown(status: number, body: string): Problem {
+export function refusalIn(status: number, body: string): Problem {
   // 403, not 401: lemonfiber answers a bad token with the status that does not
   // invite a browser to prompt for credentials it has no way to supply. Reading
   // 401 here meant a rejected key arrived as "cannot reach it", so a page that
@@ -169,7 +186,7 @@ function turnedDown(status: number, body: string): Problem {
   const sentence = saidIn(body);
   if (sentence === undefined) return unreachable();
 
-  const meant = MEANT_BY.get(status) ?? refused;
+  const meant = MEANT_BY.get(status) ?? failed;
   return meant(sentence);
 }
 

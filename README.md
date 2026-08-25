@@ -91,16 +91,23 @@ Nothing throws for an expected failure. A call returns either a value or a
 `problem.kind` says which sort of refusal it was, so a caller need not read the
 sentence to know what to do with it:
 
-| `kind`        | What it means                                                                      |
-| ------------- | ---------------------------------------------------------------------------------- |
-| `missing`     | lemonfiber has nothing by the name the request gave                                |
-| `misasked`    | It could not answer the request as it was asked                                    |
-| `refused`     | It turned the request down — a key that is not this run's, or a failure of its own |
-| `unreachable` | Nothing lemonfiber wrote came back at all                                          |
+| `kind`        | What it means                                              |
+| ------------- | ---------------------------------------------------------- |
+| `missing`     | lemonfiber has nothing by the name the request gave        |
+| `misasked`    | It could not answer the request as it was asked            |
+| `failed`      | It understood the request and its own answering failed     |
+| `refused`     | The key this page is using is not the one this run expects |
+| `unreachable` | Nothing lemonfiber wrote came back at all                  |
 
-`missing` and `misasked` always carry lemonfiber's own sentence: a body this
-package cannot read is reported as `unreachable` whatever status carried it, so a
-page from something standing in front of lemonfiber is never passed off as its
+`refused` is the key and nothing else. A caller reading it may ask for a new key
+without reading the sentence, which is the point of a kind — and a caller reading
+`failed` may not, because what failed is behind the answer rather than in front of
+it. A stopped container engine is `failed`, and asking again once it is running
+will succeed.
+
+`missing`, `misasked` and `failed` always carry lemonfiber's own sentence: a body
+this package cannot read is reported as `unreachable` whatever status carried it,
+so a page from something standing in front of lemonfiber is never passed off as its
 account of what there is.
 
 ## `src/generated/` is not yours to edit
