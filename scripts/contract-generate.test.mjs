@@ -90,6 +90,38 @@ describe("generating from a contract this package does not implement", () => {
     expect(existsSync(written())).toBe(true);
   });
 
+  it("refuses a reference with a constraint beside it, and names where", async () => {
+    const ambiguous = contract(1);
+    ambiguous.kinds.word.$defs = { Word: { type: "object" } };
+    ambiguous.kinds.word.properties.data = {
+      $ref: "#/$defs/Word",
+      properties: { kind: { const: "word" } },
+      type: "object",
+    };
+    await writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(ambiguous));
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("/word/properties/data");
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it("accepts a reference described but not constrained", async () => {
+    const described = contract(1);
+    described.kinds.word.$defs = { Word: { type: "object" } };
+    described.kinds.word.properties.data = {
+      $ref: "#/$defs/Word",
+      description: "The payload.",
+    };
+    await writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(described));
+
+    const result = run();
+
+    expect(result.status).toBe(0);
+    expect(existsSync(written())).toBe(true);
+  });
+
   it("refuses a contract describing no kinds", async () => {
     await writeFile(
       join(tree, "contract", "web-api.contract.json"),
