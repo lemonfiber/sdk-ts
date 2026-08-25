@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: b0101f0cc19b008d6a225cdc07515b6982fa4cc0  ·  api_version 1
+// Source: e6a1eaaf81d0327e072a65b24d9db9591dbe28b6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -956,15 +956,83 @@ export interface DoctorFinding {
         note?: string | null;
         outcome: "pass";
       }
-    | DoctorProblem
-    | DoctorProblem1
+    | {
+        /**
+         * The problem that produced this one, where several share a root.
+         */
+        cause?: DoctorProblem | null;
+        /**
+         * The stable identifier for this kind of problem.
+         */
+        code: string;
+        /**
+         * The underlying technical detail, available but never leading.
+         */
+        detail?: string | null;
+        /**
+         * What it means for the operator.
+         */
+        meaning: string;
+        outcome: "warn";
+        /**
+         * What to do, most likely first.
+         */
+        remedies: Remedy[];
+        /**
+         * How much it matters.
+         */
+        severity: "advisory" | "warning" | "error" | "critical";
+        /**
+         * Where it stands with respect to being fixed.
+         */
+        state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+        /**
+         * What happened, in one plain sentence.
+         */
+        summary: string;
+      }
+    | {
+        /**
+         * The problem that produced this one, where several share a root.
+         */
+        cause?: DoctorProblem | null;
+        /**
+         * The stable identifier for this kind of problem.
+         */
+        code: string;
+        /**
+         * The underlying technical detail, available but never leading.
+         */
+        detail?: string | null;
+        /**
+         * What it means for the operator.
+         */
+        meaning: string;
+        outcome: "fail";
+        /**
+         * What to do, most likely first.
+         */
+        remedies: Remedy[];
+        /**
+         * How much it matters.
+         */
+        severity: "advisory" | "warning" | "error" | "critical";
+        /**
+         * Where it stands with respect to being fixed.
+         */
+        state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+        /**
+         * What happened, in one plain sentence.
+         */
+        summary: string;
+      }
     | {
         outcome: "unverified";
         /**
          * Why it could not be determined.
          */
         reason: string;
-        remedy: Remedy;
+        remedy: Remedy1;
       }
     | {
         outcome: "skipped";
@@ -975,21 +1043,59 @@ export interface DoctorFinding {
       };
 }
 /**
- * Working, but degraded or risky.
+ * Something that went wrong, in the form an operator can act on.
  */
 export interface DoctorProblem {
-  outcome: "warn";
+  /**
+   * The problem that produced this one, where several share a root.
+   */
+  cause?: DoctorProblem | null;
+  /**
+   * The stable identifier for this kind of problem.
+   */
+  code: string;
+  /**
+   * The underlying technical detail, available but never leading.
+   */
+  detail?: string | null;
+  /**
+   * What it means for the operator.
+   */
+  meaning: string;
+  /**
+   * What to do, most likely first.
+   */
+  remedies: Remedy[];
+  /**
+   * How much it matters.
+   */
+  severity: "advisory" | "warning" | "error" | "critical";
+  /**
+   * Where it stands with respect to being fixed.
+   */
+  state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+  /**
+   * What happened, in one plain sentence.
+   */
+  summary: string;
 }
 /**
- * Not working.
- */
-export interface DoctorProblem1 {
-  outcome: "fail";
-}
-/**
- * What the operator can do to get an answer.
+ * One thing the operator can do about a problem.
  */
 export interface Remedy {
+  /**
+   * The action, phrased as something to do rather than something to know.
+   */
+  action: string;
+  /**
+   * Where to look, when that helps.
+   */
+  detail?: string | null;
+}
+/**
+ * One thing the operator can do about a problem.
+ */
+export interface Remedy1 {
   /**
    * The action, phrased as something to do rather than something to know.
    */
@@ -1022,7 +1128,7 @@ export interface ErrorProblem {
   /**
    * What to do, most likely first.
    */
-  remedies: Remedy1[];
+  remedies: Remedy[];
   /**
    * How much it matters.
    */
@@ -1059,7 +1165,7 @@ export interface ErrorProblem1 {
   /**
    * What to do, most likely first.
    */
-  remedies: Remedy1[];
+  remedies: Remedy[];
   /**
    * How much it matters.
    */
@@ -1072,19 +1178,6 @@ export interface ErrorProblem1 {
    * What happened, in one plain sentence.
    */
   summary: string;
-}
-/**
- * One thing the operator can do about a problem.
- */
-export interface Remedy1 {
-  /**
-   * The action, phrased as something to do rather than something to know.
-   */
-  action: string;
-  /**
-   * Where to look, when that helps.
-   */
-  detail?: string | null;
 }
 /**
  * The payload.
@@ -1185,7 +1278,7 @@ export interface Started {
    */
   action: string;
   /**
-   * The name to follow this work by on the event stream.
+   * The name to ask what became of this work by.
    */
   job: string;
 }

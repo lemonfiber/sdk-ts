@@ -41,6 +41,44 @@ if (artefact.api_version !== SPOKEN) {
   );
 }
 
+/** Keywords that describe a schema without constraining what it matches. */
+const ANNOTATIONS = new Set(["description", "title", "default", "examples"]);
+
+/**
+ * Every reference in the artefact with a constraint sitting beside it.
+ *
+ * Draft-07 readers discard whatever accompanies a `$ref` and 2020-12 readers
+ * apply both, so the shape means two different things to two readers. This
+ * generator is one of them: it keeps the constraint and drops the reference,
+ * which turns a variant carrying a whole payload into a type carrying only its
+ * tag, and the result compiles.
+ */
+function* besideAReference(node, path) {
+  if (Array.isArray(node)) {
+    for (const [at, item] of node.entries())
+      yield* besideAReference(item, `${path}/${String(at)}`);
+    return;
+  }
+  if (node === null || typeof node !== "object") return;
+  const named = Object.keys(node);
+  const constraints = named.filter((key) => key !== "$ref" && !ANNOTATIONS.has(key));
+  if (named.includes("$ref") && constraints.length > 0) {
+    yield `${path} (${constraints.join(", ")})`;
+  }
+  for (const [key, value] of Object.entries(node))
+    yield* besideAReference(value, `${path}/${key}`);
+}
+
+const ambiguous = [...besideAReference(artefact.kinds, "")];
+
+if (ambiguous.length > 0) {
+  stop(
+    "The vendored contract puts a constraint beside a reference, and generating " +
+      "would drop one of the two:\n  " +
+      ambiguous.join("\n  "),
+  );
+}
+
 // By code point, not by locale. This order is the order of the declarations in
 // a file that is committed and diffed, so it has to be the same on every machine
 // that regenerates it — and `localeCompare` is the one comparison that is not.
