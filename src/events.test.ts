@@ -26,10 +26,17 @@ function streaming(chunks: string[]): ReadableStream<Uint8Array> {
 }
 
 /**
+ * What a body records about having been let go of.
+ */
+interface Letting {
+  go: boolean;
+}
+
+/**
  * A stream that hands over `chunks` and then stays open, which is what a server
  * gathering on a tick does between snapshots.
  */
-function holding(chunks: string[]): ReadableStream<Uint8Array> {
+function holding(chunks: string[], letting?: Letting): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   let at = 0;
   return new ReadableStream<Uint8Array>({
@@ -44,8 +51,22 @@ function holding(chunks: string[]): ReadableStream<Uint8Array> {
         // A server gathering on a tick never resolves this between snapshots.
       });
     },
+    cancel() {
+      // Optional, because only the tests about letting go of a body care whether
+      // it was: the ones about a silence that outlasts the beat are asking a
+      // different question of the same stream.
+      if (letting) letting.go = true;
+    },
   });
 }
+
+/**
+ * A wait long enough for everything already queued to have run.
+ */
+const settled = (): Promise<void> =>
+  new Promise((resume) => {
+    setTimeout(resume, 0);
+  });
 
 const sent = (kind: string, data: unknown, id?: string): string =>
   `${id === undefined ? "" : `id: ${id}\n`}event: ${kind}\ndata: ${JSON.stringify({
@@ -98,7 +119,10 @@ describe("follow", () => {
     const following = follow<{ free: number }>({
       ...base,
       fetching: () =>
-        Promise.resolve({ ok: true, body: holding([sent("status", { free: 7 })]) }),
+        Promise.resolve({
+          ok: true,
+          body: holding([sent("status", { free: 7 })], { go: false }),
+        }),
       reconnectsAllowed: 0,
     });
 
@@ -316,6 +340,47 @@ describe("follow", () => {
 
     expect(seen.headers).toHaveLength(1);
     expect(got.filter((a) => a.at === "live")).toHaveLength(1);
+  });
+
+  // What a caller stops is the request, so the request is what its word has to
+  // reach. A fresh controller in its place is a stop nothing is listening for.
+  it("gives the request the caller's own way of stopping", async () => {
+    const gate = new AbortController();
+    const given: AbortSignal[] = [];
+    const watching: Fetching = (_url, init) => {
+      given.push(init.signal);
+      return Promise.resolve({ ok: true, body: streaming([sent("status", 1)]) });
+    };
+
+    await take(follow({ ...base, fetching: watching, signal: gate.signal }), 1);
+
+    expect(given[0]).toBe(gate.signal);
+  });
+
+  // A stream a server holds open between snapshots never ends of its own accord,
+  // so what proves a stop is what became of the body rather than what failed to
+  // arrive after it.
+  it("lets go of a stream that never ends when it is told to stop", async () => {
+    const gate = new AbortController();
+    const letting: Letting = { go: false };
+    const following = follow<number>({
+      ...base,
+      fetching: () =>
+        Promise.resolve({ ok: true, body: holding([sent("status", 1)], letting) }),
+      signal: gate.signal,
+      reconnectsAllowed: 0,
+    });
+
+    const first = await following.next();
+    const waiting = following.next();
+    await settled();
+    gate.abort();
+
+    expect(first.value).toEqual({ at: "live", kind: "status", data: 1 });
+    expect(letting.go).toBe(true);
+
+    const after = await waiting;
+    expect(after.value).toMatchObject({ at: "lost" });
   });
 
   it("survives a reader that throws mid-stream", async () => {

@@ -76,6 +76,10 @@ interface Opening {
   silenceAllowedMs: number;
   onId: (id: string) => void;
   /**
+   * The caller's way of saying it has stopped listening, where it gave one.
+   */
+  signal: AbortSignal | undefined;
+  /**
    * Set when the stream fell silent longer than it is allowed to, which is the
    * difference between a stream that ended and one that died.
    */
@@ -114,6 +118,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
       onId: (id) => {
         lastEventId = id;
       },
+      signal: options.signal,
       broke: false,
     };
     yield* readOpening<T>(opening);
@@ -140,28 +145,58 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
 
 /**
  * Reads one opening to its end, collecting what arrives and whether it broke.
+ *
+ * A caller that has stopped listening is one of the ways this ends, and the read
+ * already waiting when it says so is what its word has to reach: letting go of
+ * the body settles that read, which is what brings the loop back to end. The
+ * body is let go of however the reading ends, since a reader still holding one
+ * goes on draining a connection nobody is reading from.
  */
 async function* readOpening<T>(opening: Opening): AsyncGenerator<Arrival<T>> {
   const reader = opening.body.getReader();
   const parser = new SseParser();
   const decoder = new TextDecoder();
+  const stopping = (): void => {
+    void reader.cancel();
+  };
+  opening.signal?.addEventListener("abort", stopping, { once: true });
 
-  for (;;) {
-    const step = await nextChunk(reader, opening.silenceAllowedMs);
-    if (step.heard === "end") return;
+  try {
+    for (;;) {
+      const step = await nextChunk(reader, opening.silenceAllowedMs);
+      if (step.heard === "end") return;
 
-    if (step.heard === "silence") {
-      opening.broke = true;
-      return;
+      if (step.heard === "silence") {
+        opening.broke = true;
+        return;
+      }
+
+      opening.ledger.spoke(opening.now());
+      const events = parser.push(decoder.decode(step.chunk, { stream: true }));
+
+      for (const event of events) {
+        if (event.id !== undefined) opening.onId(event.id);
+        yield received<T>(event.data, opening);
+      }
     }
+  } finally {
+    opening.signal?.removeEventListener("abort", stopping);
+    await letGo(reader);
+  }
+}
 
-    opening.ledger.spoke(opening.now());
-    const events = parser.push(decoder.decode(step.chunk, { stream: true }));
-
-    for (const event of events) {
-      if (event.id !== undefined) opening.onId(event.id);
-      yield received<T>(event.data, opening);
-    }
+/**
+ * Lets go of the body, whatever state it is in.
+ *
+ * A body whose stream already failed says so again when it is let go of, and a
+ * stream that has already ended the reading leaves nothing further to do about
+ * it.
+ */
+async function letGo(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<void> {
+  try {
+    await reader.cancel();
+  } catch {
+    return;
   }
 }
 
@@ -230,6 +265,10 @@ function silence(ms: number, until: AbortSignal): Promise<Heard> {
 
 /**
  * Opens the stream, resuming from `lastEventId` where there is one.
+ *
+ * The caller's own way of stopping is what the request is given, so a stop said
+ * before this reaches the network is a request that is never made. A caller that
+ * gave none is given one nothing ever raises.
  */
 async function open(
   options: Following,
@@ -244,7 +283,7 @@ async function open(
   try {
     const answer = await options.fetching(options.url, {
       headers,
-      signal: new AbortController().signal,
+      signal: options.signal ?? new AbortController().signal,
     });
     return answer.ok && answer.body !== null ? answer.body : undefined;
   } catch {
