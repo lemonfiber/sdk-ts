@@ -37,16 +37,23 @@ describe("Ledger", () => {
     expect(ledger.quietForMs(4500)).toBe(3500);
   });
 
-  it("calls the stream broken only once the silence outlasts a heartbeat", () => {
+  // The server breaks a silence with a comment line, which carries no value and
+  // names no kind. Counting only what holds a value leaves a stream that has been
+  // speaking all along looking as silent as one that died.
+  it("counts a beat as the stream speaking without holding anything for it", () => {
     const ledger = new Ledger();
     ledger.record("status", 1, 1000);
+    ledger.spoke(4000);
 
-    expect(ledger.isBroken(15_000, 15_000)).toBe(false);
-    expect(ledger.isBroken(16_001, 15_000)).toBe(true);
+    expect(ledger.quietForMs(4500)).toBe(500);
+    expect(ledger.all(4500)).toEqual([{ at: "live", kind: "status", data: 1 }]);
+    expect(ledger.size).toBe(1);
   });
 
-  it("is not broken before the first arrival", () => {
-    expect(new Ledger().isBroken(999_999, 15_000)).toBe(false);
+  it("starts the clock on a beat where nothing has ever been held", () => {
+    const ledger = new Ledger();
+    ledger.spoke(4000);
+    expect(ledger.quietForMs(4500)).toBe(500);
   });
 
   // A value gathered before a gap is stale whatever the transport says.
