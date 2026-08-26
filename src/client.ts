@@ -164,9 +164,16 @@ const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
  * A refusal lemonfiber wrote a sentence for is that sentence, under the kind its
  * status warrants. A failure whose body holds no sentence this package can read is
  * reported as not answering: a body it cannot read tells it no more than silence
- * would, whatever status carried it — so a name this package reports as missing is
- * always one lemonfiber itself said was missing, never a proxy's page under a
- * status that looked right.
+ * would, whatever status carried it.
+ *
+ * What that rules out is a document, not a stranger. A page and a body of JSON
+ * that is not this envelope are both refused, and a plain sentence is taken as
+ * lemonfiber's own — which it usually is, since every refusal the write surface
+ * makes is prose and so are the reads it could not read. Nothing in a line of
+ * words says who wrote it, so a plain-text page from whatever else is listening on
+ * a loopback port is read as lemonfiber's account of what there is. Refusing prose
+ * would close that door by discarding the surface's own refusals, which is the
+ * larger loss of the two.
  *
  * The key is the one refusal read from the status alone, and it is the only one
  * `refused` is ever built from. Everything else that answered in words is the
