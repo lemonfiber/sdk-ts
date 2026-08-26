@@ -32,6 +32,17 @@ export class Ledger {
    */
   record(kind: string, data: unknown, atMs: number): void {
     this.#entries.set(kind, { data, recordedAtMs: atMs, live: true });
+    this.spoke(atMs);
+  }
+
+  /**
+   * Notes the stream speaking without it having said anything.
+   *
+   * The server breaks a silence with a comment line, which holds no value and
+   * names no kind and is the whole of what tells a quiet stream from a dead one.
+   * What is held is untouched; what starts again is the silence.
+   */
+  spoke(atMs: number): void {
     this.#lastArrivalMs = atMs;
   }
 
@@ -41,14 +52,6 @@ export class Ledger {
   quietForMs(nowMs: number): number | undefined {
     if (this.#lastArrivalMs === undefined) return undefined;
     return nowMs - this.#lastArrivalMs;
-  }
-
-  /**
-   * Whether the stream has been silent longer than a heartbeat allows.
-   */
-  isBroken(nowMs: number, heartbeatMs: number): boolean {
-    const quiet = this.quietForMs(nowMs);
-    return quiet !== undefined && quiet > heartbeatMs;
   }
 
   /**

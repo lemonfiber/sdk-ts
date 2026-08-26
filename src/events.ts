@@ -20,6 +20,10 @@ export const HEARTBEAT_MS = 15_000;
 
 /**
  * Silence beyond this means the stream is broken, not quiet.
+ *
+ * Twice the beat, which leaves one missed beat short of a broken stream. What is
+ * measured is the moment anything last arrived, a beat included; a beat carries
+ * no value and exists for no other purpose than to be counted here.
  */
 export const SILENCE_ALLOWED_MS = HEARTBEAT_MS * 2;
 
@@ -56,6 +60,11 @@ export interface Following {
   reconnectsAllowed?: number;
   signal?: AbortSignal;
 }
+
+/**
+ * What one read of an opening produced.
+ */
+type Heard = { heard: "words"; chunk: Uint8Array } | { heard: "end" } | { heard: "silence" };
 
 /**
  * What one opening of the stream needs in order to be read.
@@ -138,19 +147,20 @@ async function* readOpening<T>(opening: Opening): AsyncGenerator<Arrival<T>> {
   const decoder = new TextDecoder();
 
   for (;;) {
-    const chunk = await nextChunk(reader);
-    if (chunk === undefined) return;
+    const step = await nextChunk(reader, opening.silenceAllowedMs);
+    if (step.heard === "end") return;
 
-    const events = parser.push(decoder.decode(chunk, { stream: true }));
+    if (step.heard === "silence") {
+      opening.broke = true;
+      return;
+    }
+
+    opening.ledger.spoke(opening.now());
+    const events = parser.push(decoder.decode(step.chunk, { stream: true }));
 
     for (const event of events) {
       if (event.id !== undefined) opening.onId(event.id);
       yield received<T>(event.data, opening);
-    }
-
-    if (opening.ledger.isBroken(opening.now(), opening.silenceAllowedMs)) {
-      opening.broke = true;
-      return;
     }
   }
 }
@@ -168,17 +178,54 @@ function received<T>(text: string, opening: Opening): Arrival<T> {
 }
 
 /**
- * The next chunk, or nothing once the stream has ended or failed.
+ * The next chunk, or what its absence means.
+ *
+ * The wait is the whole of the silence detection. A stream that has gone quiet
+ * says nothing at all, so nothing arrives to prompt a reading of the clock, and a
+ * connection that died without closing would be waited on for as long as the
+ * process lived. The deadline ends the wait instead, and it starts again from
+ * whatever last arrived.
  */
 async function nextChunk(
   reader: ReadableStreamDefaultReader<Uint8Array>,
-): Promise<Uint8Array | undefined> {
+  silenceAllowedMs: number,
+): Promise<Heard> {
+  const waiting = new AbortController();
+  try {
+    return await Promise.race([reading(reader), silence(silenceAllowedMs, waiting.signal)]);
+  } finally {
+    waiting.abort();
+  }
+}
+
+/**
+ * One read, ended by the stream rather than by the clock.
+ */
+async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Heard> {
   try {
     const step = await reader.read();
-    return step.done ? undefined : step.value;
+    return step.done ? { heard: "end" } : { heard: "words", chunk: step.value };
   } catch {
-    return undefined;
+    return { heard: "end" };
   }
+}
+
+/**
+ * A wait that ends in silence, dropped where a read got there first.
+ */
+function silence(ms: number, until: AbortSignal): Promise<Heard> {
+  return new Promise((tell) => {
+    const bell = setTimeout(() => {
+      tell({ heard: "silence" });
+    }, ms);
+    until.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(bell);
+      },
+      { once: true },
+    );
+  });
 }
 
 /**

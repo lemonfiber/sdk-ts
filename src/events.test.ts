@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { API_VERSION } from "./envelope.js";
-import { follow, TOKEN_HEADER, type Arrival, type Fetching } from "./events.js";
+import {
+  follow,
+  HEARTBEAT_MS,
+  SILENCE_ALLOWED_MS,
+  TOKEN_HEADER,
+  type Arrival,
+  type Fetching,
+} from "./events.js";
 
 /**
  * A stream that hands over `chunks` and then ends.
@@ -193,19 +200,16 @@ describe("follow", () => {
     expect(got[0]).toMatchObject({ at: "lost", problem: { kind: "version" } });
   });
 
-  // Silence is a break, and what survives it is stale.
+  // Silence is a break, and what survives it is stale. A stream that has gone
+  // quiet says nothing at all, so what ends the wait is the wait itself — nothing
+  // arrives to prompt a reading of the clock.
   it("calls the stream broken once silence outlasts what is allowed", async () => {
-    const seen: Seen = { headers: [] };
-    let clock = 1000;
     const got = await take(
-      follow({
+      follow<{ free: number }>({
         ...base,
-        fetching: serving([[sent("status", { free: 412 }), ": keep-alive\n\n"]], seen),
-        now: () => {
-          clock += 40_000;
-          return clock;
-        },
-        silenceAllowedMs: 30_000,
+        fetching: () =>
+          Promise.resolve({ ok: true, body: holding([sent("status", { free: 412 })]) }),
+        silenceAllowedMs: 5,
         reconnectsAllowed: 0,
       }),
       3,
@@ -214,6 +218,37 @@ describe("follow", () => {
     expect(got[0]).toMatchObject({ at: "live", kind: "status" });
     expect(got[1]).toMatchObject({ at: "lost", problem: { kind: "stream" } });
     expect(got[2]).toMatchObject({ at: "stale", kind: "status", data: { free: 412 } });
+  });
+
+  // What the server sends when it has nothing to say is a comment line and
+  // nothing else. Counting only envelopes as arrivals reads a stream that has
+  // been speaking every fifteen seconds as one that stopped after thirty.
+  it("takes the beat a silence is broken with as the stream still speaking", async () => {
+    let clock = 0;
+    const beating = [
+      sent("status", { free: 7 }),
+      ": beat\n\n",
+      ": beat\n\n",
+      ": beat\n\n",
+      sent("status", { free: 6 }),
+    ];
+
+    const got = await take(
+      follow<{ free: number }>({
+        ...base,
+        fetching: () => Promise.resolve({ ok: true, body: holding(beating) }),
+        now: () => {
+          clock += HEARTBEAT_MS;
+          return clock;
+        },
+        silenceAllowedMs: SILENCE_ALLOWED_MS,
+        reconnectsAllowed: 0,
+      }),
+      2,
+    );
+
+    expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 7 } });
+    expect(got[1]).toEqual({ at: "live", kind: "status", data: { free: 6 } });
   });
 
   it("does not present what it held before a break as current", async () => {
