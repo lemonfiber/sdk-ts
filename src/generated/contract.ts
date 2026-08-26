@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: e6a1eaaf81d0327e072a65b24d9db9591dbe28b6  ·  api_version 1
+// Source: b837d173b77f0217217124f0116a45530fad5a63  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -64,6 +64,44 @@ export type Next = "more-content" | "household" | "client-apps";
  */
 export type Link = "hardlinked" | "copied";
 /**
+ * What proving a credential against its live service established — never the
+ * input, only the outcome.
+ *
+ * Read back as well as built. A surface that is not in this process asks setup to
+ * prove a credential and is told what came of it, so the four outcomes are tagged
+ * by name rather than distinguished by which field is present — the same reason an
+ * answer carries the step it belongs to.
+ */
+export type Validation =
+  | {
+      /**
+       * The observed fact — what the service did, not that it merely answered.
+       */
+      observed: string;
+      outcome: "valid";
+    }
+  | {
+      /**
+       * What the service said, in terms the operator can act on.
+       */
+      detail: string;
+      outcome: "rejected";
+    }
+  | {
+      /**
+       * Why nothing usable came back.
+       */
+      detail: string;
+      outcome: "unreachable";
+    }
+  | {
+      /**
+       * What it can no longer do, and why where the service says.
+       */
+      detail: string;
+      outcome: "degraded";
+    };
+/**
  * A step of setup, in the order the operator meets it.
  *
  * Some steps only inform (they detect and state, and the operator acknowledges);
@@ -89,6 +127,48 @@ export type WizardStep =
   | "review";
 
 export interface Contract {
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  archives: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Listing;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  backup: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: BackupReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  bundle: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Bundle;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
   /**
    * The wrapper every machine-readable payload arrives in.
    */
@@ -154,6 +234,20 @@ export interface Contract {
      */
     api_version: number;
     data: FormsReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  glossary: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Vocabulary;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -277,12 +371,40 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  repair: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: RepairReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   reset: {
     /**
      * The output contract's version.
      */
     api_version: number;
     data: ResetReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  restore: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: RestoreRestoration;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -350,6 +472,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  step: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: StepLine;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   stuck: {
     /**
      * The output contract's version.
@@ -369,7 +505,21 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: TraceReport;
+    data: TraceTraceReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  undo: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Reversal;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -453,12 +603,141 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: Term;
+    data: Term1;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
   };
+}
+/**
+ * The payload.
+ */
+export interface Listing {
+  /**
+   * Each one by the name it was written under, newest first.
+   *
+   * The name is the whole of what another surface needs: it is what a restore
+   * asks for, and it carries the moment the archive was taken and what it
+   * covers, because that is how a capture names one.
+   */
+  archives: string[];
+}
+/**
+ * The payload.
+ */
+export interface BackupReport {
+  /**
+   * Where the archive was written.
+   */
+  path: string;
+  /**
+   * The older backups retention pruned, oldest first.
+   */
+  pruned: string[];
+  /**
+   * What the backup covers.
+   */
+  scope:
+    | {
+        scope: "whole_stack";
+      }
+    | {
+        /**
+         * The service whose configuration this covers.
+         */
+        name: string;
+        scope: "service";
+      };
+  /**
+   * Whether it carries credentials, and so must be handled as sensitive.
+   */
+  sensitive: boolean;
+}
+/**
+ * The payload.
+ */
+export interface Bundle {
+  /**
+   * How large the file is, or would be.
+   */
+  bytes: number;
+  contents: Contents;
+  /**
+   * Where it was written, or nothing where a run that writes nothing described it.
+   */
+  path?: string | null;
+}
+/**
+ * Everything it holds, gathered, redacted and read back.
+ */
+export interface Contents {
+  /**
+   * What could not be collected, named.
+   *
+   * Named rather than passed over: a bundle from a machine whose diagnostics will not
+   * run is exactly the bundle worth having, and a gap nobody mentions reads as an
+   * absence of trouble rather than as an absence of information.
+   */
+  missing: string[];
+  /**
+   * The files, in the order a reader would want them.
+   */
+  pieces: Piece[];
+  taken: Taken;
+  terms: Terms;
+}
+/**
+ * One file inside a bundle: the name it will carry, and what it holds.
+ *
+ * Held in memory rather than written as it is gathered, because everything is read back
+ * before anything is written. A bundle that had already put one file on disk when it
+ * found a credential in the next would have to be unwritten, and unwriting is the kind of
+ * thing that half-works.
+ */
+export interface Piece {
+  /**
+   * What it holds, already redacted.
+   */
+  body: string;
+  /**
+   * What it is called inside the bundle.
+   */
+  name: string;
+}
+/**
+ * Where and when it came from.
+ */
+export interface Taken {
+  /**
+   * When, as a service writes a moment.
+   */
+  at: string;
+  /**
+   * The lemonfiber that wrote it.
+   */
+  lemonfiber: string;
+  /**
+   * The stack it was written from.
+   */
+  stack: string;
+}
+/**
+ * How it was made, and what its operator chose.
+ */
+export interface Terms {
+  /**
+   * Whether media filenames were shown.
+   */
+  filenames: boolean;
+  /**
+   * The settings the operator asked to have shown as they are.
+   */
+  revealed: string[];
+  /**
+   * How much of the logs was taken, said as it would be said aloud.
+   */
+  window: string;
 }
 /**
  * The payload.
@@ -1219,6 +1498,41 @@ export interface FormReport {
 /**
  * The payload.
  */
+export interface Vocabulary {
+  /**
+   * The words, in the order somebody meets them.
+   */
+  words: Term[];
+}
+/**
+ * A word this product uses, and what somebody meeting it needs to know.
+ */
+export interface Term {
+  /**
+   * What other services in this stack call the same thing.
+   *
+   * Sonarr and `SABnzbd` do not agree on words, and an operator moving between
+   * their screens should not have to work out that two of them are one.
+   */
+  also_called: string[];
+  /**
+   * More, for somebody who asks — never needed in order to act.
+   */
+  deep?: string | null;
+  /**
+   * One sentence: what it is for and what it costs or gains.
+   *
+   * Enough to act on. Somebody who reads only this should not be stuck.
+   */
+  short: string;
+  /**
+   * The word as it appears in the interface.
+   */
+  word: string;
+}
+/**
+ * The payload.
+ */
 export interface HouseholdHouseholdReport {
   /**
    * Whether the requests were read at all. A false here is why the list is empty, and
@@ -1681,6 +1995,149 @@ export interface MusicChoice1 {
 /**
  * The payload.
  */
+export interface RepairReport {
+  /**
+   * Whether this run was allowed to act at all.
+   */
+  acted: boolean;
+  /**
+   * What this offer is, so consent given for it can name which offer it read.
+   *
+   * Carried on every report rather than only on the ones that offer something: a
+   * surface that has to look for it is a surface that can fail to find it, and an
+   * offer of nothing is still an offer somebody may agree to nothing of.
+   */
+  agreement: string;
+  /**
+   * What has been tried too often to keep offering.
+   *
+   * Said rather than passed over. A repair that quietly stopped being offered leaves
+   * the operator watching a fault nobody mentions any more, which is worse than being
+   * told plainly that this is past what lemonfiber can work out.
+   */
+  beyond: Beyond[];
+  /**
+   * What was carried out, in the order it was.
+   */
+  mended: RepairMended[];
+  /**
+   * What could be put right, whether or not it was.
+   */
+  offered: Repair1[];
+}
+/**
+ * A repair that has run out of chances, and where to go instead.
+ */
+export interface Beyond {
+  /**
+   * The check whose fault has outlasted every attempt at it.
+   */
+  check: string;
+  remedy: Remedy2;
+}
+/**
+ * One thing the operator can do about a problem.
+ */
+export interface Remedy2 {
+  /**
+   * The action, phrased as something to do rather than something to know.
+   */
+  action: string;
+  /**
+   * Where to look, when that helps.
+   */
+  detail?: string | null;
+}
+/**
+ * One repair, and what became of it.
+ */
+export interface RepairMended {
+  /**
+   * How it turned out, once the check was asked again.
+   */
+  outcome:
+    | {
+        outcome: "fixed";
+      }
+    | {
+        outcome: "fix_failed";
+      }
+    | {
+        /**
+         * What the machine is now in, said plainly.
+         */
+        leaving: string;
+        outcome: "stopped";
+      }
+    | {
+        outcome: "declined";
+      }
+    | {
+        outcome: "would_overwrite";
+      };
+  repair: Repair;
+}
+/**
+ * What was proposed.
+ */
+export interface Repair {
+  /**
+   * The check whose finding this answers, as the finding names it.
+   */
+  check: string;
+  /**
+   * What it would do, in the words the operator will read before confirming.
+   */
+  does: string;
+  /**
+   * What else changes if it does.
+   *
+   * Stated before it is confirmed and never afterwards, because an effect an operator
+   * learns about after the fact is not something they agreed to. Empty where a repair
+   * touches nothing but the thing it names.
+   */
+  effects: string[];
+  /**
+   * Whether carrying it out is recorded well enough to be undone.
+   *
+   * A repair that cannot be reversed is still worth offering — restarting a container
+   * is not undoable and is usually right — but the operator confirming one deserves to
+   * know which kind they are agreeing to.
+   */
+  reversible: boolean;
+}
+/**
+ * One repair lemonfiber could carry out.
+ */
+export interface Repair1 {
+  /**
+   * The check whose finding this answers, as the finding names it.
+   */
+  check: string;
+  /**
+   * What it would do, in the words the operator will read before confirming.
+   */
+  does: string;
+  /**
+   * What else changes if it does.
+   *
+   * Stated before it is confirmed and never afterwards, because an effect an operator
+   * learns about after the fact is not something they agreed to. Empty where a repair
+   * touches nothing but the thing it names.
+   */
+  effects: string[];
+  /**
+   * Whether carrying it out is recorded well enough to be undone.
+   *
+   * A repair that cannot be reversed is still worth offering — restarting a container
+   * is not undoable and is usually right — but the operator confirming one deserves to
+   * know which kind they are agreeing to.
+   */
+  reversible: boolean;
+}
+/**
+ * The payload.
+ */
 export interface ResetReport {
   /**
    * Whether the reset was carried out, or only previewed pending confirmation.
@@ -1696,6 +2153,128 @@ export interface ResetReport {
    * unconfirmed, would be — each named as it reads in a seed report.
    */
   reverted_connections: string[];
+}
+/**
+ * The payload.
+ */
+export interface RestoreRestoration {
+  /**
+   * What was put back, or nothing where nothing was.
+   */
+  done?: RestoreReport | null;
+  would: Preview;
+}
+/**
+ * What a restore did.
+ */
+export interface RestoreReport {
+  /**
+   * The lemonfiber version the archive was written by.
+   */
+  from_version: string;
+  /**
+   * The data root that was re-pointed, where the restore accepted one.
+   */
+  relocated?: Relocation | null;
+  /**
+   * What was restored.
+   */
+  scope:
+    | {
+        scope: "whole_stack";
+      }
+    | {
+        /**
+         * The service whose configuration this covers.
+         */
+        name: string;
+        scope: "service";
+      };
+}
+/**
+ * A restore whose archive was taken against a different data root than the one
+ * configured now, so its stored paths would land where nothing exists.
+ */
+export interface Relocation {
+  /**
+   * The data root configured now.
+   */
+  now: string;
+  /**
+   * The data root the archive was taken against.
+   */
+  was: string;
+}
+/**
+ * What the archive holds and what restoring it would come to, read before
+ * anything was touched.
+ */
+export interface Preview {
+  /**
+   * Whether the archive is old enough that a compatibility warning applies.
+   */
+  downgrade: boolean;
+  manifest: Manifest;
+  /**
+   * The data-root difference, where the archive was taken against another one.
+   */
+  relocation?: Relocation | null;
+}
+/**
+ * The archive's own account of itself — its scope, version and contents.
+ */
+export interface Manifest {
+  /**
+   * When it was taken. Opaque here; the surface stamps it from the clock.
+   */
+  created_at: string;
+  /**
+   * The data root it was taken against, to notice a restore to a different one.
+   */
+  data_root: string;
+  /**
+   * What is inside, for a listing shown before anything is overwritten.
+   */
+  members: Member[];
+  /**
+   * The lemonfiber version that wrote it, checked against the one restoring.
+   */
+  product_version: string;
+  /**
+   * The archive format, checked before anything inside is trusted.
+   */
+  schema: number;
+  /**
+   * What it covers.
+   */
+  scope:
+    | {
+        scope: "whole_stack";
+      }
+    | {
+        /**
+         * The service whose configuration this covers.
+         */
+        name: string;
+        scope: "service";
+      };
+  /**
+   * Whether it carries credentials, and so must be handled as sensitive.
+   */
+  sensitive: boolean;
+}
+/**
+ * One entry in an archive's contents listing.
+ */
+export interface Member {
+  /**
+   * Where it sits inside the archive.
+   */
+  archive_path: string;
+  /**
+   * What it is, in the operator's terms.
+   */
+  label: string;
 }
 /**
  * The payload.
@@ -1888,6 +2467,24 @@ export interface StatusService {
 /**
  * The payload.
  */
+export interface StepLine {
+  /**
+   * What was specifically true — the evidence that makes the line worth reading
+   * rather than a spinner. Empty where there is nothing particular to say.
+   */
+  detail: string;
+  /**
+   * What it is doing, in plain language.
+   */
+  said: string;
+  /**
+   * The step being narrated.
+   */
+  step: "choosing" | "searching" | "grabbing" | "downloading" | "importing" | "scanning" | "available";
+}
+/**
+ * The payload.
+ */
 export interface StuckReport {
   /**
    * Whether an \*arr's queue could not be read, so the list may be short — reported
@@ -1929,7 +2526,7 @@ export interface StuckEntry {
 /**
  * The payload.
  */
-export interface TraceReport {
+export interface TraceTraceReport {
   /**
    * How sure the trace is of the item it followed.
    */
@@ -1968,7 +2565,7 @@ export interface TraceReport {
    * imports and removals. Repeated attempts show here as the pattern they are, which
    * the single furthest stage cannot.
    */
-  history: TraceMoment[];
+  history: TraceTraceMoment[];
   /**
    * The term the item was searched for by.
    */
@@ -2079,7 +2676,7 @@ export interface Part {
  * downloads, the import and any later removal — so a repeated attempt is seen as the
  * pattern it is rather than flattened to a single furthest stage.
  */
-export interface TraceMoment {
+export interface TraceTraceMoment {
   /**
    * When the service reported it.
    */
@@ -2117,6 +2714,76 @@ export interface TraceStage {
     | "importing"
     | "imported"
     | "available";
+}
+/**
+ * The payload.
+ */
+export interface Reversal {
+  /**
+   * What was put back, in the order it was.
+   */
+  reversed: Undo[];
+}
+/**
+ * A single reversal, for the surface to carry out.
+ */
+export interface Undo {
+  /**
+   * What reversing it does.
+   */
+  action:
+    | {
+        does: "remove";
+        /**
+         * The identifier to remove.
+         */
+        id: string;
+        /**
+         * The kind of resource.
+         */
+        resource: string;
+      }
+    | {
+        does: "restore";
+        /**
+         * The setting to restore.
+         */
+        key: string;
+        /**
+         * What to restore it to, or `None` to remove it.
+         */
+        value?: string | null;
+      }
+    | {
+        does: "delete";
+        /**
+         * The path to remove.
+         */
+        path: string;
+      }
+    | {
+        does: "reconfigure";
+        /**
+         * The field to put back.
+         */
+        field: string;
+        /**
+         * The identifier to change.
+         */
+        id: string;
+        /**
+         * The kind of resource.
+         */
+        resource: string;
+        /**
+         * What to put back, or `None` where it held nothing.
+         */
+        value?: string | null;
+      };
+  /**
+   * The service or file to reverse it against.
+   */
+  target: string;
 }
 /**
  * The payload.
@@ -2358,9 +3025,17 @@ export interface WizardWizardReport {
   phase: "in-progress" | "reviewing" | "applying" | "applied";
   /**
    * What applying will write, in the order it will be written, with any value
-   * whose name reads as a credential withheld.
+   * nobody has argued for showing withheld.
    */
   plan: SettingReport[];
+  /**
+   * What proving the credential just given came to, where one was given.
+   *
+   * Setup tests an indexer key and a Usenet login against their live services as
+   * they are entered, and this is what the service answered — never what was
+   * entered. Absent for every other answer, and for a step that gave none.
+   */
+  proof?: Validation | null;
   /**
    * Whether every applicable question is answered, so the plan can be applied.
    */
@@ -2370,11 +3045,19 @@ export interface WizardWizardReport {
    * order they are put.
    */
   unanswered: WizardStep[];
+  /**
+   * What an apply that stopped part-way had already written, each said plainly.
+   *
+   * The partial state a recovery is chosen about, so whoever chooses has seen it.
+   * Empty for every other phase, and empty too for an apply that stopped before
+   * it wrote anything.
+   */
+  written: string[];
 }
 /**
- * The payload.
+ * A word this product uses, and what somebody meeting it needs to know.
  */
-export interface Term {
+export interface Term1 {
   /**
    * What other services in this stack call the same thing.
    *
@@ -2398,6 +3081,15 @@ export interface Term {
   word: string;
 }
 
+/** The envelope carrying `archives`. */
+export type ArchivesEnvelope = Contract["archives"];
+
+/** The envelope carrying `backup`. */
+export type BackupEnvelope = Contract["backup"];
+
+/** The envelope carrying `bundle`. */
+export type BundleEnvelope = Contract["bundle"];
+
 /** The envelope carrying `config`. */
 export type ConfigEnvelope = Contract["config"];
 
@@ -2412,6 +3104,9 @@ export type ErrorEnvelope = Contract["error"];
 
 /** The envelope carrying `forms`. */
 export type FormsEnvelope = Contract["forms"];
+
+/** The envelope carrying `glossary`. */
+export type GlossaryEnvelope = Contract["glossary"];
 
 /** The envelope carrying `household`. */
 export type HouseholdEnvelope = Contract["household"];
@@ -2437,8 +3132,14 @@ export type PullEnvelope = Contract["pull"];
 /** The envelope carrying `quality`. */
 export type QualityEnvelope = Contract["quality"];
 
+/** The envelope carrying `repair`. */
+export type RepairEnvelope = Contract["repair"];
+
 /** The envelope carrying `reset`. */
 export type ResetEnvelope = Contract["reset"];
+
+/** The envelope carrying `restore`. */
+export type RestoreEnvelope = Contract["restore"];
 
 /** The envelope carrying `seed`. */
 export type SeedEnvelope = Contract["seed"];
@@ -2452,11 +3153,17 @@ export type StartEnvelope = Contract["start"];
 /** The envelope carrying `status`. */
 export type StatusEnvelope = Contract["status"];
 
+/** The envelope carrying `step`. */
+export type StepEnvelope = Contract["step"];
+
 /** The envelope carrying `stuck`. */
 export type StuckEnvelope = Contract["stuck"];
 
 /** The envelope carrying `trace`. */
 export type TraceEnvelope = Contract["trace"];
+
+/** The envelope carrying `undo`. */
+export type UndoEnvelope = Contract["undo"];
 
 /** The envelope carrying `upgrade`. */
 export type UpgradeEnvelope = Contract["upgrade"];
@@ -2477,15 +3184,19 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "config" | "dashboard" | "doctor" | "error" | "forms" | "household" | "job" | "lifecycle" | "log" | "music" | "preview" | "pull" | "quality" | "reset" | "seed" | "setup" | "start" | "status" | "stuck" | "trace" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "archives" | "backup" | "bundle" | "config" | "dashboard" | "doctor" | "error" | "forms" | "glossary" | "household" | "job" | "lifecycle" | "log" | "music" | "preview" | "pull" | "quality" | "repair" | "reset" | "restore" | "seed" | "setup" | "start" | "status" | "step" | "stuck" | "trace" | "undo" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
+  "archives": ArchivesEnvelope;
+  "backup": BackupEnvelope;
+  "bundle": BundleEnvelope;
   "config": ConfigEnvelope;
   "dashboard": DashboardEnvelope;
   "doctor": DoctorEnvelope;
   "error": ErrorEnvelope;
   "forms": FormsEnvelope;
+  "glossary": GlossaryEnvelope;
   "household": HouseholdEnvelope;
   "job": JobEnvelope;
   "lifecycle": LifecycleEnvelope;
@@ -2494,13 +3205,17 @@ export interface ByKind {
   "preview": PreviewEnvelope;
   "pull": PullEnvelope;
   "quality": QualityEnvelope;
+  "repair": RepairEnvelope;
   "reset": ResetEnvelope;
+  "restore": RestoreEnvelope;
   "seed": SeedEnvelope;
   "setup": SetupEnvelope;
   "start": StartEnvelope;
   "status": StatusEnvelope;
+  "step": StepEnvelope;
   "stuck": StuckEnvelope;
   "trace": TraceEnvelope;
+  "undo": UndoEnvelope;
   "upgrade": UpgradeEnvelope;
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
