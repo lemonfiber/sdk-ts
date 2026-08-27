@@ -159,7 +159,7 @@ structural rather than remembered, so it is checked rather than assumed.
 */
 const client = await readFile(join(SRC, "client.ts"), "utf8");
 
-if (!/^\s*private constructor\(/m.test(client))
+if (!/^[ \t]*private constructor\(/m.test(client))
   fail(
     join(SRC, "client.ts"),
     null,
