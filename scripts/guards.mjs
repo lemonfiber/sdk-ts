@@ -77,16 +77,48 @@ for (const file of files) {
 }
 
 // The scripts are not part of what ships, so the rules about addresses and
-// shape do not reach them. The identifier rule does.
+// shape do not reach them. The identifier rule does, and so does the one below.
 const scripts = (await walk(join(ROOT, "scripts"))).filter((f) => f.endsWith(".mjs"));
+
+/**
+Ways a script could reach the network.
+*/
+const REACHES = /\bfetch\s*\(|\bnode:https?\b|\bhttps?:\/\//;
+
+/**
+The one script that may, and why.
+
+Vendoring is the act of fetching: it takes the artefact from an exact revision
+and writes it down beside the copy, which is the whole point of there being a
+copy. Generating is the other half and reads what vendoring left — so a
+generator that fetched would produce types from whatever the server happens to
+serve today, which is not what this package was built against and not what its
+consumers were told they had.
+*/
+const MAY_REACH = "contract-sync.mjs";
+
+let sawGenerator = false;
 
 for (const file of scripts) {
   const text = await readFile(file, "utf8");
+  // A test names a URL as data — a `$schema` in a fixture is not a reach — and
+  // the rule is about what generation does, not about what a test says.
+  const vendoring = file.endsWith(MAY_REACH) || file.endsWith(".test.mjs");
+  if (file.endsWith("contract-generate.mjs")) sawGenerator = true;
   text.split("\n").forEach((line, index) => {
     if (COMMENT.test(line) && IDENTIFIER.test(line))
       fail(file, index + 1, "a requirement identifier in a comment — cite it in the commit");
+    if (!vendoring && !COMMENT.test(line) && REACHES.test(line))
+      fail(file, index + 1, `reaches the network; only ${MAY_REACH} may`);
   });
 }
+
+// What this is reading, asserted before what it found. A generator that has been
+// renamed leaves the rule above matching nothing, and the failure is silence: the
+// guard goes on passing about a file it can no longer see.
+if (!sawGenerator) fail(join(ROOT, "scripts"), null, "no generator here to hold offline");
+if (!scripts.some((f) => f.endsWith(MAY_REACH)))
+  fail(join(ROOT, "scripts"), null, `${MAY_REACH} is excepted and does not exist`);
 
 if (failures.length > 0) {
   console.error(`guards: ${failures.length} violation(s)\n`);
