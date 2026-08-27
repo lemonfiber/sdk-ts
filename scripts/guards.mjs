@@ -120,6 +120,63 @@ if (!sawGenerator) fail(join(ROOT, "scripts"), null, "no generator here to hold 
 if (!scripts.some((f) => f.endsWith(MAY_REACH)))
   fail(join(ROOT, "scripts"), null, `${MAY_REACH} is excepted and does not exist`);
 
+/**
+The checks that must be part of what CI runs, and what each one holds.
+
+A check the pipeline stopped calling is a rule nobody is held to, and the failure
+is silence: every run goes green and the artefact it guarded drifts. Naming them
+here means removing one from `ci` is red rather than quiet.
+*/
+const WIRED = [
+  ["contract:check", "regenerating the contract types produces no diff"],
+  ["guard", "these checks run at all"],
+  ["coverage", "every line is exercised"],
+  ["types", "the compiler sees what the types claim"],
+];
+
+const manifest = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
+const pipeline = manifest.scripts?.ci ?? "";
+
+if (pipeline === "") fail(join(ROOT, "package.json"), null, "declares no `ci` script to read");
+
+for (const [script, holds] of WIRED) {
+  if (!pipeline.includes(script))
+    fail(
+      join(ROOT, "package.json"),
+      null,
+      `\`ci\` no longer runs \`${script}\`, which is what holds that ${holds}`,
+    );
+}
+
+/**
+The one door into a client, and the refusal it cannot be taken around.
+
+`Client.at` reads the address before anything else and refuses one that is not on
+this machine. That holds only while it is the *only* way to a client: a public
+constructor, or a second factory that skipped the read, would be a client talking
+wherever it was pointed. The private constructor is what makes the refusal
+structural rather than remembered, so it is checked rather than assumed.
+*/
+const client = await readFile(join(SRC, "client.ts"), "utf8");
+
+if (!/^\s*private constructor\(/m.test(client))
+  fail(
+    join(SRC, "client.ts"),
+    null,
+    "the constructor is not private, so a client can be built without reading the address",
+  );
+
+const built = [...client.matchAll(/new Client\(/g)].length;
+if (built !== 1)
+  fail(
+    join(SRC, "client.ts"),
+    null,
+    `a client is constructed in ${built} places, so the address is read on some of them and not others`,
+  );
+
+if (!/static at\(/.test(client) || !/address\(options\.url\)/.test(client))
+  fail(join(SRC, "client.ts"), null, "the one door no longer reads the address it was given");
+
 if (failures.length > 0) {
   console.error(`guards: ${failures.length} violation(s)\n`);
   for (const f of failures) console.error(`  ${f}`);
