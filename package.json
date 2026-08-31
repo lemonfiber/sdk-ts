@@ -65,7 +65,7 @@
     "git-cliff": "^2.13.1",
     "globals": "^17.11.0",
     "json-schema-to-typescript": "^15.0.4",
-    "knip": "^6.32.2",
+    "knip": "^6.32.3",
     "prettier": "^3.9.6",
     "publint": "^0.3.24",
     "tsdown": "^0.22.14",
