@@ -1,7 +1,19 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: b837d173b77f0217217124f0116a45530fad5a63  ·  api_version 1
+// Source: v0.11.0  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
+/**
+ * What a service published to the local network is to the people in the house.
+ */
+export type Facing = "asking" | "watching" | "shelf" | "operators" | "carriage" | "unstated";
+/**
+ * Where one request stands, in the words the person who made it would use.
+ *
+ * Deliberately coarser than a [`crate::trace::Stage`]: a member does not need to know
+ * that a release was grabbed but not imported, only that it is on its way. The trace is
+ * where that detail stays, and a request names the item so it can be asked for.
+ */
+export type State2 = "waiting-for-approval" | "declined" | "failed" | "getting" | "partly-here" | "here" | "gone";
 /**
  * A panel's content, or the reason its source could not fill it.
  *
@@ -130,6 +142,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  admission: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Admitted;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   archives: {
     /**
      * The output contract's version.
@@ -164,6 +190,20 @@ export interface Contract {
      */
     api_version: number;
     data: Bundle;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  clients: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Guidance;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -242,6 +282,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  "front-door": {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: FrontDoorFrontDoorReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   glossary: {
     /**
      * The output contract's version.
@@ -262,6 +316,20 @@ export interface Contract {
      */
     api_version: number;
     data: HouseholdHouseholdReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  invitation: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Invitation;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -326,6 +394,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  outbound: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Leaving;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   preview: {
     /**
      * The output contract's version.
@@ -363,6 +445,20 @@ export interface Contract {
      */
     api_version: number;
     data: QualityReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  removal: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: HouseholdRemoval;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -478,6 +574,20 @@ export interface Contract {
      */
     api_version: number;
     data: StepLine;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  stored: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: StoredStored;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -613,6 +723,19 @@ export interface Contract {
 /**
  * The payload.
  */
+export interface Admitted {
+  /**
+   * The secret this session is carried by, sent in the header the per-run token is.
+   */
+  token: string;
+  /**
+   * When it stops being one, written as every other instant this product writes.
+   */
+  until: string;
+}
+/**
+ * The payload.
+ */
 export interface Listing {
   /**
    * Each one by the name it was written under, newest first.
@@ -742,6 +865,117 @@ export interface Terms {
 /**
  * The payload.
  */
+export interface Guidance {
+  /**
+   * Every device, in the order somebody is likely to be holding one.
+   */
+  devices: Device[];
+  /**
+   * What this will not do for them.
+   */
+  nothing_is_installed: string;
+  /**
+   * True of every device, said once.
+   */
+  only_at_home: string;
+  /**
+   * Why playback here is likely to struggle before any app is chosen, or `None`
+   * where the preset in force asks for nothing this platform cannot serve.
+   *
+   * Absent far more often than present, and it must be: a caution shown to
+   * everybody says nothing about anybody's machine, and a reader who meets one
+   * every time stops reading it.
+   */
+  straining?: Straining | null;
+  /**
+   * What to do when it does not work, keyed by the symptom.
+   */
+  trouble: Trouble[];
+}
+/**
+ * A kind of device somebody in the house might watch on.
+ */
+export interface Device {
+  /**
+   * What is worth knowing before starting, where anything is.
+   */
+  caution?: string | null;
+  /**
+   * What to use on it.
+   */
+  client: string;
+  /**
+   * What somebody would call the device they are holding.
+   */
+  device: string;
+  /**
+   * What to do instead where this is a bad device to be stuck with.
+   */
+  instead?: string | null;
+  /**
+   * How well served it is.
+   */
+  support: "good" | "workable" | "poor" | "fallback";
+}
+/**
+ * Why playback here is likely to struggle, whatever app the household installs.
+ *
+ * Present only where the preset in force asks for transcoding this platform cannot
+ * do in hardware. It belongs to the guidance rather than to any one device: the
+ * preset and the platform decide it between them, and every device in the table
+ * meets it.
+ */
+export interface Straining {
+  /**
+   * What that preset asks of this machine, and what playback does where this
+   * machine cannot give it.
+   */
+  caution: string;
+  /**
+   * What makes it stop.
+   */
+  instead: string;
+  /**
+   * The preset in force, under the name it was chosen by.
+   */
+  preset: string;
+}
+/**
+ * Something somebody reports, and what is likely behind it.
+ *
+ * Keyed by the symptom rather than the cause: the person asking has the symptom,
+ * and which cause it is is the thing they cannot yet say.
+ */
+export interface Trouble {
+  /**
+   * What is likely behind it, most likely first.
+   */
+  causes: Cause[];
+  /**
+   * What somebody says is happening, in their words.
+   */
+  symptom: string;
+}
+/**
+ * One thing that could be behind a symptom, and how to tell it from the others.
+ */
+export interface Cause {
+  /**
+   * What is wrong.
+   */
+  because: string;
+  /**
+   * What to do about it.
+   */
+  fix: string;
+  /**
+   * How to tell this cause from the others under the same symptom.
+   */
+  tell: string;
+}
+/**
+ * The payload.
+ */
 export interface ConfigReport {
   /**
    * Whether this command changed, or would change, a setting.
@@ -790,7 +1024,51 @@ export interface DashboardSnapshot {
    * channel is refusing, then what has already been said.
    */
   alerts: DashboardAlert[];
+  /**
+   * The one address to hand somebody who lives here.
+   *
+   * On the screen rather than only behind a question, because the operator who
+   * needs it is not the one who thought to ask: they have just been asked "what
+   * do I open?" by somebody in the next room. Built from the same reading as the
+   * panels beside it, so the screen and `front-door` cannot name different doors.
+   */
+  door:
+    | {
+        data: DashboardFrontDoorReport;
+        panel: "ready";
+      }
+    | {
+        data: {
+          /**
+           * Why the panel could not be filled, in the operator's terms.
+           */
+          reason: string;
+        };
+        panel: "unavailable";
+      };
   health: DashboardSummary;
+  /**
+   * What the household has asked for that is not moving.
+   *
+   * On the screen rather than only behind a question, for the reason the door
+   * beside it is: a request waiting on a decision or failed after one is waiting
+   * on the operator, and an operator who has to think to ask is one who finds out
+   * when somebody comes to complain.
+   */
+  household:
+    | {
+        data: DashboardHouseholdReport;
+        panel: "ready";
+      }
+    | {
+        data: {
+          /**
+           * Why the panel could not be filled, in the operator's terms.
+           */
+          reason: string;
+        };
+        panel: "unavailable";
+      };
   /**
    * The per-service queues.
    */
@@ -914,6 +1192,108 @@ export interface DashboardAlert {
   summary: string;
 }
 /**
+ * The household's one front door: which service it is, where it stands, and what
+ * else they can reach that is not it.
+ */
+export interface DashboardFrontDoorReport {
+  /**
+   * The address to hand them, read from this machine at the moment of asking
+   * rather than remembered. Absent where there is no door, and where there is
+   * one on a machine that will say neither what it is called nor where it is.
+   */
+  address?: Address | null;
+  /**
+   * Everything else the household can reach, and why none of it is the door.
+   */
+  beside: DashboardBeside[];
+  /**
+   * How this came to be the door: worked out from what the stack declares, named
+   * by the operator, or named by them and refused.
+   *
+   * Carried as a state rather than left to the sentence beneath it, for the reason
+   * the standing is: an operator whose setting was refused reads the sentence, and
+   * a browser, a script or a dashboard reads this.
+   */
+  chosen:
+    | {
+        chosen: "derived";
+      }
+    | {
+        chosen: "named";
+        door: string;
+      }
+    | {
+        chosen: "refused";
+        door: Refusal;
+      };
+  /**
+   * What that service is to them. Absent for the same reason.
+   */
+  facing?: Facing | null;
+  /**
+   * What this comes to, in the words an operator would say it in — including,
+   * where there is no door, that there is none.
+   */
+  meaning: string;
+  /**
+   * The service the household begins at, by the name it shows itself under.
+   * Absent where this stack publishes nothing they could begin at.
+   */
+  service?: string | null;
+  /**
+   * Where the front door stands.
+   */
+  standing: "established" | "library-only" | "unreachable" | "stranded" | "none";
+}
+/**
+ * Where the front door is reached, and what is worth knowing about the address.
+ */
+export interface Address {
+  /**
+   * What is worth knowing about the address itself, where anything is. Absent
+   * for one that keeps working on its own.
+   */
+  caution?: string | null;
+  /**
+   * The whole address, as it would be typed or followed.
+   */
+  url: string;
+}
+/**
+ * A service the household can reach that is not the front door, and why it is not.
+ *
+ * Carried rather than left out, because the decision is the useful part: an operator
+ * who can see that the index over every service was considered and refused has been
+ * told something, where one shown a single name has only been given an answer.
+ */
+export interface DashboardBeside {
+  /**
+   * Why it is not somewhere to begin.
+   */
+  because: string;
+  /**
+   * What it is to the household.
+   */
+  facing: "asking" | "watching" | "shelf" | "operators" | "carriage" | "unstated";
+  /**
+   * The service, by the name it shows itself under.
+   */
+  service: string;
+}
+/**
+ * A named front door that is not one, and why it is not.
+ */
+export interface Refusal {
+  /**
+   * Why this stack will not send a household there.
+   */
+  because: string;
+  /**
+   * What the operator recorded, as they wrote it.
+   */
+  named: string;
+}
+/**
  * The one-line health summary — the same computation every other surface
  * uses, so no two of them can grade the same stack differently.
  *
@@ -967,6 +1347,100 @@ export interface DashboardAffected {
    * What is wrong, in one line.
    */
   summary: string;
+}
+/**
+ * Who is in the household, what each may watch, and what each has asked for.
+ */
+export interface DashboardHouseholdReport {
+  /**
+   * Whether the household could be read at all. A false here is why the list is
+   * empty, and keeps an unread record from being mistaken for an empty house — the
+   * same honesty a trace keeps about a silence it did not hear.
+   */
+  available: boolean;
+  /**
+   * What could not be read, and anything else worth the operator's attention.
+   */
+  findings: string[];
+  /**
+   * Everybody the media server holds an account for, in name order — including
+   * those who have never asked for anything, and the invitations nobody has taken
+   * up yet.
+   */
+  members: DashboardHouseholdMember[];
+}
+/**
+ * One household member: who they are, what they may watch, when they were last
+ * seen, and everything they have asked for.
+ */
+export interface DashboardHouseholdMember {
+  access: MemberAccess;
+  /**
+   * Whether somebody has set a password on the account. False is an invitation
+   * nobody has taken up rather than a member who is not here.
+   */
+  claimed: boolean;
+  /**
+   * When the media server last saw them, as it timestamps it. Absent where nobody
+   * has ever signed in, which is exactly the unclaimed invitations.
+   */
+  last_seen?: string | null;
+  /**
+   * The member, by the name their account is held under.
+   */
+  name: string;
+  /**
+   * What they asked for, newest first.
+   */
+  requests: DashboardMemberRequest[];
+}
+/**
+ * What they may watch.
+ */
+export interface MemberAccess {
+  /**
+   * Whether the account administers the media server.
+   */
+  administrator: boolean;
+  /**
+   * The highest rating they may watch, where the operator set a limit.
+   */
+  age_limit?: number | null;
+  /**
+   * Whether the account is switched off — held, but unable to sign in.
+   */
+  disabled: boolean;
+  /**
+   * Every library, rather than a chosen few. The ordinary case.
+   */
+  every_library: boolean;
+  /**
+   * The libraries they may watch where it is not every one, by the names the
+   * operator gave them — or by the server's identifiers where the library list
+   * could not be read, which a finding says.
+   */
+  libraries: string[];
+}
+/**
+ * One thing a household member asked for, and where it stands in their words.
+ */
+export interface DashboardMemberRequest {
+  /**
+   * What kind of thing it is — a series, a film — in the household's own words.
+   * Absent where the request service names a kind this build does not know.
+   */
+  media?: string | null;
+  /**
+   * Where the request stands, or absent where the request service reports a status
+   * this build does not know rather than guessing it into the nearest word.
+   */
+  state?: State2 | null;
+  /**
+   * What it is called, where the service filing it has been told about it and its
+   * library could be read. Absent for a request no service holds yet — one still
+   * awaiting approval has been handed to nobody, so there is no title to find.
+   */
+  title?: string | null;
 }
 /**
  * One `*arr`'s queue, and how much of it is stuck.
@@ -1498,6 +1972,80 @@ export interface FormReport {
 /**
  * The payload.
  */
+export interface FrontDoorFrontDoorReport {
+  /**
+   * The address to hand them, read from this machine at the moment of asking
+   * rather than remembered. Absent where there is no door, and where there is
+   * one on a machine that will say neither what it is called nor where it is.
+   */
+  address?: Address | null;
+  /**
+   * Everything else the household can reach, and why none of it is the door.
+   */
+  beside: FrontDoorBeside[];
+  /**
+   * How this came to be the door: worked out from what the stack declares, named
+   * by the operator, or named by them and refused.
+   *
+   * Carried as a state rather than left to the sentence beneath it, for the reason
+   * the standing is: an operator whose setting was refused reads the sentence, and
+   * a browser, a script or a dashboard reads this.
+   */
+  chosen:
+    | {
+        chosen: "derived";
+      }
+    | {
+        chosen: "named";
+        door: string;
+      }
+    | {
+        chosen: "refused";
+        door: Refusal;
+      };
+  /**
+   * What that service is to them. Absent for the same reason.
+   */
+  facing?: Facing | null;
+  /**
+   * What this comes to, in the words an operator would say it in — including,
+   * where there is no door, that there is none.
+   */
+  meaning: string;
+  /**
+   * The service the household begins at, by the name it shows itself under.
+   * Absent where this stack publishes nothing they could begin at.
+   */
+  service?: string | null;
+  /**
+   * Where the front door stands.
+   */
+  standing: "established" | "library-only" | "unreachable" | "stranded" | "none";
+}
+/**
+ * A service the household can reach that is not the front door, and why it is not.
+ *
+ * Carried rather than left out, because the decision is the useful part: an operator
+ * who can see that the index over every service was considered and refused has been
+ * told something, where one shown a single name has only been given an answer.
+ */
+export interface FrontDoorBeside {
+  /**
+   * Why it is not somewhere to begin.
+   */
+  because: string;
+  /**
+   * What a service published to the local network is to the people in the house.
+   */
+  facing: "asking" | "watching" | "shelf" | "operators" | "carriage" | "unstated";
+  /**
+   * The service, by the name it shows itself under.
+   */
+  service: string;
+}
+/**
+ * The payload.
+ */
 export interface Vocabulary {
   /**
    * The words, in the order somebody meets them.
@@ -1535,9 +2083,9 @@ export interface Term {
  */
 export interface HouseholdHouseholdReport {
   /**
-   * Whether the requests were read at all. A false here is why the list is empty, and
-   * keeps an unread record from being mistaken for a household that has asked for
-   * nothing — the same honesty a trace keeps about a silence it did not hear.
+   * Whether the household could be read at all. A false here is why the list is
+   * empty, and keeps an unread record from being mistaken for an empty house — the
+   * same honesty a trace keeps about a silence it did not hear.
    */
   available: boolean;
   /**
@@ -1545,22 +2093,63 @@ export interface HouseholdHouseholdReport {
    */
   findings: string[];
   /**
-   * The members who have asked for something, in name order.
+   * Everybody the media server holds an account for, in name order — including
+   * those who have never asked for anything, and the invitations nobody has taken
+   * up yet.
    */
   members: HouseholdHouseholdMember[];
 }
 /**
- * One household member and everything they have asked for.
+ * One household member: who they are, what they may watch, when they were last
+ * seen, and everything they have asked for.
  */
 export interface HouseholdHouseholdMember {
+  access: MemberAccess1;
   /**
-   * The member, by the name the request service shows them under.
+   * Whether somebody has set a password on the account. False is an invitation
+   * nobody has taken up rather than a member who is not here.
+   */
+  claimed: boolean;
+  /**
+   * When the media server last saw them, as it timestamps it. Absent where nobody
+   * has ever signed in, which is exactly the unclaimed invitations.
+   */
+  last_seen?: string | null;
+  /**
+   * The member, by the name their account is held under.
    */
   name: string;
   /**
    * What they asked for, newest first.
    */
   requests: HouseholdMemberRequest[];
+}
+/**
+ * What they may watch.
+ */
+export interface MemberAccess1 {
+  /**
+   * Whether the account administers the media server.
+   */
+  administrator: boolean;
+  /**
+   * The highest rating they may watch, where the operator set a limit.
+   */
+  age_limit?: number | null;
+  /**
+   * Whether the account is switched off — held, but unable to sign in.
+   */
+  disabled: boolean;
+  /**
+   * Every library, rather than a chosen few. The ordinary case.
+   */
+  every_library: boolean;
+  /**
+   * The libraries they may watch where it is not every one, by the names the
+   * operator gave them — or by the server's identifiers where the library list
+   * could not be read, which a finding says.
+   */
+  libraries: string[];
 }
 /**
  * One thing a household member asked for, and where it stands in their words.
@@ -1582,6 +2171,68 @@ export interface HouseholdMemberRequest {
    * awaiting approval has been handed to nobody, so there is no title to find.
    */
   title?: string | null;
+}
+/**
+ * The payload.
+ */
+export interface Invitation {
+  /**
+   * The one address to send them.
+   *
+   * Where a *person* reaches the media server: built from what this machine is
+   * called on the network, not from either of the hosts the stack wires itself
+   * with — those resolve only on this machine or inside the stack, and an
+   * invitation carrying one sends somebody an address that cannot open.
+   */
+  address: string;
+  /**
+   * What is worth knowing about the address itself, where anything is.
+   *
+   * An address that is a number is one a router can hand elsewhere, so a bookmark
+   * made from it stops working with nothing here having changed. Carried on the
+   * invitation because that is the copy somebody keeps.
+   */
+  caution?: string | null;
+  /**
+   * How many hours it stands before it is withdrawn.
+   *
+   * Counted from when it was *offered*, which for an account whose password was
+   * taken off is the moment of the reset rather than when the account was made.
+   * What happens at the end is withdrawal, and withdrawal removes the account.
+   */
+  hours: number;
+  /**
+   * Whether the request service knows about the household yet.
+   *
+   * Separate from `standing`, which is about the media-server account alone. The
+   * two can disagree — an account made while the request service was unreachable
+   * is `Made` and `NotYet` — and that disagreement is the state this reports.
+   */
+  linked: "made" | "not-yet" | "not-tried";
+  /**
+   * The name they sign in as.
+   */
+  name: string;
+  /**
+   * Whether the account was made, or only described.
+   *
+   * A rehearsal can say the whole answer without writing any of it — the name is
+   * the one asked for, the address is the stack's, and what has run out has just
+   * been read — so the only thing separating it from the real run is this.
+   */
+  rehearsed: boolean;
+  /**
+   * What was found where this was going.
+   */
+  standing: "made" | "waiting" | "joined" | "reset";
+  /**
+   * Invitations nobody claimed in time, taken back on the way past.
+   *
+   * Reported rather than done quietly: an operator who invited somebody last
+   * week and hears nothing would otherwise have no way to learn the account is
+   * gone. On a rehearsal these are the ones that *would* be taken back.
+   */
+  withdrawn: string[];
 }
 /**
  * The payload.
@@ -1862,6 +2513,70 @@ export interface MusicChoice {
 /**
  * The payload.
  */
+export interface Leaving {
+  /**
+   * Every request lemonfiber makes on its own account, in a fixed order.
+   */
+  ours: Outbound[];
+  /**
+   * The requests made by services this stack runs, attributed to them.
+   */
+  theirs: Elsewhere[];
+}
+/**
+ * One request lemonfiber makes, where it goes, and what refusing it costs.
+ */
+export interface Outbound {
+  /**
+   * Whether this machine's settings allow it.
+   */
+  allowed: boolean;
+  /**
+   * What stops working once it is off.
+   */
+  cost: string;
+  /**
+   * Where it goes as this machine is configured. Empty where nothing is
+   * configured to reach, which is not the same as switched off.
+   */
+  destination: string[];
+  /**
+   * Why lemonfiber asks.
+   */
+  purpose: string;
+  /**
+   * Which request this is.
+   */
+  reach: "registry" | "guides" | "echo" | "indexer" | "usenet";
+  /**
+   * Exactly what travels in the request.
+   */
+  sends: string;
+  /**
+   * The setting that switches it off.
+   */
+  switch: string;
+}
+/**
+ * A request one of the stack's services makes, which is not lemonfiber's.
+ */
+export interface Elsewhere {
+  /**
+   * Where its requests go, in the terms an operator would recognise.
+   */
+  destination: string;
+  /**
+   * What it asks for.
+   */
+  purpose: string;
+  /**
+   * The service, by the id the stack declares it under.
+   */
+  service: string;
+}
+/**
+ * The payload.
+ */
 export interface PreviewPlan {
   /**
    * Profiles the closure asked for that the configuration does not support.
@@ -1991,6 +2706,43 @@ export interface MusicChoice1 {
    * The audio format it targets, in plain terms.
    */
   targets: string;
+}
+/**
+ * The payload.
+ */
+export interface HouseholdRemoval {
+  /**
+   * Whether the request service holds an account for them at all.
+   *
+   * False where they never signed in there, which is nothing to revoke rather than a
+   * revocation that failed.
+   */
+  "asks-through-the-request-service": boolean;
+  /**
+   * Whether it was carried out, or only described pending confirmation.
+   */
+  confirmed: boolean;
+  /**
+   * What could not be done, and anything else worth the operator's attention.
+   */
+  findings: string[];
+  /**
+   * The name their account is held under, as the media server spells it rather than
+   * as the operator typed it.
+   */
+  name: string;
+  /**
+   * How many of their requests go with them.
+   *
+   * **They are destroyed, not reassigned.** The request service removes them by hand
+   * so that a title still waiting goes back to being unrequested rather than pointing
+   * at nobody — so this is a count of things that will stop existing.
+   */
+  requests: number;
+  /**
+   * How far it got.
+   */
+  revoked: "everywhere" | "media-server-only" | "nothing";
 }
 /**
  * The payload.
@@ -2210,6 +2962,15 @@ export interface Relocation {
  * anything was touched.
  */
 export interface Preview {
+  /**
+   * What this listing is, so consent given for it can name which listing it read.
+   *
+   * Carried on every listing rather than only on the ones that would re-point
+   * something: a surface that has to look for it is a surface that can fail to
+   * find it, and a restore that would overwrite the same configuration in place
+   * is still one somebody may agree to.
+   */
+  agreement: string;
   /**
    * Whether the archive is old enough that a compatibility warning applies.
    */
@@ -2485,6 +3246,105 @@ export interface StepLine {
 /**
  * The payload.
  */
+export interface StoredStored {
+  /**
+   * What is on this machine that is not lemonfiber's to keep or remove.
+   */
+  beside: StoredBeside[];
+  /**
+   * Each thing kept, configuration first and then what can be made again.
+   */
+  kept: Kept[];
+  /**
+   * Whether this run removed any of it.
+   */
+  removal:
+    | {
+        state: "not-asked";
+      }
+    | {
+        state: "unconfirmed";
+      }
+    | {
+        /**
+         * The directories that are gone.
+         */
+        gone: string[];
+        /**
+         * What could not be removed, each with the reason.
+         */
+        left: Left[];
+        state: "done";
+      };
+  /**
+   * The two directories all of it lives under.
+   */
+  roots: Root[];
+}
+/**
+ * Something on this machine that lemonfiber neither keeps nor removes.
+ */
+export interface StoredBeside {
+  /**
+   * What it is.
+   */
+  what: string;
+  /**
+   * Whose it is, and why it is not lemonfiber's to take away.
+   */
+  why: string;
+}
+/**
+ * One thing lemonfiber keeps on this machine.
+ */
+export interface Kept {
+  /**
+   * Where it is, in full.
+   */
+  at: string;
+  /**
+   * Whether it holds a credential, which is what decides how carefully a copy of
+   * it has to be treated.
+   */
+  secret: boolean;
+  /**
+   * What it is, in the operator's words.
+   */
+  what: string;
+  /**
+   * Why it is kept.
+   */
+  why: string;
+}
+/**
+ * Something a removal could not take away.
+ */
+export interface Left {
+  /**
+   * The path that is still there.
+   */
+  at: string;
+  /**
+   * What the machine said about it, so it can be finished by hand.
+   */
+  why: string;
+}
+/**
+ * A directory everything lemonfiber keeps sits under.
+ */
+export interface Root {
+  /**
+   * The directory itself.
+   */
+  at: string;
+  /**
+   * What lives under it, and what losing it would cost.
+   */
+  what: string;
+}
+/**
+ * The payload.
+ */
 export interface StuckReport {
   /**
    * Whether an \*arr's queue could not be read, so the list may be short — reported
@@ -2753,6 +3613,16 @@ export interface Undo {
          * What to restore it to, or `None` to remove it.
          */
         value?: string | null;
+        /**
+         * What lemonfiber put there, which has to still be there for putting the
+         * old value back to be putting anything back.
+         *
+         * Carried so that a reversal can ask whether it is undoing its own work.
+         * Without it a reversal knows only what it would like the setting to say,
+         * and a setting the operator has since chosen for themselves reads exactly
+         * like one nobody has touched.
+         */
+        wrote: string;
       }
     | {
         does: "delete";
@@ -3081,6 +3951,9 @@ export interface Term1 {
   word: string;
 }
 
+/** The envelope carrying `admission`. */
+export type AdmissionEnvelope = Contract["admission"];
+
 /** The envelope carrying `archives`. */
 export type ArchivesEnvelope = Contract["archives"];
 
@@ -3089,6 +3962,9 @@ export type BackupEnvelope = Contract["backup"];
 
 /** The envelope carrying `bundle`. */
 export type BundleEnvelope = Contract["bundle"];
+
+/** The envelope carrying `clients`. */
+export type ClientsEnvelope = Contract["clients"];
 
 /** The envelope carrying `config`. */
 export type ConfigEnvelope = Contract["config"];
@@ -3105,11 +3981,17 @@ export type ErrorEnvelope = Contract["error"];
 /** The envelope carrying `forms`. */
 export type FormsEnvelope = Contract["forms"];
 
+/** The envelope carrying `front-door`. */
+export type FrontDoorEnvelope = Contract["front-door"];
+
 /** The envelope carrying `glossary`. */
 export type GlossaryEnvelope = Contract["glossary"];
 
 /** The envelope carrying `household`. */
 export type HouseholdEnvelope = Contract["household"];
+
+/** The envelope carrying `invitation`. */
+export type InvitationEnvelope = Contract["invitation"];
 
 /** The envelope carrying `job`. */
 export type JobEnvelope = Contract["job"];
@@ -3123,6 +4005,9 @@ export type LogEnvelope = Contract["log"];
 /** The envelope carrying `music`. */
 export type MusicEnvelope = Contract["music"];
 
+/** The envelope carrying `outbound`. */
+export type OutboundEnvelope = Contract["outbound"];
+
 /** The envelope carrying `preview`. */
 export type PreviewEnvelope = Contract["preview"];
 
@@ -3131,6 +4016,9 @@ export type PullEnvelope = Contract["pull"];
 
 /** The envelope carrying `quality`. */
 export type QualityEnvelope = Contract["quality"];
+
+/** The envelope carrying `removal`. */
+export type RemovalEnvelope = Contract["removal"];
 
 /** The envelope carrying `repair`. */
 export type RepairEnvelope = Contract["repair"];
@@ -3155,6 +4043,9 @@ export type StatusEnvelope = Contract["status"];
 
 /** The envelope carrying `step`. */
 export type StepEnvelope = Contract["step"];
+
+/** The envelope carrying `stored`. */
+export type StoredEnvelope = Contract["stored"];
 
 /** The envelope carrying `stuck`. */
 export type StuckEnvelope = Contract["stuck"];
@@ -3184,27 +4075,33 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "archives" | "backup" | "bundle" | "config" | "dashboard" | "doctor" | "error" | "forms" | "glossary" | "household" | "job" | "lifecycle" | "log" | "music" | "preview" | "pull" | "quality" | "repair" | "reset" | "restore" | "seed" | "setup" | "start" | "status" | "step" | "stuck" | "trace" | "undo" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "archives" | "backup" | "bundle" | "clients" | "config" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "household" | "invitation" | "job" | "lifecycle" | "log" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "reset" | "restore" | "seed" | "setup" | "start" | "status" | "step" | "stored" | "stuck" | "trace" | "undo" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
+  "admission": AdmissionEnvelope;
   "archives": ArchivesEnvelope;
   "backup": BackupEnvelope;
   "bundle": BundleEnvelope;
+  "clients": ClientsEnvelope;
   "config": ConfigEnvelope;
   "dashboard": DashboardEnvelope;
   "doctor": DoctorEnvelope;
   "error": ErrorEnvelope;
   "forms": FormsEnvelope;
+  "front-door": FrontDoorEnvelope;
   "glossary": GlossaryEnvelope;
   "household": HouseholdEnvelope;
+  "invitation": InvitationEnvelope;
   "job": JobEnvelope;
   "lifecycle": LifecycleEnvelope;
   "log": LogEnvelope;
   "music": MusicEnvelope;
+  "outbound": OutboundEnvelope;
   "preview": PreviewEnvelope;
   "pull": PullEnvelope;
   "quality": QualityEnvelope;
+  "removal": RemovalEnvelope;
   "repair": RepairEnvelope;
   "reset": ResetEnvelope;
   "restore": RestoreEnvelope;
@@ -3213,6 +4110,7 @@ export interface ByKind {
   "start": StartEnvelope;
   "status": StatusEnvelope;
   "step": StepEnvelope;
+  "stored": StoredEnvelope;
   "stuck": StuckEnvelope;
   "trace": TraceEnvelope;
   "undo": UndoEnvelope;
