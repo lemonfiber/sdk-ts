@@ -1,7 +1,23 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: v0.11.0  ·  api_version 1
+// Source: 20fdb305796624ba209c78ef8de2b631990d442c  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
+/**
+ * Which side of the household's day a moment falls on.
+ */
+export type Period = "active" | "quiet";
+/**
+ * Whether a client is fetching at all, where a cap made it a question.
+ *
+ * Apart from the limits above rather than folded in with them, because it answers
+ * a different question and a client held to a crawl is not a client that stopped.
+ * A word that named both would be the vocabulary this whole path exists to avoid.
+ */
+export type Pulling = "fetching" | "stopped";
+/**
+ * Where a month stands against a declared cap.
+ */
+export type Reached = "within" | "warning" | "exceeded";
 /**
  * What a service published to the local network is to the people in the house.
  */
@@ -14,6 +30,19 @@ export type Facing = "asking" | "watching" | "shelf" | "operators" | "carriage" 
  * where that detail stays, and a request names the item so it can be asked for.
  */
 export type State2 = "waiting-for-approval" | "declined" | "failed" | "getting" | "partly-here" | "here" | "gone";
+/**
+ * What happens to what a household member asks for.
+ *
+ * Three, and they are the three the request service can actually be put into. A
+ * household is in one of them because of two settings taken together — whether requests
+ * arrive unseen, and whether a period limits how many — so the words here are a reading
+ * of that pair rather than a fourth setting kept beside it.
+ *
+ * Choosing per person is not a fourth policy. It is one of these three chosen for one
+ * member rather than for the house, which is why what a surface offers is a policy and,
+ * separately, who it is for.
+ */
+export type Policy = "trusted" | "within-a-limit" | "everything-waits";
 /**
  * A panel's content, or the reason its source could not fill it.
  *
@@ -156,6 +185,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  alerts: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: AlertReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   archives: {
     /**
      * The output contract's version.
@@ -176,6 +219,20 @@ export interface Contract {
      */
     api_version: number;
     data: BackupReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  bandwidth: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: BandwidthSharing;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -218,6 +275,20 @@ export interface Contract {
      */
     api_version: number;
     data: ConfigReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  credentials: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: CredentialsInventory;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -302,6 +373,20 @@ export interface Contract {
      */
     api_version: number;
     data: Vocabulary;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  hosting: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: HostingReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -399,7 +484,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: Leaving;
+    data: OutboundLeaving;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -537,6 +622,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  space: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: SpaceReckoning;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   start: {
     /**
      * The output contract's version.
@@ -574,6 +673,20 @@ export interface Contract {
      */
     api_version: number;
     data: StepLine;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  "stop-seeding": {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: StopSeedingLetting;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -630,6 +743,20 @@ export interface Contract {
      */
     api_version: number;
     data: Reversal;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  uninstall: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: UninstallUninstall;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -736,6 +863,44 @@ export interface Admitted {
 /**
  * The payload.
  */
+export interface AlertReport {
+  /**
+   * Whether this call changed the answer.
+   */
+  changed: boolean;
+  /**
+   * Events set apart from the preset, quietest name first.
+   */
+  exceptions: ExceptionReport[];
+  /**
+   * What that preset means, in the operator's terms.
+   */
+  means: string;
+  /**
+   * The preset in force for events with no exception of their own.
+   */
+  preset: string;
+  /**
+   * Whether it only reported what it would have written.
+   */
+  rehearsed: boolean;
+}
+/**
+ * One event kind the operator set apart from the preset.
+ */
+export interface ExceptionReport {
+  /**
+   * The kind of event, by the name a finding gives it.
+   */
+  kind: string;
+  /**
+   * Whether it is heard about, whatever the preset would say.
+   */
+  wanted: boolean;
+}
+/**
+ * The payload.
+ */
 export interface Listing {
   /**
    * Each one by the name it was written under, newest first.
@@ -776,6 +941,333 @@ export interface BackupReport {
    * Whether it carries credentials, and so must be handled as sensitive.
    */
   sensitive: boolean;
+}
+/**
+ * The payload.
+ */
+export interface BandwidthSharing {
+  /**
+   * What a spent cap is doing to the figures above, where one is spent.
+   */
+  acting?: string | null;
+  /**
+   * Whether this run wrote the limits to the clients or only read them.
+   */
+  applied: boolean;
+  /**
+   * The monthly cap, where one was declared.
+   */
+  cap?: Cap | null;
+  /**
+   * What the line was measured to carry.
+   */
+  capacity?: Capacity | null;
+  /**
+   * What is worth knowing about that reading before trusting it.
+   */
+  cautions: string[];
+  /**
+   * What each download client was asked and what it is doing about it.
+   */
+  clients: BandwidthHolding[];
+  down: BandwidthReading;
+  /**
+   * What that means for the household.
+   */
+  means: string;
+  /**
+   * What the stack itself moved this month.
+   */
+  metered?: Metered | null;
+  /**
+   * What throttling the upload costs, where an upload limit is in force.
+   */
+  ratio?: string | null;
+  /**
+   * Where the month stands against it.
+   */
+  reached?: Reached | null;
+  /**
+   * The override, where one is running or has just run out.
+   */
+  respite:
+    | {
+        standing: "none";
+      }
+    | {
+        seconds: number;
+        standing: "in-force";
+      }
+    | {
+        seconds: number;
+        standing: "expired";
+      };
+  /**
+   * What the override amounts to, in words.
+   */
+  respite_says?: string | null;
+  /**
+   * Where the line stands.
+   */
+  restraint:
+    "unlimited" | "limited" | "scheduled-active" | "scheduled-quiet" | "overridden" | "cap-warning" | "cap-exceeded";
+  /**
+   * The household's hours, where any were declared.
+   */
+  rhythm?: Rhythm | null;
+  /**
+   * What is outside every limit here.
+   */
+  untouched: string[];
+  up: BandwidthReading1;
+  /**
+   * The zone the clients read those hours in, where the stack says.
+   */
+  zone?: string | null;
+}
+/**
+ * A monthly allowance, and what to do at the end of it.
+ */
+export interface Cap {
+  /**
+   * What happens when it is reached, chosen when the cap was declared.
+   */
+  exceeded: "pause" | "throttle" | "continue";
+  /**
+   * The allowance, in bytes.
+   */
+  monthly: number;
+}
+/**
+ * What the line was measured to carry.
+ */
+export interface Capacity {
+  /**
+   * Bytes a second down.
+   */
+  down: number;
+  /**
+   * Where the figure came from.
+   */
+  source: "declared" | "observed";
+  /**
+   * When it was taken, in seconds since the epoch.
+   */
+  taken: number;
+  /**
+   * Whether the path it was measured over goes through the VPN tunnel.
+   */
+  through_tunnel: boolean;
+  /**
+   * Bytes a second up.
+   *
+   * Measured apart from the download, because a home connection is asymmetric
+   * and a single figure for both would make every upload share far larger than
+   * the operator meant.
+   */
+  up: number;
+}
+/**
+ * One download client, and what became of the limits it was given.
+ */
+export interface BandwidthHolding {
+  /**
+   * What it said.
+   */
+  answer:
+    | {
+        answered: "held";
+        down: BandwidthHeld;
+        /**
+         * Which side of the household's day it says it is on, where it keeps the
+         * hours itself.
+         */
+        period?: Period | null;
+        up: BandwidthHeld1;
+      }
+    | {
+        answered: "silent";
+        /**
+         * What went wrong, in the words of whatever refused.
+         */
+        said: string;
+      };
+  /**
+   * The client, by the name the stack knows it under.
+   */
+  client: string;
+  /**
+   * Whether it is fetching at all, where a declared cap made that a question.
+   *
+   * Absent on a stack with no cap rather than assumed to be fetching: asking
+   * every client whether it has stopped, on a stack where nothing would ever
+   * stop it, is traffic spent on a figure nothing would act on.
+   */
+  pulling?: Pulling | null;
+}
+/**
+ * What became of the download limit.
+ */
+export interface BandwidthHeld {
+  /**
+   * What it reports as in force.
+   */
+  accepted?: number | null;
+  /**
+   * What it was asked to hold to, in bytes a second, where anything was.
+   */
+  asked?: number | null;
+  /**
+   * What it is moving right now, where it reported a figure.
+   */
+  moving?: number | null;
+  /**
+   * What that adds up to.
+   */
+  verdict: "unasked" | "nothing-to-limit" | "holding" | "ignored" | "overrunning";
+}
+/**
+ * And of the upload one.
+ */
+export interface BandwidthHeld1 {
+  /**
+   * What it reports as in force.
+   */
+  accepted?: number | null;
+  /**
+   * What it was asked to hold to, in bytes a second, where anything was.
+   */
+  asked?: number | null;
+  /**
+   * What it is moving right now, where it reported a figure.
+   */
+  moving?: number | null;
+  /**
+   * What that adds up to.
+   */
+  verdict: "unasked" | "nothing-to-limit" | "holding" | "ignored" | "overrunning";
+}
+/**
+ * The download limit.
+ */
+export interface BandwidthReading {
+  /**
+   * The limit as it was expressed.
+   */
+  limit:
+    | {
+        as: "unlimited";
+      }
+    | {
+        as: "share";
+        at: number;
+      }
+    | {
+        as: "absolute";
+        at: number;
+      };
+  /**
+   * What it comes to against the measured line.
+   */
+  resolved:
+    | {
+        is: "unlimited";
+      }
+    | {
+        bytes_per_second: number;
+        is: "at";
+      }
+    | {
+        is: "unmeasured";
+      };
+  /**
+   * The limit and the line it was measured against, in one sentence.
+   *
+   * Carried rather than left to each surface, so the rule that a share is never
+   * shown without the figure it is a share of is kept in one place instead of
+   * three.
+   */
+  says: string;
+}
+/**
+ * What the stack itself moved in a calendar month, and what that leaves out.
+ */
+export interface Metered {
+  /**
+   * Bytes pulled down, as far as the clients count them.
+   */
+  down: number;
+  /**
+   * What this count does not include, always said.
+   */
+  excludes: string;
+  /**
+   * What is known to be missing from the count itself, where anything is.
+   */
+  incomplete: string[];
+  /**
+   * The month, as the client that dated the figures dates them.
+   */
+  month: string;
+  /**
+   * Bytes given back.
+   */
+  up: number;
+}
+/**
+ * The hours the household is awake, declared once for every download client.
+ */
+export interface Rhythm {
+  /**
+   * When the household's day starts.
+   */
+  from: string;
+  /**
+   * When it ends, which may be the next morning.
+   */
+  to: string;
+}
+/**
+ * The upload limit, which is declared apart and defaults lower.
+ */
+export interface BandwidthReading1 {
+  /**
+   * The limit as it was expressed.
+   */
+  limit:
+    | {
+        as: "unlimited";
+      }
+    | {
+        as: "share";
+        at: number;
+      }
+    | {
+        as: "absolute";
+        at: number;
+      };
+  /**
+   * What it comes to against the measured line.
+   */
+  resolved:
+    | {
+        is: "unlimited";
+      }
+    | {
+        bytes_per_second: number;
+        is: "at";
+      }
+    | {
+        is: "unmeasured";
+      };
+  /**
+   * The limit and the line it was measured against, in one sentence.
+   *
+   * Carried rather than left to each surface, so the rule that a share is never
+   * shown without the figure it is a share of is kept in one place instead of
+   * three.
+   */
+  says: string;
 }
 /**
  * The payload.
@@ -1018,6 +1510,188 @@ export interface SettingReport {
 /**
  * The payload.
  */
+export interface CredentialsInventory {
+  /**
+   * Every credential, whether or not it is present.
+   */
+  held: CredentialsHeld[];
+  protection: Protection;
+  /**
+   * One value, where one was asked for.
+   */
+  revealed?: Revealed | null;
+  /**
+   * What became of a rotation, where one was asked for.
+   */
+  rotated?: CredentialsRotation | null;
+}
+/**
+ * One credential, described without being disclosed.
+ *
+ * There is deliberately no value here, and no field a value could be put in later
+ * without the change being visible in review.
+ */
+export interface CredentialsHeld {
+  /**
+   * What is worth saying about this one, where anything is.
+   */
+  advisory?: string | null;
+  /**
+   * Everything that authenticates with it. Named individually, because a
+   * consumer left off this list is a consumer a rotation would silently strand.
+   */
+  consumers: string[];
+  /**
+   * A short likeness of the value, for telling two copies apart in a report.
+   *
+   * Absent where there is no value to take one of. Never reversible and never a
+   * proof — see [`fingerprint`].
+   */
+  fingerprint?: string | null;
+  /**
+   * Where the value lives, as a path or a description of one.
+   */
+  location: string;
+  /**
+   * What it is, in the operator's words — `qBittorrent web UI password`.
+   */
+  name: string;
+  /**
+   * Who produced it.
+   */
+  origin: "operator" | "service" | "lemonfiber";
+  /**
+   * The setting it is recorded under, which is a name and never a value.
+   */
+  setting: string;
+  /**
+   * Where it stands.
+   */
+  state: "absent" | "active" | "stale" | "invalid" | "rotating" | "superseded";
+}
+/**
+ * What keeping them in files does and does not protect against.
+ */
+export interface Protection {
+  /**
+   * What it protects against.
+   */
+  against: string[];
+  /**
+   * What it does not protect against.
+   */
+  not_against: string[];
+  /**
+   * What the storage is, before any claim about it.
+   */
+  summary: string;
+}
+/**
+ * One stored value, handed back because the operator asked for it and said so.
+ *
+ * Separate from [`Held`] rather than a field on it, so that the inventory cannot
+ * carry a value by accident: a surface that renders the inventory has nothing to
+ * render, whatever it does.
+ */
+export interface Revealed {
+  /**
+   * Which credential this is.
+   */
+  name: string;
+  /**
+   * The value, present only where the ask was confirmed.
+   */
+  value?: string | null;
+  /**
+   * What the operator is told before it appears, whether or not it appears.
+   */
+  warning: string;
+}
+/**
+ * What one rotation came to.
+ */
+export interface CredentialsRotation {
+  /**
+   * Every consumer, and how far the rotation reached it.
+   */
+  consumers: CredentialsPropagation[];
+  /**
+   * Which credential was to be replaced.
+   */
+  credential: string;
+  /**
+   * What became of the replacement.
+   */
+  settled:
+    | {
+        /**
+         * What the service did while proving it — an observation, never the value.
+         */
+        observed: string;
+        settled: "replaced";
+      }
+    | {
+        /**
+         * What the service said, with any credential in it withheld.
+         */
+        detail: string;
+        settled: "refused";
+      }
+    | {
+        /**
+         * Why nothing could be concluded.
+         */
+        detail: string;
+        settled: "unproven";
+      }
+    | {
+        /**
+         * The names that would have been accepted.
+         */
+        known: string[];
+        settled: "unknown";
+      }
+    | {
+        /**
+         * Where a replacement comes from, and what to do once it exists.
+         */
+        detail: string;
+        settled: "elsewhere";
+      };
+}
+/**
+ * One consumer, and how far the rotation reached it.
+ */
+export interface CredentialsPropagation {
+  /**
+   * What authenticates with the credential.
+   */
+  consumer: string;
+  /**
+   * How far the rotation reached it.
+   */
+  reach:
+    | {
+        reach: "updated";
+      }
+    | {
+        /**
+         * What still has to happen, written as the command that does it.
+         */
+        detail: string;
+        reach: "pending";
+      }
+    | {
+        /**
+         * Why it could not be.
+         */
+        detail: string;
+        reach: "failed";
+      };
+}
+/**
+ * The payload.
+ */
 export interface DashboardSnapshot {
   /**
    * What the operator has been told, newest first: what is owed them where a
@@ -1108,7 +1782,7 @@ export interface DashboardSnapshot {
    */
   storage:
     | {
-        data: Storage;
+        data: DashboardStorage;
         panel: "ready";
       }
     | {
@@ -1353,11 +2027,26 @@ export interface DashboardAffected {
  */
 export interface DashboardHouseholdReport {
   /**
+   * What that policy allows in a period, in the words a household says it in.
+   *
+   * Absent where nothing limits the household, which is not the same as a policy
+   * that could not be read: that one leaves [`Self::policy`] absent too.
+   */
+  allows?: string | null;
+  /**
    * Whether the household could be read at all. A false here is why the list is
    * empty, and keeps an unread record from being mistaken for an empty house — the
    * same honesty a trace keeps about a silence it did not hear.
    */
   available: boolean;
+  /**
+   * What the limits on this household are and are not, where anybody carries one.
+   *
+   * Absent on a household nobody has limited, because there is no claim to be modest
+   * about. Present the moment there is one, because a parent who has set a limit is
+   * exactly the reader who might take it for a lock.
+   */
+  filtering?: string | null;
   /**
    * What could not be read, and anything else worth the operator's attention.
    */
@@ -1368,6 +2057,11 @@ export interface DashboardHouseholdReport {
    * up yet.
    */
   members: DashboardHouseholdMember[];
+  /**
+   * What happens to what the household asks for where nobody chose otherwise for
+   * one person. Absent where the request service could not be asked.
+   */
+  policy?: Policy | null;
 }
 /**
  * One household member: who they are, what they may watch, when they were last
@@ -1375,6 +2069,14 @@ export interface DashboardHouseholdReport {
  */
 export interface DashboardHouseholdMember {
   access: MemberAccess;
+  /**
+   * What they may ask for, and what their period has left of it.
+   *
+   * Absent where the request service holds no account for them, and where it could
+   * not be asked — an unread answer is not an unlimited member, and reporting one as
+   * the other would tell an operator their quota was never applied.
+   */
+  asking?: DashboardMemberAsking | null;
   /**
    * Whether somebody has set a password on the account. False is an invitation
    * nobody has taken up rather than a member who is not here.
@@ -1393,6 +2095,19 @@ export interface DashboardHouseholdMember {
    * What they asked for, newest first.
    */
   requests: DashboardMemberRequest[];
+  /**
+   * What this member would be told, in the words they would read it in.
+   *
+   * Everything a household member is owed at the moment of asking and cannot be
+   * shown where they ask: what happens to what they ask for, what their period has
+   * left and when it makes room, roughly what a thing costs before they choose one,
+   * what is still waiting on an answer, and what was refused and why. Written to
+   * them rather than about them, so it can be handed over as it stands.
+   *
+   * Empty where there is nothing to tell them — a member the request service holds
+   * no account for has no standing to report and nothing waiting.
+   */
+  to_hand_over: string[];
 }
 /**
  * What they may watch.
@@ -1420,16 +2135,166 @@ export interface MemberAccess {
    * could not be read, which a finding says.
    */
   libraries: string[];
+  /**
+   * What that limit comes to in the certificates this media server names, in the
+   * operator's own country. Absent where no limit is set.
+   */
+  rated?: Rated | null;
+  /**
+   * What they are held to, in one word — including where what they may watch and
+   * what they may ask for disagree.
+   */
+  restriction: "unrestricted" | "rating-limited" | "library-limited" | "both" | "inconsistent";
+  /**
+   * What becomes of content the media server has no rating for.
+   *
+   * Said either way, because an unexplained absence is the thing this answers: a
+   * restricted member missing half the library is either this setting or a defect,
+   * and an operator cannot tell which from silence.
+   */
+  unrated: "held-back" | "let-through";
+}
+/**
+ * What one age limit comes to, in the certificates named for it.
+ *
+ * Both sides, because either alone misleads. What is allowed without what is held
+ * back reads as a limit that stops nothing; what is held back without what is allowed
+ * reads as a limit that stops everything.
+ */
+export interface Rated {
+  /**
+   * The certificates at the highest age this limit still lets through.
+   *
+   * Empty where the table names nothing at or below the limit, which is a limit
+   * that lets nothing rated through at all.
+   */
+  allows: string[];
+  /**
+   * Whether these came from lemonfiber's own mapping because the media server's
+   * table named no certificates.
+   *
+   * Carried rather than hidden: a certificate said to be this household's when it
+   * is this program's is the kind of claim a parent would act on.
+   */
+  fell_back: boolean;
+  /**
+   * The certificates at the lowest age this limit holds back.
+   *
+   * Empty where the table names nothing above the limit, which is a limit that
+   * holds nothing rated back at all.
+   */
+  holds_back: string[];
+}
+/**
+ * What one member may ask for, where the request service could be asked.
+ *
+ * Both counts, because the service keeps them apart and folding them would report a
+ * household as within its limit while the half that matters is spent: television is
+ * counted a season at a time, so one ask for a six-season series spends six.
+ */
+export interface DashboardMemberAsking {
+  films: Counted;
+  /**
+   * When the count next lets go of something, so one more becomes possible.
+   *
+   * Absent where nothing limits them, and where the request service's own dates
+   * could not be read — an invented one would be a promise about a day on which
+   * nothing happens. The period is a window that rolls rather than a month that
+   * ends, so this is the moment their earliest counted request ages out.
+   */
+  frees_up?: string | null;
+  /**
+   * What happens to what they ask for.
+   */
+  policy: "trusted" | "within-a-limit" | "everything-waits";
+  /**
+   * Where they stand against what their period allows, taken over both counts.
+   */
+  standing: "unlimited" | "within-quota" | "near-quota" | "quota-exhausted";
+  television: Counted1;
+}
+/**
+ * Films, counted one to a request.
+ */
+export interface Counted {
+  /**
+   * How many the period allows. Absent where nothing limits them, which is a
+   * different answer from a limit of nought.
+   */
+  limit?: number | null;
+  /**
+   * How long the period is, in the words a household says it in — absent where
+   * the count runs from the beginning rather than over a window.
+   */
+  period?: string | null;
+  /**
+   * How many more they may ask for. Absent where nothing limits them.
+   */
+  remaining?: number | null;
+  /**
+   * How many the period has already counted against them.
+   */
+  used: number;
+}
+/**
+ * Television, counted one to a season.
+ */
+export interface Counted1 {
+  /**
+   * How many the period allows. Absent where nothing limits them, which is a
+   * different answer from a limit of nought.
+   */
+  limit?: number | null;
+  /**
+   * How long the period is, in the words a household says it in — absent where
+   * the count runs from the beginning rather than over a window.
+   */
+  period?: string | null;
+  /**
+   * How many more they may ask for. Absent where nothing limits them.
+   */
+  remaining?: number | null;
+  /**
+   * How many the period has already counted against them.
+   */
+  used: number;
 }
 /**
  * One thing a household member asked for, and where it stands in their words.
  */
 export interface DashboardMemberRequest {
   /**
+   * About how much room it will want, at the quality in force.
+   *
+   * A guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the
+   * request service names a kind this build does not know, since there is nothing to
+   * guess the length of.
+   */
+  estimate?: Estimate | null;
+  /**
+   * The number the request service files it under, which is how one is named again
+   * when somebody rules on it.
+   */
+  id: number;
+  /**
    * What kind of thing it is — a series, a film — in the household's own words.
    * Absent where the request service names a kind this build does not know.
    */
   media?: string | null;
+  /**
+   * Why it was turned down, where it was turned down from here.
+   *
+   * **The request service keeps none**, so this is lemonfiber's own record and is
+   * said to be — a reason presented as delivered would end the operator's job at
+   * exactly the point it begins. Absent on a request nobody has refused, and on one
+   * refused in the request service itself, where there are no words to report and
+   * inventing some would put them in somebody's mouth.
+   *
+   * Whether the words were carried to the person who asked is the record's own
+   * `told`, which is why the two travel together: what an operator does next turns
+   * on it, and a reason read without it is a reason of unknown standing.
+   */
+  refused?: Refused | null;
   /**
    * Where the request stands, or absent where the request service reports a status
    * this build does not know rather than guessing it into the nearest word.
@@ -1441,6 +2306,87 @@ export interface DashboardMemberRequest {
    * awaiting approval has been handed to nobody, so there is no title to find.
    */
   title?: string | null;
+  /**
+   * How many whole days it has been waiting on somebody, where it is waiting at all
+   * and the service's own date could be read.
+   *
+   * Only on the ones nobody has ruled on. A request already answered has not been
+   * waiting since it was made, and a figure beside one would be counting the wrong
+   * thing.
+   */
+  waiting_days?: number | null;
+}
+/**
+ * About how much room one request will want.
+ *
+ * Carried as a number and a word rather than as a rendered string, so a surface can
+ * put it in a column and still say what it is. The word is not decoration: a figure
+ * with nothing hedging it is a promise, and this cannot keep one.
+ */
+export interface Estimate {
+  /**
+   * About how many bytes it will take.
+   */
+  bytes: number;
+  /**
+   * Whether this was measured. Always false — nothing here has measured anything,
+   * and the field is present so that a surface rendering it cannot forget to say so.
+   */
+  measured: boolean;
+}
+/**
+ * What was said when one request was turned down.
+ */
+export interface Refused {
+  /**
+   * When it was turned down, so somebody reading it later knows which answer this
+   * was rather than assuming it is the newest.
+   *
+   * Absent where the machine's clock could not be written as a date, which is a
+   * refusal worth keeping the words of and not worth losing them over.
+   */
+  at?: string | null;
+  /**
+   * Whether nobody ruled on it and the period the household agreed to closed it,
+   * rather than an operator turning it down.
+   *
+   * The words are then this program's own, which is why the two are told apart here
+   * and not left to be read off the sentence: an operator scanning for what happened
+   * while they were away is looking for exactly the ones nobody answered, and a
+   * member is owed the difference between having been refused and having run out.
+   *
+   * Absent from every record written before a household could arrange this, which is
+   * the right reading of them — they are all somebody's own refusals.
+   */
+  expired?: boolean;
+  /**
+   * Why, in the words it was turned down in.
+   */
+  reason: string;
+  /**
+   * Whether the words have been carried to whoever asked, and where to.
+   *
+   * Absent until the one attempt has been made. **This is what makes a second one
+   * impossible rather than unlikely**: carrying happens only where this is absent,
+   * and it is written whether anything was reached or not — so a member with nowhere
+   * to send to is asked about once, and a household is never told the same thing
+   * twice by a run that happened to be started twice.
+   */
+  told?: Passed | null;
+}
+/**
+ * Where a refusal's words were carried, and when.
+ */
+export interface Passed {
+  /**
+   * When the attempt was made, absent where the clock could not be written down.
+   */
+  at?: string | null;
+  /**
+   * The services they reached, by the names the member knows them by. Empty where
+   * there was nowhere this could send.
+   */
+  to: string[];
 }
 /**
  * One `*arr`'s queue, and how much of it is stuck.
@@ -1506,7 +2452,7 @@ export interface DashboardService {
 /**
  * The storage picture: what is free, when it runs out, and whether imports link.
  */
-export interface Storage {
+export interface DashboardStorage {
   /**
    * The time until the disk fills at the current rate of the queue draining
    * onto it, or `None` where it is not projected to fill.
@@ -2081,13 +3027,115 @@ export interface Term {
 /**
  * The payload.
  */
+export interface HostingReport {
+  /**
+   * What is true of this manager and worth knowing before it is relied on.
+   */
+  caveat?: string | null;
+  /**
+   * What this run changed, where it was asked to change something.
+   */
+  changed?: Changed | null;
+  /**
+   * Every long-running command there is, hosted or not.
+   */
+  commands: HostedCommand[];
+  /**
+   * What to do instead, where lemonfiber cannot configure this platform.
+   */
+  instruction?: string | null;
+  /**
+   * The service manager this platform has, or the absence of one.
+   */
+  manager: "launchd" | "systemd" | "unsupported";
+}
+/**
+ * What one run of this command did to the machine.
+ */
+export interface Changed {
+  /**
+   * Whether it installed it, rather than took it back.
+   */
+  installed: boolean;
+  /**
+   * The command it acted on.
+   */
+  name: string;
+  /**
+   * Whether this was a rehearsal, in which case nothing above happened.
+   */
+  rehearsed: boolean;
+  /**
+   * Whether it started the command, which only installing does.
+   */
+  started: boolean;
+  /**
+   * Everything it wrote or removed, so nothing goes unnamed in either direction.
+   */
+  touched: string[];
+}
+/**
+ * One long-running command, and what stands between it and this machine.
+ */
+export interface HostedCommand {
+  /**
+   * How it is typed in a terminal, which is what hosting installs.
+   */
+  command: string;
+  /**
+   * The service definition installed for it, where there is one.
+   */
+  definition?: string | null;
+  /**
+   * What it does for as long as it runs, in one sentence.
+   */
+  guarantees: string;
+  /**
+   * The program the definition names, where nothing is there any more.
+   */
+  missing?: string | null;
+  /**
+   * lemonfiber's own name for it.
+   */
+  name: string;
+  /**
+   * Where a hosted run writes the words it would have said on a terminal.
+   */
+  output?: string | null;
+  /**
+   * The whole command line that definition runs.
+   */
+  runs?: string | null;
+  /**
+   * What stands between it and the machine.
+   */
+  standing: "not-hosted" | "hosted" | "installed-unverified" | "stopped" | "orphaned" | "unsupported";
+}
+/**
+ * The payload.
+ */
 export interface HouseholdHouseholdReport {
+  /**
+   * What that policy allows in a period, in the words a household says it in.
+   *
+   * Absent where nothing limits the household, which is not the same as a policy
+   * that could not be read: that one leaves [`Self::policy`] absent too.
+   */
+  allows?: string | null;
   /**
    * Whether the household could be read at all. A false here is why the list is
    * empty, and keeps an unread record from being mistaken for an empty house — the
    * same honesty a trace keeps about a silence it did not hear.
    */
   available: boolean;
+  /**
+   * What the limits on this household are and are not, where anybody carries one.
+   *
+   * Absent on a household nobody has limited, because there is no claim to be modest
+   * about. Present the moment there is one, because a parent who has set a limit is
+   * exactly the reader who might take it for a lock.
+   */
+  filtering?: string | null;
   /**
    * What could not be read, and anything else worth the operator's attention.
    */
@@ -2098,6 +3146,11 @@ export interface HouseholdHouseholdReport {
    * up yet.
    */
   members: HouseholdHouseholdMember[];
+  /**
+   * What happens to what the household asks for where nobody chose otherwise for
+   * one person. Absent where the request service could not be asked.
+   */
+  policy?: Policy | null;
 }
 /**
  * One household member: who they are, what they may watch, when they were last
@@ -2105,6 +3158,14 @@ export interface HouseholdHouseholdReport {
  */
 export interface HouseholdHouseholdMember {
   access: MemberAccess1;
+  /**
+   * What they may ask for, and what their period has left of it.
+   *
+   * Absent where the request service holds no account for them, and where it could
+   * not be asked — an unread answer is not an unlimited member, and reporting one as
+   * the other would tell an operator their quota was never applied.
+   */
+  asking?: HouseholdMemberAsking | null;
   /**
    * Whether somebody has set a password on the account. False is an invitation
    * nobody has taken up rather than a member who is not here.
@@ -2123,6 +3184,19 @@ export interface HouseholdHouseholdMember {
    * What they asked for, newest first.
    */
   requests: HouseholdMemberRequest[];
+  /**
+   * What this member would be told, in the words they would read it in.
+   *
+   * Everything a household member is owed at the moment of asking and cannot be
+   * shown where they ask: what happens to what they ask for, what their period has
+   * left and when it makes room, roughly what a thing costs before they choose one,
+   * what is still waiting on an answer, and what was refused and why. Written to
+   * them rather than about them, so it can be handed over as it stands.
+   *
+   * Empty where there is nothing to tell them — a member the request service holds
+   * no account for has no standing to report and nothing waiting.
+   */
+  to_hand_over: string[];
 }
 /**
  * What they may watch.
@@ -2150,16 +3224,144 @@ export interface MemberAccess1 {
    * could not be read, which a finding says.
    */
   libraries: string[];
+  /**
+   * What that limit comes to in the certificates this media server names, in the
+   * operator's own country. Absent where no limit is set.
+   */
+  rated?: Rated | null;
+  /**
+   * What they are held to, in one word — including where what they may watch and
+   * what they may ask for disagree.
+   */
+  restriction: "unrestricted" | "rating-limited" | "library-limited" | "both" | "inconsistent";
+  /**
+   * What becomes of content the media server has no rating for.
+   *
+   * Said either way, because an unexplained absence is the thing this answers: a
+   * restricted member missing half the library is either this setting or a defect,
+   * and an operator cannot tell which from silence.
+   */
+  unrated: "held-back" | "let-through";
+}
+/**
+ * What one member may ask for, where the request service could be asked.
+ *
+ * Both counts, because the service keeps them apart and folding them would report a
+ * household as within its limit while the half that matters is spent: television is
+ * counted a season at a time, so one ask for a six-season series spends six.
+ */
+export interface HouseholdMemberAsking {
+  films: Counted2;
+  /**
+   * When the count next lets go of something, so one more becomes possible.
+   *
+   * Absent where nothing limits them, and where the request service's own dates
+   * could not be read — an invented one would be a promise about a day on which
+   * nothing happens. The period is a window that rolls rather than a month that
+   * ends, so this is the moment their earliest counted request ages out.
+   */
+  frees_up?: string | null;
+  /**
+   * What happens to what a household member asks for.
+   *
+   * Three, and they are the three the request service can actually be put into. A
+   * household is in one of them because of two settings taken together — whether requests
+   * arrive unseen, and whether a period limits how many — so the words here are a reading
+   * of that pair rather than a fourth setting kept beside it.
+   *
+   * Choosing per person is not a fourth policy. It is one of these three chosen for one
+   * member rather than for the house, which is why what a surface offers is a policy and,
+   * separately, who it is for.
+   */
+  policy: "trusted" | "within-a-limit" | "everything-waits";
+  /**
+   * Where they stand against what their period allows, taken over both counts.
+   */
+  standing: "unlimited" | "within-quota" | "near-quota" | "quota-exhausted";
+  television: Counted3;
+}
+/**
+ * Films, counted one to a request.
+ */
+export interface Counted2 {
+  /**
+   * How many the period allows. Absent where nothing limits them, which is a
+   * different answer from a limit of nought.
+   */
+  limit?: number | null;
+  /**
+   * How long the period is, in the words a household says it in — absent where
+   * the count runs from the beginning rather than over a window.
+   */
+  period?: string | null;
+  /**
+   * How many more they may ask for. Absent where nothing limits them.
+   */
+  remaining?: number | null;
+  /**
+   * How many the period has already counted against them.
+   */
+  used: number;
+}
+/**
+ * Television, counted one to a season.
+ */
+export interface Counted3 {
+  /**
+   * How many the period allows. Absent where nothing limits them, which is a
+   * different answer from a limit of nought.
+   */
+  limit?: number | null;
+  /**
+   * How long the period is, in the words a household says it in — absent where
+   * the count runs from the beginning rather than over a window.
+   */
+  period?: string | null;
+  /**
+   * How many more they may ask for. Absent where nothing limits them.
+   */
+  remaining?: number | null;
+  /**
+   * How many the period has already counted against them.
+   */
+  used: number;
 }
 /**
  * One thing a household member asked for, and where it stands in their words.
  */
 export interface HouseholdMemberRequest {
   /**
+   * About how much room it will want, at the quality in force.
+   *
+   * A guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the
+   * request service names a kind this build does not know, since there is nothing to
+   * guess the length of.
+   */
+  estimate?: Estimate | null;
+  /**
+   * The number the request service files it under, which is how one is named again
+   * when somebody rules on it.
+   */
+  id: number;
+  /**
    * What kind of thing it is — a series, a film — in the household's own words.
    * Absent where the request service names a kind this build does not know.
    */
   media?: string | null;
+  /**
+   * Why it was turned down, where it was turned down from here.
+   *
+   * **The request service keeps none**, so this is lemonfiber's own record and is
+   * said to be — a reason presented as delivered would end the operator's job at
+   * exactly the point it begins. Absent on a request nobody has refused, and on one
+   * refused in the request service itself, where there are no words to report and
+   * inventing some would put them in somebody's mouth.
+   *
+   * Whether the words were carried to the person who asked is the record's own
+   * `told`, which is why the two travel together: what an operator does next turns
+   * on it, and a reason read without it is a reason of unknown standing.
+   */
+  refused?: Refused | null;
   /**
    * Where the request stands, or absent where the request service reports a status
    * this build does not know rather than guessing it into the nearest word.
@@ -2171,6 +3373,15 @@ export interface HouseholdMemberRequest {
    * awaiting approval has been handed to nobody, so there is no title to find.
    */
   title?: string | null;
+  /**
+   * How many whole days it has been waiting on somebody, where it is waiting at all
+   * and the service's own date could be read.
+   *
+   * Only on the ones nobody has ruled on. A request already answered has not been
+   * waiting since it was made, and a figure beside one would be counting the wrong
+   * thing.
+   */
+  waiting_days?: number | null;
 }
 /**
  * The payload.
@@ -2185,6 +3396,10 @@ export interface Invitation {
    * invitation carrying one sends somebody an address that cannot open.
    */
   address: string;
+  /**
+   * What this offer wrote on the account, where it wrote anything.
+   */
+  applied?: Applied | null;
   /**
    * What is worth knowing about the address itself, where anything is.
    *
@@ -2233,6 +3448,58 @@ export interface Invitation {
    * gone. On a rehearsal these are the ones that *would* be taken back.
    */
   withdrawn: string[];
+}
+/**
+ * What an invitation wrote on the account, in the household's own words.
+ *
+ * **Said back so an absence later is explicable.** A member held to a rating who
+ * cannot find half the library is either this working or a defect, and an operator
+ * with nothing on record cannot tell which. So the limit, the libraries, what happened
+ * to content the media server has no rating for, and whether the request service was
+ * held to the same decision all travel back on the answer that applied them.
+ *
+ * Absent where the offer set nothing at all, which is not the same as an offer that
+ * set no restrictions: naming neither a library nor a limit is saying nothing about
+ * access, and nothing is what gets written.
+ *
+ * Serialised in the field names the household read uses for the same facts, rather
+ * than in the invitation's own spelling: one setting named two ways across two shapes
+ * is two shapes a client has to be told are about the same thing.
+ */
+export interface Applied {
+  /**
+   * What a limit here is, and what it is not.
+   *
+   * Carried on the answer rather than left to a document, because the reader who
+   * most needs it is the parent who has just set one.
+   */
+  filtering: string;
+  /**
+   * The libraries they may open, as the operator named them. Empty is every one.
+   */
+  libraries: string[];
+  /**
+   * How far up the ratings they may watch, in the words and the certificates this
+   * media server names in the operator's own country. Absent where no limit was set.
+   */
+  limit?: string | null;
+  /**
+   * Whether the request service was held to the same decision.
+   *
+   * The same three answers a link carries, and for the same reason: what somebody
+   * may *ask for* is a second service's business, and that service can be down while
+   * the media server is not. `NotTried` here is a service with no account for them
+   * yet — nothing to hold rather than a failure to hold something.
+   */
+  requesting: "made" | "not-yet" | "not-tried";
+  /**
+   * What becomes of content the media server has no rating for.
+   *
+   * Held back by default on somebody being narrowed, because a rating limit cannot
+   * decide about a thing that carries no rating. The cost is real and is why this is
+   * reported rather than assumed: some legitimate content becomes invisible to them.
+   */
+  unrated: "held-back" | "let-through";
 }
 /**
  * The payload.
@@ -2513,11 +3780,11 @@ export interface MusicChoice {
 /**
  * The payload.
  */
-export interface Leaving {
+export interface OutboundLeaving {
   /**
    * Every request lemonfiber makes on its own account, in a fixed order.
    */
-  ours: Outbound[];
+  ours: OutboundOutbound[];
   /**
    * The requests made by services this stack runs, attributed to them.
    */
@@ -2526,7 +3793,7 @@ export interface Leaving {
 /**
  * One request lemonfiber makes, where it goes, and what refusing it costs.
  */
-export interface Outbound {
+export interface OutboundOutbound {
   /**
    * Whether this machine's settings allow it.
    */
@@ -2547,7 +3814,7 @@ export interface Outbound {
   /**
    * Which request this is.
    */
-  reach: "registry" | "guides" | "echo" | "indexer" | "usenet";
+  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household";
   /**
    * Exactly what travels in the request.
    */
@@ -2914,7 +4181,7 @@ export interface RestoreRestoration {
    * What was put back, or nothing where nothing was.
    */
   done?: RestoreReport | null;
-  would: Preview;
+  would: RestorePreview;
 }
 /**
  * What a restore did.
@@ -2961,7 +4228,7 @@ export interface Relocation {
  * What the archive holds and what restoring it would come to, read before
  * anything was touched.
  */
-export interface Preview {
+export interface RestorePreview {
   /**
    * What this listing is, so consent given for it can name which listing it read.
    *
@@ -2975,7 +4242,7 @@ export interface Preview {
    * Whether the archive is old enough that a compatibility warning applies.
    */
   downgrade: boolean;
-  manifest: Manifest;
+  manifest: RestoreManifest;
   /**
    * The data-root difference, where the archive was taken against another one.
    */
@@ -2984,7 +4251,7 @@ export interface Preview {
 /**
  * The archive's own account of itself — its scope, version and contents.
  */
-export interface Manifest {
+export interface RestoreManifest {
   /**
    * When it was taken. Opaque here; the surface stamps it from the clock.
    */
@@ -3167,6 +4434,278 @@ export interface Protocols {
 /**
  * The payload.
  */
+export interface SpaceReckoning {
+  /**
+   * What this offer names itself, so an answer to it can say which offer it was
+   * answering.
+   */
+  agreement: string;
+  /**
+   * The completed downloads, each with where it stands and what removing it
+   * would cost.
+   */
+  candidates: SpaceCandidate[];
+  /**
+   * Where the room went, one line per tree plus the services' own files, and
+   * one line for what is committed but has not landed yet.
+   */
+  consumption: SpaceConsumption[];
+  /**
+   * Whether new acquisitions are halted to keep the services writable.
+   */
+  halted: boolean;
+  /**
+   * The imports that stopped part-way, with what is on disk for each.
+   */
+  interrupted: Interrupted[];
+  /**
+   * Where the stack stands, which is where its worst volume stands.
+   */
+  level: "unknown" | "ample" | "advisory" | "warning" | "critical" | "exhausted";
+  /**
+   * The files far enough out of line with the rest to be worth pointing at.
+   */
+  outsized: Outsized[];
+  /**
+   * What of that room could be got back, and what each would cost.
+   *
+   * A second reading of bytes already counted above rather than more of them: a
+   * seeding torrent's file is in the tree it lives in *and* here. Summing the
+   * two lists together would double what is on the disk, which is the mistake
+   * this whole module is arranged to avoid.
+   */
+  reclaimable: SpaceConsumption[];
+  /**
+   * What became of a confirmed cleanup, where one was asked for.
+   */
+  reclaimed?: SpaceReclaimed | null;
+  /**
+   * The volumes watched. Either filling stops the stack, so both are reported
+   * whether or not they are the same drive.
+   */
+  volumes: Volume[];
+}
+/**
+ * One completed download, and what reclaiming it would come to.
+ */
+export interface SpaceCandidate {
+  /**
+   * What it occupies.
+   */
+  bytes: number;
+  /**
+   * What removing it costs, where it costs anything.
+   */
+  consequence?: string | null;
+  /**
+   * What both sides call it.
+   */
+  name: string;
+  /**
+   * Where it stands.
+   */
+  standing:
+    | {
+        standing: "never_imported";
+      }
+    | {
+        /**
+         * What it has uploaded against what it downloaded, in hundredths, as the
+         * client reports it.
+         *
+         * A whole number rather than a fraction because every report this product
+         * makes is compared for equality somewhere, and a fraction cannot be —
+         * two figures a client would call the same would not be. The hundredth is
+         * finer than any decision made on a ratio.
+         */
+        ratio: number;
+        standing: "seeding";
+      }
+    | {
+        standing: "left_alone";
+      };
+}
+/**
+ * One line of the accounting.
+ */
+export interface SpaceConsumption {
+  /**
+   * What it is about.
+   */
+  category:
+    | {
+        name: string;
+        of: "tree";
+      }
+    | {
+        of: "landing";
+      }
+    | {
+        of: "seeding";
+      }
+    | {
+        of: "orphaned";
+      }
+    | {
+        of: "extracted";
+      }
+    | {
+        of: "services";
+      }
+    | {
+        of: "unmanaged";
+      };
+  /**
+   * What getting it back would cost.
+   */
+  reclaim:
+    | "by_losing_content"
+    | "in_progress"
+    | "at_the_cost_of_ratio"
+    | "the_easy_win"
+    | "already_have_it"
+    | "marginally"
+    | "you_said_not";
+  tally: Tally;
+}
+/**
+ * What it occupies, counted both ways.
+ */
+export interface Tally {
+  /**
+   * How many names were counted.
+   */
+  files: number;
+  /**
+   * The bytes the names add up to — what this would take with nothing shared.
+   */
+  logical: number;
+  /**
+   * The bytes the underlying files add up to — what the volume has actually
+   * lost to them.
+   */
+  physical: number;
+  /**
+   * How many of those names pointed at a file already counted.
+   */
+  shared: number;
+}
+/**
+ * An import that stopped part-way, in the words of whatever stopped it.
+ */
+export interface Interrupted {
+  /**
+   * What the service calls it.
+   */
+  name: string;
+  /**
+   * What is on disk for it already, where the walk could find it.
+   */
+  partial: number;
+  /**
+   * What the service said, verbatim.
+   */
+  said: string;
+}
+/**
+ * One file far larger than the rest.
+ */
+export interface Outsized {
+  /**
+   * What it occupies.
+   */
+  bytes: number;
+  /**
+   * Where it is.
+   */
+  path: string;
+  /**
+   * How many times the middle file of this walk it is.
+   */
+  times_typical: number;
+}
+/**
+ * What became of a confirmed cleanup.
+ */
+export interface SpaceReclaimed {
+  /**
+   * What they occupied.
+   */
+  bytes: number;
+  /**
+   * The paths that were taken.
+   */
+  gone: string[];
+  /**
+   * What could not be taken, and what the platform said about it.
+   */
+  left: SpaceLeft[];
+}
+/**
+ * Something a cleanup could not take.
+ */
+export interface SpaceLeft {
+  /**
+   * Where it is.
+   */
+  at: string;
+  /**
+   * What the platform said, verbatim.
+   */
+  why: string;
+}
+/**
+ * One volume, as one run measured it.
+ */
+export interface Volume {
+  /**
+   * The path that was measured.
+   */
+  at: string;
+  /**
+   * The bytes already committed to landing here.
+   */
+  committed: number;
+  /**
+   * Bytes free, or nothing where the volume could not be read.
+   */
+  free?: number | null;
+  /**
+   * Where it stands.
+   */
+  level: "unknown" | "ample" | "advisory" | "warning" | "critical" | "exhausted";
+  /**
+   * The effective limit — the mount's own size, which on a dataset given a
+   * quota is the quota rather than the device beneath it.
+   */
+  limit?: number | null;
+  /**
+   * Where the volume holding it is mounted, which is what the limit belongs to.
+   */
+  point: string;
+  /**
+   * What would be free once the committed content has landed.
+   */
+  projected?: number | null;
+  /**
+   * What the reading is worth.
+   */
+  reading:
+    | {
+        as: "live";
+      }
+    | {
+        as: "as_of";
+        at: number;
+      };
+  /**
+   * Which of the two this is.
+   */
+  role: "data" | "services";
+}
+/**
+ * The payload.
+ */
 export interface StatusStatusReport {
   /**
    * What a whole set of services amounts to.
@@ -3246,6 +4785,83 @@ export interface StepLine {
 /**
  * The payload.
  */
+export interface StopSeedingLetting {
+  /**
+   * What this offer names itself, so an answer to it can say which offer it
+   * answered.
+   */
+  agreement: string;
+  download: StopSeedingCandidate;
+  /**
+   * What goes with it, carried rather than left for a surface to remember.
+   */
+  goes: string;
+  /**
+   * What became of an answered offer, and nothing where the offer is all this is.
+   */
+  gone?: Gone | null;
+}
+/**
+ * The download, in the same words the account names it in: where it stands, what
+ * it occupies, and what removing it costs.
+ */
+export interface StopSeedingCandidate {
+  /**
+   * What it occupies.
+   */
+  bytes: number;
+  /**
+   * What removing it costs, where it costs anything.
+   */
+  consequence?: string | null;
+  /**
+   * What both sides call it.
+   */
+  name: string;
+  /**
+   * Where it stands.
+   */
+  standing:
+    | {
+        standing: "never_imported";
+      }
+    | {
+        /**
+         * What it has uploaded against what it downloaded, in hundredths, as the
+         * client reports it.
+         *
+         * A whole number rather than a fraction because every report this product
+         * makes is compared for equality somewhere, and a fraction cannot be —
+         * two figures a client would call the same would not be. The hundredth is
+         * finer than any decision made on a ratio.
+         */
+        ratio: number;
+        standing: "seeding";
+      }
+    | {
+        standing: "left_alone";
+      };
+}
+/**
+ * What became of a download the client was asked to let go.
+ */
+export interface Gone {
+  /**
+   * What it occupied, as the client reported it.
+   */
+  bytes: number;
+  /**
+   * What the client is no longer holding.
+   */
+  name: string;
+  /**
+   * Whether this was a rehearsal, which asks the client for nothing.
+   */
+  rehearsed: boolean;
+}
+/**
+ * The payload.
+ */
 export interface StoredStored {
   /**
    * What is on this machine that is not lemonfiber's to keep or remove.
@@ -3273,7 +4889,7 @@ export interface StoredStored {
         /**
          * What could not be removed, each with the reason.
          */
-        left: Left[];
+        left: StoredLeft[];
         state: "done";
       };
   /**
@@ -3319,7 +4935,7 @@ export interface Kept {
 /**
  * Something a removal could not take away.
  */
-export interface Left {
+export interface StoredLeft {
   /**
    * The path that is still there.
    */
@@ -3658,6 +5274,227 @@ export interface Undo {
 /**
  * The payload.
  */
+export interface UninstallUninstall {
+  manifest: UninstallManifest;
+  /**
+   * Whether anything was removed on this run.
+   */
+  removal:
+    | {
+        state: "surveyed";
+      }
+    | {
+        state: "confirmed";
+      }
+    | {
+        /**
+         * The credentials this destroyed, said rather than left to be inferred.
+         */
+        credentials: string[];
+        /**
+         * What went, by the name the manifest gave it.
+         */
+        gone: string[];
+        state: "complete";
+      }
+    | {
+        /**
+         * The credentials this destroyed.
+         */
+        credentials: string[];
+        /**
+         * What went, by the name the manifest gave it.
+         */
+        gone: string[];
+        /**
+         * What is still there, and how to remove it.
+         */
+        left: UninstallLeft[];
+        state: "partial";
+      };
+}
+/**
+ * What removing would come to, or what it came to.
+ */
+export interface UninstallManifest {
+  /**
+   * What this reading names itself, so an answer says which reading it answered.
+   */
+  agreement: string;
+  /**
+   * Whether a backup was offered before configuration is destroyed, and how.
+   */
+  backup?: string | null;
+  /**
+   * What the lines that are going occupy, where that is knowable.
+   */
+  bytes: number;
+  /**
+   * What is still coming down, which stopping would interrupt.
+   */
+  coming: Coming[];
+  confidence: UninstallConfidence;
+  /**
+   * What is beneath the data location that the stack did not put there.
+   *
+   * Not a warning. While this is non-empty the data location is never removed as
+   * one tree, and only the stack's own directories beneath it are offered.
+   */
+  foreign: Foreign[];
+  /**
+   * Every line it reaches, each said to be going or said to be kept.
+   */
+  items: Item[];
+  /**
+   * What it leaves alone, in the operator's words.
+   */
+  keeps: string;
+  /**
+   * What lemonfiber cannot remove, each with how to remove it by hand.
+   */
+  outside: Outside[];
+  /**
+   * What it takes, in the operator's words.
+   */
+  removes: string;
+  /**
+   * Which removal this is.
+   */
+  tier: "stop" | "services" | "configuration" | "media";
+  /**
+   * Whether the data location is on a network share or a drive that unplugs.
+   *
+   * Said where it is, so removing across a mount an operator forgot was a mount is
+   * something they read before agreeing rather than after.
+   */
+  volume?: string | null;
+}
+/**
+ * One download still coming down when the removal was asked for.
+ */
+export interface Coming {
+  /**
+   * What it is, as the client names it.
+   */
+  name: string;
+  /**
+   * How far along, from zero to a hundred.
+   */
+  progress: number;
+}
+/**
+ * How much of this was read, and what could not be.
+ */
+export interface UninstallConfidence {
+  /**
+   * Whether every source this tier needed answered.
+   */
+  complete: boolean;
+  /**
+   * What could not be read, each in the words of whatever refused.
+   *
+   * The point of the field: a manifest that is short says so and says why, rather
+   * than reading as a machine with less on it than it has.
+   */
+  unread: string[];
+}
+/**
+ * Something beneath the data location that the stack did not put there.
+ */
+export interface Foreign {
+  /**
+   * The directory it is in, relative to the data location — or the file itself,
+   * where it sits directly in the data location.
+   */
+  at: string;
+  /**
+   * What they occupy.
+   */
+  bytes: number;
+  /**
+   * How many files were found under it.
+   */
+  files: number;
+}
+/**
+ * One thing a removal reaches, said to be going or said to be kept.
+ */
+export interface Item {
+  /**
+   * What it occupies, where that is knowable. Absent for a container or a network,
+   * whose room is the image's rather than their own.
+   */
+  bytes?: number | null;
+  /**
+   * Why it is being kept rather than removed, where it is being kept.
+   *
+   * `None` is the ordinary case: this line is going. A reason here is the whole of
+   * how an image shared with another project, or a path this run could not
+   * confirm, stays on the list without being taken.
+   */
+  kept?: string | null;
+  /**
+   * What it is called — a container name, an image reference, or a full path.
+   */
+  name: string;
+  /**
+   * Whether it holds a credential, so a report can say what destroying it destroys.
+   */
+  secret: boolean;
+  /**
+   * Which of the four sorts of thing it is.
+   */
+  sort: "container" | "network" | "image" | "path";
+  /**
+   * What it is, in the operator's words.
+   */
+  what: string;
+}
+/**
+ * Something an uninstall leaves behind, and how to remove it by hand.
+ */
+export interface Outside {
+  /**
+   * How to remove it on this platform, as the operator would type or do it.
+   */
+  by_hand: string;
+  /**
+   * Whether this machine was found to have it.
+   *
+   * A survey that could not look says nothing was found rather than that nothing
+   * is there, which is why the entry is listed either way and this field carries
+   * the difference.
+   */
+  found: boolean;
+  /**
+   * What it is.
+   */
+  what: string;
+  /**
+   * Why it is not lemonfiber's to take away.
+   */
+  why: string;
+}
+/**
+ * Something a removal could not take.
+ */
+export interface UninstallLeft {
+  /**
+   * How to finish it by hand.
+   */
+  by_hand: string;
+  /**
+   * What is still there.
+   */
+  name: string;
+  /**
+   * What the machine said about it, verbatim.
+   */
+  why: string;
+}
+/**
+ * The payload.
+ */
 export interface UpgradeReport {
   /**
    * Whether the operator confirmed; without it nothing was triggered, only the
@@ -3954,11 +5791,17 @@ export interface Term1 {
 /** The envelope carrying `admission`. */
 export type AdmissionEnvelope = Contract["admission"];
 
+/** The envelope carrying `alerts`. */
+export type AlertsEnvelope = Contract["alerts"];
+
 /** The envelope carrying `archives`. */
 export type ArchivesEnvelope = Contract["archives"];
 
 /** The envelope carrying `backup`. */
 export type BackupEnvelope = Contract["backup"];
+
+/** The envelope carrying `bandwidth`. */
+export type BandwidthEnvelope = Contract["bandwidth"];
 
 /** The envelope carrying `bundle`. */
 export type BundleEnvelope = Contract["bundle"];
@@ -3968,6 +5811,9 @@ export type ClientsEnvelope = Contract["clients"];
 
 /** The envelope carrying `config`. */
 export type ConfigEnvelope = Contract["config"];
+
+/** The envelope carrying `credentials`. */
+export type CredentialsEnvelope = Contract["credentials"];
 
 /** The envelope carrying `dashboard`. */
 export type DashboardEnvelope = Contract["dashboard"];
@@ -3986,6 +5832,9 @@ export type FrontDoorEnvelope = Contract["front-door"];
 
 /** The envelope carrying `glossary`. */
 export type GlossaryEnvelope = Contract["glossary"];
+
+/** The envelope carrying `hosting`. */
+export type HostingEnvelope = Contract["hosting"];
 
 /** The envelope carrying `household`. */
 export type HouseholdEnvelope = Contract["household"];
@@ -4035,6 +5884,9 @@ export type SeedEnvelope = Contract["seed"];
 /** The envelope carrying `setup`. */
 export type SetupEnvelope = Contract["setup"];
 
+/** The envelope carrying `space`. */
+export type SpaceEnvelope = Contract["space"];
+
 /** The envelope carrying `start`. */
 export type StartEnvelope = Contract["start"];
 
@@ -4043,6 +5895,9 @@ export type StatusEnvelope = Contract["status"];
 
 /** The envelope carrying `step`. */
 export type StepEnvelope = Contract["step"];
+
+/** The envelope carrying `stop-seeding`. */
+export type StopSeedingEnvelope = Contract["stop-seeding"];
 
 /** The envelope carrying `stored`. */
 export type StoredEnvelope = Contract["stored"];
@@ -4055,6 +5910,9 @@ export type TraceEnvelope = Contract["trace"];
 
 /** The envelope carrying `undo`. */
 export type UndoEnvelope = Contract["undo"];
+
+/** The envelope carrying `uninstall`. */
+export type UninstallEnvelope = Contract["uninstall"];
 
 /** The envelope carrying `upgrade`. */
 export type UpgradeEnvelope = Contract["upgrade"];
@@ -4075,22 +5933,26 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "archives" | "backup" | "bundle" | "clients" | "config" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "household" | "invitation" | "job" | "lifecycle" | "log" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "reset" | "restore" | "seed" | "setup" | "start" | "status" | "step" | "stored" | "stuck" | "trace" | "undo" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "alerts" | "archives" | "backup" | "bandwidth" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "hosting" | "household" | "invitation" | "job" | "lifecycle" | "log" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
   "admission": AdmissionEnvelope;
+  "alerts": AlertsEnvelope;
   "archives": ArchivesEnvelope;
   "backup": BackupEnvelope;
+  "bandwidth": BandwidthEnvelope;
   "bundle": BundleEnvelope;
   "clients": ClientsEnvelope;
   "config": ConfigEnvelope;
+  "credentials": CredentialsEnvelope;
   "dashboard": DashboardEnvelope;
   "doctor": DoctorEnvelope;
   "error": ErrorEnvelope;
   "forms": FormsEnvelope;
   "front-door": FrontDoorEnvelope;
   "glossary": GlossaryEnvelope;
+  "hosting": HostingEnvelope;
   "household": HouseholdEnvelope;
   "invitation": InvitationEnvelope;
   "job": JobEnvelope;
@@ -4107,13 +5969,16 @@ export interface ByKind {
   "restore": RestoreEnvelope;
   "seed": SeedEnvelope;
   "setup": SetupEnvelope;
+  "space": SpaceEnvelope;
   "start": StartEnvelope;
   "status": StatusEnvelope;
   "step": StepEnvelope;
+  "stop-seeding": StopSeedingEnvelope;
   "stored": StoredEnvelope;
   "stuck": StuckEnvelope;
   "trace": TraceEnvelope;
   "undo": UndoEnvelope;
+  "uninstall": UninstallEnvelope;
   "upgrade": UpgradeEnvelope;
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
