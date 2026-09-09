@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: e6cd57b374cee20ba03feb8f18df4b1743056976  ·  api_version 1
+// Source: a21dad1cf2f016bfe8f8b426e0351736d7a1f691  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -401,6 +401,20 @@ export interface Contract {
      */
     api_version: number;
     data: Vocabulary;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  history: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: HistoryReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -827,6 +841,20 @@ export interface Contract {
      */
     api_version: number;
     data: UninstallUninstall;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  update: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: UpdateUpdateReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -3373,6 +3401,65 @@ export interface Term {
 /**
  * The payload.
  */
+export interface HistoryReport {
+  /**
+   * The changes, newest first.
+   */
+  changes: ChangeReport[];
+  /**
+   * How far back the record goes, in the operator's terms.
+   *
+   * Stated rather than left to be inferred from the oldest entry: a record that has
+   * been trimmed and one that has always been short look identical from the entries
+   * alone, and only one of them means something is missing.
+   */
+  horizon: string;
+}
+/**
+ * One change lemonfiber made, and whether it could be put back.
+ */
+export interface ChangeReport {
+  /**
+   * How many changes that one operation made, this one among them.
+   *
+   * An operation is the unit an operator agreed to, and undoing half of one leaves a
+   * machine in a state nobody chose — so what a single line would take with it is on
+   * the line rather than left to be counted off the list.
+   */
+  alongside: number;
+  /**
+   * When it was made.
+   */
+  at: string;
+  /**
+   * Why it could not go further, where it could not.
+   */
+  because?: string | null;
+  /**
+   * What it did, in the operator's terms.
+   */
+  did: string;
+  /**
+   * What to do instead, where there is something.
+   */
+  instead?: string | null;
+  /**
+   * The operation that made it — a seed, a reconfigure, an applied fix — so a
+   * history reads as what happened rather than as bare diffs.
+   */
+  operation: string;
+  /**
+   * How far it could be put back: `whole`, `partial`, or `none`.
+   */
+  reversal: string;
+  /**
+   * What it was made to.
+   */
+  target: string;
+}
+/**
+ * The payload.
+ */
 export interface HostingReport {
   /**
    * What is true of this manager and worth knowing before it is relied on.
@@ -4368,7 +4455,7 @@ export interface OutboundOutbound {
   /**
    * Which request this is.
    */
-  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household";
+  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates";
   /**
    * Exactly what travels in the request.
    */
@@ -6078,6 +6165,80 @@ export interface UninstallLeft {
 /**
  * The payload.
  */
+export interface UpdateUpdateReport {
+  /**
+   * What updating leaves alone, and what it needs afterwards.
+   */
+  afterwards: string;
+  /**
+   * The version the operator asked to move to, where they asked for one.
+   */
+  asked?: string | null;
+  /**
+   * Where the running binary is, with any link followed, or nothing where this
+   * machine would not say.
+   *
+   * The answer to which of several copies on a search path is the one that ran, so
+   * a version somebody quotes can be attributed to a file rather than to a name.
+   */
+  at?: string | null;
+  /**
+   * What a release brings besides the program, and when any of it is fetched.
+   */
+  carries: string;
+  /**
+   * Exactly what to type, where there is something exact to type.
+   */
+  command?: string | null;
+  /**
+   * Whether the version named can read the configuration on this machine.
+   *
+   * Only where a version was named, since it is the question a downgrade asks and
+   * nothing else does.
+   */
+  configuration?: string | null;
+  /**
+   * How this copy got onto the machine.
+   */
+  installed: "homebrew" | "scoop" | "winget" | "cargo" | "distribution" | "installer" | "elsewhere" | "untellable";
+  /**
+   * Why there is nothing exact to type, where there is not.
+   */
+  instead?: string | null;
+  /**
+   * The newest version released, where the check could read one.
+   */
+  offered?: string | null;
+  /**
+   * The tool that owns this copy, where one does.
+   */
+  owner?: string | null;
+  /**
+   * Whether the directory holding the running binary can be written to.
+   *
+   * Nothing where it was not asked, which is every copy a package manager owns —
+   * replacing one of those is that tool's business and not this one's. Asked by
+   * trying rather than by reading permission bits, and reported rather than acted
+   * on: a copy this operator cannot replace is a thing to say with the path, never
+   * a reason to go looking for a way to become somebody else.
+   */
+  replaceable?: boolean | null;
+  /**
+   * The version running now.
+   */
+  running: string;
+  /**
+   * Which of the states this is.
+   */
+  standing: "current" | "update-available" | "managed-externally" | "check-failed";
+  /**
+   * Why availability could not be told, where it could not.
+   */
+  untold?: string | null;
+}
+/**
+ * The payload.
+ */
 export interface UpgradeReport {
   /**
    * Whether the operator confirmed; without it nothing was triggered, only the
@@ -6422,6 +6583,9 @@ export type FrontDoorEnvelope = Contract["front-door"];
 /** The envelope carrying `glossary`. */
 export type GlossaryEnvelope = Contract["glossary"];
 
+/** The envelope carrying `history`. */
+export type HistoryEnvelope = Contract["history"];
+
 /** The envelope carrying `hosting`. */
 export type HostingEnvelope = Contract["hosting"];
 
@@ -6512,6 +6676,9 @@ export type UndoEnvelope = Contract["undo"];
 /** The envelope carrying `uninstall`. */
 export type UninstallEnvelope = Contract["uninstall"];
 
+/** The envelope carrying `update`. */
+export type UpdateEnvelope = Contract["update"];
+
 /** The envelope carrying `upgrade`. */
 export type UpgradeEnvelope = Contract["upgrade"];
 
@@ -6531,7 +6698,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -6552,6 +6719,7 @@ export interface ByKind {
   "forms": FormsEnvelope;
   "front-door": FrontDoorEnvelope;
   "glossary": GlossaryEnvelope;
+  "history": HistoryEnvelope;
   "hosting": HostingEnvelope;
   "household": HouseholdEnvelope;
   "import": ImportEnvelope;
@@ -6582,6 +6750,7 @@ export interface ByKind {
   "trace": TraceEnvelope;
   "undo": UndoEnvelope;
   "uninstall": UninstallEnvelope;
+  "update": UpdateEnvelope;
   "upgrade": UpgradeEnvelope;
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
