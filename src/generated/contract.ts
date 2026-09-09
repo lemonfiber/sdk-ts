@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 20fdb305796624ba209c78ef8de2b631990d442c  ·  api_version 1
+// Source: e6cd57b374cee20ba03feb8f18df4b1743056976  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -18,6 +18,44 @@ export type Pulling = "fetching" | "stopped";
  * Where a month stands against a declared cap.
  */
 export type Reached = "within" | "warning" | "exceeded";
+/**
+ * What proving a credential against its live service established — never the
+ * input, only the outcome.
+ *
+ * Read back as well as built. A surface that is not in this process asks setup to
+ * prove a credential and is told what came of it, so the four outcomes are tagged
+ * by name rather than distinguished by which field is present — the same reason an
+ * answer carries the step it belongs to.
+ */
+export type Validation =
+  | {
+      /**
+       * The observed fact — what the service did, not that it merely answered.
+       */
+      observed: string;
+      outcome: "valid";
+    }
+  | {
+      /**
+       * What the service said, in terms the operator can act on.
+       */
+      detail: string;
+      outcome: "rejected";
+    }
+  | {
+      /**
+       * Why nothing usable came back.
+       */
+      detail: string;
+      outcome: "unreachable";
+    }
+  | {
+      /**
+       * What it can no longer do, and why where the service says.
+       */
+      detail: string;
+      outcome: "degraded";
+    };
 /**
  * What a service published to the local network is to the people in the house.
  */
@@ -105,44 +143,6 @@ export type Next = "more-content" | "household" | "client-apps";
  */
 export type Link = "hardlinked" | "copied";
 /**
- * What proving a credential against its live service established — never the
- * input, only the outcome.
- *
- * Read back as well as built. A surface that is not in this process asks setup to
- * prove a credential and is told what came of it, so the four outcomes are tagged
- * by name rather than distinguished by which field is present — the same reason an
- * answer carries the step it belongs to.
- */
-export type Validation =
-  | {
-      /**
-       * The observed fact — what the service did, not that it merely answered.
-       */
-      observed: string;
-      outcome: "valid";
-    }
-  | {
-      /**
-       * What the service said, in terms the operator can act on.
-       */
-      detail: string;
-      outcome: "rejected";
-    }
-  | {
-      /**
-       * Why nothing usable came back.
-       */
-      detail: string;
-      outcome: "unreachable";
-    }
-  | {
-      /**
-       * What it can no longer do, and why where the service says.
-       */
-      detail: string;
-      outcome: "degraded";
-    };
-/**
  * A step of setup, in the order the operator meets it.
  *
  * Some steps only inform (they detect and state, and the operator acknowledges);
@@ -177,6 +177,20 @@ export interface Contract {
      */
     api_version: number;
     data: Admitted;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  adoption: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: AdoptReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -233,6 +247,20 @@ export interface Contract {
      */
     api_version: number;
     data: BandwidthSharing;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  beside: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: BesideReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -409,6 +437,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  import: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: ImportReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   invitation: {
     /**
      * The output contract's version.
@@ -457,6 +499,20 @@ export interface Contract {
      */
     api_version: number;
     data: LogLine;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  migration: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: MigrationReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -558,6 +614,20 @@ export interface Contract {
      */
     api_version: number;
     data: RepairReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  replacement: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: ReplaceReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -859,6 +929,66 @@ export interface Admitted {
    * When it stops being one, written as every other instant this product writes.
    */
   until: string;
+}
+/**
+ * The payload.
+ */
+export interface AdoptReport {
+  /**
+   * The host paths those services keep their data in, so a backup can be taken of
+   * exactly the right thing.
+   */
+  back_up: string[];
+  /**
+   * The project lemonfiber would manage, where exactly one could be adopted.
+   */
+  project?: string | null;
+  /**
+   * Why nothing was done, where nothing was.
+   */
+  refusal?: string | null;
+  /**
+   * Where the act stands.
+   */
+  stance: "unchanged" | "pending" | "blocked" | "applied";
+  /**
+   * The services whose databases a newer version would upgrade, and whose data
+   * therefore has to be backed up before anything opens it.
+   */
+  upgrades: CarryingReport[];
+}
+/**
+ * What adopting one existing service would come to.
+ */
+export interface CarryingReport {
+  /**
+   * Whether its database must be backed up before lemonfiber opens it.
+   */
+  backup_first: boolean;
+  /**
+   * What that means for this service's data, in the operator's terms.
+   */
+  because: string;
+  /**
+   * The version standing here now.
+   */
+  existing: string;
+  /**
+   * The version lemonfiber pins.
+   */
+  ours: string;
+  /**
+   * Whether lemonfiber will not do this at all.
+   */
+  refused: boolean;
+  /**
+   * The service, by the name lemonfiber runs it under.
+   */
+  service: string;
+  /**
+   * Which of the two is the later, in one word.
+   */
+  verdict: string;
 }
 /**
  * The payload.
@@ -1272,6 +1402,44 @@ export interface BandwidthReading1 {
 /**
  * The payload.
  */
+export interface BesideReport {
+  /**
+   * Where each service would listen instead, lowest original port first.
+   */
+  ports: MovedReport[];
+  /**
+   * Why nothing was written, where nothing was.
+   */
+  refusal?: string | null;
+  /**
+   * Where the act stands.
+   */
+  stance: "unchanged" | "pending" | "blocked" | "applied";
+  /**
+   * Where the Compose file that says so was written.
+   */
+  written?: string | null;
+}
+/**
+ * Where one service would listen to run beside what is already here.
+ */
+export interface MovedReport {
+  /**
+   * The port it would ordinarily take.
+   */
+  from: number;
+  /**
+   * The lemonfiber service being moved.
+   */
+  service: string;
+  /**
+   * The port it would take instead.
+   */
+  to: number;
+}
+/**
+ * The payload.
+ */
 export interface Bundle {
   /**
    * How large the file is, or would be.
@@ -1474,10 +1642,11 @@ export interface ConfigReport {
    */
   changed: boolean;
   /**
-   * What this change costs, where making it decided something with a
-   * consequence — turning port forwarding off, or moving to a provider while it
-   * is off. Absent for every other change, and for a rehearsal, which decided
-   * nothing.
+   * What this change costs, where making it decides something with a
+   * consequence — moving the library, turning port forwarding off, or naming a
+   * front door. Stated for a change that is only staged as well as one that
+   * landed, since the moment before it happens is the moment it is worth reading.
+   * Absent for a read, and for a change to a setting nobody catalogued a cost for.
    */
   consequence?: string | null;
   /**
@@ -1486,9 +1655,186 @@ export interface ConfigReport {
    */
   rehearsed: boolean;
   /**
+   * The difference between the configuration in force and the one proposed, and
+   * where that proposal stands: applied, staged for a confirmation, turned away,
+   * or nothing to do. Absent for a read, which proposes nothing.
+   */
+  review?: Review | null;
+  /**
    * The settings asked about — one for a lookup, all of them for a listing.
    */
   settings: SettingReport[];
+}
+/**
+ * A proposed change, read against what is in force, and where it stands.
+ */
+export interface Review {
+  change: Change;
+  findings?: Findings;
+  /**
+   * What proving the replacement credential came to, where one was proven.
+   *
+   * A replacement is proven against its live service before the credential it
+   * replaces is discarded, so this is present for exactly those settings and
+   * absent everywhere else.
+   */
+  proof?: Validation | null;
+  /**
+   * Why nothing was written, where nothing was and the reason is not simply that
+   * somebody has yet to say yes.
+   */
+  refusal?: string | null;
+  /**
+   * Where the proposal stands.
+   */
+  stance: "unchanged" | "pending" | "blocked" | "applied";
+}
+/**
+ * The difference, as it would be applied.
+ */
+export interface Change {
+  /**
+   * Whether applying it is cheap or consequential.
+   */
+  cost: "cheap" | "consequential";
+  /**
+   * What it holds now, withheld where it is a credential, and absent where the
+   * setting holds nothing yet.
+   */
+  from?: string | null;
+  /**
+   * The setting the change names.
+   */
+  key: string;
+  /**
+   * What it would hold, withheld the same way.
+   */
+  to: string;
+}
+/**
+ * What the change comes to on this machine, beyond the value it changes.
+ *
+ * Filled by whoever went and asked — the services where they file, the clients
+ * what they are fetching — and empty on every change that comes to nothing
+ * beyond its value. Carried on a staged proposal as well as an applied one: a
+ * review that withheld this until after the yes would be asking for a yes to
+ * something unstated.
+ */
+export interface Findings {
+  /**
+   * What is still coming down, where a reduction would interrupt it.
+   */
+  active: Active[];
+  /**
+   * The hand-edit found in the configuration file, where one was found.
+   */
+  edited?: Edited | null;
+  /**
+   * What this change leaves exactly as it is, said in full — because an operator
+   * dropping a way of downloading is weighing whether they lose what they built
+   * with it.
+   */
+  keeps: string[];
+  /**
+   * The library paths the services hold, and what moving the data location does
+   * to each. Empty for every change that does not move it.
+   */
+  library: LibraryPath[];
+  /**
+   * What this change newly asks the operator for, in the order they meet it.
+   */
+  opens: Opening[];
+  /**
+   * What this change stops running, by service name.
+   */
+  stops: string[];
+}
+/**
+ * One download still coming down when a reduction was asked for.
+ */
+export interface Active {
+  /**
+   * What it is, as the client names it.
+   */
+  name: string;
+  /**
+   * How far along, from zero to a hundred.
+   */
+  progress: number;
+  /**
+   * Which client has it.
+   */
+  protocol: string;
+}
+/**
+ * A setting changed outside lemonfiber since it last wrote one.
+ *
+ * Both sides, so the operator chooses between them rather than being told one of
+ * them lost. Values a listing withholds are withheld here too — a report a script
+ * can log must not be the one place a password is printed.
+ */
+export interface Edited {
+  /**
+   * What the file holds now.
+   */
+  found: string;
+  /**
+   * Whether either value was withheld rather than shown.
+   */
+  secret: boolean;
+  /**
+   * What lemonfiber last wrote there.
+   */
+  wrote: string;
+}
+/**
+ * One library path a service files into, and what moving the data location does
+ * to it.
+ */
+export interface LibraryPath {
+  /**
+   * Why it does or does not, in the operator's terms.
+   */
+  because: string;
+  /**
+   * Whether the library at this path survives the move.
+   */
+  carried: boolean;
+  /**
+   * The host directory it would resolve to after the move, where the move can
+   * resolve it at all.
+   */
+  host?: string | null;
+  /**
+   * The path as that service holds it, which is a path inside its container.
+   */
+  path: string;
+  /**
+   * The service holding it.
+   */
+  service: string;
+}
+/**
+ * One thing a way of downloading newly asks the operator for.
+ *
+ * What is opened and nothing beside it: an operator adding Usenet is shown the
+ * Usenet provider and the settings its login is kept in, and never the tunnel,
+ * which they neither need nor asked about.
+ */
+export interface Opening {
+  /**
+   * Why this protocol needs it.
+   */
+  because: string;
+  /**
+   * The setting its answer is kept in, where it is kept in one. Absent for an
+   * account the operator has to go and obtain, which no setting holds.
+   */
+  setting?: string | null;
+  /**
+   * What it is, in the operator's terms.
+   */
+  what: string;
 }
 /**
  * One setting, as it is safe to show.
@@ -3386,6 +3732,65 @@ export interface HouseholdMemberRequest {
 /**
  * The payload.
  */
+export interface ImportReport {
+  /**
+   * What was carried across.
+   */
+  carried: RecordReport[];
+  /**
+   * What could not be carried, and why.
+   */
+  not_carried: UnsupportedReport[];
+  /**
+   * The project the records were read from.
+   */
+  project?: string | null;
+  /**
+   * Why nothing was carried, where nothing was.
+   */
+  refusal?: string | null;
+  /**
+   * Where the act stands.
+   */
+  stance: "unchanged" | "pending" | "blocked" | "applied";
+  /**
+   * What would be, where nothing has been yet.
+   */
+  would_carry: RecordReport[];
+}
+/**
+ * One record carried across, or that would be.
+ */
+export interface RecordReport {
+  /**
+   * What kind of record it is, in the plural a person reads.
+   */
+  kind: string;
+  /**
+   * What it is called.
+   */
+  name: string;
+  /**
+   * The service it belongs to.
+   */
+  service: string;
+}
+/**
+ * Something found that lemonfiber cannot take over, named rather than passed over.
+ */
+export interface UnsupportedReport {
+  /**
+   * Why it cannot be adopted, in the operator's terms.
+   */
+  because: string;
+  /**
+   * What was found, by the name the engine gives it.
+   */
+  what: string;
+}
+/**
+ * The payload.
+ */
 export interface Invitation {
   /**
    * The one address to send them.
@@ -3732,6 +4137,155 @@ export interface LogLine {
    * Which stream it arrived on.
    */
   stream: "stdout" | "stderr";
+}
+/**
+ * The payload.
+ */
+export interface MigrationReport {
+  /**
+   * Where each service would listen to run beside the existing setup.
+   */
+  beside: MovedReport[];
+  /**
+   * What adopting each recognised service would come to, by service name.
+   */
+  carrying: CarryingReport[];
+  /**
+   * Ports wanted by lemonfiber that an existing service already holds.
+   */
+  conflicts: ConflictReport[];
+  /**
+   * What the existing layout costs where it cannot hold a hardlink, absent where
+   * it can.
+   */
+  linking?: LinkingReport | null;
+  /**
+   * What may be done about what was found, least destructive first.
+   */
+  modes: ModeReport[];
+  /**
+   * What no migration carries across, whatever mode it runs in.
+   */
+  not_carried: UnsupportedReport[];
+  /**
+   * Whether the engine answered at all.
+   *
+   * False means the survey found nothing because it could not look, which is a
+   * different answer from finding nothing, and the only one that must never be
+   * read as an empty machine.
+   */
+  read: boolean;
+  /**
+   * Existing projects, by project name.
+   */
+  standing: StandingReport[];
+  /**
+   * What was found and cannot be adopted.
+   */
+  unsupported: UnsupportedReport[];
+}
+/**
+ * A port lemonfiber wants for a service that something else already answers on.
+ */
+export interface ConflictReport {
+  /**
+   * The project already holding it.
+   */
+  held_by: string;
+  /**
+   * The host port both want.
+   */
+  port: number;
+  /**
+   * The lemonfiber service that would publish it.
+   */
+  wanted_by: string;
+}
+/**
+ * What an existing layout costs, where it cannot hold a hardlink.
+ */
+export interface LinkingReport {
+  /**
+   * Why they cannot, naming the filesystems it is about.
+   */
+  because: string;
+  /**
+   * What that costs, in room rather than in adjectives.
+   */
+  cost: string;
+  /**
+   * The filesystems the existing setup keeps its data on.
+   */
+  filesystems: string[];
+  /**
+   * Whether lemonfiber will do it. Always false: the layout and the library in it
+   * are the operator's, and correctness does not outrank their data.
+   */
+  forced: boolean;
+  /**
+   * Whether imports can be hardlinks across this layout. False whenever this is
+   * reported at all, since a layout that links is not reported.
+   */
+  links: boolean;
+  /**
+   * What would fix it, offered.
+   */
+  remedy: string;
+}
+/**
+ * One thing an operator may do about a setup already here.
+ */
+export interface ModeReport {
+  /**
+   * Whether carrying it out stops or alters what is already running.
+   */
+  disturbs: boolean;
+  /**
+   * The word an operator types for it.
+   */
+  mode: string;
+  /**
+   * Whether it is offered already chosen. Only adopting is.
+   */
+  preselected: boolean;
+  /**
+   * What choosing it would come to, in the operator's terms.
+   */
+  what: string;
+}
+/**
+ * One Compose project on this machine that is not lemonfiber's.
+ */
+export interface StandingReport {
+  /**
+   * The Compose project name.
+   */
+  project: string;
+  /**
+   * Its containers, by service name.
+   */
+  services: OccupantReport[];
+}
+/**
+ * One container of somebody else's stack, as the engine reports it.
+ */
+export interface OccupantReport {
+  /**
+   * Whether lemonfiber knows this service and could take it over as it stands.
+   */
+  adoptable: boolean;
+  /**
+   * Every host port it publishes, lowest first.
+   */
+  ports: number[];
+  /**
+   * Whether it is running now, as against present but stopped.
+   */
+  running: boolean;
+  /**
+   * The Compose service name it answers to.
+   */
+  service: string;
 }
 /**
  * The payload.
@@ -4153,6 +4707,35 @@ export interface Repair1 {
    * know which kind they are agreeing to.
    */
   reversible: boolean;
+}
+/**
+ * The payload.
+ */
+export interface ReplaceReport {
+  /**
+   * The project that would be stood in place of.
+   */
+  project?: string | null;
+  /**
+   * Why nothing was stopped, where nothing was.
+   */
+  refusal?: string | null;
+  /**
+   * Where the act stands.
+   */
+  stance: "unchanged" | "pending" | "blocked" | "applied";
+  /**
+   * The services that would not stop and are still up.
+   */
+  still_running: string[];
+  /**
+   * The services that were stopped.
+   */
+  stopped: string[];
+  /**
+   * The services that would be stopped, by name.
+   */
+  would_stop: string[];
 }
 /**
  * The payload.
@@ -5791,6 +6374,9 @@ export interface Term1 {
 /** The envelope carrying `admission`. */
 export type AdmissionEnvelope = Contract["admission"];
 
+/** The envelope carrying `adoption`. */
+export type AdoptionEnvelope = Contract["adoption"];
+
 /** The envelope carrying `alerts`. */
 export type AlertsEnvelope = Contract["alerts"];
 
@@ -5802,6 +6388,9 @@ export type BackupEnvelope = Contract["backup"];
 
 /** The envelope carrying `bandwidth`. */
 export type BandwidthEnvelope = Contract["bandwidth"];
+
+/** The envelope carrying `beside`. */
+export type BesideEnvelope = Contract["beside"];
 
 /** The envelope carrying `bundle`. */
 export type BundleEnvelope = Contract["bundle"];
@@ -5839,6 +6428,9 @@ export type HostingEnvelope = Contract["hosting"];
 /** The envelope carrying `household`. */
 export type HouseholdEnvelope = Contract["household"];
 
+/** The envelope carrying `import`. */
+export type ImportEnvelope = Contract["import"];
+
 /** The envelope carrying `invitation`. */
 export type InvitationEnvelope = Contract["invitation"];
 
@@ -5850,6 +6442,9 @@ export type LifecycleEnvelope = Contract["lifecycle"];
 
 /** The envelope carrying `log`. */
 export type LogEnvelope = Contract["log"];
+
+/** The envelope carrying `migration`. */
+export type MigrationEnvelope = Contract["migration"];
 
 /** The envelope carrying `music`. */
 export type MusicEnvelope = Contract["music"];
@@ -5871,6 +6466,9 @@ export type RemovalEnvelope = Contract["removal"];
 
 /** The envelope carrying `repair`. */
 export type RepairEnvelope = Contract["repair"];
+
+/** The envelope carrying `replacement`. */
+export type ReplacementEnvelope = Contract["replacement"];
 
 /** The envelope carrying `reset`. */
 export type ResetEnvelope = Contract["reset"];
@@ -5933,15 +6531,17 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "alerts" | "archives" | "backup" | "bandwidth" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "hosting" | "household" | "invitation" | "job" | "lifecycle" | "log" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
   "admission": AdmissionEnvelope;
+  "adoption": AdoptionEnvelope;
   "alerts": AlertsEnvelope;
   "archives": ArchivesEnvelope;
   "backup": BackupEnvelope;
   "bandwidth": BandwidthEnvelope;
+  "beside": BesideEnvelope;
   "bundle": BundleEnvelope;
   "clients": ClientsEnvelope;
   "config": ConfigEnvelope;
@@ -5954,10 +6554,12 @@ export interface ByKind {
   "glossary": GlossaryEnvelope;
   "hosting": HostingEnvelope;
   "household": HouseholdEnvelope;
+  "import": ImportEnvelope;
   "invitation": InvitationEnvelope;
   "job": JobEnvelope;
   "lifecycle": LifecycleEnvelope;
   "log": LogEnvelope;
+  "migration": MigrationEnvelope;
   "music": MusicEnvelope;
   "outbound": OutboundEnvelope;
   "preview": PreviewEnvelope;
@@ -5965,6 +6567,7 @@ export interface ByKind {
   "quality": QualityEnvelope;
   "removal": RemovalEnvelope;
   "repair": RepairEnvelope;
+  "replacement": ReplacementEnvelope;
   "reset": ResetEnvelope;
   "restore": RestoreEnvelope;
   "seed": SeedEnvelope;
