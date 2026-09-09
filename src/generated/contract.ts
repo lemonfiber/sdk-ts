@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: a21dad1cf2f016bfe8f8b426e0351736d7a1f691  ·  api_version 1
+// Source: 23e2c42506e8210fb26c35c56448b098b185ebd6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -302,7 +302,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: ConfigReport;
+    data: ConfigConfigReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -470,7 +470,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: Invitation;
+    data: InvitationInvitation;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -692,6 +692,20 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  "self-update": {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: SelfUpdateUpdateReport;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   setup: {
     /**
      * The output contract's version.
@@ -826,7 +840,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: Reversal;
+    data: UndoReversal;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -854,7 +868,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: UpdateUpdateReport;
+    data: UpdateReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -1664,7 +1678,7 @@ export interface Cause {
 /**
  * The payload.
  */
-export interface ConfigReport {
+export interface ConfigConfigReport {
   /**
    * Whether this command changed, or would change, a setting.
    */
@@ -1687,7 +1701,7 @@ export interface ConfigReport {
    * where that proposal stands: applied, staged for a confirmation, turned away,
    * or nothing to do. Absent for a read, which proposes nothing.
    */
-  review?: Review | null;
+  review?: ConfigReview | null;
   /**
    * The settings asked about — one for a lookup, all of them for a listing.
    */
@@ -1696,8 +1710,8 @@ export interface ConfigReport {
 /**
  * A proposed change, read against what is in force, and where it stands.
  */
-export interface Review {
-  change: Change;
+export interface ConfigReview {
+  change: ConfigChange;
   findings?: Findings;
   /**
    * What proving the replacement credential came to, where one was proven.
@@ -1720,7 +1734,7 @@ export interface Review {
 /**
  * The difference, as it would be applied.
  */
-export interface Change {
+export interface ConfigChange {
   /**
    * Whether applying it is cheap or consequential.
    */
@@ -3878,7 +3892,7 @@ export interface UnsupportedReport {
 /**
  * The payload.
  */
-export interface Invitation {
+export interface InvitationInvitation {
   /**
    * The one address to send them.
    *
@@ -3891,7 +3905,7 @@ export interface Invitation {
   /**
    * What this offer wrote on the account, where it wrote anything.
    */
-  applied?: Applied | null;
+  applied?: InvitationApplied | null;
   /**
    * What is worth knowing about the address itself, where anything is.
    *
@@ -3958,7 +3972,7 @@ export interface Invitation {
  * than in the invitation's own spelling: one setting named two ways across two shapes
  * is two shapes a client has to be told are about the same thing.
  */
-export interface Applied {
+export interface InvitationApplied {
   /**
    * What a limit here is, and what it is not.
    *
@@ -5073,6 +5087,80 @@ export interface SeedWiring {
 /**
  * The payload.
  */
+export interface SelfUpdateUpdateReport {
+  /**
+   * What updating leaves alone, and what it needs afterwards.
+   */
+  afterwards: string;
+  /**
+   * The version the operator asked to move to, where they asked for one.
+   */
+  asked?: string | null;
+  /**
+   * Where the running binary is, with any link followed, or nothing where this
+   * machine would not say.
+   *
+   * The answer to which of several copies on a search path is the one that ran, so
+   * a version somebody quotes can be attributed to a file rather than to a name.
+   */
+  at?: string | null;
+  /**
+   * What a release brings besides the program, and when any of it is fetched.
+   */
+  carries: string;
+  /**
+   * Exactly what to type, where there is something exact to type.
+   */
+  command?: string | null;
+  /**
+   * Whether the version named can read the configuration on this machine.
+   *
+   * Only where a version was named, since it is the question a downgrade asks and
+   * nothing else does.
+   */
+  configuration?: string | null;
+  /**
+   * How this copy got onto the machine.
+   */
+  installed: "homebrew" | "scoop" | "winget" | "cargo" | "distribution" | "installer" | "elsewhere" | "untellable";
+  /**
+   * Why there is nothing exact to type, where there is not.
+   */
+  instead?: string | null;
+  /**
+   * The newest version released, where the check could read one.
+   */
+  offered?: string | null;
+  /**
+   * The tool that owns this copy, where one does.
+   */
+  owner?: string | null;
+  /**
+   * Whether the directory holding the running binary can be written to.
+   *
+   * Nothing where it was not asked, which is every copy a package manager owns —
+   * replacing one of those is that tool's business and not this one's. Asked by
+   * trying rather than by reading permission bits, and reported rather than acted
+   * on: a copy this operator cannot replace is a thing to say with the path, never
+   * a reason to go looking for a way to become somebody else.
+   */
+  replaceable?: boolean | null;
+  /**
+   * The version running now.
+   */
+  running: string;
+  /**
+   * Which of the states this is.
+   */
+  standing: "current" | "update-available" | "managed-externally" | "check-failed";
+  /**
+   * Why availability could not be told, where it could not.
+   */
+  untold?: string | null;
+}
+/**
+ * The payload.
+ */
 export interface SetupReport {
   /**
    * Where the library was put, where a location was chosen.
@@ -5864,7 +5952,7 @@ export interface TraceStage {
 /**
  * The payload.
  */
-export interface Reversal {
+export interface UndoReversal {
   /**
    * What was put back, in the order it was.
    */
@@ -6165,76 +6253,103 @@ export interface UninstallLeft {
 /**
  * The payload.
  */
-export interface UpdateUpdateReport {
+export interface UpdateReport {
   /**
-   * What updating leaves alone, and what it needs afterwards.
+   * What became of each service the run reached, in the order it reached them.
    */
-  afterwards: string;
+  applied: UpdateApplied[];
   /**
-   * The version the operator asked to move to, where they asked for one.
+   * Where the backup taken before anything moved was written.
    */
-  asked?: string | null;
+  backup?: string | null;
   /**
-   * Where the running binary is, with any link followed, or nothing where this
-   * machine would not say.
-   *
-   * The answer to which of several copies on a search path is the one that ran, so
-   * a version somebody quotes can be attributed to a file rather than to a name.
+   * What would move, and what taking each step means.
    */
-  at?: string | null;
+  changes: UpdateChange[];
   /**
-   * What a release brings besides the program, and when any of it is fetched.
+   * Whether the steps were agreed to, or only shown.
    */
-  carries: string;
+  confirmed: boolean;
   /**
-   * Exactly what to type, where there is something exact to type.
+   * Why the run stopped where it did, where it stopped early.
    */
-  command?: string | null;
+  halted?: string | null;
   /**
-   * Whether the version named can read the configuration on this machine.
-   *
-   * Only where a version was named, since it is the question a downgrade asks and
-   * nothing else does.
+   * What the download clients are still working on, named so an operator can
+   * tell whether the thing they have been waiting for is among them.
    */
-  configuration?: string | null;
+  in_flight: string[];
   /**
-   * How this copy got onto the machine.
+   * Stack files the operator had edited, left as they set them rather than
+   * overwritten with this build's own, each with the change that was held back.
    */
-  installed: "homebrew" | "scoop" | "winget" | "cargo" | "distribution" | "installer" | "elsewhere" | "untellable";
+  stack_edits: StackEdit[];
   /**
-   * Why there is nothing exact to type, where there is not.
+   * The one word the run comes to.
    */
-  instead?: string | null;
+  state: "current" | "updates-available" | "updated" | "partial" | "failed";
+}
+/**
+ * What one service's update came to.
+ */
+export interface UpdateApplied {
   /**
-   * The newest version released, where the check could read one.
+   * What went wrong, where anything did.
    */
-  offered?: string | null;
+  detail?: string | null;
   /**
-   * The tool that owns this copy, where one does.
+   * How it ended.
    */
-  owner?: string | null;
+  ending: "updated" | "not-fetched" | "not-started" | "not-reached";
   /**
-   * Whether the directory holding the running binary can be written to.
-   *
-   * Nothing where it was not asked, which is every copy a package manager owns —
-   * replacing one of those is that tool's business and not this one's. Asked by
-   * trying rather than by reading permission bits, and reported rather than acted
-   * on: a copy this operator cannot replace is a thing to say with the path, never
-   * a reason to go looking for a way to become somebody else.
+   * The version it was standing on before the run.
    */
-  replaceable?: boolean | null;
+  from: string;
   /**
-   * The version running now.
+   * How it could be put back, given how it ended.
    */
-  running: string;
+  reversal: "rollback" | "restore";
   /**
-   * Which of the states this is.
+   * The service it is about.
    */
-  standing: "current" | "update-available" | "managed-externally" | "check-failed";
+  service: string;
   /**
-   * Why availability could not be told, where it could not.
+   * The version the run was moving it to.
    */
-  untold?: string | null;
+  to: string;
+}
+/**
+ * What updating one service would change.
+ */
+export interface UpdateChange {
+  /**
+   * What the step means, in the words an operator decides on.
+   */
+  because: string;
+  /**
+   * The version it is standing on now.
+   */
+  current: string;
+  /**
+   * Whether taking it is a step nothing walks back.
+   */
+  irreversible: boolean;
+  /**
+   * How large the step between them is.
+   */
+  jump: "major" | "minor" | "patch" | "untellable";
+  /**
+   * Whether lemonfiber refuses to take it at all.
+   */
+  refused: boolean;
+  /**
+   * The service, by its manifest id, which is also its Compose service name.
+   */
+  service: string;
+  /**
+   * The version this build pins for it.
+   */
+  target: string;
 }
 /**
  * The payload.
@@ -6643,6 +6758,9 @@ export type RestoreEnvelope = Contract["restore"];
 /** The envelope carrying `seed`. */
 export type SeedEnvelope = Contract["seed"];
 
+/** The envelope carrying `self-update`. */
+export type SelfUpdateEnvelope = Contract["self-update"];
+
 /** The envelope carrying `setup`. */
 export type SetupEnvelope = Contract["setup"];
 
@@ -6698,7 +6816,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -6739,6 +6857,7 @@ export interface ByKind {
   "reset": ResetEnvelope;
   "restore": RestoreEnvelope;
   "seed": SeedEnvelope;
+  "self-update": SelfUpdateEnvelope;
   "setup": SetupEnvelope;
   "space": SpaceEnvelope;
   "start": StartEnvelope;
