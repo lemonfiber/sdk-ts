@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 23e2c42506e8210fb26c35c56448b098b185ebd6  ·  api_version 1
+// Source: d4f5fc4840b7ef7b4e6218be55f451d158b404fd  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5954,9 +5954,31 @@ export interface TraceStage {
  */
 export interface UndoReversal {
   /**
+   * What was not put back, each with the reason it was not.
+   *
+   * A reversal an operator asked for by name has to say what it did *not* do. Five
+   * changes asked back and three carried out is a machine in a state nobody has been
+   * told about, and "some of it worked" is the sentence that makes somebody go
+   * looking by hand. Empty where everything went back, which is the common case.
+   */
+  left: UndoLeft[];
+  /**
    * What was put back, in the order it was.
    */
   reversed: Undo[];
+}
+/**
+ * One change a reversal did not put back, and why it did not.
+ */
+export interface UndoLeft {
+  /**
+   * Why it is still standing, in the operator's terms.
+   */
+  because: string;
+  /**
+   * What the change was against — a service, or lemonfiber's own environment file.
+   */
+  target: string;
 }
 /**
  * A single reversal, for the surface to carry out.
@@ -6271,7 +6293,14 @@ export interface UpdateReport {
    */
   confirmed: boolean;
   /**
-   * Why the run stopped where it did, where it stopped early.
+   * Why the stack is not as the run found it, where it is not.
+   *
+   * Two runs end that way and an operator has the same thing to do about either:
+   * one that met a service which would not come back and stopped there, and one
+   * where every step succeeded and the stack would not start again afterwards.
+   * The second is not a failure of the update — `state` still says `Updated`,
+   * because it is — but the stack came down for the capture and something has to
+   * say that it is still down.
    */
   halted?: string | null;
   /**
