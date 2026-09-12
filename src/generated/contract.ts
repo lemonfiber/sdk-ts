@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 55c09e73138dab5c73fab0b46c1a2718d637b208  ·  api_version 1
+// Source: bf548851539b7ffcd1aaba4b5eb6f4de7a361021  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -6085,6 +6085,18 @@ export interface Undo {
          * The path to remove.
          */
         path: string;
+      }
+    | {
+        /**
+         * The version this run moved it to, which has to still be the one running
+         * for putting the old one back to be putting anything back.
+         */
+        current: string;
+        does: "repin";
+        /**
+         * The version to put back.
+         */
+        previous: string;
       }
     | {
         does: "reconfigure";
