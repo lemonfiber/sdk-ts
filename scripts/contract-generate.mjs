@@ -104,82 +104,7 @@ const parts = [
   "",
 ];
 
-/** Where a definition is pointed at from inside a schema. */
-const POINTS_AT = "#/$defs/";
-
-/** Every definition a schema reaches, however deeply. */
-function* reaches(node) {
-  if (Array.isArray(node)) {
-    for (const item of node) yield* reaches(item);
-    return;
-  }
-  if (node === null || typeof node !== "object") return;
-  for (const [key, value] of Object.entries(node)) {
-    if (key === "$ref" && typeof value === "string" && value.startsWith(POINTS_AT)) {
-      yield value.slice(POINTS_AT.length);
-    } else {
-      yield* reaches(value);
-    }
-  }
-}
-
-/** The same schema with the named definitions pointed at under new names. */
-const renamed = (node, naming) => {
-  if (Array.isArray(node)) return node.map((item) => renamed(item, naming));
-  if (node === null || typeof node !== "object") return node;
-  return Object.fromEntries(
-    Object.entries(node).map(([key, value]) => {
-      if (key === "$ref" && typeof value === "string" && value.startsWith(POINTS_AT)) {
-        const to = naming.get(value.slice(POINTS_AT.length));
-        return [key, to === undefined ? value : `${POINTS_AT}${to}`];
-      }
-      return [key, renamed(value, naming)];
-    }),
-  );
-};
-
 const definitionsOf = (kind) => artefact.kinds[kind].$defs ?? {};
-
-/**
- * Which definitions cannot be shared between kinds.
- *
- * Most can: `Remedy` means the same thing wherever it appears, so one
- * declaration serves every kind that carries it. A few do not — `State` is five
- * different shapes across five kinds — and those must be kept apart or one kind
- * silently gets another's.
- *
- * A definition that *reaches* one of those is in the same position: its own
- * shape looks identical across kinds because the pointer reads the same, while
- * what it points at does not. So this closes over references until it stops
- * growing, rather than comparing shapes alone.
- */
-const apart = new Set();
-const shapes = new Map();
-
-for (const kind of kinds) {
-  for (const [name, definition] of Object.entries(definitionsOf(kind))) {
-    const written = JSON.stringify(definition);
-    const before = shapes.get(name);
-    if (before === undefined) shapes.set(name, written);
-    else if (before !== written) apart.add(name);
-  }
-}
-
-for (let growing = true; growing;) {
-  growing = false;
-  for (const kind of kinds) {
-    for (const [name, definition] of Object.entries(definitionsOf(kind))) {
-      if (apart.has(name)) continue;
-      for (const reached of reaches(definition)) {
-        if (apart.has(reached)) {
-          apart.add(name);
-          growing = true;
-          break;
-        }
-      }
-    }
-  }
-}
 
 /**
  * Every kind compiled together, rather than one at a time.
@@ -201,16 +126,16 @@ for (const kind of kinds) {
     ),
   );
 
-  const naming = new Map(
-    Object.keys(definitionsOf(kind))
-      .filter((name) => apart.has(name))
-      .map((name) => [name, `${typeName(kind)}${name}`]),
-  );
-
+  // Under the name the artefact gives it, with nothing added. This used to
+  // prefix every name two kinds described differently, because `State` was
+  // eight shapes across eleven kinds and sharing them by name handed one kind
+  // another's. The producer names each type for itself now and holds itself to
+  // it — `a_definition_name_describes_one_shape` — so a name is a type again
+  // and the same name twice is the same definition twice.
   for (const [name, definition] of Object.entries(definitionsOf(kind))) {
-    shared[naming.get(name) ?? name] = renamed(definition, naming);
+    shared[name] = definition;
   }
-  carried[kind] = renamed(body, naming);
+  carried[kind] = body;
 }
 
 parts.push(
