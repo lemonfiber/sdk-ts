@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: d4f5fc4840b7ef7b4e6218be55f451d158b404fd  ·  api_version 1
+// Source: 55c09e73138dab5c73fab0b46c1a2718d637b208  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -982,6 +982,14 @@ export interface AdoptReport {
    */
   back_up: string[];
   /**
+   * Where the capture of those paths was written, once one has been taken.
+   *
+   * Absent on a rehearsal, which captures nothing, and absent where the setup
+   * mounted nothing worth capturing. Present on an adoption that went through,
+   * because an operator told a backup was taken is owed the path to it.
+   */
+  backed_up?: string | null;
+  /**
    * The project lemonfiber would manage, where exactly one could be adopted.
    */
   project?: string | null;
@@ -1108,11 +1116,40 @@ export interface BackupReport {
          */
         name: string;
         scope: "service";
+      }
+    | {
+        /**
+         * The Compose project the capture was taken from.
+         */
+        project: string;
+        scope: "existing";
+        /**
+         * The host trees captured, in the order the survey reported them.
+         */
+        trees: Tree[];
       };
   /**
    * Whether it carries credentials, and so must be handled as sensitive.
    */
   sensitive: boolean;
+}
+/**
+ * One host tree captured from a setup lemonfiber does not manage.
+ *
+ * Both halves are needed to find it again: the archive path says where it sits
+ * inside the archive, and the host path says where it was read from. Nothing
+ * derives the second from the first, because a tree outside lemonfiber's layout
+ * has no layout to derive it from.
+ */
+export interface Tree {
+  /**
+   * Where it sits inside the archive.
+   */
+  archive_path: string;
+  /**
+   * Where it was read from, on the machine whose setup was taken over.
+   */
+  host_path: string;
 }
 /**
  * The payload.
@@ -4892,6 +4929,17 @@ export interface RestoreReport {
          */
         name: string;
         scope: "service";
+      }
+    | {
+        /**
+         * The Compose project the capture was taken from.
+         */
+        project: string;
+        scope: "existing";
+        /**
+         * The host trees captured, in the order the survey reported them.
+         */
+        trees: Tree[];
       };
 }
 /**
@@ -4969,6 +5017,17 @@ export interface RestoreManifest {
          */
         name: string;
         scope: "service";
+      }
+    | {
+        /**
+         * The Compose project the capture was taken from.
+         */
+        project: string;
+        scope: "existing";
+        /**
+         * The host trees captured, in the order the survey reported them.
+         */
+        trees: Tree[];
       };
   /**
    * Whether it carries credentials, and so must be handled as sensitive.
