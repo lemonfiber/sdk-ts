@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: e28022c19009f9bd3dec6a6b737e511d4e2f53e5  ·  api_version 1
+// Source: c5bc2d5199e836b33962206b68f406b0f24e8703  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -67,8 +67,7 @@ export type Facing = "asking" | "watching" | "shelf" | "operators" | "carriage" 
  * that a release was grabbed but not imported, only that it is on its way. The trace is
  * where that detail stays, and a request names the item so it can be asked for.
  */
-export type DashboardState2 =
-  "waiting-for-approval" | "declined" | "failed" | "getting" | "partly-here" | "here" | "gone";
+export type RequestState = "waiting-for-approval" | "declined" | "failed" | "getting" | "partly-here" | "here" | "gone";
 /**
  * What happens to what a household member asks for.
  *
@@ -90,7 +89,7 @@ export type Policy = "trusted" | "within-a-limit" | "everything-waits";
  * in its own words, rather than showing stale data as current or blank data as
  * zero — and the panels beside it stay live.
  */
-export type Panel =
+export type PanelVpn =
   | {
       data: Vpn;
       panel: "ready";
@@ -104,15 +103,6 @@ export type Panel =
       };
       panel: "unavailable";
     };
-/**
- * Where one request stands, in the words the person who made it would use.
- *
- * Deliberately coarser than a [`crate::trace::Stage`]: a member does not need to know
- * that a release was grabbed but not imported, only that it is on its way. The trace is
- * where that detail stays, and a request names the item so it can be asked for.
- */
-export type HouseholdState =
-  "waiting-for-approval" | "declined" | "failed" | "getting" | "partly-here" | "here" | "gone";
 /**
  * What a whole set of services amounts to.
  */
@@ -247,7 +237,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: BandwidthSharing;
+    data: Sharing;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -303,7 +293,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: ConfigConfigReport;
+    data: ConfigReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -317,7 +307,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: CredentialsInventory;
+    data: Inventory;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -331,7 +321,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: DashboardSnapshot;
+    data: Snapshot;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -345,7 +335,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: DoctorDoctorReport;
+    data: DoctorReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -359,7 +349,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: ErrorProblem;
+    data: Problem1;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -387,7 +377,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: FrontDoorFrontDoorReport;
+    data: FrontDoorReport1;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -443,7 +433,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: HouseholdHouseholdReport;
+    data: HouseholdReport1;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -471,7 +461,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: InvitationInvitation;
+    data: Invitation;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -499,7 +489,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: LifecycleLifecycleReport;
+    data: LifecycleReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -555,7 +545,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: OutboundLeaving;
+    data: Leaving;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -569,7 +559,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: PreviewPlan;
+    data: Plan1;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -670,7 +660,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: RestoreRestoration;
+    data: Restoration;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -698,7 +688,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: SelfUpdateUpdateReport;
+    data: UpdateReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -726,7 +716,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: SpaceReckoning;
+    data: Reckoning;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -757,7 +747,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: StatusStatusReport;
+    data: StatusReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -771,7 +761,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: StepLine;
+    data: Line;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -785,7 +775,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: StopSeedingLetting;
+    data: Letting;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -799,7 +789,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: StoredStored;
+    data: Stored;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -827,7 +817,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: TraceTraceReport;
+    data: TraceReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -855,7 +845,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: UninstallUninstall;
+    data: Uninstall;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -869,7 +859,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: UpdateReport;
+    data: StackUpdateReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -897,7 +887,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: VersionVersionReport;
+    data: VersionReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -911,7 +901,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: WalkthroughWalkthroughReport;
+    data: WalkthroughReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -939,7 +929,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: WizardWizardReport;
+    data: WizardReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -1155,7 +1145,7 @@ export interface Tree {
 /**
  * The payload.
  */
-export interface BandwidthSharing {
+export interface Sharing {
   /**
    * What a spent cap is doing to the figures above, where one is spent.
    */
@@ -1179,7 +1169,7 @@ export interface BandwidthSharing {
   /**
    * What each download client was asked and what it is doing about it.
    */
-  clients: BandwidthHolding[];
+  clients: Holding[];
   down: BandwidthReading;
   /**
    * What that means for the household.
@@ -1280,7 +1270,7 @@ export interface Capacity {
 /**
  * One download client, and what became of the limits it was given.
  */
-export interface BandwidthHolding {
+export interface Holding {
   /**
    * What it said.
    */
@@ -1716,7 +1706,7 @@ export interface Cause {
 /**
  * The payload.
  */
-export interface ConfigConfigReport {
+export interface ConfigReport {
   /**
    * Whether this command changed, or would change, a setting.
    */
@@ -1739,7 +1729,7 @@ export interface ConfigConfigReport {
    * where that proposal stands: applied, staged for a confirmation, turned away,
    * or nothing to do. Absent for a read, which proposes nothing.
    */
-  review?: ConfigReview | null;
+  review?: Review | null;
   /**
    * The settings asked about — one for a lookup, all of them for a listing.
    */
@@ -1748,7 +1738,7 @@ export interface ConfigConfigReport {
 /**
  * A proposed change, read against what is in force, and where it stands.
  */
-export interface ConfigReview {
+export interface Review {
   change: ConfigChange;
   findings?: Findings;
   /**
@@ -1936,11 +1926,11 @@ export interface SettingReport {
 /**
  * The payload.
  */
-export interface CredentialsInventory {
+export interface Inventory {
   /**
    * Every credential, whether or not it is present.
    */
-  held: CredentialsHeld[];
+  held: CredentialHeld[];
   protection: Protection;
   /**
    * One value, where one was asked for.
@@ -1949,7 +1939,7 @@ export interface CredentialsInventory {
   /**
    * What became of a rotation, where one was asked for.
    */
-  rotated?: CredentialsRotation | null;
+  rotated?: Rotation | null;
 }
 /**
  * One credential, described without being disclosed.
@@ -1957,7 +1947,7 @@ export interface CredentialsInventory {
  * There is deliberately no value here, and no field a value could be put in later
  * without the change being visible in review.
  */
-export interface CredentialsHeld {
+export interface CredentialHeld {
   /**
    * What is worth saying about this one, where anything is.
    */
@@ -2036,11 +2026,11 @@ export interface Revealed {
 /**
  * What one rotation came to.
  */
-export interface CredentialsRotation {
+export interface Rotation {
   /**
    * Every consumer, and how far the rotation reached it.
    */
-  consumers: CredentialsPropagation[];
+  consumers: Propagation[];
   /**
    * Which credential was to be replaced.
    */
@@ -2088,7 +2078,7 @@ export interface CredentialsRotation {
 /**
  * One consumer, and how far the rotation reached it.
  */
-export interface CredentialsPropagation {
+export interface Propagation {
   /**
    * What authenticates with the credential.
    */
@@ -2118,12 +2108,12 @@ export interface CredentialsPropagation {
 /**
  * The payload.
  */
-export interface DashboardSnapshot {
+export interface Snapshot {
   /**
    * What the operator has been told, newest first: what is owed them where a
    * channel is refusing, then what has already been said.
    */
-  alerts: DashboardAlert[];
+  alerts: Alert[];
   /**
    * The one address to hand somebody who lives here.
    *
@@ -2134,7 +2124,7 @@ export interface DashboardSnapshot {
    */
   door:
     | {
-        data: DashboardFrontDoorReport;
+        data: FrontDoorReport;
         panel: "ready";
       }
     | {
@@ -2146,7 +2136,7 @@ export interface DashboardSnapshot {
         };
         panel: "unavailable";
       };
-  health: DashboardSummary;
+  health: HealthSummary;
   /**
    * What the household has asked for that is not moving.
    *
@@ -2157,7 +2147,7 @@ export interface DashboardSnapshot {
    */
   household:
     | {
-        data: DashboardHouseholdReport;
+        data: HouseholdReport;
         panel: "ready";
       }
     | {
@@ -2191,7 +2181,7 @@ export interface DashboardSnapshot {
    */
   services:
     | {
-        data: DashboardService[];
+        data: Service[];
         panel: "ready";
       }
     | {
@@ -2208,7 +2198,7 @@ export interface DashboardSnapshot {
    */
   storage:
     | {
-        data: DashboardStorage;
+        data: Storage;
         panel: "ready";
       }
     | {
@@ -2235,7 +2225,7 @@ export interface DashboardSnapshot {
    */
   transfers:
     | {
-        data: DashboardTransfer[];
+        data: Transfer[];
         panel: "ready";
       }
     | {
@@ -2251,12 +2241,12 @@ export interface DashboardSnapshot {
    * The VPN, or `None` where no VPN is configured and the panel is omitted
    * rather than shown permanently red.
    */
-  vpn?: Panel | null;
+  vpn?: PanelVpn | null;
 }
 /**
  * One interruption: what happened, which way, and how much it matters.
  */
-export interface DashboardAlert {
+export interface Alert {
   /**
    * Every check this alert speaks for, the first being [`Self::check`]. More
    * than one where the same event was grouped across several services.
@@ -2295,7 +2285,7 @@ export interface DashboardAlert {
  * The household's one front door: which service it is, where it stands, and what
  * else they can reach that is not it.
  */
-export interface DashboardFrontDoorReport {
+export interface FrontDoorReport {
   /**
    * The address to hand them, read from this machine at the moment of asking
    * rather than remembered. Absent where there is no door, and where there is
@@ -2305,7 +2295,7 @@ export interface DashboardFrontDoorReport {
   /**
    * Everything else the household can reach, and why none of it is the door.
    */
-  beside: DashboardBeside[];
+  beside: FrontDoorBeside[];
   /**
    * How this came to be the door: worked out from what the stack declares, named
    * by the operator, or named by them and refused.
@@ -2366,7 +2356,7 @@ export interface Address {
  * who can see that the index over every service was considered and refused has been
  * told something, where one shown a single name has only been given an answer.
  */
-export interface DashboardBeside {
+export interface FrontDoorBeside {
   /**
    * Why it is not somewhere to begin.
    */
@@ -2402,12 +2392,12 @@ export interface Refusal {
  * to infer health from a blank space, which is the one reading this must never
  * be open to.
  */
-export interface DashboardSummary {
+export interface HealthSummary {
   /**
    * Everything that is wrong, worst first, so the line expands to the affected
    * items and their remedies rather than to a number nobody can act on.
    */
-  affected: DashboardAffected[];
+  affected: Affected[];
   /**
    * The one word.
    */
@@ -2426,7 +2416,7 @@ export interface DashboardSummary {
 /**
  * One thing that is wrong, as the expanded summary lists it.
  */
-export interface DashboardAffected {
+export interface Affected {
   /**
    * The check that raised it.
    */
@@ -2451,7 +2441,7 @@ export interface DashboardAffected {
 /**
  * Who is in the household, what each may watch, and what each has asked for.
  */
-export interface DashboardHouseholdReport {
+export interface HouseholdReport {
   /**
    * What that policy allows in a period, in the words a household says it in.
    *
@@ -2482,7 +2472,7 @@ export interface DashboardHouseholdReport {
    * those who have never asked for anything, and the invitations nobody has taken
    * up yet.
    */
-  members: DashboardHouseholdMember[];
+  members: HouseholdMember[];
   /**
    * What happens to what the household asks for where nobody chose otherwise for
    * one person. Absent where the request service could not be asked.
@@ -2493,7 +2483,7 @@ export interface DashboardHouseholdReport {
  * One household member: who they are, what they may watch, when they were last
  * seen, and everything they have asked for.
  */
-export interface DashboardHouseholdMember {
+export interface HouseholdMember {
   access: MemberAccess;
   /**
    * What they may ask for, and what their period has left of it.
@@ -2502,7 +2492,7 @@ export interface DashboardHouseholdMember {
    * not be asked — an unread answer is not an unlimited member, and reporting one as
    * the other would tell an operator their quota was never applied.
    */
-  asking?: DashboardMemberAsking | null;
+  asking?: MemberAsking | null;
   /**
    * Whether somebody has set a password on the account. False is an invitation
    * nobody has taken up rather than a member who is not here.
@@ -2520,7 +2510,7 @@ export interface DashboardHouseholdMember {
   /**
    * What they asked for, newest first.
    */
-  requests: DashboardMemberRequest[];
+  requests: MemberRequest[];
   /**
    * What this member would be told, in the words they would read it in.
    *
@@ -2618,7 +2608,7 @@ export interface Rated {
  * household as within its limit while the half that matters is spent: television is
  * counted a season at a time, so one ask for a six-season series spends six.
  */
-export interface DashboardMemberAsking {
+export interface MemberAsking {
   films: Counted;
   /**
    * When the count next lets go of something, so one more becomes possible.
@@ -2688,7 +2678,7 @@ export interface Counted1 {
 /**
  * One thing a household member asked for, and where it stands in their words.
  */
-export interface DashboardMemberRequest {
+export interface MemberRequest {
   /**
    * About how much room it will want, at the quality in force.
    *
@@ -2725,7 +2715,7 @@ export interface DashboardMemberRequest {
    * Where the request stands, or absent where the request service reports a status
    * this build does not know rather than guessing it into the nearest word.
    */
-  state?: DashboardState2 | null;
+  state?: RequestState | null;
   /**
    * What it is called, where the service filing it has been told about it and its
    * library could be read. Absent for a request no service holds yet — one still
@@ -2834,7 +2824,7 @@ export interface Queue {
 /**
  * One service, as it stands.
  */
-export interface DashboardService {
+export interface Service {
   /**
    * How much its absence costs, so a summary can weigh it.
    */
@@ -2878,7 +2868,7 @@ export interface DashboardService {
 /**
  * The storage picture: what is free, when it runs out, and whether imports link.
  */
-export interface DashboardStorage {
+export interface Storage {
   /**
    * The time until the disk fills at the current rate of the queue draining
    * onto it, or `None` where it is not projected to fill.
@@ -2951,7 +2941,7 @@ export interface Stuck {
 /**
  * One active download, as the dashboard shows it.
  */
-export interface DashboardTransfer {
+export interface Transfer {
   /**
    * The time left, or `None` where it is stalled and there is none to give.
    */
@@ -3011,11 +3001,11 @@ export interface Vpn {
 /**
  * The payload.
  */
-export interface DoctorDoctorReport {
+export interface DoctorReport {
   /**
    * Each finding, in the order the checks produced them.
    */
-  findings: DoctorFinding[];
+  findings: Finding[];
   /**
    * What the findings amount to, as one word.
    */
@@ -3024,7 +3014,7 @@ export interface DoctorDoctorReport {
 /**
  * One thing a check established, and how it turned out.
  */
-export interface DoctorFinding {
+export interface Finding {
   /**
    * The family this belongs to.
    */
@@ -3085,7 +3075,7 @@ export interface DoctorFinding {
         /**
          * The problem that produced this one, where several share a root.
          */
-        cause?: DoctorProblem | null;
+        cause?: Problem | null;
         /**
          * The stable identifier for this kind of problem.
          */
@@ -3120,7 +3110,7 @@ export interface DoctorFinding {
         /**
          * The problem that produced this one, where several share a root.
          */
-        cause?: DoctorProblem | null;
+        cause?: Problem | null;
         /**
          * The stable identifier for this kind of problem.
          */
@@ -3170,11 +3160,11 @@ export interface DoctorFinding {
 /**
  * Something that went wrong, in the form an operator can act on.
  */
-export interface DoctorProblem {
+export interface Problem {
   /**
    * The problem that produced this one, where several share a root.
    */
-  cause?: DoctorProblem | null;
+  cause?: Problem | null;
   /**
    * The stable identifier for this kind of problem.
    */
@@ -3231,50 +3221,13 @@ export interface Remedy1 {
   detail?: string | null;
 }
 /**
- * The payload.
- */
-export interface ErrorProblem {
-  /**
-   * The problem that produced this one, where several share a root.
-   */
-  cause?: ErrorProblem1 | null;
-  /**
-   * The stable identifier for this kind of problem.
-   */
-  code: string;
-  /**
-   * The underlying technical detail, available but never leading.
-   */
-  detail?: string | null;
-  /**
-   * What it means for the operator.
-   */
-  meaning: string;
-  /**
-   * What to do, most likely first.
-   */
-  remedies: Remedy[];
-  /**
-   * How much it matters.
-   */
-  severity: "advisory" | "warning" | "error" | "critical";
-  /**
-   * Where it stands with respect to being fixed.
-   */
-  state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
-  /**
-   * What happened, in one plain sentence.
-   */
-  summary: string;
-}
-/**
  * Something that went wrong, in the form an operator can act on.
  */
-export interface ErrorProblem1 {
+export interface Problem1 {
   /**
    * The problem that produced this one, where several share a root.
    */
-  cause?: ErrorProblem1 | null;
+  cause?: Problem | null;
   /**
    * The stable identifier for this kind of problem.
    */
@@ -3342,9 +3295,10 @@ export interface FormReport {
   name: string;
 }
 /**
- * The payload.
+ * The household's one front door: which service it is, where it stands, and what
+ * else they can reach that is not it.
  */
-export interface FrontDoorFrontDoorReport {
+export interface FrontDoorReport1 {
   /**
    * The address to hand them, read from this machine at the moment of asking
    * rather than remembered. Absent where there is no door, and where there is
@@ -3393,27 +3347,6 @@ export interface FrontDoorFrontDoorReport {
    * Where the front door stands.
    */
   standing: "established" | "library-only" | "unreachable" | "stranded" | "none";
-}
-/**
- * A service the household can reach that is not the front door, and why it is not.
- *
- * Carried rather than left out, because the decision is the useful part: an operator
- * who can see that the index over every service was considered and refused has been
- * told something, where one shown a single name has only been given an answer.
- */
-export interface FrontDoorBeside {
-  /**
-   * Why it is not somewhere to begin.
-   */
-  because: string;
-  /**
-   * What a service published to the local network is to the people in the house.
-   */
-  facing: "asking" | "watching" | "shelf" | "operators" | "carriage" | "unstated";
-  /**
-   * The service, by the name it shows itself under.
-   */
-  service: string;
 }
 /**
  * The payload.
@@ -3597,9 +3530,9 @@ export interface HostedCommand {
   standing: "not-hosted" | "hosted" | "installed-unverified" | "stopped" | "orphaned" | "unsupported";
 }
 /**
- * The payload.
+ * Who is in the household, what each may watch, and what each has asked for.
  */
-export interface HouseholdHouseholdReport {
+export interface HouseholdReport1 {
   /**
    * What that policy allows in a period, in the words a household says it in.
    *
@@ -3630,243 +3563,12 @@ export interface HouseholdHouseholdReport {
    * those who have never asked for anything, and the invitations nobody has taken
    * up yet.
    */
-  members: HouseholdHouseholdMember[];
+  members: HouseholdMember[];
   /**
    * What happens to what the household asks for where nobody chose otherwise for
    * one person. Absent where the request service could not be asked.
    */
   policy?: Policy | null;
-}
-/**
- * One household member: who they are, what they may watch, when they were last
- * seen, and everything they have asked for.
- */
-export interface HouseholdHouseholdMember {
-  access: MemberAccess1;
-  /**
-   * What they may ask for, and what their period has left of it.
-   *
-   * Absent where the request service holds no account for them, and where it could
-   * not be asked — an unread answer is not an unlimited member, and reporting one as
-   * the other would tell an operator their quota was never applied.
-   */
-  asking?: HouseholdMemberAsking | null;
-  /**
-   * Whether somebody has set a password on the account. False is an invitation
-   * nobody has taken up rather than a member who is not here.
-   */
-  claimed: boolean;
-  /**
-   * When the media server last saw them, as it timestamps it. Absent where nobody
-   * has ever signed in, which is exactly the unclaimed invitations.
-   */
-  last_seen?: string | null;
-  /**
-   * The member, by the name their account is held under.
-   */
-  name: string;
-  /**
-   * What they asked for, newest first.
-   */
-  requests: HouseholdMemberRequest[];
-  /**
-   * What this member would be told, in the words they would read it in.
-   *
-   * Everything a household member is owed at the moment of asking and cannot be
-   * shown where they ask: what happens to what they ask for, what their period has
-   * left and when it makes room, roughly what a thing costs before they choose one,
-   * what is still waiting on an answer, and what was refused and why. Written to
-   * them rather than about them, so it can be handed over as it stands.
-   *
-   * Empty where there is nothing to tell them — a member the request service holds
-   * no account for has no standing to report and nothing waiting.
-   */
-  to_hand_over: string[];
-}
-/**
- * What they may watch.
- */
-export interface MemberAccess1 {
-  /**
-   * Whether the account administers the media server.
-   */
-  administrator: boolean;
-  /**
-   * The highest rating they may watch, where the operator set a limit.
-   */
-  age_limit?: number | null;
-  /**
-   * Whether the account is switched off — held, but unable to sign in.
-   */
-  disabled: boolean;
-  /**
-   * Every library, rather than a chosen few. The ordinary case.
-   */
-  every_library: boolean;
-  /**
-   * The libraries they may watch where it is not every one, by the names the
-   * operator gave them — or by the server's identifiers where the library list
-   * could not be read, which a finding says.
-   */
-  libraries: string[];
-  /**
-   * What that limit comes to in the certificates this media server names, in the
-   * operator's own country. Absent where no limit is set.
-   */
-  rated?: Rated | null;
-  /**
-   * What they are held to, in one word — including where what they may watch and
-   * what they may ask for disagree.
-   */
-  restriction: "unrestricted" | "rating-limited" | "library-limited" | "both" | "inconsistent";
-  /**
-   * What becomes of content the media server has no rating for.
-   *
-   * Said either way, because an unexplained absence is the thing this answers: a
-   * restricted member missing half the library is either this setting or a defect,
-   * and an operator cannot tell which from silence.
-   */
-  unrated: "held-back" | "let-through";
-}
-/**
- * What one member may ask for, where the request service could be asked.
- *
- * Both counts, because the service keeps them apart and folding them would report a
- * household as within its limit while the half that matters is spent: television is
- * counted a season at a time, so one ask for a six-season series spends six.
- */
-export interface HouseholdMemberAsking {
-  films: Counted2;
-  /**
-   * When the count next lets go of something, so one more becomes possible.
-   *
-   * Absent where nothing limits them, and where the request service's own dates
-   * could not be read — an invented one would be a promise about a day on which
-   * nothing happens. The period is a window that rolls rather than a month that
-   * ends, so this is the moment their earliest counted request ages out.
-   */
-  frees_up?: string | null;
-  /**
-   * What happens to what a household member asks for.
-   *
-   * Three, and they are the three the request service can actually be put into. A
-   * household is in one of them because of two settings taken together — whether requests
-   * arrive unseen, and whether a period limits how many — so the words here are a reading
-   * of that pair rather than a fourth setting kept beside it.
-   *
-   * Choosing per person is not a fourth policy. It is one of these three chosen for one
-   * member rather than for the house, which is why what a surface offers is a policy and,
-   * separately, who it is for.
-   */
-  policy: "trusted" | "within-a-limit" | "everything-waits";
-  /**
-   * Where they stand against what their period allows, taken over both counts.
-   */
-  standing: "unlimited" | "within-quota" | "near-quota" | "quota-exhausted";
-  television: Counted3;
-}
-/**
- * Films, counted one to a request.
- */
-export interface Counted2 {
-  /**
-   * How many the period allows. Absent where nothing limits them, which is a
-   * different answer from a limit of nought.
-   */
-  limit?: number | null;
-  /**
-   * How long the period is, in the words a household says it in — absent where
-   * the count runs from the beginning rather than over a window.
-   */
-  period?: string | null;
-  /**
-   * How many more they may ask for. Absent where nothing limits them.
-   */
-  remaining?: number | null;
-  /**
-   * How many the period has already counted against them.
-   */
-  used: number;
-}
-/**
- * Television, counted one to a season.
- */
-export interface Counted3 {
-  /**
-   * How many the period allows. Absent where nothing limits them, which is a
-   * different answer from a limit of nought.
-   */
-  limit?: number | null;
-  /**
-   * How long the period is, in the words a household says it in — absent where
-   * the count runs from the beginning rather than over a window.
-   */
-  period?: string | null;
-  /**
-   * How many more they may ask for. Absent where nothing limits them.
-   */
-  remaining?: number | null;
-  /**
-   * How many the period has already counted against them.
-   */
-  used: number;
-}
-/**
- * One thing a household member asked for, and where it stands in their words.
- */
-export interface HouseholdMemberRequest {
-  /**
-   * About how much room it will want, at the quality in force.
-   *
-   * A guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the
-   * request service names a kind this build does not know, since there is nothing to
-   * guess the length of.
-   */
-  estimate?: Estimate | null;
-  /**
-   * The number the request service files it under, which is how one is named again
-   * when somebody rules on it.
-   */
-  id: number;
-  /**
-   * What kind of thing it is — a series, a film — in the household's own words.
-   * Absent where the request service names a kind this build does not know.
-   */
-  media?: string | null;
-  /**
-   * Why it was turned down, where it was turned down from here.
-   *
-   * **The request service keeps none**, so this is lemonfiber's own record and is
-   * said to be — a reason presented as delivered would end the operator's job at
-   * exactly the point it begins. Absent on a request nobody has refused, and on one
-   * refused in the request service itself, where there are no words to report and
-   * inventing some would put them in somebody's mouth.
-   *
-   * Whether the words were carried to the person who asked is the record's own
-   * `told`, which is why the two travel together: what an operator does next turns
-   * on it, and a reason read without it is a reason of unknown standing.
-   */
-  refused?: Refused | null;
-  /**
-   * Where the request stands, or absent where the request service reports a status
-   * this build does not know rather than guessing it into the nearest word.
-   */
-  state?: HouseholdState | null;
-  /**
-   * What it is called, where the service filing it has been told about it and its
-   * library could be read. Absent for a request no service holds yet — one still
-   * awaiting approval has been handed to nobody, so there is no title to find.
-   */
-  title?: string | null;
-  /**
-   * How many whole days it has been waiting on somebody, where it is waiting at all
-   * and the service's own date could be read.
-   *
-   * Only on the ones nobody has ruled on. A request already answered has not been
-   * waiting since it was made, and a figure beside one would be counting the wrong
-   * thing.
-   */
-  waiting_days?: number | null;
 }
 /**
  * The payload.
@@ -3930,7 +3632,7 @@ export interface UnsupportedReport {
 /**
  * The payload.
  */
-export interface InvitationInvitation {
+export interface Invitation {
   /**
    * The one address to send them.
    *
@@ -4061,7 +3763,7 @@ export interface Started {
 /**
  * The payload.
  */
-export interface LifecycleLifecycleReport {
+export interface LifecycleReport {
   /**
    * The Compose subcommand that was run.
    */
@@ -4081,7 +3783,7 @@ export interface LifecycleLifecycleReport {
    * moved, or could not be.
    */
   forwarding?: string | null;
-  plan: LifecyclePlan;
+  plan: Plan;
   /**
    * Whether this was a rehearsal.
    */
@@ -4093,7 +3795,7 @@ export interface LifecycleLifecycleReport {
    * says it is, and surveying afterwards would only report the absence it
    * was asked to produce.
    */
-  services: LifecycleService[];
+  services: Service[];
   /**
    * Stack files the operator has edited, left as they set them rather than
    * overwritten with lemonfiber's own. Empty in the ordinary case; a named entry
@@ -4120,11 +3822,11 @@ export interface LifecycleLifecycleReport {
  * report afterwards — two accounts of one run, and a second shape for it
  * would be a way for them to differ.
  */
-export interface LifecyclePlan {
+export interface Plan {
   /**
    * Profiles the closure asked for that the configuration does not support.
    */
-  dropped: LifecycleDropped[];
+  dropped: Dropped[];
   /**
    * The forms the operator named, in the order they named them.
    */
@@ -4150,7 +3852,7 @@ export interface LifecyclePlan {
  * operator looking for a fault. What they have is a stack not configured for
  * one of the two ways of downloading, which is a sentence rather than a word.
  */
-export interface LifecycleDropped {
+export interface Dropped {
   /**
    * The provider it cannot run without.
    */
@@ -4159,50 +3861,6 @@ export interface LifecycleDropped {
    * The profile that will not run.
    */
   profile: string;
-}
-/**
- * One service, as it stands.
- */
-export interface LifecycleService {
-  /**
-   * How much its absence costs, so a summary can weigh it.
-   */
-  criticality: "critical" | "core" | "important" | "enhancing" | "optional";
-  /**
-   * The services it needs before it can work, as the manifest declares them.
-   * Carried so a failure can be attributed to the thing underneath it rather
-   * than counted as one more independent thing wrong.
-   */
-  depends_on: string[];
-  /**
-   * How it exited, where it has exited.
-   */
-  exit?: number | null;
-  /**
-   * The service's identifier, which is also its Compose service name.
-   */
-  id: string;
-  /**
-   * What it is called in front of an operator.
-   */
-  name: string;
-  /**
-   * The profile that declared it.
-   */
-  profile: string;
-  /**
-   * What it is doing.
-   */
-  state:
-    | "failed"
-    | "crash-looping"
-    | "unhealthy"
-    | "absent"
-    | "stopped"
-    | "starting"
-    | "running"
-    | "healthy"
-    | "host-managed";
 }
 /**
  * A stack file the operator edited, preserved rather than overwritten, with the
@@ -4473,11 +4131,11 @@ export interface MusicChoice {
 /**
  * The payload.
  */
-export interface OutboundLeaving {
+export interface Leaving {
   /**
    * Every request lemonfiber makes on its own account, in a fixed order.
    */
-  ours: OutboundOutbound[];
+  ours: Outbound[];
   /**
    * The requests made by services this stack runs, attributed to them.
    */
@@ -4486,7 +4144,7 @@ export interface OutboundLeaving {
 /**
  * One request lemonfiber makes, where it goes, and what refusing it costs.
  */
-export interface OutboundOutbound {
+export interface Outbound {
   /**
    * Whether this machine's settings allow it.
    */
@@ -4537,11 +4195,11 @@ export interface Elsewhere {
 /**
  * The payload.
  */
-export interface PreviewPlan {
+export interface Plan1 {
   /**
    * Profiles the closure asked for that the configuration does not support.
    */
-  dropped: PreviewDropped[];
+  dropped: Dropped[];
   /**
    * The forms the operator named, in the order they named them.
    */
@@ -4559,23 +4217,6 @@ export interface PreviewPlan {
    * appearing twice is not a state this can hold.
    */
   services: string[];
-}
-/**
- * A profile left out of a closure, and what it would have needed.
- *
- * The provider travels with the profile because a name on its own sends the
- * operator looking for a fault. What they have is a stack not configured for
- * one of the two ways of downloading, which is a sentence rather than a word.
- */
-export interface PreviewDropped {
-  /**
-   * The provider it cannot run without.
-   */
-  needs: "usenet" | "torrent";
-  /**
-   * The profile that will not run.
-   */
-  profile: string;
 }
 /**
  * The payload.
@@ -4731,7 +4372,7 @@ export interface RepairReport {
   /**
    * What was carried out, in the order it was.
    */
-  mended: RepairMended[];
+  mended: Mended[];
   /**
    * What could be put right, whether or not it was.
    */
@@ -4763,7 +4404,7 @@ export interface Remedy2 {
 /**
  * One repair, and what became of it.
  */
-export interface RepairMended {
+export interface Mended {
   /**
    * How it turned out, once the check was asked again.
    */
@@ -4898,12 +4539,12 @@ export interface ResetReport {
 /**
  * The payload.
  */
-export interface RestoreRestoration {
+export interface Restoration {
   /**
    * What was put back, or nothing where nothing was.
    */
   done?: RestoreReport | null;
-  would: RestorePreview;
+  would: Preview;
 }
 /**
  * What a restore did.
@@ -4961,7 +4602,7 @@ export interface Relocation {
  * What the archive holds and what restoring it would come to, read before
  * anything was touched.
  */
-export interface RestorePreview {
+export interface Preview {
   /**
    * What this listing is, so consent given for it can name which listing it read.
    *
@@ -4975,7 +4616,7 @@ export interface RestorePreview {
    * Whether the archive is old enough that a compatibility warning applies.
    */
   downgrade: boolean;
-  manifest: RestoreManifest;
+  manifest: BackupManifest;
   /**
    * The data-root difference, where the archive was taken against another one.
    */
@@ -4984,7 +4625,7 @@ export interface RestorePreview {
 /**
  * The archive's own account of itself — its scope, version and contents.
  */
-export interface RestoreManifest {
+export interface BackupManifest {
   /**
    * When it was taken. Opaque here; the surface stamps it from the clock.
    */
@@ -5059,12 +4700,12 @@ export interface SeedReport {
   /**
    * Every connection attempted, and how each turned out.
    */
-  wirings: SeedWiring[];
+  wirings: Wiring[];
 }
 /**
  * One connection, and how it turned out.
  */
-export interface SeedWiring {
+export interface Wiring {
   /**
    * What was being connected, such as `SABnzbd into Sonarr`.
    */
@@ -5147,7 +4788,7 @@ export interface SeedWiring {
 /**
  * The payload.
  */
-export interface SelfUpdateUpdateReport {
+export interface UpdateReport {
   /**
    * What updating leaves alone, and what it needs afterwards.
    */
@@ -5261,7 +4902,7 @@ export interface Protocols {
 /**
  * The payload.
  */
-export interface SpaceReckoning {
+export interface Reckoning {
   /**
    * What this offer names itself, so an answer to it can say which offer it was
    * answering.
@@ -5271,12 +4912,12 @@ export interface SpaceReckoning {
    * The completed downloads, each with where it stands and what removing it
    * would cost.
    */
-  candidates: SpaceCandidate[];
+  candidates: Candidate[];
   /**
    * Where the room went, one line per tree plus the services' own files, and
    * one line for what is committed but has not landed yet.
    */
-  consumption: SpaceConsumption[];
+  consumption: Consumption[];
   /**
    * Whether new acquisitions are halted to keep the services writable.
    */
@@ -5301,11 +4942,11 @@ export interface SpaceReckoning {
    * two lists together would double what is on the disk, which is the mistake
    * this whole module is arranged to avoid.
    */
-  reclaimable: SpaceConsumption[];
+  reclaimable: Consumption[];
   /**
    * What became of a confirmed cleanup, where one was asked for.
    */
-  reclaimed?: SpaceReclaimed | null;
+  reclaimed?: Reclaimed | null;
   /**
    * The volumes watched. Either filling stops the stack, so both are reported
    * whether or not they are the same drive.
@@ -5315,7 +4956,7 @@ export interface SpaceReckoning {
 /**
  * One completed download, and what reclaiming it would come to.
  */
-export interface SpaceCandidate {
+export interface Candidate {
   /**
    * What it occupies.
    */
@@ -5355,7 +4996,7 @@ export interface SpaceCandidate {
 /**
  * One line of the accounting.
  */
-export interface SpaceConsumption {
+export interface Consumption {
   /**
    * What it is about.
    */
@@ -5454,7 +5095,7 @@ export interface Outsized {
 /**
  * What became of a confirmed cleanup.
  */
-export interface SpaceReclaimed {
+export interface Reclaimed {
   /**
    * What they occupied.
    */
@@ -5533,7 +5174,7 @@ export interface Volume {
 /**
  * The payload.
  */
-export interface StatusStatusReport {
+export interface StatusReport {
   /**
    * What a whole set of services amounts to.
    */
@@ -5545,56 +5186,12 @@ export interface StatusStatusReport {
   /**
    * Each service, worst first.
    */
-  services: StatusService[];
-}
-/**
- * One service, as it stands.
- */
-export interface StatusService {
-  /**
-   * How much its absence costs, so a summary can weigh it.
-   */
-  criticality: "critical" | "core" | "important" | "enhancing" | "optional";
-  /**
-   * The services it needs before it can work, as the manifest declares them.
-   * Carried so a failure can be attributed to the thing underneath it rather
-   * than counted as one more independent thing wrong.
-   */
-  depends_on: string[];
-  /**
-   * How it exited, where it has exited.
-   */
-  exit?: number | null;
-  /**
-   * The service's identifier, which is also its Compose service name.
-   */
-  id: string;
-  /**
-   * What it is called in front of an operator.
-   */
-  name: string;
-  /**
-   * The profile that declared it.
-   */
-  profile: string;
-  /**
-   * What it is doing.
-   */
-  state:
-    | "failed"
-    | "crash-looping"
-    | "unhealthy"
-    | "absent"
-    | "stopped"
-    | "starting"
-    | "running"
-    | "healthy"
-    | "host-managed";
+  services: Service[];
 }
 /**
  * The payload.
  */
-export interface StepLine {
+export interface Line {
   /**
    * What was specifically true — the evidence that makes the line worth reading
    * rather than a spinner. Empty where there is nothing particular to say.
@@ -5612,13 +5209,13 @@ export interface StepLine {
 /**
  * The payload.
  */
-export interface StopSeedingLetting {
+export interface Letting {
   /**
    * What this offer names itself, so an answer to it can say which offer it
    * answered.
    */
   agreement: string;
-  download: StopSeedingCandidate;
+  download: Candidate1;
   /**
    * What goes with it, carried rather than left for a surface to remember.
    */
@@ -5629,10 +5226,9 @@ export interface StopSeedingLetting {
   gone?: Gone | null;
 }
 /**
- * The download, in the same words the account names it in: where it stands, what
- * it occupies, and what removing it costs.
+ * One completed download, and what reclaiming it would come to.
  */
-export interface StopSeedingCandidate {
+export interface Candidate1 {
   /**
    * What it occupies.
    */
@@ -5689,7 +5285,7 @@ export interface Gone {
 /**
  * The payload.
  */
-export interface StoredStored {
+export interface Stored {
   /**
    * What is on this machine that is not lemonfiber's to keep or remove.
    */
@@ -5829,7 +5425,7 @@ export interface StuckEntry {
 /**
  * The payload.
  */
-export interface TraceTraceReport {
+export interface TraceReport {
   /**
    * How sure the trace is of the item it followed.
    */
@@ -5868,7 +5464,7 @@ export interface TraceTraceReport {
    * imports and removals. Repeated attempts show here as the pattern they are, which
    * the single furthest stage cannot.
    */
-  history: TraceTraceMoment[];
+  history: TraceMoment[];
   /**
    * The term the item was searched for by.
    */
@@ -5979,7 +5575,7 @@ export interface Part {
  * downloads, the import and any later removal — so a repeated attempt is seen as the
  * pattern it is rather than flattened to a single furthest stage.
  */
-export interface TraceTraceMoment {
+export interface TraceMoment {
   /**
    * When the service reported it.
    */
@@ -6135,7 +5731,7 @@ export interface Undo {
 /**
  * The payload.
  */
-export interface UninstallUninstall {
+export interface Uninstall {
   manifest: UninstallManifest;
   /**
    * Whether anything was removed on this run.
@@ -6356,7 +5952,7 @@ export interface UninstallLeft {
 /**
  * The payload.
  */
-export interface UpdateReport {
+export interface StackUpdateReport {
   /**
    * What became of each service the run reached, in the order it reached them.
    */
@@ -6365,7 +5961,7 @@ export interface UpdateReport {
    * Where the backup taken before anything moved was written.
    */
   backup?: string | null;
-  changelog: UpdateNotes;
+  changelog: Notes;
   /**
    * What would move, and what taking each step means.
    */
@@ -6437,11 +6033,11 @@ export interface UpdateApplied {
  * stack update is weighing that, and being shown only which image numbers go up
  * is being shown the arithmetic rather than the reason.
  */
-export interface UpdateNotes {
+export interface Notes {
   /**
    * Every release the record holds, newest first.
    */
-  releases: UpdateSummary[];
+  releases: ReleaseSummary[];
   /**
    * What each requirement the running release cites is, and where it is defined.
    */
@@ -6465,7 +6061,7 @@ export interface UpdateNotes {
  * there have been and which of them was taken back; only the one being read needs
  * to carry every line of what it changed.
  */
-export interface UpdateSummary {
+export interface ReleaseSummary {
   /**
    * What it set out to deliver.
    */
@@ -6660,12 +6256,12 @@ export interface UpgradeMedia {
 /**
  * The payload.
  */
-export interface VersionVersionReport {
+export interface VersionReport {
   /**
    * The running binary's version.
    */
   binary: string;
-  changelog: VersionNotes;
+  changelog: Notes1;
   /**
    * What the container engine reports, when it could be asked.
    */
@@ -6682,11 +6278,11 @@ export interface VersionVersionReport {
 /**
  * What this build's release changed, and every release there has been.
  */
-export interface VersionNotes {
+export interface Notes1 {
   /**
    * Every release the record holds, newest first.
    */
-  releases: VersionSummary[];
+  releases: ReleaseSummary[];
   /**
    * What each requirement the running release cites is, and where it is defined.
    */
@@ -6703,43 +6299,9 @@ export interface VersionNotes {
   state: "current" | "pending" | "stale";
 }
 /**
- * One release as a listing shows it: everything but what it changed.
- *
- * Kept apart from [`Release`] rather than being it with the entries left out,
- * because the two are read for different things. A listing answers which releases
- * there have been and which of them was taken back; only the one being read needs
- * to carry every line of what it changed.
- */
-export interface VersionSummary {
-  /**
-   * What it set out to deliver.
-   */
-  delivers?: string | null;
-  /**
-   * The version this one patched, where it is a patch.
-   */
-  patches?: string | null;
-  /**
-   * The day it was published, where the record of it says.
-   */
-  released_on?: string | null;
-  /**
-   * Whether anything in it is a change an operator would notice.
-   */
-  user_facing: boolean;
-  /**
-   * The version.
-   */
-  version: string;
-  /**
-   * Why it was withdrawn, where it was.
-   */
-  withdrawn?: string | null;
-}
-/**
  * The payload.
  */
-export interface WalkthroughWalkthroughReport {
+export interface WalkthroughReport {
   /**
    * Whether what was asked for was already here, and so was not acquired again.
    */
@@ -6760,7 +6322,7 @@ export interface WalkthroughWalkthroughReport {
    * Every line it said, in order — the same lines the operator watched arrive, kept so
    * a machine-readable run is not a silent one.
    */
-  lines: WalkthroughLine[];
+  lines: Line1[];
   /**
    * What the import did with the file, where it got that far.
    */
@@ -6789,7 +6351,7 @@ export interface WalkthroughWalkthroughReport {
   /**
    * Where and why it stopped, where it did.
    */
-  stopped?: WalkthroughStopped | null;
+  stopped?: Stopped | null;
   /**
    * What could have been walked instead, where nothing was chosen — the safe first
    * attempts, so an operator with an empty library is not left guessing.
@@ -6808,7 +6370,7 @@ export interface Handover {
 /**
  * One narrated line: a step, and what was specifically true of it.
  */
-export interface WalkthroughLine {
+export interface Line1 {
   /**
    * What was specifically true — the evidence that makes the line worth reading
    * rather than a spinner. Empty where there is nothing particular to say.
@@ -6826,7 +6388,7 @@ export interface WalkthroughLine {
 /**
  * A walkthrough that stopped: where, why, what the services were saying, and what to do.
  */
-export interface WalkthroughStopped {
+export interface Stopped {
   /**
    * What the services involved were saying at the time, shown inline rather than left
    * for the operator to go and find — a fault report they have to research is a fault
@@ -6877,7 +6439,7 @@ export interface SupervisionReport {
 /**
  * The payload.
  */
-export interface WizardWizardReport {
+export interface WizardReport {
   /**
    * Whether that step asks a question, as opposed to only informing.
    */
