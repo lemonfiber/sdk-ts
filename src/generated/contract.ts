@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: c5bc2d5199e836b33962206b68f406b0f24e8703  ·  api_version 1
+// Source: b74e46e28c96aa19bd9f3712ae9b6a2b6429a058  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1086,6 +1086,7 @@ export interface Listing {
  * The payload.
  */
 export interface BackupReport {
+  pace: Pace;
   /**
    * Where the archive was written.
    */
@@ -1123,6 +1124,30 @@ export interface BackupReport {
    * Whether it carries credentials, and so must be handled as sensitive.
    */
   sensitive: boolean;
+}
+/**
+ * What the capture moved, against what a capture is meant to stay inside.
+ *
+ * Read off the room check that already ran, so saying it costs nothing: the trees
+ * were walked to decide whether the archive would fit, and this is the same number
+ * put to a second use.
+ */
+export interface Pace {
+  /**
+   * Whether this capture is inside it.
+   */
+  brisk: boolean;
+  /**
+   * The bytes a capture may move and still be expected to finish in time.
+   *
+   * Carried with the reading rather than left for a reader to look up, so a surface
+   * showing this does not need a second copy of the number to compare against.
+   */
+  budget: number;
+  /**
+   * The bytes the captured trees came to, as the room check measured them.
+   */
+  moved: number;
 }
 /**
  * One host tree captured from a setup lemonfiber does not manage.
