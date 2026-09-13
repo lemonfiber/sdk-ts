@@ -42,6 +42,22 @@ const COMMENT = /^\s*(?:\/\/|\*|\/\*)/;
 
 const files = (await walk(SRC)).filter((f) => !f.includes("/generated/"));
 
+/**
+Refuse a list nothing is in, before anything is claimed about what is in it.
+
+Every check below is a claim about an absence — no hardcoded address, no
+reasoning in a comment, no file over the cap — and a claim about an absence is
+satisfied by having looked at nothing. A directory that moved, or a filter that
+stopped matching, leaves an empty list and every one of them passes. The count
+printed at the end would show it, and nobody reads a count on a green run.
+*/
+const readSomething = (what, found) => {
+  if (found.length === 0)
+    fail(join(ROOT, what), null, "holds nothing, so every check over it passed on nothing");
+};
+
+readSomething("src", files);
+
 for (const file of files) {
   const text = await readFile(file, "utf8");
   const lines = text.split("\n");
@@ -79,6 +95,8 @@ for (const file of files) {
 // The scripts are not part of what ships, so the rules about addresses and
 // shape do not reach them. The identifier rule does, and so does the one below.
 const scripts = (await walk(join(ROOT, "scripts"))).filter((f) => f.endsWith(".mjs"));
+
+readSomething("scripts", scripts);
 
 /**
 Ways a script could reach the network.
