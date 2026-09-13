@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: b74e46e28c96aa19bd9f3712ae9b6a2b6429a058  ·  api_version 1
+// Source: 24ddf47e248873717c50eb3243dec61f43e6cccd  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -560,6 +560,20 @@ export interface Contract {
      */
     api_version: number;
     data: Plan1;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  provenance: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: ProvenanceReport;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -4246,6 +4260,63 @@ export interface Plan1 {
 /**
  * The payload.
  */
+export interface ProvenanceReport {
+  /**
+   * The services, in the order the stack declares them.
+   *
+   * Every service the manifest holds rather than the ones some form would start:
+   * what is *in* this stack is the question being asked, and an answer narrowed to
+   * what is running would leave the operator unable to ask about the service they
+   * are deciding whether to run.
+   */
+  services: ServiceProvenance[];
+}
+/**
+ * Where one service comes from, as the stack declares it.
+ */
+export interface ServiceProvenance {
+  /**
+   * The service's id, which is also its Compose service name.
+   */
+  id: string;
+  /**
+   * The image it runs, without a tag.
+   */
+  image: string;
+  /**
+   * The SPDX identifier of the licence it is published under.
+   *
+   * Stated rather than summarised as *open source*, because the identifier is what
+   * somebody checks against the project — and because the four in this stack are
+   * not interchangeable to anybody deciding what to do with what they run.
+   */
+  license: string;
+  /**
+   * What it is called in front of an operator.
+   */
+  name: string;
+  /**
+   * The exact tag this stack pins it at.
+   *
+   * Kept apart from the image rather than written as one reference, so that a
+   * caller comparing what is pinned against what a project has released is
+   * comparing versions rather than parsing them out of a string. The two are
+   * printed together for a person, because a version without the image it belongs
+   * to names nothing that can be fetched.
+   */
+  pinned: string;
+  /**
+   * The project it is built from.
+   *
+   * The whole point of the entry for anybody verifying: the licence is a string
+   * this stack wrote down, and this is where somebody goes to find out whether the
+   * project still agrees with it.
+   */
+  upstream: string;
+}
+/**
+ * The payload.
+ */
 export interface QualityReport {
   /**
    * The global choice first, then each media type set apart from it.
@@ -6644,6 +6715,9 @@ export type OutboundEnvelope = Contract["outbound"];
 /** The envelope carrying `preview`. */
 export type PreviewEnvelope = Contract["preview"];
 
+/** The envelope carrying `provenance`. */
+export type ProvenanceEnvelope = Contract["provenance"];
+
 /** The envelope carrying `pull`. */
 export type PullEnvelope = Contract["pull"];
 
@@ -6726,7 +6800,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -6759,6 +6833,7 @@ export interface ByKind {
   "music": MusicEnvelope;
   "outbound": OutboundEnvelope;
   "preview": PreviewEnvelope;
+  "provenance": ProvenanceEnvelope;
   "pull": PullEnvelope;
   "quality": QualityEnvelope;
   "removal": RemovalEnvelope;
