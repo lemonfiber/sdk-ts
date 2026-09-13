@@ -7,8 +7,15 @@
 # this repository's main, but on a weekly schedule.
 #
 # The gap is cadence, not correctness. Driven by hand against a real pin, that
-# check refused it and named the commits it was missing. This fires it on the
+# check refused it and named the commits it was missing. This fires on the
 # change instead of on the calendar.
+#
+# It asks the console to *take* the client rather than to judge its pin. Asking
+# for the verdict only ever produced a red check that somebody else had to clear
+# — and because `sdk-drift` is required there, that somebody was whoever next
+# opened a pull request, about anything. In one evening this repository moved
+# four times and cost four unrelated authors a dependency bump. `sdk-bump` opens
+# the bump instead, and merges it where the rebuild is clean.
 #
 # Every commit on main counts. What the console gets is generated types, a
 # transport, an event reader and a vendored contract, and there is no subset of
@@ -39,7 +46,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: lemonfiber-web
 
-      - name: Ask the console to compare its pin against this main
+      - name: Ask the console to take this main
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
           OWNER: ${{ github.repository_owner }}
@@ -47,7 +54,7 @@ jobs:
           set -euo pipefail
 
           if ! gh api --method POST \
-            "repos/${OWNER}/lemonfiber-web/actions/workflows/sdk-drift.yml/dispatches" \
+            "repos/${OWNER}/lemonfiber-web/actions/workflows/sdk-bump.yml/dispatches" \
             -f ref=main
           then
             # A notifier that cannot notify has to say so. Reporting success
@@ -57,4 +64,4 @@ jobs:
             exit 1
           fi
 
-          echo "asked lemonfiber-web to compare its pin against this main."
+          echo "asked lemonfiber-web to take this main."
