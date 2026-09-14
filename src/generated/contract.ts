@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 9daf9ff7e729c0203a830492d198baa28a8fe207  ·  api_version 1
+// Source: 2e3e492ec02d33edbe42e39be05e9f5c9905e3a6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -169,6 +169,10 @@ export interface Contract {
     api_version: number;
     data: Admitted;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -182,6 +186,10 @@ export interface Contract {
      */
     api_version: number;
     data: AdoptReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -197,6 +205,10 @@ export interface Contract {
     api_version: number;
     data: AlertReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -210,6 +222,10 @@ export interface Contract {
      */
     api_version: number;
     data: Listing;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -225,6 +241,10 @@ export interface Contract {
     api_version: number;
     data: BackupReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -238,6 +258,10 @@ export interface Contract {
      */
     api_version: number;
     data: Sharing;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -253,6 +277,10 @@ export interface Contract {
     api_version: number;
     data: BesideReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -266,6 +294,10 @@ export interface Contract {
      */
     api_version: number;
     data: Bundle;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -281,6 +313,10 @@ export interface Contract {
     api_version: number;
     data: Guidance;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -294,6 +330,10 @@ export interface Contract {
      */
     api_version: number;
     data: ConfigReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -309,6 +349,10 @@ export interface Contract {
     api_version: number;
     data: Inventory;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -322,6 +366,10 @@ export interface Contract {
      */
     api_version: number;
     data: Snapshot;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -337,6 +385,10 @@ export interface Contract {
     api_version: number;
     data: DoctorReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -350,6 +402,10 @@ export interface Contract {
      */
     api_version: number;
     data: Problem1;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -365,6 +421,10 @@ export interface Contract {
     api_version: number;
     data: FormsReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -378,6 +438,10 @@ export interface Contract {
      */
     api_version: number;
     data: FrontDoorReport1;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -393,6 +457,10 @@ export interface Contract {
     api_version: number;
     data: Vocabulary;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -406,6 +474,10 @@ export interface Contract {
      */
     api_version: number;
     data: HistoryReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -421,6 +493,10 @@ export interface Contract {
     api_version: number;
     data: HostingReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -434,6 +510,10 @@ export interface Contract {
      */
     api_version: number;
     data: HouseholdReport1;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -449,6 +529,10 @@ export interface Contract {
     api_version: number;
     data: ImportReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -462,6 +546,10 @@ export interface Contract {
      */
     api_version: number;
     data: Invitation;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -477,6 +565,10 @@ export interface Contract {
     api_version: number;
     data: Started;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -490,6 +582,10 @@ export interface Contract {
      */
     api_version: number;
     data: LifecycleReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -505,6 +601,10 @@ export interface Contract {
     api_version: number;
     data: LogLine;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -518,6 +618,10 @@ export interface Contract {
      */
     api_version: number;
     data: MigrationReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -533,6 +637,10 @@ export interface Contract {
     api_version: number;
     data: MusicReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -546,6 +654,10 @@ export interface Contract {
      */
     api_version: number;
     data: Leaving;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -561,6 +673,10 @@ export interface Contract {
     api_version: number;
     data: Plan1;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -574,6 +690,10 @@ export interface Contract {
      */
     api_version: number;
     data: ProvenanceReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -592,6 +712,10 @@ export interface Contract {
      */
     data: string;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -605,6 +729,10 @@ export interface Contract {
      */
     api_version: number;
     data: QualityReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -620,6 +748,10 @@ export interface Contract {
     api_version: number;
     data: HouseholdRemoval;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -633,6 +765,10 @@ export interface Contract {
      */
     api_version: number;
     data: RepairReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -648,6 +784,10 @@ export interface Contract {
     api_version: number;
     data: ReplaceReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -661,6 +801,10 @@ export interface Contract {
      */
     api_version: number;
     data: ResetReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -676,6 +820,10 @@ export interface Contract {
     api_version: number;
     data: Restoration;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -689,6 +837,10 @@ export interface Contract {
      */
     api_version: number;
     data: SeedReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -704,6 +856,10 @@ export interface Contract {
     api_version: number;
     data: UpdateReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -718,6 +874,10 @@ export interface Contract {
     api_version: number;
     data: SetupReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -731,6 +891,10 @@ export interface Contract {
      */
     api_version: number;
     data: Reckoning;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -749,6 +913,10 @@ export interface Contract {
      */
     data: string;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -762,6 +930,10 @@ export interface Contract {
      */
     api_version: number;
     data: StatusReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -777,6 +949,10 @@ export interface Contract {
     api_version: number;
     data: Line;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -790,6 +966,10 @@ export interface Contract {
      */
     api_version: number;
     data: Letting;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -805,6 +985,10 @@ export interface Contract {
     api_version: number;
     data: Stored;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -818,6 +1002,10 @@ export interface Contract {
      */
     api_version: number;
     data: StuckReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -833,6 +1021,10 @@ export interface Contract {
     api_version: number;
     data: TraceReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -846,6 +1038,10 @@ export interface Contract {
      */
     api_version: number;
     data: UndoReversal;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -861,6 +1057,10 @@ export interface Contract {
     api_version: number;
     data: Uninstall;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -874,6 +1074,10 @@ export interface Contract {
      */
     api_version: number;
     data: StackUpdateReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -889,6 +1093,10 @@ export interface Contract {
     api_version: number;
     data: UpgradeReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -902,6 +1110,10 @@ export interface Contract {
      */
     api_version: number;
     data: VersionReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -917,6 +1129,10 @@ export interface Contract {
     api_version: number;
     data: WalkthroughReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -930,6 +1146,10 @@ export interface Contract {
      */
     api_version: number;
     data: SupervisionReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
@@ -945,6 +1165,10 @@ export interface Contract {
     api_version: number;
     data: WizardReport;
     /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
     kind: string;
@@ -958,6 +1182,10 @@ export interface Contract {
      */
     api_version: number;
     data: Term1;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
     /**
      * Which payload this is, so a consumer can branch before parsing `data`.
      */
