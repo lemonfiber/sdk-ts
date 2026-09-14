@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 41067195202edaaa380b339294ccafae05e2e99d  ·  api_version 1
+// Source: 468091e1dc8b30b0bb6006302690be10e39275fb  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4032,15 +4032,23 @@ export interface RecordReport {
   service: string;
 }
 /**
- * Something found that lemonfiber cannot take over, named rather than passed over.
+ * Something lemonfiber cannot act on, named rather than passed over.
+ *
+ * Written for a migration survey and read by two reports now. The second is the
+ * status of a stack the operator maintains themselves, where a service declaring an
+ * API this build cannot reach is named the same way — what, and why — rather than
+ * being dropped from every feature that would have used it. One shape for both,
+ * because "named rather than passed over" is the whole of what either is saying and
+ * two shapes would be two ways of saying it.
  */
 export interface UnsupportedReport {
   /**
-   * Why it cannot be adopted, in the operator's terms.
+   * Why lemonfiber cannot act on it, in the operator's terms.
    */
   because: string;
   /**
-   * What was found, by the name the engine gives it.
+   * What was found, by the name the thing that found it gives it — a project and
+   * service for a survey, a service id for a stack lemonfiber runs.
    */
   what: string;
 }
@@ -4213,6 +4221,16 @@ export interface LifecycleReport {
   held?: string | null;
   plan: Plan;
   /**
+   * Host ports this start wants that another Compose project on this machine
+   * already answers on, each named on both sides.
+   *
+   * Empty for every action that starts nothing, and empty on a machine running one
+   * stack. Reported rather than refused: a port somebody deliberately shares is
+   * their business, and the start goes ahead — what this changes is whether an
+   * operator meeting a bind failure knows who is holding the port.
+   */
+  port_conflicts?: ConflictReport[];
+  /**
    * Whether this was a rehearsal.
    */
   rehearsed: boolean;
@@ -4289,6 +4307,23 @@ export interface Dropped {
    * The profile that will not run.
    */
   profile: string;
+}
+/**
+ * A port lemonfiber wants for a service that something else already answers on.
+ */
+export interface ConflictReport {
+  /**
+   * The project already holding it.
+   */
+  held_by: string;
+  /**
+   * The host port both want.
+   */
+  port: number;
+  /**
+   * The lemonfiber service that would publish it.
+   */
+  wanted_by: string;
 }
 /**
  * A stack file the operator edited, preserved rather than overwritten, with the
@@ -4408,23 +4443,6 @@ export interface MigrationReport {
    * What was found and cannot be adopted.
    */
   unsupported: UnsupportedReport[];
-}
-/**
- * A port lemonfiber wants for a service that something else already answers on.
- */
-export interface ConflictReport {
-  /**
-   * The project already holding it.
-   */
-  held_by: string;
-  /**
-   * The host port both want.
-   */
-  port: number;
-  /**
-   * The lemonfiber service that would publish it.
-   */
-  wanted_by: string;
 }
 /**
  * What an existing layout costs, where it cannot hold a hardlink.
@@ -4609,12 +4627,27 @@ export interface Outbound {
 export interface Elsewhere {
   /**
    * Where its requests go, in the terms an operator would recognise.
+   *
+   * Empty means it reaches nothing, which is an answer. It never means *and we
+   * do not know*: that is [`Self::recorded`], and the two must not be read as one
+   * — an unknown service rendered as an empty destination would be this product
+   * claiming nothing leaves the machine on the strength of having no idea.
    */
   destination: string;
   /**
    * What it asks for.
    */
   purpose: string;
+  /**
+   * Whether lemonfiber ships a record of what this service reaches.
+   *
+   * False for a service that arrived in the stack after this build was made, or
+   * from an operator's own fork. It is listed anyway, because the alternative —
+   * leaving it out — is a privacy inventory that is complete-looking and short,
+   * and a reader counting the services on their machine against the ones on this
+   * list is the reader this surface exists for.
+   */
+  recorded: boolean;
   /**
    * The service, by the id the stack declares it under.
    */
@@ -4727,6 +4760,17 @@ export interface QualityReport {
    * forced into their shape.
    */
   music?: MusicChoice1 | null;
+  /**
+   * The hand-edited config a reapply replaced — or, rehearsed, would replace — with
+   * the diff of what goes against what lands in its place.
+   *
+   * Absent everywhere else, and absent for a reapply over a config already in
+   * lemonfiber's own hand. Consent given against a yes-or-no is consent to
+   * something the operator was never shown: they know a file they edited is about
+   * to go, and not which of their lines is in it. The lines are masked the way
+   * every stack-file diff is, so a key that drifted is named without its value.
+   */
+  overwritten?: StackEdit | null;
 }
 /**
  * One preset in force, and what it means for the media it applies to — the
@@ -4912,6 +4956,9 @@ export interface Mended {
       }
     | {
         outcome: "would_overwrite";
+      }
+    | {
+        outcome: "unmanaged";
       };
   repair: Repair;
 }
@@ -5193,6 +5240,17 @@ export interface SeedReport {
    */
   rehearsed: boolean;
   /**
+   * Services this pass could not wire because it cannot speak to them, each with
+   * why.
+   *
+   * Not wirings, because nothing was attempted and a wiring says how an attempt
+   * turned out. Not absences either, which is the point: a pass that skipped a
+   * service declaring an API shape this build does not speak used to say nothing at
+   * all, and an operator who wrote that declaration had no way to tell it from a
+   * service lemonfiber had simply forgotten.
+   */
+  unsupported?: UnsupportedReport[];
+  /**
    * Every connection attempted, and how each turned out.
    */
   wirings: Wiring[];
@@ -5273,6 +5331,13 @@ export interface Wiring {
       }
     | {
         state: "would-adopt";
+      }
+    | {
+        /**
+         * Why the operator said to leave it alone, in their own words.
+         */
+        reason: string;
+        state: "observed";
       }
     | {
         /**
@@ -5710,6 +5775,19 @@ export interface StatusReport {
    * it.
    */
   undeclared: Undeclared[];
+  /**
+   * Services that are running and operable like any other, and that lemonfiber
+   * cannot offer the features needing to know what they are — each with why.
+   *
+   * Empty for the stack this build ships. It fills in for a stack the operator
+   * maintains, where a declaration can name an API and leave out the part that
+   * makes it addressable: such a service starts, stops and reports its state
+   * exactly as the others do, and every feature that would have spoken to it used
+   * to do nothing and say nothing. Here rather than on the service's own row,
+   * because it is a statement about what this build can do rather than about how
+   * the service is faring.
+   */
+  unsupported?: UnsupportedReport[];
 }
 /**
  * How long each way of acting on these services takes them away for.
@@ -6069,6 +6147,16 @@ export interface StuckReport {
    * The stuck items, each linkable to its trace.
    */
   items: StuckEntry[];
+  /**
+   * Services whose queue lemonfiber cannot read at all, each with why.
+   *
+   * Apart from [`Self::incomplete`], which is a queue that was asked and would not
+   * answer. This is a queue that was never asked, because the service declares an
+   * API shape this build does not speak or a Servarr declaration it cannot reach
+   * through — and a reading that dropped those would be as short as an unreadable
+   * queue makes it, without the sentence that says so.
+   */
+  unsupported?: UnsupportedReport[];
 }
 /**
  * One stuck item queue health found, named so it links straight to its own trace.
