@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8  ·  api_version 1
+// Source: 41067195202edaaa380b339294ccafae05e2e99d  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5690,6 +5690,7 @@ export interface StatusReport {
    * What a whole set of services amounts to.
    */
   condition: "inactive" | "degraded" | "partial" | "active";
+  disturbs: Disturbances;
   /**
    * The forms asked about; empty means the whole stack was.
    */
@@ -5709,6 +5710,127 @@ export interface StatusReport {
    * it.
    */
   undeclared: Undeclared[];
+}
+/**
+ * How long each way of acting on these services takes them away for.
+ *
+ * Here so that a surface can say it before it asks the operator to confirm,
+ * which is the only moment saying it is any use.
+ */
+export interface Disturbances {
+  /**
+   * Restarting services.
+   */
+  restarting:
+    | {
+        bound: "bounded";
+        /**
+         * The length, in seconds.
+         *
+         * Seconds rather than the engine's own duration shape, because every
+         * caller of this turns it into a sentence and none of them wants
+         * nanoseconds to do it.
+         */
+        seconds: number;
+      }
+    | {
+        bound: "open-ended";
+        /**
+         * What has to happen before it ends.
+         */
+        until: "downloads";
+      };
+  /**
+   * Bringing services up, whether a whole form or named services inside one.
+   */
+  starting:
+    | {
+        bound: "bounded";
+        /**
+         * The length, in seconds.
+         *
+         * Seconds rather than the engine's own duration shape, because every
+         * caller of this turns it into a sentence and none of them wants
+         * nanoseconds to do it.
+         */
+        seconds: number;
+      }
+    | {
+        bound: "open-ended";
+        /**
+         * What has to happen before it ends.
+         */
+        until: "downloads";
+      };
+  /**
+   * Taking services down, interrupting anything still arriving.
+   */
+  stopping:
+    | {
+        bound: "bounded";
+        /**
+         * The length, in seconds.
+         *
+         * Seconds rather than the engine's own duration shape, because every
+         * caller of this turns it into a sentence and none of them wants
+         * nanoseconds to do it.
+         */
+        seconds: number;
+      }
+    | {
+        bound: "open-ended";
+        /**
+         * What has to happen before it ends.
+         */
+        until: "downloads";
+      };
+  /**
+   * Taking the stack down once everything still arriving has landed.
+   *
+   * Whole forms only: stopping named services has no such wait to ask for,
+   * and a caller that asks for both at once is refused.
+   */
+  stopping_after_downloads:
+    | {
+        bound: "bounded";
+        /**
+         * The length, in seconds.
+         *
+         * Seconds rather than the engine's own duration shape, because every
+         * caller of this turns it into a sentence and none of them wants
+         * nanoseconds to do it.
+         */
+        seconds: number;
+      }
+    | {
+        bound: "open-ended";
+        /**
+         * What has to happen before it ends.
+         */
+        until: "downloads";
+      };
+  /**
+   * Changing the running set, which stops whatever falls outside the new one.
+   */
+  switching:
+    | {
+        bound: "bounded";
+        /**
+         * The length, in seconds.
+         *
+         * Seconds rather than the engine's own duration shape, because every
+         * caller of this turns it into a sentence and none of them wants
+         * nanoseconds to do it.
+         */
+        seconds: number;
+      }
+    | {
+        bound: "open-ended";
+        /**
+         * What has to happen before it ends.
+         */
+        until: "downloads";
+      };
 }
 /**
  * A container running under this project that the stack description never declared.
