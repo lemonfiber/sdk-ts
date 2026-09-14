@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: be01322365767b4f7a75b07dd99785140086c371  ·  api_version 1
+// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1348,13 +1348,24 @@ export interface Listing {
 export interface BackupReport {
   pace: Pace;
   /**
-   * Where the archive was written.
+   * Where the archive was written, or — on a run that only said what it would
+   * capture — where it would have gone.
    */
   path: string;
   /**
-   * The older backups retention pruned, oldest first.
+   * The older backups retention pruned, oldest first — or would prune.
    */
   pruned: string[];
+  /**
+   * Whether this run only said what it would capture.
+   *
+   * A flag rather than a second shape, because every other field means the same
+   * thing either way: a capture is settled before it is written — the room is
+   * measured, the manifest described, the name and the path derived, and retention
+   * worked out — so what a rehearsal reports is what a real run would report, with
+   * the one write left out. What changes is the tense a surface says it in.
+   */
+  rehearsed: boolean;
   /**
    * What the backup covers.
    */
@@ -1805,6 +1816,20 @@ export interface Bundle {
    * Where it was written, or nothing where a run that writes nothing described it.
    */
   path?: string | null;
+  /**
+   * Where it would be written, on the run that only describes one.
+   *
+   * The other half of what a description is for. What goes in the file and how
+   * large it is answer *whether* to make it; where it lands answers *where to find
+   * it*, and an operator deciding at a shell needs both at the one moment the
+   * answer can still change what they do. Resolved by the same function the run
+   * that writes resolves it with, so the path shown and the path written are one.
+   *
+   * Absent on a run that wrote one — `path` is then where it went — and absent on a
+   * machine that would not say where lemonfiber keeps its own files, which is the
+   * one destination of the three that needs that answer.
+   */
+  would_go?: string | null;
 }
 /**
  * Everything it holds, gathered, redacted and read back.
@@ -2421,6 +2446,21 @@ export interface Rotation {
          */
         detail: string;
         settled: "unproven";
+      }
+    | {
+        /**
+         * What would still need doing before every consumer held the replacement.
+         */
+        afterwards: string[];
+        /**
+         * What a real run would do, step by step, in lemonfiber's own words.
+         */
+        detail: string;
+        /**
+         * Where the value that would be replaced is kept.
+         */
+        location: string;
+        settled: "rehearsed";
       }
     | {
         /**
@@ -5143,6 +5183,16 @@ export interface SeedReport {
    */
   assessment: "assessed" | "unassessable";
   /**
+   * Whether this pass only said what it would do.
+   *
+   * A flag rather than a second shape, because every connection above means the
+   * same thing either way: what the service holds is what it holds, and what
+   * lemonfiber would write is what it would write. What changes is that two of the
+   * states are reachable only here, and that the last line of the report is an
+   * instruction to run it for real rather than to run it again.
+   */
+  rehearsed: boolean;
+  /**
    * Every connection attempted, and how each turned out.
    */
   wirings: Wiring[];
@@ -5207,6 +5257,22 @@ export interface Wiring {
       }
     | {
         state: "unmanaged";
+      }
+    | {
+        /**
+         * What a real run would leave it holding, or `None` where that value would be
+         * generated rather than read.
+         */
+        ours?: string | null;
+        state: "would-wire";
+        /**
+         * What the service holds now, or `None` where it holds nothing or could not
+         * be asked.
+         */
+        yours?: string | null;
+      }
+    | {
+        state: "would-adopt";
       }
     | {
         /**
@@ -6112,10 +6178,23 @@ export interface UndoReversal {
    * changes asked back and three carried out is a machine in a state nobody has been
    * told about, and "some of it worked" is the sentence that makes somebody go
    * looking by hand. Empty where everything went back, which is the common case.
+   *
+   * On a run that only said what it would do, this is what it cannot promise: a
+   * change that goes back through the service that made it goes back only where that
+   * service is answering, and a rehearsal has not asked one.
    */
   left: UndoLeft[];
   /**
-   * What was put back, in the order it was.
+   * Whether this run only said what it would put back.
+   *
+   * A flag rather than a second shape, because the two lists mean the same thing
+   * either way and a caller reading them should read one document. What changes is
+   * the tense a surface says them in.
+   */
+  rehearsed: boolean;
+  /**
+   * What was put back, in the order it was — or, on a run that only said what it
+   * would do, what would go back.
    */
   reversed: Undo[];
 }
@@ -6915,13 +6994,45 @@ export interface SupervisionReport {
   forms: string[];
   /**
    * Why the watch ended: the data root vanished, or a different volume took
-   * its place.
+   * its place — or, on a run that only said what a watch would do, that nothing
+   * was watched at all.
    */
   reason: string;
   /**
    * Whether stopping the services succeeded.
    */
   stopped: boolean;
+  /**
+   * The watch this run would have kept, where it only said what it would do.
+   *
+   * A guard is the one command with no ending of its own, so a rehearsal of it
+   * cannot be the command with its last step left out — it would hold until the
+   * drive was pulled. What it answers with is this instead, and the fields above
+   * then describe a watch that never began: nothing ended, and nothing was
+   * stopped. Absent on every watch that actually ran.
+   */
+  would?: Vigil | null;
+}
+/**
+ * The watch a run would keep, and what it would do at the end of it.
+ */
+export interface Vigil {
+  /**
+   * The invocation it would run the moment that location went, word for word.
+   *
+   * Built by the same path a real watch stops the services through, rather than
+   * described beside it: an argv reported from a second reckoning is one nobody
+   * runs, and the one nobody runs is the one that stops being right.
+   */
+  command: string[];
+  /**
+   * How often it would look, in seconds.
+   */
+  every: number;
+  /**
+   * The data location it would hold.
+   */
+  root: string;
 }
 /**
  * The payload.
