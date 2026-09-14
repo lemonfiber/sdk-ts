@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 2e3e492ec02d33edbe42e39be05e9f5c9905e3a6  ·  api_version 1
+// Source: be01322365767b4f7a75b07dd99785140086c371  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -294,6 +294,24 @@ export interface Contract {
      */
     api_version: number;
     data: Bundle;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  catalogue: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: CatalogueReport;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -1862,6 +1880,83 @@ export interface Terms {
 /**
  * The payload.
  */
+export interface CatalogueReport {
+  /**
+   * The services this stack has dropped, in the order it records them.
+   *
+   * Empty for a stack that has never dropped anything, which is a different thing
+   * from a stack that keeps no record — and told apart by the fact that a stack
+   * keeping no record cannot be read as having dropped something it did.
+   */
+  removed: RemovedService[];
+  /**
+   * The services, in the order the stack declares them.
+   *
+   * Every service the manifest holds rather than the ones some form would start:
+   * what a service is *for* is the question being asked, and an answer narrowed to
+   * what is running would leave the operator unable to ask about the one they are
+   * deciding whether to run.
+   */
+  services: CataloguedService[];
+}
+/**
+ * A service this stack used to carry, and what became of it.
+ */
+export interface RemovedService {
+  /**
+   * The id it was declared under, which is the name an operator will look for.
+   */
+  id: string;
+  /**
+   * Why it went.
+   */
+  reason: string;
+  /**
+   * The stack version whose catalogue stopped carrying it.
+   */
+  removed_in: string;
+  /**
+   * What took its place, where anything did.
+   *
+   * Absent is an answer and the commonest one: most things that go are not
+   * replaced, and a record that named the nearest surviving service to avoid an
+   * empty field would be pointing an operator at something that does not do the
+   * job they are looking for.
+   */
+  replaced_by?: string | null;
+}
+/**
+ * What one service is for, as the stack declares it.
+ */
+export interface CataloguedService {
+  /**
+   * How much its absence matters.
+   */
+  criticality: "critical" | "core" | "important" | "enhancing" | "optional";
+  /**
+   * What it does for the operator, in plain language.
+   */
+  describes: string;
+  /**
+   * The service's id, which is also its Compose service name.
+   */
+  id: string;
+  /**
+   * What it is called in front of an operator.
+   */
+  name: string;
+  /**
+   * What going without it costs.
+   *
+   * Carried beside the description rather than left to a separate question,
+   * because the pair is what turns an inventory into a judgement: knowing that
+   * Bazarr finds subtitles says nothing about whether its being down matters.
+   */
+  without_it: string;
+}
+/**
+ * The payload.
+ */
 export interface Guidance {
   /**
    * Every device, in the order somebody is likely to be holding one.
@@ -3102,6 +3197,19 @@ export interface Service {
    * than counted as one more independent thing wrong.
    */
   depends_on: string[];
+  /**
+   * What it does for the operator, in the stack's own words.
+   *
+   * Carried on the service rather than looked up where it is shown, because this
+   * is the one struct every surface reads: a listing, the machine-readable reply,
+   * the web API and the terminal's panel all render this, and a description
+   * fetched separately by each of them would be four chances to render three.
+   *
+   * The stack's words rather than lemonfiber's, for the reason its absence cost is:
+   * a stack that adds a service should not need a lemonfiber release before it can
+   * say what that service is for.
+   */
+  describes: string;
   /**
    * How it exited, where it has exited.
    */
@@ -5524,6 +5632,48 @@ export interface StatusReport {
    * Each service, worst first.
    */
   services: Service[];
+  /**
+   * The containers running under this project that the stack never declared.
+   *
+   * Kept apart from the services rather than mixed in with them, because what is
+   * known about each is different: a service has a profile, a criticality and a
+   * description, and one of these has a name and a state and nothing else. Shown
+   * all the same — something running under this project's name that lemonfiber did
+   * not put there is the operator's business whether or not lemonfiber understands
+   * it.
+   */
+  undeclared: Undeclared[];
+}
+/**
+ * A container running under this project that the stack description never declared.
+ *
+ * Its own type rather than a [`Service`] with the fields left blank. A service
+ * carries a profile and a criticality, and there is no honest value for either here:
+ * filling them in would have lemonfiber asserting how much something matters when
+ * the only thing it knows about it is that it exists.
+ */
+export interface Undeclared {
+  /**
+   * What it does for the operator — which is exactly what is not known.
+   */
+  describes: string;
+  /**
+   * The Compose service name the engine reports it under.
+   */
+  id: string;
+  /**
+   * What it is doing, read the same way a declared service's state is.
+   */
+  state:
+    | "failed"
+    | "crash-looping"
+    | "unhealthy"
+    | "absent"
+    | "stopped"
+    | "starting"
+    | "running"
+    | "healthy"
+    | "host-managed";
 }
 /**
  * The payload.
@@ -6893,6 +7043,9 @@ export type BesideEnvelope = Contract["beside"];
 /** The envelope carrying `bundle`. */
 export type BundleEnvelope = Contract["bundle"];
 
+/** The envelope carrying `catalogue`. */
+export type CatalogueEnvelope = Contract["catalogue"];
+
 /** The envelope carrying `clients`. */
 export type ClientsEnvelope = Contract["clients"];
 
@@ -7041,7 +7194,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -7053,6 +7206,7 @@ export interface ByKind {
   "bandwidth": BandwidthEnvelope;
   "beside": BesideEnvelope;
   "bundle": BundleEnvelope;
+  "catalogue": CatalogueEnvelope;
   "clients": ClientsEnvelope;
   "config": ConfigEnvelope;
   "credentials": CredentialsEnvelope;
