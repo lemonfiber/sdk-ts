@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 24ddf47e248873717c50eb3243dec61f43e6cccd  ·  api_version 1
+// Source: 9daf9ff7e729c0203a830492d198baa28a8fe207  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -3822,6 +3822,19 @@ export interface LifecycleReport {
    * moved, or could not be.
    */
   forwarding?: string | null;
+  /**
+   * Why nothing was run, where a start declined to run anything.
+   *
+   * Absent for every ordinary command, which is what makes it readable: a
+   * lifecycle report with an empty plan and a status of nothing is a report of
+   * something that did not happen, and without this there is nowhere to say
+   * whether that was a fault or the correct answer. A start at a login declines
+   * for three reasons the operator would each act on differently — the stack was
+   * stopped on purpose, autostart was never asked for, or this machine is on its
+   * battery and nobody said to start anyway — and a run nobody is watching has to
+   * leave the reason somewhere a reader finds later.
+   */
+  held?: string | null;
   plan: Plan;
   /**
    * Whether this was a rehearsal.
