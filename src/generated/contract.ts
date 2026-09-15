@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 468091e1dc8b30b0bb6006302690be10e39275fb  ·  api_version 1
+// Source: f00ef6a8fb3f3cd78034eaccd7faedecddda9257  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -2664,6 +2664,12 @@ export interface Alert {
    */
   kind: string;
   /**
+   * What it costs the operator, which is the half between the event and the
+   * fix. "The tunnel dropped" and "restart the gateway" leave whoever reads
+   * them to work out for themselves whether anything leaked.
+   */
+  meaning: string;
+  /**
    * Which way it went.
    */
   moment: "onset" | "resolved";
@@ -2827,6 +2833,12 @@ export interface Affected {
    * What is also wrong because of this, counted with it rather than again.
    */
   downstream: string[];
+  /**
+   * What it costs the operator. The line expands to items an operator can act
+   * on, and an item that states only the event leaves the judgement it was
+   * supposed to save them.
+   */
+  meaning: string;
   /**
    * What to do about it, most likely first.
    */
