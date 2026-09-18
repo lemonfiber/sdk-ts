@@ -124,21 +124,30 @@ A change belongs in those Rust types; everything downstream follows from that. T
 merging:
 
 ```console
-npm run contract:sync       # pull a newer contract from lemonfiber
-npm run contract:generate   # rewrite src/generated/ from it
+npm run contract:sync -- v1.0.0   # pull the contract at that revision
+npm run contract:generate         # rewrite src/generated/ from it
 ```
+
+The revision is required and is a release tag or a full 40-character commit hash.
+There is no default: an abbreviated hash names one artefact today and may not
+later, and a sync with no revision at all would vendor whatever `main` happened
+to hold at the moment it ran.
 
 Why it works this way:
 [ADR-0014](https://github.com/lemonfiber/spec/blob/main/00-overview/decisions/0014-one-generated-contract-for-every-sdk.md).
 
 ## The gate
 
-Everything CI runs, in one command:
-
 ```console
 npm ci
 npm run ci
 ```
+
+That is the whole of what CI runs over this package's own source — the `gate` job
+runs exactly `npm run ci` — and it is not the whole of CI. What it leaves out is
+named in the [`justfile`](justfile) beside `just ci`, which runs the same command:
+the four commit rules, which `.githooks/commit-msg` refuses before the push;
+`contract-drift`, which fetches the served artefact; and the forge-side jobs.
 
 The individual steps are the `scripts` in [`package.json`](package.json), and each
 runs on its own while you work — `npm test` for the fast loop.
