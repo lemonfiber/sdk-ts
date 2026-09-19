@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 7a055462021054aad2191f137986826003d714be  ·  api_version 1
+// Source: eb40fb4d4a052f2d063de373920b1fb4c2ea7957  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1050,6 +1050,24 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  substitution: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: SubstitutionReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   trace: {
     /**
      * The output contract's version.
@@ -1182,6 +1200,24 @@ export interface Contract {
      */
     api_version: number;
     data: SupervisionReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  wiring: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: WiringReport;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -6307,6 +6343,72 @@ export interface StuckEntry {
 /**
  * The payload.
  */
+export interface SubstitutionReport {
+  /**
+   * Whether it was written, or only worked out.
+   *
+   * A run that only says what it would do writes nothing and reports the same
+   * answer, so the two are told apart here rather than by the caller remembering
+   * which flags it passed.
+   */
+  applied: boolean;
+  substitution: Substitution;
+}
+/**
+ * The change itself, and what it would leave with nothing filling it.
+ */
+export interface Substitution {
+  /**
+   * Every service that asks for it, so the reach of the change is visible.
+   */
+  asked_by: string[];
+  /**
+   * The capability whose filler changes.
+   */
+  capability: string;
+  /**
+   * What this would leave with nothing filling it, each naming what asked.
+   *
+   * The one thing an operator cannot find out afterwards. A service filling two
+   * capabilities is replaced for one of them, and the other stops being filled —
+   * which is a working stack becoming a broken one, on a change that reads as
+   * swapping like for like.
+   */
+  leaves_unfilled: Unfilled[];
+  /**
+   * What would fill it.
+   */
+  now: string;
+  /**
+   * The setting the change writes.
+   */
+  setting: string;
+  /**
+   * What fills it now, where anything does.
+   */
+  was?: string | null;
+}
+/**
+ * A capability something asks for and nothing fills, and what asked for it.
+ *
+ * The pair rather than the name: a capability nothing fills is a fact about the
+ * stack, and a capability *`seerr` asks for* and nothing fills is a thing somebody
+ * can act on. Reporting the first and leaving the second to be worked out is the
+ * obscure failure at the point of use this exists instead of.
+ */
+export interface Unfilled {
+  /**
+   * The service that asked.
+   */
+  by: string;
+  /**
+   * What it asked for.
+   */
+  capability: string;
+}
+/**
+ * The payload.
+ */
 export interface TraceReport {
   /**
    * How sure the trace is of the item it followed.
@@ -7366,6 +7468,94 @@ export interface Vigil {
 /**
  * The payload.
  */
+export interface WiringReport {
+  /**
+   * Every capability something asks for and nothing fills, naming what asked.
+   *
+   * Repeated out of the links above rather than left to be found among them: a
+   * stack with one unfilled ask among twenty working ones is a stack whose one
+   * problem is a line in a list, and a consumer that had to notice it would be
+   * the reason nobody did.
+   */
+  unfilled: Unfilled[];
+  /**
+   * Every link, in the order the stack declares them.
+   */
+  wired: Wired[];
+}
+/**
+ * One of the stack's links, answered.
+ */
+export interface Wired {
+  /**
+   * The service the link runs from — what asked.
+   */
+  by: string;
+  /**
+   * What it reaches.
+   */
+  reaches:
+    | {
+        /**
+         * The capability asked for.
+         */
+        capability: string;
+        how: "asked";
+        /**
+         * What the ask reaches — empty where nothing fills it or a contest stands.
+         */
+        services: string[];
+        /**
+         * How it was settled.
+         */
+        settled:
+          | {
+              settled: "outright";
+            }
+          | {
+              settled: "each";
+            }
+          | {
+              /**
+               * Every candidate, named, so a choice is made from a list.
+               */
+              claimants: string[];
+              settled: "contested";
+            }
+          | {
+              /**
+               * The ones not chosen, so the choice reads as a choice.
+               */
+              over: string[];
+              settled: "chosen";
+              /**
+               * Who chose.
+               */
+              whose: "stack" | "operator";
+              /**
+               * Why, where the chooser said.
+               */
+              why?: string | null;
+            }
+          | {
+              settled: "unfilled";
+            };
+      }
+    | {
+        how: "by-name";
+        /**
+         * The service named.
+         */
+        service: string;
+        /**
+         * Why it is by name.
+         */
+        why: string;
+      };
+}
+/**
+ * The payload.
+ */
 export interface WizardReport {
   /**
    * Whether that step asks a question, as opposed to only informing.
@@ -7606,6 +7796,9 @@ export type StoredEnvelope = Contract["stored"];
 /** The envelope carrying `stuck`. */
 export type StuckEnvelope = Contract["stuck"];
 
+/** The envelope carrying `substitution`. */
+export type SubstitutionEnvelope = Contract["substitution"];
+
 /** The envelope carrying `trace`. */
 export type TraceEnvelope = Contract["trace"];
 
@@ -7630,6 +7823,9 @@ export type WalkthroughEnvelope = Contract["walkthrough"];
 /** The envelope carrying `watch`. */
 export type WatchEnvelope = Contract["watch"];
 
+/** The envelope carrying `wiring`. */
+export type WiringEnvelope = Contract["wiring"];
+
 /** The envelope carrying `wizard`. */
 export type WizardEnvelope = Contract["wizard"];
 
@@ -7637,7 +7833,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -7690,6 +7886,7 @@ export interface ByKind {
   "stop-seeding": StopSeedingEnvelope;
   "stored": StoredEnvelope;
   "stuck": StuckEnvelope;
+  "substitution": SubstitutionEnvelope;
   "trace": TraceEnvelope;
   "undo": UndoEnvelope;
   "uninstall": UninstallEnvelope;
@@ -7698,6 +7895,7 @@ export interface ByKind {
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
   "watch": WatchEnvelope;
+  "wiring": WiringEnvelope;
   "wizard": WizardEnvelope;
   "word": WordEnvelope;
 }
