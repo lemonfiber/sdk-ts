@@ -72,12 +72,33 @@ for (const file of files) {
       !/^\s*(?:\/\/|\*)/.test(line) &&
       !file.endsWith(".test.ts")
     ) {
-      fail(file, at, "a hardcoded address");
+      fail(
+        file,
+        at,
+        "a hardcoded address. A client library reaches whatever address its caller " +
+          "gives it and none of its own, so an address written here is one a consumer " +
+          "cannot change. Take it from `options.url`, which `Client.at` already reads",
+      );
     }
 
-    if (/eslint-disable/.test(line)) fail(file, at, "eslint-disable");
+    if (/eslint-disable/.test(line))
+      fail(
+        file,
+        at,
+        "an eslint-disable. There are two answers to a lint finding — change the " +
+          "code, or change the rule in `eslint.config.js` with a reason, reviewed. A " +
+          "local suppression is neither: it hides the finding in the place least " +
+          "likely to be read again",
+      );
     if (/@ts-(?:ignore|expect-error|nocheck)/.test(line))
-      fail(file, at, "TypeScript escape hatch");
+      fail(
+        file,
+        at,
+        "a TypeScript escape hatch. The compiler is the whole of what this package " +
+          "promises a consumer about shapes, and a line it is told to skip is a shape " +
+          "nothing checked. Fix the type, or widen it where the value is genuinely " +
+          "unknown and narrow it at the edge",
+      );
 
     // Comments state facts. Reasoning belongs in an ADR.
     if (REASONING.test(line))
@@ -88,7 +109,13 @@ for (const file of files) {
   });
 
   if (!file.endsWith(".test.ts") && lines.length > LINE_CAP) {
-    fail(file, null, `${lines.length} lines, cap is ${LINE_CAP}`);
+    fail(
+      file,
+      null,
+      `${lines.length} lines, over the cap of ${LINE_CAP}. A file past it is one ` +
+        "nobody reads before editing. Split it along a seam it already has rather " +
+        "than raising the cap",
+    );
   }
 }
 
