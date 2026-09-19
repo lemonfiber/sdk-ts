@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: f00ef6a8fb3f3cd78034eaccd7faedecddda9257  ·  api_version 1
+// Source: 1f93acf64d10438872c89b96838406794f7c6ea7  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1214,6 +1214,19 @@ export interface Contract {
  * The payload.
  */
 export interface Admitted {
+  /**
+   * The household member this session is for, where it is a member's.
+   *
+   * **Absent is the operator**, which is the whole of the discriminator. A second
+   * field naming which kind of person this is could disagree with this one, and
+   * the day they disagreed a client would have to choose which to believe.
+   *
+   * The id and nothing else. What that member is called, what they may watch and
+   * what they have left are read from the household report, which already carries
+   * all of it per member — so there is one fact here and no second copy of
+   * anything that could go stale against the read.
+   */
+  member?: string | null;
   /**
    * The secret this session is carried by, sent in the header the per-run token is.
    */
@@ -2765,6 +2778,22 @@ export interface Address {
  * told something, where one shown a single name has only been given an answer.
  */
 export interface FrontDoorBeside {
+  /**
+   * The address to hand somebody for this service, read from this machine at the
+   * moment of asking rather than remembered.
+   *
+   * **Carried because not-the-door is not nowhere.** A household member wanting to
+   * watch something, or to ask for something, wants the service that faces them —
+   * and which of the two happens to be the front door is an operator's
+   * arrangement, not an answer to their question. Without this a surface can hand
+   * them only whichever one the door turned out to be, and say nothing at all
+   * about the other.
+   *
+   * Absent where the stack declares no port for it, for the reason the door's own
+   * address is absent then: an address with no port on it is one a browser answers
+   * with a refusal, and the manifest is where a port is declared.
+   */
+  address?: Address | null;
   /**
    * Why it is not somewhere to begin.
    */
