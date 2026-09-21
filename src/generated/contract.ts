@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: eb40fb4d4a052f2d063de373920b1fb4c2ea7957  ·  api_version 1
+// Source: d3e6b53cfcf942d3d8b50bb29bf29bfdbb741d40  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -2368,6 +2368,32 @@ export interface SettingReport {
    * The setting's name.
    */
   key: string;
+  /**
+   * Where the value came from, beside the value rather than behind a second
+   * request — reading a setting and reading what put it there are one act.
+   */
+  origin:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
   /**
    * Whether the value was withheld.
    */
