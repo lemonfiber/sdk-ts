@@ -33,6 +33,14 @@ export default tseslint.config(
       // lemonfiber serves plain HTTP on loopback: C6-R7 forbids self-signed TLS
       // by default, and C6-R6 requires saying so rather than papering over it.
       "unicorn/prefer-https": "off",
+      // Every place this fires is a guard clause — `if (x === undefined) return
+      // undefined;` and then the real answer. Collapsing those into ternaries
+      // puts the ordinary case and the exception on one line and makes the
+      // early return, which is the thing being said, the middle of an
+      // expression. The style is deliberate here and in the rest of the org,
+      // and a rule that argues with it is one to answer once rather than with
+      // thirteen disables.
+      "unicorn/prefer-ternary": "off",
     },
   },
 

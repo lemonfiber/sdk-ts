@@ -15,11 +15,12 @@ import { problem, type Problem } from "./problem.js";
 function isLoopbackHost(host: string): boolean {
   const bare = host.startsWith("[") && host.endsWith("]") ? host.slice(1, -1) : host;
 
-  if (bare === "localhost" || bare.endsWith(".localhost")) return true;
-  if (bare === "::1") return true;
-  if (/^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bare)) return true;
-
-  return false;
+  return (
+    bare === "localhost" ||
+    bare.endsWith(".localhost") ||
+    bare === "::1" ||
+    /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bare)
+  );
 }
 
 export type Address = { ok: true; base: string } | { ok: false; problem: Problem };
