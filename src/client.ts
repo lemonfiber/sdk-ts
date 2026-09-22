@@ -90,8 +90,10 @@ export class Client {
     const headers: Record<string, string> = {
       [TOKEN_HEADER]: this.#token,
       Accept: "application/json",
+      // Part of what the request is, rather than assigned onto a value that
+      // was already complete a line earlier.
+      ...(body !== undefined && { "Content-Type": "application/json" }),
     };
-    if (body !== undefined) headers["Content-Type"] = "application/json";
 
     let answer;
     try {

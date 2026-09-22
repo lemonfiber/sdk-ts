@@ -277,8 +277,11 @@ async function open(
   const headers: Record<string, string> = {
     [TOKEN_HEADER]: options.token,
     Accept: "text/event-stream",
+    // Spread rather than assigned afterwards: the header is part of what this
+    // request is, and a mutation a line later reads as an afterthought to a
+    // value that was already complete.
+    ...(lastEventId !== undefined && { "Last-Event-ID": lastEventId }),
   };
-  if (lastEventId !== undefined) headers["Last-Event-ID"] = lastEventId;
 
   try {
     const answer = await options.fetching(options.url, {
