@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: eb40fb4d4a052f2d063de373920b1fb4c2ea7957  ·  api_version 1
+// Source: 4c2ae3797d9c60ea2f6768640131bab16976bc36  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -123,6 +123,53 @@ export type Triggered =
        */
       detail: string;
       state: "failed";
+    };
+/**
+ * How an installed service is reached, where it is reached at all.
+ *
+ * The tier is the arm, so the label a tier earns lives only in the arm entitled to
+ * one. Only a household service is proxied — the bundled policy is that an admin
+ * surface does not get a name on the household network — and a record able to carry
+ * a loopback service with a hostname would be a record able to describe the thing
+ * that policy exists to prevent.
+ *
+ * **The group is on both arms, and that is not an oversight.** Only the proxy is
+ * the household tier's alone; the bundled dashboard carries an entry for an
+ * operator surface too, with the address it links to rendered from the tier — nine
+ * of the shipped stack's own entries point at this machine. A record that kept the
+ * group for the wider tier alone would leave a loopback service off the panel its
+ * bundled neighbours are on.
+ *
+ * A tier and never an address, either way: lemonfiber renders one from the other
+ * exactly as it does for a bundled service, so the two-tier policy stays a property
+ * of the system rather than a request a plugin made.
+ */
+export type PluginReached =
+  | {
+      /**
+       * The group on the bundled dashboard, where the manifest named one.
+       */
+      group?: string | null;
+      /**
+       * The port the service listens on.
+       */
+      port: number;
+      tier: "loopback";
+    }
+  | {
+      /**
+       * The group on the bundled dashboard, where the manifest named one.
+       */
+      group?: string | null;
+      /**
+       * The single label in front of the operator's domain.
+       */
+      hostname: string;
+      /**
+       * The port the service listens on.
+       */
+      port: number;
+      tier: "household";
     };
 /**
  * One thing to do next.
@@ -690,6 +737,24 @@ export interface Contract {
      */
     api_version: number;
     data: Leaving;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  plugins: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: PluginInstalls;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -2368,6 +2433,32 @@ export interface SettingReport {
    * The setting's name.
    */
   key: string;
+  /**
+   * Where the value came from, beside the value rather than behind a second
+   * request — reading a setting and reading what put it there are one act.
+   */
+  origin:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
   /**
    * Whether the value was withheld.
    */
@@ -4807,6 +4898,104 @@ export interface Elsewhere {
    * The service, by the id the stack declares it under.
    */
   service: string;
+}
+/**
+ * The payload.
+ */
+export interface PluginInstalls {
+  /**
+   * What this run's install came to, or nothing where it only read.
+   */
+  install?: PluginInstall | null;
+  /**
+   * Every plugin the record holds.
+   *
+   * What it holds, rather than what it would hold: a rehearsal wrote nothing, so
+   * what it settled is in `install` and not here. A listing that counted it
+   * would report an install that did not happen.
+   */
+  installed: PluginInstalled1[];
+}
+/**
+ * What an install came to.
+ */
+export interface PluginInstall {
+  /**
+   * Whether it was written down. A rehearsal leaves this false.
+   */
+  recorded: boolean;
+  would: PluginInstalled;
+}
+/**
+ * What the install settled, said whether or not it was written down.
+ */
+export interface PluginInstalled {
+  /**
+   * The plugin's id: the name it is installed and journalled under.
+   */
+  plugin: string;
+  /**
+   * What was placed, one entry per service the plugin declares.
+   */
+  services: PluginPlaced[];
+  /**
+   * The plugin's own content version, as it stood when it was installed.
+   */
+  version: string;
+}
+/**
+ * One service of an installed plugin, as it was placed.
+ */
+export interface PluginPlaced {
+  /**
+   * Where inside the container its one configuration directory is mounted.
+   *
+   * Resolved rather than optional. The record answers where the directory is, and
+   * a run that re-derived the fallback would answer for a container it did not
+   * write the day that fallback moved.
+   */
+  config_path: string;
+  /**
+   * The digest that fixes what runs.
+   */
+  digest: string;
+  /**
+   * The registry path, carrying no pin of its own.
+   */
+  image: string;
+  /**
+   * How it is reached, or nothing where it has no listener.
+   */
+  reached?: PluginReached | null;
+  /**
+   * The service's id, which is the name its container is written under.
+   */
+  service: string;
+  /**
+   * The readable name that digest went by when it was installed.
+   */
+  tag: string;
+  /**
+   * Whether the library is mounted for it.
+   */
+  takes_data: boolean;
+}
+/**
+ * One plugin's install, as it was decided.
+ */
+export interface PluginInstalled1 {
+  /**
+   * The plugin's id: the name it is installed and journalled under.
+   */
+  plugin: string;
+  /**
+   * What was placed, one entry per service the plugin declares.
+   */
+  services: PluginPlaced[];
+  /**
+   * The plugin's own content version, as it stood when it was installed.
+   */
+  version: string;
 }
 /**
  * The payload.
@@ -7739,6 +7928,9 @@ export type MusicEnvelope = Contract["music"];
 /** The envelope carrying `outbound`. */
 export type OutboundEnvelope = Contract["outbound"];
 
+/** The envelope carrying `plugins`. */
+export type PluginsEnvelope = Contract["plugins"];
+
 /** The envelope carrying `preview`. */
 export type PreviewEnvelope = Contract["preview"];
 
@@ -7833,7 +8025,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -7867,6 +8059,7 @@ export interface ByKind {
   "migration": MigrationEnvelope;
   "music": MusicEnvelope;
   "outbound": OutboundEnvelope;
+  "plugins": PluginsEnvelope;
   "preview": PreviewEnvelope;
   "provenance": ProvenanceEnvelope;
   "pull": PullEnvelope;
