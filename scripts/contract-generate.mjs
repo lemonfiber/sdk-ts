@@ -107,6 +107,53 @@ const parts = [
 const definitionsOf = (kind) => artefact.kinds[kind].$defs ?? {};
 
 /**
+ * The names this file writes itself, and what each one means here.
+ *
+ * Every definition hoisted out of a kind's `$defs` lands in this module's one
+ * scope, beside these four and one `…Envelope` per kind. Nothing coordinates
+ * the two authorities writing into it — the contract names its definitions and
+ * this generator names its own — so a definition taking one of these names is
+ * emitted twice under it.
+ */
+const OWNED = new Map([
+  ["Contract", "the object every kind hangs off"],
+  ["Kind", "the union of every kind the server may send"],
+  ["ByKind", "the envelope each kind carries"],
+  ["CONTRACT_API_VERSION", "the wire version these types were generated for"],
+  ...kinds.map((kind) => [`${typeName(kind)}Envelope`, `the envelope carrying \`${kind}\``]),
+]);
+
+const taken = kinds.flatMap((kind) =>
+  Object.keys(definitionsOf(kind))
+    .filter((name) => OWNED.has(name))
+    .map((name) => `${name}, defined by \`${kind}\` — here it names ${OWNED.get(name)}`),
+);
+
+/**
+ * Refuses a name the contract and this generator both claim, naming both.
+ *
+ * `a_definition_name_describes_one_shape` is the producer's rule, and this is
+ * where the generated file is held to it rather than assuming it. Emitting both
+ * is worse than refusing: `tsc` reports a duplicate identifier in a file nobody
+ * edits, the union becomes an error type, and every use of it downstream fails
+ * for a reason none of those errors mentions. One rename is the fix and none of
+ * the errors asks for it.
+ *
+ * The name moves in the contract rather than here. All five are this package's
+ * published surface — `Kind` and `ByKind` are what a caller writes
+ * `<K extends Kind>` against — so moving one of them instead would break every
+ * caller to spare the producer a rename.
+ */
+if (taken.length > 0) {
+  stop(
+    "The vendored contract defines a type under a name this generator writes " +
+      "itself, and emitting both would put two shapes under one name:\n  " +
+      taken.join("\n  ") +
+      "\n\nRename the definition in the contract.",
+  );
+}
+
+/**
  * Every kind compiled together, rather than one at a time.
  *
  * Compiled separately, a definition two kinds both carry is emitted once per

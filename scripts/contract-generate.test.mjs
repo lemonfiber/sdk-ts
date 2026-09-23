@@ -133,4 +133,54 @@ describe("generating from a contract this package does not implement", () => {
     expect(result.status).toBe(1);
     expect(existsSync(written())).toBe(false);
   });
+  it("refuses a definition under a name this generator writes, and names both", async () => {
+    // Two shapes under one name. Emitted, `tsc` reports a duplicate identifier
+    // in a file nobody edits, the union becomes an error type, and every use of
+    // it downstream fails for a reason none of those errors mentions.
+    const collides = contract(1);
+    collides.kinds.word.$defs = { Kind: { type: "string", enum: ["bool", "int"] } };
+    await writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(collides));
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("Kind");
+    // The kind it came from, because the contract is one file of sixty-two and
+    // a refusal naming only the type leaves somebody grepping for it.
+    expect(result.stderr).toContain("word");
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it("refuses a definition named for an envelope this generator writes", async () => {
+    // The per-kind half of the same set. `WordEnvelope` is written for the kind
+    // `word`, so it is reserved by the contract's own list of kinds rather than
+    // by a constant, and a contract that grows a kind grows this set with it.
+    const collides = contract(1);
+    collides.kinds.word.$defs = { WordEnvelope: { type: "object" } };
+    await writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(collides));
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("WordEnvelope");
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it("accepts a definition whose name only contains one of them", async () => {
+    // The control. `ProblemKind` is not `Kind`, and a check on substrings would
+    // refuse most of the contract's vocabulary to catch one name — every
+    // `…Kind`, every `…Contract`, and every type ending in `Envelope` that is
+    // not an envelope this file writes.
+    const nearby = contract(1);
+    nearby.kinds.word.$defs = {
+      ProblemKind: { type: "string" },
+      ByKindness: { type: "object" },
+    };
+    await writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(nearby));
+
+    const result = run();
+
+    expect(result.status).toBe(0);
+    expect(existsSync(written())).toBe(true);
+  });
 });
