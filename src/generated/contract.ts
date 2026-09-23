@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 269c149f22605d007d019355e46b777efeb0ef77  ·  api_version 1
+// Source: 61611373c390f4f525924990a8e893e37d1f600f  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -157,6 +157,106 @@ export type PluginVerdict =
        * What stopped it being run.
        */
       why: string;
+    };
+/**
+ * How a single check turned out.
+ *
+ * "Could not check" (`Unverified`) is its own variant rather than a level of
+ * severity, so a check that could not run can never be mistaken for one that
+ * passed — the dishonesty this whole subsystem exists to prevent.
+ */
+export type DoctorVerdict =
+  | {
+      /**
+       * What was observed, where stating it helps — an address, a port.
+       */
+      note?: string | null;
+      outcome: "pass";
+    }
+  | {
+      /**
+       * The problem that produced this one, where several share a root.
+       */
+      cause?: Problem | null;
+      /**
+       * The stable identifier for this kind of problem.
+       */
+      code: string;
+      /**
+       * The underlying technical detail, available but never leading.
+       */
+      detail?: string | null;
+      /**
+       * What it means for the operator.
+       */
+      meaning: string;
+      outcome: "warn";
+      /**
+       * What to do, most likely first.
+       */
+      remedies: Remedy[];
+      /**
+       * How much it matters.
+       */
+      severity: "advisory" | "warning" | "error" | "critical";
+      /**
+       * Where it stands with respect to being fixed.
+       */
+      state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+      /**
+       * What happened, in one plain sentence.
+       */
+      summary: string;
+    }
+  | {
+      /**
+       * The problem that produced this one, where several share a root.
+       */
+      cause?: Problem | null;
+      /**
+       * The stable identifier for this kind of problem.
+       */
+      code: string;
+      /**
+       * The underlying technical detail, available but never leading.
+       */
+      detail?: string | null;
+      /**
+       * What it means for the operator.
+       */
+      meaning: string;
+      outcome: "fail";
+      /**
+       * What to do, most likely first.
+       */
+      remedies: Remedy[];
+      /**
+       * How much it matters.
+       */
+      severity: "advisory" | "warning" | "error" | "critical";
+      /**
+       * Where it stands with respect to being fixed.
+       */
+      state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+      /**
+       * What happened, in one plain sentence.
+       */
+      summary: string;
+    }
+  | {
+      outcome: "unverified";
+      /**
+       * Why it could not be determined.
+       */
+      reason: string;
+      remedy: Remedy1;
+    }
+  | {
+      outcome: "skipped";
+      /**
+       * Why the check did not apply.
+       */
+      reason: string;
     };
 /**
  * How an installed service is reached, where it is reached at all.
@@ -5002,6 +5102,16 @@ export interface PluginInstall {
    * held.
    */
   reversed?: UndoReversal | null;
+  /**
+   * What the stack's own checks made of the install, or nothing on a run that
+   * asked them nothing.
+   *
+   * The other half of what an install has to establish, and the half a plugin
+   * cannot establish for itself: its proofs say the plugin works, and this says the
+   * stack still does. Absent on a rehearsal, which writes nothing and so has
+   * nothing to hold a reading against.
+   */
+  verified?: PluginVerification | null;
   would: PluginInstalled;
 }
 /**
@@ -5208,6 +5318,193 @@ export interface Undo {
    * The service or file to reverse it against.
    */
   target: string;
+}
+/**
+ * What the stack's own checks made of an install.
+ */
+export interface PluginVerification {
+  /**
+   * Every check this install made worse.
+   *
+   * Empty is the answer an install needs, and it is the common one. What is here
+   * is what takes the install back.
+   */
+  broke: PluginChangedCheck[];
+  /**
+   * Every check nothing could be concluded about across the two readings.
+   *
+   * Reported and never acted on. *I could not tell* is not *it is still broken*,
+   * and an install reversed because a check could not reach a provider it also
+   * could not reach an hour ago would be punishing a plugin for the weather. It is
+   * said out loud rather than dropped, because the assurance an operator thought
+   * they had is the thing that went.
+   */
+  unsettled: PluginChangedCheck[];
+}
+/**
+ * One check that stands differently after an install than it did before.
+ */
+export interface PluginChangedCheck {
+  /**
+   * How the same check read before the install, or nothing where it was not
+   * raised at all.
+   *
+   * Absent means the check produced no finding beforehand, which is read as it
+   * holding: a finding no longer raised is a fault no longer there, and the same
+   * rule read backwards is that one not yet raised was not yet a fault.
+   */
+  before?: DoctorVerdict | null;
+  now: Finding1;
+}
+/**
+ * The check as it reads now, with everything the diagnosis says about it.
+ *
+ * The finding itself rather than a summary of it, because what an operator does
+ * next is read the remedy, the service's own output and what else is causing it
+ * — and a second, thinner shape of the same fact is where those stop arriving.
+ */
+export interface Finding1 {
+  /**
+   * The family this belongs to.
+   */
+  category:
+    "environment" | "storage" | "network" | "vpn" | "credentials" | "services" | "providers" | "queue" | "config";
+  /**
+   * The check whose finding explains this one, where another does.
+   *
+   * Set after the run rather than by the check itself: a check is independent
+   * by construction and cannot see what any other found, which is a property
+   * worth keeping.
+   */
+  caused_by?: string | null;
+  /**
+   * A stable identifier for the thing checked, such as `vpn.egress-match`.
+   */
+  check: string;
+  /**
+   * What the service said for itself, lately.
+   *
+   * Carried on the finding rather than left for the operator to go and fetch,
+   * because the explanation is almost always in it: a check can say a service is
+   * not answering, and only the service can say why. Absent where the finding is
+   * not about a service, where the service is fine, or where the engine would not
+   * say — an empty section would be a promise of evidence that is not there.
+   *
+   * Set after the run, like [`Self::caused_by`], since reading a service's output
+   * is not the check's own business and a check that did it would be doing two
+   * things.
+   */
+  said?: string | null;
+  /**
+   * The service this is about, where it is about one.
+   *
+   * Absent for the checks that are about the machine rather than about
+   * something running on it — the environment, the filesystem, the operator's
+   * own choices. Carried so that one service's trouble can be attributed to
+   * the service underneath it rather than counted as one more independent
+   * thing wrong.
+   */
+  service?: string | null;
+  /**
+   * The one-line summary of what was checked.
+   */
+  title: string;
+  /**
+   * How it turned out.
+   */
+  verdict:
+    | {
+        /**
+         * What was observed, where stating it helps — an address, a port.
+         */
+        note?: string | null;
+        outcome: "pass";
+      }
+    | {
+        /**
+         * The problem that produced this one, where several share a root.
+         */
+        cause?: Problem | null;
+        /**
+         * The stable identifier for this kind of problem.
+         */
+        code: string;
+        /**
+         * The underlying technical detail, available but never leading.
+         */
+        detail?: string | null;
+        /**
+         * What it means for the operator.
+         */
+        meaning: string;
+        outcome: "warn";
+        /**
+         * What to do, most likely first.
+         */
+        remedies: Remedy[];
+        /**
+         * How much it matters.
+         */
+        severity: "advisory" | "warning" | "error" | "critical";
+        /**
+         * Where it stands with respect to being fixed.
+         */
+        state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+        /**
+         * What happened, in one plain sentence.
+         */
+        summary: string;
+      }
+    | {
+        /**
+         * The problem that produced this one, where several share a root.
+         */
+        cause?: Problem | null;
+        /**
+         * The stable identifier for this kind of problem.
+         */
+        code: string;
+        /**
+         * The underlying technical detail, available but never leading.
+         */
+        detail?: string | null;
+        /**
+         * What it means for the operator.
+         */
+        meaning: string;
+        outcome: "fail";
+        /**
+         * What to do, most likely first.
+         */
+        remedies: Remedy[];
+        /**
+         * How much it matters.
+         */
+        severity: "advisory" | "warning" | "error" | "critical";
+        /**
+         * Where it stands with respect to being fixed.
+         */
+        state: "actionable" | "guided" | "remediable" | "unknown" | "suppressed";
+        /**
+         * What happened, in one plain sentence.
+         */
+        summary: string;
+      }
+    | {
+        outcome: "unverified";
+        /**
+         * Why it could not be determined.
+         */
+        reason: string;
+        remedy: Remedy1;
+      }
+    | {
+        outcome: "skipped";
+        /**
+         * Why the check did not apply.
+         */
+        reason: string;
+      };
 }
 /**
  * What the install settled, said whether or not it was written down.
