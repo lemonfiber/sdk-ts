@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 687d9be3045b7774a6351cc959966a606bb68808  ·  api_version 1
+// Source: 7d4d153a396e03d6c866440f97f9b61e6584c952  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5872,6 +5872,16 @@ export interface PluginInstalled1 {
  * What taking a plugin off the machine came to, or would come to.
  */
 export interface PluginRemoval {
+  /**
+   * Every service that stops when it goes, named before any of them does.
+   *
+   * By service rather than by plugin, because a service is what an operator notices
+   * stopping: a plugin that brought two containers takes two things away, and the
+   * plugin's name alone would not say which of the addresses they use goes quiet.
+   * None of them comes back — a removal is not a restart — which is why this is
+   * stated before the run rather than discovered after it.
+   */
+  interrupts: string[];
   /**
    * Every capability that would have nothing filling it afterwards.
    *
