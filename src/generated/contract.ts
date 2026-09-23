@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 150bca10c47dd2a08076d6810ea09f8eb1a7c49e  ·  api_version 1
+// Source: 14d079c574ea72f9dcba3c16c0b6b96bf44fd9c2  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1313,7 +1313,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: UndoReversal2;
+    data: UndoReversal3;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -5091,6 +5091,16 @@ export interface PluginInstalls {
    * read it.
    */
   removal?: PluginRemoval | null;
+  /**
+   * What this run's update came to, or nothing where it updated nothing.
+   *
+   * A third field rather than an install and a removal filled in together, for the
+   * reason those two are apart: an update is one operation with one account.
+   *
+   * Boxed because it carries a whole install's account beside the reversal, and
+   * every other run's report would otherwise be as large as the one run that updates.
+   */
+  update?: PluginUpdate | null;
 }
 /**
  * What an install came to, and what it took to get there.
@@ -5939,6 +5949,182 @@ export interface PluginUnfilled {
  * it is not empty: what went back, and what did not with the reason it did not.
  */
 export interface UndoReversal1 {
+  /**
+   * What was not put back, each with the reason it was not.
+   *
+   * A reversal an operator asked for by name has to say what it did *not* do. Five
+   * changes asked back and three carried out is a machine in a state nobody has been
+   * told about, and "some of it worked" is the sentence that makes somebody go
+   * looking by hand. Empty where everything went back, which is the common case.
+   *
+   * On a run that only said what it would do, this is what it cannot promise: a
+   * change that goes back through the service that made it goes back only where that
+   * service is answering, and a rehearsal has not asked one.
+   */
+  left: UndoLeft[];
+  /**
+   * What putting these changes back means beyond the changes themselves.
+   *
+   * Empty on almost every run. What lands here is a change the judgement can put
+   * back in full and that still leaves something behind — the one in force today
+   * being a setting that re-points where data lives, which goes back while the
+   * library stays exactly where it was moved to.
+   *
+   * Neither list above can carry it. It did not fail to go back, so it is not what
+   * was left; and reporting only that it went back would send an operator looking
+   * for their files at an address that no longer names them.
+   */
+  noted?: UndoNoted[];
+  /**
+   * Whether this run only said what it would put back.
+   *
+   * A flag rather than a second shape, because the two lists mean the same thing
+   * either way and a caller reading them should read one document. What changes is
+   * the tense a surface says them in.
+   */
+  rehearsed: boolean;
+  /**
+   * What was put back, in the order it was — or, on a run that only said what it
+   * would do, what would go back.
+   */
+  reversed: Undo[];
+}
+/**
+ * What updating a plugin came to, or would come to, as one account.
+ *
+ * **One account, because it is one operation.** An update is the version installed
+ * going back and another coming on, and a report that gave those as a removal and an
+ * install side by side would invite reading them as two things that might each have
+ * happened. What an operator has to be able to read off this is which version the
+ * machine is on, and there are exactly two answers: the new one, where
+ * `install.recorded` is true, or the one it replaced, which `restored` says the state
+ * of.
+ */
+export interface PluginUpdate {
+  /**
+   * The version the record named before this run.
+   */
+  from: string;
+  install: PluginInstall1;
+  /**
+   * Every service of the installed version that stops, named before any of them
+   * does.
+   */
+  interrupts: string[];
+  /**
+   * The plugin this is about.
+   */
+  plugin: string;
+  /**
+   * Where the update did not hold, what putting the version it replaced back came
+   * to. Absent on a rehearsal and on an update that held.
+   */
+  restored?: PluginRestored | null;
+  /**
+   * What stopped the new version before its proofs could be asked, where something
+   * did: a write that would not land, a container that would not start, or a record
+   * that could not be written. A proof or a check that did not hold is in `install`.
+   */
+  stopped?: string | null;
+  /**
+   * The version this run installs, or would.
+   */
+  to: string;
+  went_back: UndoReversal2;
+}
+/**
+ * What an install came to, and what it took to get there.
+ *
+ * **The three lists below are stated whether the run wrote anything or not, and that
+ * is the whole of what makes a rehearsal worth running.** A rehearsal that reported
+ * less than the real run would be a preview of a different operation; one that
+ * reported it from code of its own would be a second derivation free to disagree
+ * with the one that acts. So they are filled in one place, from the manifest and from
+ * the very list of writes the install is carried out from, and the surface says them
+ * in whichever tense `recorded` calls for.
+ */
+export interface PluginInstall1 {
+  /**
+   * What those verdicts were reached against, or nothing where none were reached.
+   *
+   * Carried rather than assumed, because the two kinds of evidence are not the
+   * same claim: an author's read asks the recordings a plugin ships, and an
+   * install asks the service running on this machine. The weaker must not be
+   * readable as the stronger, and a reader handed a verdict has nothing else in
+   * the document to tell them apart.
+   */
+  against?: PluginEvidence | null;
+  /**
+   * Every change it makes to the machine, in the order it makes them.
+   */
+  changes: PluginChange[];
+  /**
+   * Every bundled thing the plugin declares it will change.
+   *
+   * The full extent rather than a sample of it: a manifest may change a bundled
+   * setting only through a recipe, and a recipe reaching one no `[[override]]`
+   * names is refused before anything is written.
+   */
+  overrides: PluginOverriding[];
+  /**
+   * Every proof that has to hold before the plugin is installed, and on a run
+   * that asked them, what each came to.
+   */
+  proofs: PluginProving[];
+  /**
+   * Whether it was written down. A rehearsal leaves this false.
+   */
+  recorded: boolean;
+  /**
+   * What putting the install back came to, where something failed and it was.
+   *
+   * The rollback layer's own report rather than a shape of this verb's: what went
+   * back, and what did not with the reason each is still standing. Absent on a run
+   * that had nothing to put back, which is both a rehearsal and an install that
+   * held.
+   */
+  reversed?: UndoReversal | null;
+  /**
+   * What the stack's own checks made of the install, or nothing on a run that
+   * asked them nothing.
+   *
+   * The other half of what an install has to establish, and the half a plugin
+   * cannot establish for itself: its proofs say the plugin works, and this says the
+   * stack still does. Absent on a rehearsal, which writes nothing and so has
+   * nothing to hold a reading against.
+   */
+  verified?: PluginVerification | null;
+  would: PluginInstalled;
+}
+/**
+ * Where an update did not hold: what putting the version it replaced back came to.
+ */
+export interface PluginRestored {
+  /**
+   * Whether everything its record says it placed is on the machine again.
+   */
+  placed: boolean;
+  /**
+   * Whether its containers are running again.
+   *
+   * Apart from `placed`, because the two fail differently: a document that would not
+   * land is a disk, and a container that would not start is the engine — and an
+   * operator fixes them in different places.
+   */
+  running: boolean;
+  /**
+   * The version put back, which is the one the record still names.
+   */
+  version: string;
+}
+/**
+ * What putting a run back came to.
+ *
+ * A report rather than a bare list, because it is what an envelope carries and an
+ * envelope carries a document. Two lists, and the second is the one that matters when
+ * it is not empty: what went back, and what did not with the reason it did not.
+ */
+export interface UndoReversal2 {
   /**
    * What was not put back, each with the reason it was not.
    *
@@ -7776,7 +7962,7 @@ export interface TraceStage {
  * envelope carries a document. Two lists, and the second is the one that matters when
  * it is not empty: what went back, and what did not with the reason it did not.
  */
-export interface UndoReversal2 {
+export interface UndoReversal3 {
   /**
    * What was not put back, each with the reason it was not.
    *
