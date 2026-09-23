@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 7d4d153a396e03d6c866440f97f9b61e6584c952  ·  api_version 1
+// Source: 150bca10c47dd2a08076d6810ea09f8eb1a7c49e  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4231,7 +4231,17 @@ export interface ChangeReport {
    */
   alongside: number;
   /**
-   * When it was made.
+   * When it was made, as whole seconds since the Unix epoch, written in decimal.
+   *
+   * A string of digits rather than a number, because it is the stamp the record keeps
+   * and a stamp is compared and stored as text; what it counts is stated here so a
+   * reader can turn it into a time without guessing at a format.
+   *
+   * **`0` means the clock was unreadable when the change was written**, not that it
+   * was made at the epoch: it is how a machine whose clock would not answer stamps a
+   * change. It is not an instant, so two changes both stamped `0` were not made at
+   * the same moment, and a reader showing it as a date in 1970 would be inventing
+   * one.
    */
   at: string;
   /**
@@ -4252,9 +4262,9 @@ export interface ChangeReport {
    */
   operation: string;
   /**
-   * How far it could be put back: `whole`, `partial`, or `none`.
+   * How far it could be put back.
    */
-  reversal: string;
+  reversal: "whole" | "partial" | "none";
   /**
    * What it was made to.
    */
