@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 61611373c390f4f525924990a8e893e37d1f600f  ·  api_version 1
+// Source: 687d9be3045b7774a6351cc959966a606bb68808  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -258,6 +258,29 @@ export type DoctorVerdict =
        */
       reason: string;
     };
+/**
+ * Exactly what a place must hold.
+ *
+ * Three kinds and no nesting: a flag that must be set, a number that must match, or a
+ * word. A value deeper than this is asking about a document rather than about a claim
+ * — and where the thing worth asserting is deeper *in* the answer, the key reaches it
+ * rather than the value growing to match.
+ */
+export type Expected = boolean | number | string;
+/**
+ * The kind of value a key must hold.
+ *
+ * Five, and closed. A name outside them is one no runner could evaluate, and an
+ * assertion nothing evaluates is a proof that silently checks less than it says —
+ * which is worse than one that fails.
+ *
+ * Named for what it is the kind *of*, rather than `Kind`, because this is published
+ * and whoever generates from it flattens every definition into one scope. `Kind` is
+ * the one name there a generator is certain to want for itself: every envelope this
+ * contract describes is keyed by its `kind`, so the union of them is a `Kind` too, and
+ * two of them in one module is a definition nothing can be compiled against.
+ */
+export type ExpectedKind = "bool" | "int" | "str" | "list" | "dict";
 /**
  * How an installed service is reached, where it is reached at all.
  *
@@ -1290,7 +1313,7 @@ export interface Contract {
      * The output contract's version.
      */
     api_version: number;
-    data: UndoReversal1;
+    data: UndoReversal2;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -5049,6 +5072,15 @@ export interface PluginInstalls {
    * would report an install that did not happen.
    */
   installed: PluginInstalled1[];
+  /**
+   * What this run's removal came to, or nothing where it removed nothing.
+   *
+   * Beside the install rather than in place of it, and never both at once: an
+   * install and a removal are two verbs with two accounts, and a field that held
+   * whichever happened would make a reader ask which one this was before they could
+   * read it.
+   */
+  removal?: PluginRemoval | null;
 }
 /**
  * What an install came to, and what it took to get there.
@@ -5210,6 +5242,19 @@ export interface UndoReversal {
    */
   left: UndoLeft[];
   /**
+   * What putting these changes back means beyond the changes themselves.
+   *
+   * Empty on almost every run. What lands here is a change the judgement can put
+   * back in full and that still leaves something behind — the one in force today
+   * being a setting that re-points where data lives, which goes back while the
+   * library stays exactly where it was moved to.
+   *
+   * Neither list above can carry it. It did not fail to go back, so it is not what
+   * was left; and reporting only that it went back would send an operator looking
+   * for their files at an address that no longer names them.
+   */
+  noted?: UndoNoted[];
+  /**
    * Whether this run only said what it would put back.
    *
    * A flag rather than a second shape, because the two lists mean the same thing
@@ -5233,6 +5278,19 @@ export interface UndoLeft {
   because: string;
   /**
    * What the change was against — a service, or lemonfiber's own environment file.
+   */
+  target: string;
+}
+/**
+ * What putting one change back means beyond the change itself.
+ */
+export interface UndoNoted {
+  /**
+   * What goes back, what does not go with it, and what to do instead.
+   */
+  because: string;
+  /**
+   * What the change was against.
    */
   target: string;
 }
@@ -5511,9 +5569,42 @@ export interface Finding1 {
  */
 export interface PluginInstalled {
   /**
+   * Every row it adds to a register lemonfiber already runs, as the install
+   * settled them.
+   *
+   * Kept here rather than read back off the plugin's own files, for the reason
+   * everything else on this record is: the author's directory may be gone the
+   * moment an install is done, and a doctor run a month later is a question about
+   * this machine rather than about a document. This record is the one answer, so a
+   * row that runs is a row that was declared at install and has not changed under
+   * anybody since.
+   *
+   * Defaulted for a register written before this field existed, which reads as a
+   * plugin that contributes nothing — the same answer a plugin that contributes
+   * nothing gets, and the only one that can be given about a record that does not
+   * say.
+   */
+  contributions?: Contribution[];
+  /**
    * The plugin's id: the name it is installed and journalled under.
    */
   plugin: string;
+  /**
+   * Every core capability its services fill, as the install settled them.
+   *
+   * Core names only. A capability of the plugin's own is namespaced, nothing asks
+   * for it, and it is inert by design — so a removal that named one as about to go
+   * unfilled would be warning about something nothing was reaching for.
+   *
+   * Kept for the question a removal has to answer before it happens: what this
+   * machine would have nothing filling once the plugin is off it. Asking the
+   * manifest would be asking a file that may be gone.
+   *
+   * Defaulted for a register written before the field existed, which reads as a
+   * plugin that fills nothing — the answer that names no capability rather than the
+   * one that invents one.
+   */
+  provides?: string[];
   /**
    * What was placed, one entry per service the plugin declares.
    */
@@ -5522,6 +5613,173 @@ export interface PluginInstalled {
    * The plugin's own content version, as it stood when it was installed.
    */
   version: string;
+}
+/**
+ * A row in a register lemonfiber already runs.
+ *
+ * The fields beyond `at` and `id` are the row its point declares, and the point is
+ * published — so the required set, the optional set, the closed sets and the bounds
+ * are read from `extension-points.json` rather than restated here. What this type
+ * fixes is that a contribution is declared in this block and nowhere else, and that
+ * it carries nothing outside the union of the rows the published points take.
+ */
+export interface Contribution {
+  /**
+   * What to do, in the imperative.
+   */
+  action?: string | null;
+  /**
+   * A point the build publishes. One it does not is refused by name.
+   */
+  at: string;
+  /**
+   * Which family a check is narrowed to.
+   */
+  category?: string | null;
+  /**
+   * The technical half of a remedy, which must not lead.
+   */
+  detail?: string | null;
+  /**
+   * What the answer must be.
+   */
+  expect?: Expect | null;
+  /**
+   * The recorded response the check is proved against.
+   */
+  fixture?: string | null;
+  /**
+   * The check a remedy is for, which must be one this same plugin declared.
+   */
+  for?: string | null;
+  /**
+   * Namespaced with the declaring plugin's id, always.
+   */
+  id: string;
+  /**
+   * Method and path on the plugin's own service.
+   *
+   * There is no field for a host, so a check cannot be pointed at another service,
+   * at the machine, or off it. A plugin wanting to say something about a service it
+   * did not install is asking to speak for somebody else's software.
+   */
+  request?: PluginRequest | null;
+  /**
+   * Which service the finding is about. Defaults to the plugin's own.
+   */
+  service?: string | null;
+  /**
+   * How long a check may run, within the bounds the point declares.
+   */
+  timeout_s?: number | null;
+  /**
+   * The one-line summary of what was checked.
+   */
+  title?: string | null;
+  /**
+   * Why this is worth checking.
+   */
+  why?: string | null;
+}
+/**
+ * What the answer has to be.
+ *
+ * A status is a claim about the network path rather than about the service: Docker
+ * publishes a port by putting a proxy in front of it, and that proxy accepts a
+ * connection before knowing whether anything inside is listening. So a status alone
+ * is not evidence — except for a refusal, which is the one answer no port proxy can
+ * produce.
+ *
+ * **A key of the four key-wise constraints is a place rather than a name.** A plain
+ * name is a top-level member, and one beginning with `/` is a JSON Pointer, extended
+ * with a step that picks an entry of a list by a field it holds. A flat name was enough while every service answered a flat object, and the
+ * only thing it could say about a service that nests its payload was that the envelope
+ * was there — which is a probe that passes by observing that something replied.
+ */
+export interface Expect {
+  /**
+   * What the body must begin with, where it is not JSON.
+   */
+  body_starts_with?: string | null;
+  /**
+   * A substring of the content type the answer was served as.
+   */
+  content_type?: string | null;
+  /**
+   * Places the answer must carry, each with the exact value it must hold.
+   */
+  json?: {
+    [k: string]: Expected;
+  } | null;
+  /**
+   * The answer read as an array, with at least this many entries.
+   *
+   * A catalogue is very often a list rather than an object, and none of the
+   * object-shaped constraints can say anything about one.
+   */
+  json_array_min?: number | null;
+  /**
+   * Places the answer must carry, each with a number it must not be below.
+   */
+  json_at_least?: {
+    [k: string]: number;
+  } | null;
+  /**
+   * Places the answer must carry, whatever they hold.
+   */
+  json_has_keys?: string[] | null;
+  /**
+   * The answer did not parse as JSON at all.
+   *
+   * Which is what a service that serves its application shell for every path it does
+   * not implement answers — and the reason a status alone proves nothing against
+   * one: the shell comes back `200` whether the API behind it exists or not, so what
+   * has to be said is that the body was *not* a document.
+   */
+  json_is_absent?: boolean | null;
+  /**
+   * Places the answer must carry, each with the kind of value it must be.
+   */
+  json_types?: {
+    [k: string]: ExpectedKind;
+  } | null;
+  /**
+   * The status the answer must carry.
+   */
+  status?: number | null;
+}
+/**
+ * What is asked, and where.
+ *
+ * Three fields and no more, and the third is the one worth explaining. A service that
+ * answers XML unless a caller asks for JSON cannot satisfy a capability whose probe
+ * requires a JSON assertion, and until this field there was nowhere to ask: Plex
+ * answers `text/xml` at every path, including the one its health probe uses, unless
+ * the request carries `Accept: application/json`.
+ *
+ * **It is one media type and not a header map, and the difference is the point.** A
+ * probe declares who it is asked as, and `none` on every `guarded` probe has meant what
+ * it says partly because nothing could be presented. A map of headers would make that a
+ * convention a reviewer has to hold — any service may name its credential header
+ * whatever it likes, so no list of refused names could ever be closed — where one named
+ * field keeps it a property of the format. A probe still cannot present anything,
+ * because there is nowhere to write it.
+ */
+export interface PluginRequest {
+  /**
+   * The one representation the answer is asked for, as a media type.
+   *
+   * Absent where the service needs no asking, which is most of them.
+   */
+  accept?: string | null;
+  /**
+   * The HTTP method.
+   */
+  method: string;
+  /**
+   * The path on the service being asked.
+   */
+  path: string;
 }
 /**
  * One service of an installed plugin, as it was placed.
@@ -5565,9 +5823,42 @@ export interface PluginPlaced {
  */
 export interface PluginInstalled1 {
   /**
+   * Every row it adds to a register lemonfiber already runs, as the install
+   * settled them.
+   *
+   * Kept here rather than read back off the plugin's own files, for the reason
+   * everything else on this record is: the author's directory may be gone the
+   * moment an install is done, and a doctor run a month later is a question about
+   * this machine rather than about a document. This record is the one answer, so a
+   * row that runs is a row that was declared at install and has not changed under
+   * anybody since.
+   *
+   * Defaulted for a register written before this field existed, which reads as a
+   * plugin that contributes nothing — the same answer a plugin that contributes
+   * nothing gets, and the only one that can be given about a record that does not
+   * say.
+   */
+  contributions?: Contribution[];
+  /**
    * The plugin's id: the name it is installed and journalled under.
    */
   plugin: string;
+  /**
+   * Every core capability its services fill, as the install settled them.
+   *
+   * Core names only. A capability of the plugin's own is namespaced, nothing asks
+   * for it, and it is inert by design — so a removal that named one as about to go
+   * unfilled would be warning about something nothing was reaching for.
+   *
+   * Kept for the question a removal has to answer before it happens: what this
+   * machine would have nothing filling once the plugin is off it. Asking the
+   * manifest would be asking a file that may be gone.
+   *
+   * Defaulted for a register written before the field existed, which reads as a
+   * plugin that fills nothing — the answer that names no capability rather than the
+   * one that invents one.
+   */
+  provides?: string[];
   /**
    * What was placed, one entry per service the plugin declares.
    */
@@ -5576,6 +5867,97 @@ export interface PluginInstalled1 {
    * The plugin's own content version, as it stood when it was installed.
    */
   version: string;
+}
+/**
+ * What taking a plugin off the machine came to, or would come to.
+ */
+export interface PluginRemoval {
+  /**
+   * Every capability that would have nothing filling it afterwards.
+   *
+   * Stated before it happens rather than reported after, which is the requirement
+   * and also the only useful order: an operator told afterwards that their requests
+   * no longer reach anything has been informed rather than asked.
+   */
+  leaves: PluginUnfilled[];
+  /**
+   * The plugin this is about.
+   */
+  plugin: string;
+  /**
+   * Whether the record of what is installed was written without it.
+   *
+   * False on a rehearsal and on a run that got as far as putting the files back and
+   * no further, which are two different machines and are told apart by what the
+   * reversal says rather than by a second flag here.
+   */
+  removed: boolean;
+  went_back: UndoReversal1;
+}
+/**
+ * A capability that would have nothing filling it.
+ */
+export interface PluginUnfilled {
+  /**
+   * The core name nothing would fill.
+   */
+  capability: string;
+  /**
+   * The plugin that is filling it now, which is the one going.
+   *
+   * Named rather than left to the reader, because the sentence an operator has to
+   * act on is *this is the only thing filling it* and a capability on its own does
+   * not say that.
+   */
+  filled_by: string;
+}
+/**
+ * What putting a run back came to.
+ *
+ * A report rather than a bare list, because it is what an envelope carries and an
+ * envelope carries a document. Two lists, and the second is the one that matters when
+ * it is not empty: what went back, and what did not with the reason it did not.
+ */
+export interface UndoReversal1 {
+  /**
+   * What was not put back, each with the reason it was not.
+   *
+   * A reversal an operator asked for by name has to say what it did *not* do. Five
+   * changes asked back and three carried out is a machine in a state nobody has been
+   * told about, and "some of it worked" is the sentence that makes somebody go
+   * looking by hand. Empty where everything went back, which is the common case.
+   *
+   * On a run that only said what it would do, this is what it cannot promise: a
+   * change that goes back through the service that made it goes back only where that
+   * service is answering, and a rehearsal has not asked one.
+   */
+  left: UndoLeft[];
+  /**
+   * What putting these changes back means beyond the changes themselves.
+   *
+   * Empty on almost every run. What lands here is a change the judgement can put
+   * back in full and that still leaves something behind — the one in force today
+   * being a setting that re-points where data lives, which goes back while the
+   * library stays exactly where it was moved to.
+   *
+   * Neither list above can carry it. It did not fail to go back, so it is not what
+   * was left; and reporting only that it went back would send an operator looking
+   * for their files at an address that no longer names them.
+   */
+  noted?: UndoNoted[];
+  /**
+   * Whether this run only said what it would put back.
+   *
+   * A flag rather than a second shape, because the two lists mean the same thing
+   * either way and a caller reading them should read one document. What changes is
+   * the tense a surface says them in.
+   */
+  rehearsed: boolean;
+  /**
+   * What was put back, in the order it was — or, on a run that only said what it
+   * would do, what would go back.
+   */
+  reversed: Undo[];
 }
 /**
  * The payload.
@@ -7374,7 +7756,7 @@ export interface TraceStage {
  * envelope carries a document. Two lists, and the second is the one that matters when
  * it is not empty: what went back, and what did not with the reason it did not.
  */
-export interface UndoReversal1 {
+export interface UndoReversal2 {
   /**
    * What was not put back, each with the reason it was not.
    *
@@ -7388,6 +7770,19 @@ export interface UndoReversal1 {
    * service is answering, and a rehearsal has not asked one.
    */
   left: UndoLeft[];
+  /**
+   * What putting these changes back means beyond the changes themselves.
+   *
+   * Empty on almost every run. What lands here is a change the judgement can put
+   * back in full and that still leaves something behind — the one in force today
+   * being a setting that re-points where data lives, which goes back while the
+   * library stays exactly where it was moved to.
+   *
+   * Neither list above can carry it. It did not fail to go back, so it is not what
+   * was left; and reporting only that it went back would send an operator looking
+   * for their files at an address that no longer names them.
+   */
+  noted?: UndoNoted[];
   /**
    * Whether this run only said what it would put back.
    *
