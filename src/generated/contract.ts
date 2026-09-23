@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 4c2ae3797d9c60ea2f6768640131bab16976bc36  ·  api_version 1
+// Source: becca9b0c303f3ef3ef28b93fccca299db0d8d18  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4917,14 +4917,103 @@ export interface PluginInstalls {
   installed: PluginInstalled1[];
 }
 /**
- * What an install came to.
+ * What an install came to, and what it took to get there.
+ *
+ * **The three lists below are stated whether the run wrote anything or not, and that
+ * is the whole of what makes a rehearsal worth running.** A rehearsal that reported
+ * less than the real run would be a preview of a different operation; one that
+ * reported it from code of its own would be a second derivation free to disagree
+ * with the one that acts. So they are filled in one place, from the manifest and from
+ * the very list of writes the install is carried out from, and the surface says them
+ * in whichever tense `recorded` calls for.
  */
 export interface PluginInstall {
+  /**
+   * Every change it makes to the machine, in the order it makes them.
+   */
+  changes: PluginChange[];
+  /**
+   * Every bundled thing the plugin declares it will change.
+   *
+   * The full extent rather than a sample of it: a manifest may change a bundled
+   * setting only through a recipe, and a recipe reaching one no `[[override]]`
+   * names is refused before anything is written.
+   */
+  overrides: PluginOverriding[];
+  /**
+   * Every proof that has to hold before the plugin is installed.
+   */
+  proofs: PluginProving[];
   /**
    * Whether it was written down. A rehearsal leaves this false.
    */
   recorded: boolean;
   would: PluginInstalled;
+}
+/**
+ * One change installing a plugin makes to the machine.
+ *
+ * A path and what goes at it, which is the whole of what an install touches: a
+ * plugin's wiring goes in files of its own, so there is no change here that is an
+ * edit to something somebody else owns.
+ */
+export interface PluginChange {
+  /**
+   * Where it lands, in full.
+   *
+   * In full rather than relative to the stack, because *what is this about to do
+   * to my machine* is answered by a path somebody can go and look at — and a
+   * relative one is right about a directory the reader has to work out for
+   * themselves.
+   */
+  path: string;
+  /**
+   * What lands there.
+   */
+  puts: "directory" | "document";
+}
+/**
+ * One bundled thing a plugin declares it will change.
+ */
+export interface PluginOverriding {
+  /**
+   * Which bundled setting it changes.
+   */
+  setting: string;
+  /**
+   * What changing it is for.
+   */
+  why: string;
+}
+/**
+ * One proof that has to hold before a plugin is reported installed.
+ */
+export interface PluginProving {
+  /**
+   * What it asks, as the method and the path it is asked at.
+   */
+  asks: string;
+  /**
+   * What it establishes, in one line.
+   */
+  establishes: string;
+  /**
+   * Which of the plugin's services it asks, where the manifest settles that.
+   *
+   * Nothing where it does not, which is a manifest the reader has already refused
+   * — carried as an absence rather than as a guess, so that a report built from a
+   * manifest nobody held to the reader says *this was not settled* instead of
+   * naming whichever service came first.
+   */
+  of?: string | null;
+  /**
+   * The proof's id, which its verdict is reported against.
+   */
+  proof: string;
+  /**
+   * Why it is worth asserting.
+   */
+  why: string;
 }
 /**
  * What the install settled, said whether or not it was written down.
