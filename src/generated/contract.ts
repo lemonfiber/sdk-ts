@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 7021f08143d8e2cfedc2ddf7e9b681d01c62dac9  ·  api_version 1
+// Source: 9fd0586162913789261e9b17399655655f1de60a  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5307,9 +5307,10 @@ export interface PluginInstall {
 /**
  * One change installing a plugin makes to the machine.
  *
- * A path and what goes at it, which is the whole of what an install touches: a
- * plugin's wiring goes in files of its own, so there is no change here that is an
- * edit to something somebody else owns.
+ * A path and what goes at it, which is the whole of what an install touches. Two of
+ * them can be edits to a file the stack already has — the proxy's and the
+ * dashboard's — and those say so, as a region, so an operator reading the account
+ * knows which of their files the install writes into.
  */
 export interface PluginChange {
   /**
@@ -5324,7 +5325,7 @@ export interface PluginChange {
   /**
    * What lands there.
    */
-  puts: "directory" | "document";
+  puts: "directory" | "document" | "region";
 }
 /**
  * An ask several services claim and nothing has chosen between, so it reaches
@@ -5516,6 +5517,27 @@ export interface Undo {
          * The path to remove.
          */
         path: string;
+      }
+    | {
+        does: "withdraw";
+        /**
+         * The same file beneath the stack directory, as the record of what lemonfiber
+         * materialised names it.
+         */
+        key: string;
+        /**
+         * Whose region it is, as its markers name it.
+         */
+        owner: string;
+        /**
+         * The file the region is in.
+         */
+        path: string;
+        /**
+         * The checksum of what was written between the markers, which has to still be
+         * what is there for taking it out to be taking out lemonfiber's own work.
+         */
+        written: number;
       }
     | {
         /**
@@ -6084,6 +6106,11 @@ export interface PluginPlaced {
    */
   config_path: string;
   /**
+   * What the plugin says it does for the operator, which is what its dashboard entry
+   * says beside it.
+   */
+  description?: string;
+  /**
    * The digest that fixes what runs.
    */
   digest: string;
@@ -6091,6 +6118,13 @@ export interface PluginPlaced {
    * The registry path, carrying no pin of its own.
    */
   image: string;
+  /**
+   * What it is called, for a reader, which is what its dashboard entry is listed as.
+   *
+   * Defaulted for a record written before this was kept, which lists it by its id
+   * rather than leaving it off the panel.
+   */
+  name?: string;
   /**
    * Every core capability this one service fills, which is what makes it a candidate
    * when the stack asks for one.
