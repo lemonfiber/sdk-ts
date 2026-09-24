@@ -102,7 +102,7 @@ sentence to know what to do with it:
 | `unreachable` | Nothing lemonfiber wrote came back at all                    |
 | `version`     | The reply is in an `api_version` this package does not speak |
 | `malformed`   | What arrived as an answer was not a lemonfiber envelope      |
-| `stream`      | The event stream went silent for longer than it allows       |
+| `stream`      | The event stream broke or went quiet for too long            |
 
 `refused` is the key and nothing else. A caller reading it may ask for a new key
 without reading the sentence, which is the point of a kind — and a caller reading
