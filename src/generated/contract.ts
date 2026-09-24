@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 14d079c574ea72f9dcba3c16c0b6b96bf44fd9c2  ·  api_version 1
+// Source: 599816ca1d30c3c9a9dbe014e6350f1d2eaa7bd1  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -337,6 +337,37 @@ export type Next = "more-content" | "household" | "client-apps";
  * file and two.
  */
 export type Link = "hardlinked" | "copied";
+/**
+ * Where a value in force came from.
+ *
+ * Published under a name of its own because the generated schema keys on the type's
+ * bare name, and a second `Origin` in the crate would be merged with this one into a
+ * single definition carrying the variants of both — a published contract saying a
+ * credential may be *unknown* and a setting may be *service*, neither of which is
+ * true, and neither of which the additive-only surface check would refuse.
+ */
+export type ValueOrigin =
+  | {
+      origin: "bundled";
+    }
+  | {
+      origin: "operator";
+    }
+  | {
+      /**
+       * Which one, so the thread back to it is a name rather than a search.
+       */
+      named: string;
+      origin: "plugin";
+    }
+  | {
+      origin: "unknown";
+      /**
+       * What stopped it being established, so the gap reads as a reason rather
+       * than as a shrug.
+       */
+      why: string;
+    };
 /**
  * A step of setup, in the order the operator meets it.
  *
@@ -3791,6 +3822,36 @@ export interface Finding {
    */
   check: string;
   /**
+   * Whose check this is: one this build ships, or one a named plugin contributed.
+   *
+   * Carried rather than read off the identifier. A contributed check's id is
+   * namespaced with the plugin's, and a reader could decode that from the colon —
+   * but an origin a reader has to decode is one a reader gets wrong, and the day a
+   * bundled id grew a colon every such reader would misattribute it in silence.
+   */
+  origin:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
+  /**
    * What the service said for itself, lately.
    *
    * Carried on the finding rather than left for the operator to go and fetch,
@@ -5129,6 +5190,15 @@ export interface PluginInstall {
    */
   changes: PluginChange[];
   /**
+   * Every ask of the stack's the install leaves contested that is not contested
+   * now, as it would then stand.
+   *
+   * A plugin's service that claims what the stack asks for is a candidate like any
+   * other, so installing it leaves the ask refused until somebody chooses — which is
+   * a change to what the stack does, and stated with the rest before it happens.
+   */
+  contests: WiringContest[];
+  /**
    * Every bundled thing the plugin declares it will change.
    *
    * The full extent rather than a sample of it: a manifest may change a bundled
@@ -5187,6 +5257,24 @@ export interface PluginChange {
    * What lands there.
    */
   puts: "directory" | "document";
+}
+/**
+ * An ask several services claim and nothing has chosen between, so it reaches
+ * nothing.
+ */
+export interface WiringContest {
+  /**
+   * The service that asked.
+   */
+  by: string;
+  /**
+   * What it asked for.
+   */
+  capability: string;
+  /**
+   * Every claimant, named — a plugin's with the plugin beside it.
+   */
+  claimants: string[];
 }
 /**
  * One bundled thing a plugin declares it will change.
@@ -5459,6 +5547,36 @@ export interface Finding1 {
    * A stable identifier for the thing checked, such as `vpn.egress-match`.
    */
   check: string;
+  /**
+   * Whose check this is: one this build ships, or one a named plugin contributed.
+   *
+   * Carried rather than read off the identifier. A contributed check's id is
+   * namespaced with the plugin's, and a reader could decode that from the colon —
+   * but an origin a reader has to decode is one a reader gets wrong, and the day a
+   * bundled id grew a colon every such reader would misattribute it in silence.
+   */
+  origin:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
   /**
    * What the service said for itself, lately.
    *
@@ -5822,6 +5940,17 @@ export interface PluginPlaced {
    */
   image: string;
   /**
+   * Every core capability this one service fills, which is what makes it a candidate
+   * when the stack asks for one.
+   *
+   * Per service rather than read off the plugin's whole list, because a wiring
+   * reaches a service and not a plugin: of a plugin's two services, the one that
+   * fills a capability is the one an ask for it would reach. Defaulted for a record
+   * written before this was kept, which reads as filling nothing — a service nothing
+   * is wired to, rather than one wired to on a guess.
+   */
+  provides?: string[];
+  /**
    * How it is reached, or nothing where it has no listener.
    */
   reached?: PluginReached | null;
@@ -6058,6 +6187,15 @@ export interface PluginInstall1 {
    * Every change it makes to the machine, in the order it makes them.
    */
   changes: PluginChange[];
+  /**
+   * Every ask of the stack's the install leaves contested that is not contested
+   * now, as it would then stand.
+   *
+   * A plugin's service that claims what the stack asks for is a candidate like any
+   * other, so installing it leaves the ask refused until somebody chooses — which is
+   * a change to what the stack does, and stated with the rest before it happens.
+   */
+  contests: WiringContest[];
   /**
    * Every bundled thing the plugin declares it will change.
    *
@@ -8779,6 +8917,17 @@ export interface Wired {
          */
         capability: string;
         how: "asked";
+        /**
+         * Where each service that claims it came from: this build's stack, or a
+         * named plugin.
+         *
+         * Every claimant rather than only what the ask reaches, because a contest
+         * reaches nothing and is exactly where an operator most needs to know which of
+         * the names in front of them is not the stack's.
+         */
+        origins: {
+          [k: string]: ValueOrigin;
+        };
         /**
          * What the ask reaches — empty where nothing fills it or a contest stands.
          */
