@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 599816ca1d30c3c9a9dbe014e6350f1d2eaa7bd1  ·  api_version 1
+// Source: 2f32817737ae2a18ddbc15c3403ef47d396d4599  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5133,6 +5133,9 @@ export interface Elsewhere {
 export interface PluginInstalls {
   /**
    * What this run's install came to, or nothing where it only read.
+   *
+   * Boxed for the reason the update is: it carries a whole account, and every other
+   * run's report would otherwise be as large as the one run that installs.
    */
   install?: PluginInstall | null;
   /**
@@ -5152,6 +5155,14 @@ export interface PluginInstalls {
    * read it.
    */
   removal?: PluginRemoval | null;
+  /**
+   * Every capability the operator chose an installed plugin's service to fill.
+   *
+   * Filled on the reading of what is installed, which is the one read of what each
+   * plugin is doing; a run that installs, updates or removes one leaves it empty,
+   * because none of them changes a choice.
+   */
+  substituted?: PluginSubstituted[];
   /**
    * What this run's update came to, or nothing where it updated nothing.
    *
@@ -5723,6 +5734,24 @@ export interface PluginInstalled {
    * say.
    */
   contributions?: Contribution[];
+  declared?: PluginDeclaration;
+  /**
+   * The source it was installed from, as the operator named it.
+   *
+   * Empty for a record written before this was kept. A rehearsal's account carries
+   * the source it was asked about, because that is what it would record.
+   */
+  from?: string;
+  /**
+   * When it was installed, as the record stamps every change: whole seconds since
+   * the epoch.
+   *
+   * The install's own stamp, the one its changes are journalled under, so the
+   * listing and the history name the same moment. Empty where the record predates
+   * it; a rehearsal's account carries the moment it was asked, which is the stamp
+   * the install would have run under.
+   */
+  installed_at?: string;
   /**
    * The plugin's id: the name it is installed and journalled under.
    */
@@ -5920,6 +5949,72 @@ export interface PluginRequest {
   path: string;
 }
 /**
+ * What the plugin declared about itself: where it is published, whether it was
+ * reviewed, what it claims, what it may change, where it may reach and what it
+ * will hold.
+ */
+export interface PluginDeclaration {
+  /**
+   * Every capability it claims, core and its own, in the order it declares them.
+   *
+   * Apart from what its services fill: a claim is what it says it can do and has to
+   * demonstrate, and a capability of its own is claimed without anything asking for
+   * it.
+   */
+  claims?: string[];
+  /**
+   * The licence it is distributed under.
+   */
+  license?: string;
+  /**
+   * Every bundled setting it declares it may change.
+   */
+  overrides?: PluginOverriding[];
+  /**
+   * Every destination a recipe of its could reach that is not one of its own
+   * services: a service of this stack's, or a name outside it.
+   *
+   * Recorded as declared rather than sorted into the two here, because which names
+   * are this stack's is a question about the stack, and the stack a record is read
+   * against is the one on the machine when it is read.
+   */
+  reaches?: string[];
+  /**
+   * Whether anybody reviewed it before it was installed.
+   *
+   * False for every install from a path an operator named — which is every install
+   * this build makes. Carried rather than left implicit, because an unreviewed
+   * plugin is to be said to be one for as long as it is installed, and a field that
+   * is only ever false today is still the field a reviewed install will set.
+   */
+  reviewed?: boolean;
+  /**
+   * Every credential it says it will hold.
+   */
+  secrets?: PluginSecret[];
+  /**
+   * Where its source is published, as the plugin names it.
+   */
+  upstream?: string;
+}
+/**
+ * One credential a plugin says it will hold, without a value and with no place for one.
+ */
+export interface PluginSecret {
+  /**
+   * What the value is, within the plugin.
+   */
+  id: string;
+  /**
+   * Whose credential it is.
+   */
+  of: string;
+  /**
+   * What holding it is for.
+   */
+  why: string;
+}
+/**
  * One service of an installed plugin, as it was placed.
  */
 export interface PluginPlaced {
@@ -5988,6 +6083,24 @@ export interface PluginInstalled1 {
    * say.
    */
   contributions?: Contribution[];
+  declared?: PluginDeclaration;
+  /**
+   * The source it was installed from, as the operator named it.
+   *
+   * Empty for a record written before this was kept. A rehearsal's account carries
+   * the source it was asked about, because that is what it would record.
+   */
+  from?: string;
+  /**
+   * When it was installed, as the record stamps every change: whole seconds since
+   * the epoch.
+   *
+   * The install's own stamp, the one its changes are journalled under, so the
+   * listing and the history name the same moment. Empty where the record predates
+   * it; a rehearsal's account carries the moment it was asked, which is the stamp
+   * the install would have run under.
+   */
+  installed_at?: string;
   /**
    * The plugin's id: the name it is installed and journalled under.
    */
@@ -6117,6 +6230,29 @@ export interface UndoReversal1 {
    * would do, what would go back.
    */
   reversed: Undo[];
+}
+/**
+ * A capability the operator chose one of a plugin's services to fill.
+ *
+ * The only way anything a plugin brought comes to fill what the stack asks for in
+ * place of the stack's own: a plugin cannot choose, and wiring by name is not
+ * something a plugin can introduce. So what a plugin substituted is what the operator
+ * substituted with it, and it is read off the recorded choices rather than off the
+ * plugin.
+ */
+export interface PluginSubstituted {
+  /**
+   * The capability it fills.
+   */
+  capability: string;
+  /**
+   * The plugin whose service it is.
+   */
+  plugin: string;
+  /**
+   * The service chosen.
+   */
+  service: string;
 }
 /**
  * What updating a plugin came to, or would come to, as one account.
