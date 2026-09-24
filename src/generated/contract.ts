@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 9fd0586162913789261e9b17399655655f1de60a  ·  api_version 1
+// Source: f2519ad9ccd4d7d4ac40eea3306289a6ee400e50  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -367,6 +367,21 @@ export type ValueOrigin =
        * than as a shrug.
        */
       why: string;
+    }
+  | {
+      /**
+       * Which plugin set what is in force.
+       */
+      named: string;
+      origin: "overridden";
+      replaced: ValueReplaced;
+    }
+  | {
+      /**
+       * Which plugin set it.
+       */
+      named: string;
+      origin: "orphaned";
     };
 /**
  * A step of setup, in the order the operator meets it.
@@ -2646,6 +2661,21 @@ export interface SettingReport {
          * than as a shrug.
          */
         why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
       };
   /**
    * Whether the value was withheld.
@@ -2655,6 +2685,62 @@ export interface SettingReport {
    * Its value, or a note that it is set and withheld.
    */
   value: string;
+}
+/**
+ * What it replaced, and where that came from.
+ */
+export interface ValueReplaced {
+  /**
+   * Where the replaced value came from, read from the record of the change that
+   * wrote it, and unknown where nothing recorded one.
+   */
+  from:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
+      };
+  /**
+   * What it held, where there was a value and it may be shown. Nothing where nothing
+   * was set — this build's default was in force — or where it is withheld.
+   */
+  value?: string | null;
+  /**
+   * Whether a value is withheld because the setting holds a credential. A replaced
+   * credential is shown as sealed and never in clear, as the one in force is.
+   */
+  withheld: boolean;
 }
 /**
  * The payload.
@@ -2725,6 +2811,21 @@ export interface CredentialHeld {
          * than as a shrug.
          */
         why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
       };
   /**
    * Where the value lives, as a path or a description of one.
@@ -3879,6 +3980,21 @@ export interface Finding {
          * than as a shrug.
          */
         why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
       };
   /**
    * What the service said for itself, lately.
@@ -5164,6 +5280,21 @@ export interface Elsewhere {
          * than as a shrug.
          */
         why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
       };
   /**
    * What it asks for.
@@ -5666,6 +5797,21 @@ export interface Finding1 {
          * than as a shrug.
          */
         why: string;
+      }
+    | {
+        /**
+         * Which plugin set what is in force.
+         */
+        named: string;
+        origin: "overridden";
+        replaced: ValueReplaced;
+      }
+    | {
+        /**
+         * Which plugin set it.
+         */
+        named: string;
+        origin: "orphaned";
       };
   /**
    * What the service said for itself, lately.
