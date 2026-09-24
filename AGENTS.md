@@ -8,7 +8,7 @@ Guidance for any AI agent working in this repo.
 
 ## What this repo is
 
-The TypeScript client for lemonfiber's local web API, published as
+The TypeScript client for lemonfiber's local web API, packaged as
 `@lemonfiber/sdk-ts`. A library with **no user interface and no server**. Spec:
 [`30-repos/sdk-ts.md`](https://github.com/lemonfiber/spec/blob/main/30-repos/sdk-ts.md)
 and the
