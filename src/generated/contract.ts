@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 2f32817737ae2a18ddbc15c3403ef47d396d4599  ·  api_version 1
+// Source: 7021f08143d8e2cfedc2ddf7e9b681d01c62dac9  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -2698,6 +2698,35 @@ export interface CredentialHeld {
    */
   fingerprint?: string | null;
   /**
+   * Whose line it is: the stack's own, or an installed plugin's, named.
+   *
+   * A different question from who produced it. A plugin's secret is minted by the
+   * service it belongs to like any other, and what the operator needs to know as well
+   * is that the service is one a plugin brought.
+   */
+  from:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
+  /**
    * Where the value lives, as a path or a description of one.
    */
   location: string;
@@ -5108,6 +5137,34 @@ export interface Elsewhere {
    * claiming nothing leaves the machine on the strength of having no idea.
    */
   destination: string;
+  /**
+   * Whose request it is: the stack's own, or an installed plugin's, named.
+   *
+   * A column in this account rather than an account of its own, because what leaves
+   * this machine is one question however many parties are asking it.
+   */
+  origin:
+    | {
+        origin: "bundled";
+      }
+    | {
+        origin: "operator";
+      }
+    | {
+        /**
+         * Which one, so the thread back to it is a name rather than a search.
+         */
+        named: string;
+        origin: "plugin";
+      }
+    | {
+        origin: "unknown";
+        /**
+         * What stopped it being established, so the gap reads as a reason rather
+         * than as a shrug.
+         */
+        why: string;
+      };
   /**
    * What it asks for.
    */
