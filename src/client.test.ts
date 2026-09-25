@@ -91,6 +91,45 @@ describe("read", () => {
     expect(seen[0]?.url).toContain("service=sonarr");
   });
 
+  // A command's flag given more than once is the same parameter repeated, which is
+  // what the server reads as a list.
+  it("repeats a parameter once for each value in a list, in order", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("forms", { form: ["library", "watch"] });
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=library&form=watch");
+  });
+
+  it("sends a list of one as the parameter given once", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("forms", { form: ["library"] });
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=library");
+  });
+
+  // A flag given no times is a flag not given; `form=` would be one form with
+  // an empty name.
+  it("sends nothing for an empty list", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("forms", { form: [] });
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms");
+  });
+
+  it("escapes every value in a list on its own", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("forms", { form: ["a b", "c&d=e"] });
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=a+b&form=c%26d%3De");
+  });
+
+  it("writes numbers and booleans in a list as it writes them alone", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("logs", { tail: [5, 10], follow: [true] });
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/logs?tail=5&tail=10&follow=true");
+  });
+
   it("leaves out an argument that was not given", async () => {
     const seen: Seen[] = [];
     await open(answering({}, seen)).read("logs", { tail: undefined, service: "sonarr" });

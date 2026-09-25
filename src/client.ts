@@ -9,9 +9,19 @@ import { TOKEN_HEADER } from "./events.js";
 import { failed, misasked, missing, refused, unreachable, type Problem } from "./problem.js";
 
 /**
- * What a query parameter may carry. A value that is `undefined` is not sent.
+ * One value a query parameter can carry.
  */
-export type Query = Record<string, string | number | boolean | undefined>;
+type Scalar = string | number | boolean;
+
+/**
+ * What a query parameter may carry. A value that is `undefined` is not sent.
+ *
+ * A list is the same parameter given once for each of its values, in order
+ * (`form=a&form=b`), which is how a command's flag given more than once is
+ * written as a read. An empty list sends nothing, the same as `undefined`: a
+ * flag given no times is a flag not given.
+ */
+export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
@@ -231,6 +241,13 @@ function summaryIn(body: string): string | undefined {
 }
 
 /**
+ * A parameter's values, whether it was given one or a list of them.
+ */
+function listed(value: Scalar | readonly Scalar[]): readonly Scalar[] {
+  return typeof value === "object" ? value : [value];
+}
+
+/**
  * A query string, or nothing when there is nothing to ask for.
  *
  * The token is never among these: a credential in a URL reaches logs, history
@@ -240,7 +257,8 @@ function search(query: Query): string {
   const parts = new URLSearchParams();
 
   for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined) parts.set(key, String(value));
+    if (value === undefined) continue;
+    for (const one of listed(value)) parts.append(key, String(one));
   }
 
   const text = parts.toString();
