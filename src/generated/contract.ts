@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: d477cc1d38842ce1245279201fb03b6fbef2e51d  ·  api_version 1
+// Source: 844c3a814eda21947270c155943221a2e08e1561  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -3759,6 +3759,14 @@ export interface Service {
    */
   exit?: number | null;
   /**
+   * Every form it is running for, in the order the stack declares them.
+   *
+   * All of them rather than one, because a service two forms share is there for
+   * both, and stopping one of them leaves it running for the other. Empty where no
+   * form it belongs to is up: a service nobody's form holds is not missing from one.
+   */
+  forms: string[];
+  /**
    * The service's identifier, which is also its Compose service name.
    */
   id: string;
@@ -4903,6 +4911,15 @@ export interface Plan {
    */
   dropped: Dropped[];
   /**
+   * The services those profiles hold, each with what it needed and who asked.
+   *
+   * The same answer as [`Self::dropped`], a service at a time. A surface showing what
+   * did not start shows services, and one holding its own copy of which service sits
+   * in which profile would be a second copy of the stack's vocabulary.
+   */
+  filtered: Filtered[];
+  footprint: Footprint;
+  /**
    * The forms the operator named, in the order they named them.
    */
   forms: string[];
@@ -4936,6 +4953,44 @@ export interface Dropped {
    * The profile that will not run.
    */
   profile: string;
+}
+/**
+ * A service a closure asked for that the configuration leaves out, and why.
+ */
+export interface Filtered {
+  /**
+   * The forms that asked for it, in the order the stack declares them.
+   */
+  forms: string[];
+  /**
+   * The service's identifier.
+   */
+  id: string;
+  /**
+   * What it is called in front of an operator.
+   */
+  name: string;
+  /**
+   * The provider it cannot run without.
+   */
+  needs: "usenet" | "torrent";
+  /**
+   * The profile it belongs to, which is what the configuration leaves out.
+   */
+  profile: string;
+}
+/**
+ * What the stack estimates the services that would start need.
+ */
+export interface Footprint {
+  /**
+   * The sum of the estimates the services declare, in MiB.
+   */
+  estimated_mib: number;
+  /**
+   * The services that declare no estimate, and so are not in the sum.
+   */
+  unestimated: string[];
 }
 /**
  * A port lemonfiber wants for a service that something else already answers on.
@@ -6695,6 +6750,15 @@ export interface Plan1 {
    */
   dropped: Dropped[];
   /**
+   * The services those profiles hold, each with what it needed and who asked.
+   *
+   * The same answer as [`Self::dropped`], a service at a time. A surface showing what
+   * did not start shows services, and one holding its own copy of which service sits
+   * in which profile would be a second copy of the stack's vocabulary.
+   */
+  filtered: Filtered[];
+  footprint: Footprint;
+  /**
    * The forms the operator named, in the order they named them.
    */
   forms: string[];
@@ -7785,10 +7849,26 @@ export interface Volume {
  */
 export interface StatusReport {
   /**
+   * The forms the running services are up for, in the order the stack declares them.
+   *
+   * Read from the whole stack whichever forms were asked about. A form counts while
+   * every service it holds has been started and none has been stopped, and one
+   * wholly inside a broader form that counts is left out. Each service names the ones
+   * it is running for.
+   */
+  active_forms: string[];
+  /**
    * What a whole set of services amounts to.
    */
   condition: "inactive" | "degraded" | "partial" | "active";
   disturbs: Disturbances;
+  /**
+   * What those forms left out for want of a configured provider, service by service.
+   *
+   * Beside the services rather than among them: a service filtered out is the
+   * configuration being honoured, not a service that did not start.
+   */
+  filtered: Filtered[];
   /**
    * The forms asked about; empty means the whole stack was.
    */
