@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: f2519ad9ccd4d7d4ac40eea3306289a6ee400e50  ·  api_version 1
+// Source: d477cc1d38842ce1245279201fb03b6fbef2e51d  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4336,6 +4336,16 @@ export interface Term {
    * More, for somebody who asks — never needed in order to act.
    */
   deep?: string | null;
+  /**
+   * The other forms this product itself writes the word in, where a state or a
+   * stage is named by one — `grabbed` for `grab`, `seeding` for `seed`.
+   *
+   * Apart from [`Self::also_called`], which is another service's word and one this
+   * product must never write as its own. These are this product's own words, and a
+   * surface explaining a word it was sent looks for the word it was sent here, so
+   * that nothing on the far side has to guess which term an inflection belongs to.
+   */
+  forms: string[];
   /**
    * One sentence: what it is for and what it costs or gains.
    *
@@ -9437,6 +9447,16 @@ export interface Term1 {
    * More, for somebody who asks — never needed in order to act.
    */
   deep?: string | null;
+  /**
+   * The other forms this product itself writes the word in, where a state or a
+   * stage is named by one — `grabbed` for `grab`, `seeding` for `seed`.
+   *
+   * Apart from [`Self::also_called`], which is another service's word and one this
+   * product must never write as its own. These are this product's own words, and a
+   * surface explaining a word it was sent looks for the word it was sent here, so
+   * that nothing on the far side has to guess which term an inflection belongs to.
+   */
+  forms: string[];
   /**
    * One sentence: what it is for and what it costs or gains.
    *
