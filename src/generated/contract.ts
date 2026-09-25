@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: b767cc90686b33d68a8af39c283309f8849ac5ba  ·  api_version 1
+// Source: 6323c13be36ba1f6f9606c00c8ba222468329801  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -6101,6 +6101,14 @@ export interface Contribution {
    * What the answer must be.
    */
   expect?: Expect | null;
+  /**
+   * A recorded response the check must fail on.
+   *
+   * For a check whose passing state cannot be recorded, such as one that needs an
+   * account nobody holds: the state it exists to find can be, and proving the check
+   * holds it to firing there. It may name the same file as `fixture`.
+   */
+  fires_on?: string | null;
   /**
    * The recorded response the check is proved against.
    */
