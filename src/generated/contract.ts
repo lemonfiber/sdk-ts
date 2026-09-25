@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 844c3a814eda21947270c155943221a2e08e1561  ·  api_version 1
+// Source: c155500c230b63a9da22b07d0054b1ca07526733  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7342,9 +7342,9 @@ export interface SeedReport {
    *
    * Not wirings, because nothing was attempted and a wiring says how an attempt
    * turned out. Not absences either, which is the point: a pass that skipped a
-   * service declaring an API shape this build does not speak used to say nothing at
-   * all, and an operator who wrote that declaration had no way to tell it from a
-   * service lemonfiber had simply forgotten.
+   * service declaring an API shape this build does not speak and said nothing would
+   * leave the operator who wrote that declaration no way to tell it from a service
+   * lemonfiber had simply forgotten.
    */
   unsupported?: UnsupportedReport[];
   /**
