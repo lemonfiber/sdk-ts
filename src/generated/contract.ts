@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: c155500c230b63a9da22b07d0054b1ca07526733  ·  api_version 1
+// Source: b767cc90686b33d68a8af39c283309f8849ac5ba  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7875,6 +7875,9 @@ export interface StatusReport {
   forms: string[];
   /**
    * Each service, worst first.
+   *
+   * A service the active forms filtered out is listed only while it is there; one
+   * that is not is in `filtered` and nowhere else.
    */
   services: Service[];
   /**
