@@ -14,7 +14,7 @@ default:
 # can carry it.
 hooks:
     git config core.hooksPath .githooks
-    @echo "hooks on: .githooks/commit-msg, .githooks/pre-push"
+    @echo "hooks on: .githooks/pre-commit, .githooks/commit-msg, .githooks/pre-push"
 
 # Everything the `gate` job reads, which is `npm run ci` and is the whole of what
 # CI runs over this package's own source.

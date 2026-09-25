@@ -9,7 +9,7 @@
 
 <p align="center">
   The TypeScript client for lemonfiber's local web API. Typed calls, a typed
-  event stream, and a typed error &mdash; published as
+  event stream, and a typed error &mdash; packaged as
   <code>@lemonfiber/sdk-ts</code>.
 </p>
 
@@ -78,6 +78,8 @@ Live updates arrive as envelopes. Anything gathered before a break in the
 connection is marked out of date rather than shown as current:
 
 ```ts
+const url = "http://127.0.0.1:9000/api/events"; // the stream's own address, not the base
+
 for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: fetch })) {
   if (arrival.at === "live") draw(arrival.kind, arrival.data);
   if (arrival.at === "stale") markOutOfDate(arrival.quietForMs);
@@ -91,13 +93,16 @@ Nothing throws for an expected failure. A call returns either a value or a
 `problem.kind` says which sort of refusal it was, so a caller need not read the
 sentence to know what to do with it:
 
-| `kind`        | What it means                                              |
-| ------------- | ---------------------------------------------------------- |
-| `missing`     | lemonfiber has nothing by the name the request gave        |
-| `misasked`    | It could not answer the request as it was asked            |
-| `failed`      | It understood the request and its own answering failed     |
-| `refused`     | The key this page is using is not the one this run expects |
-| `unreachable` | Nothing lemonfiber wrote came back at all                  |
+| `kind`        | What it means                                                |
+| ------------- | ------------------------------------------------------------ |
+| `missing`     | lemonfiber has nothing by the name the request gave          |
+| `misasked`    | It could not answer the request as it was asked              |
+| `failed`      | It understood the request and its own answering failed       |
+| `refused`     | The key this page is using is not the one this run expects   |
+| `unreachable` | Nothing lemonfiber wrote came back at all                    |
+| `version`     | The reply is in an `api_version` this package does not speak |
+| `malformed`   | What arrived as an answer was not a lemonfiber envelope      |
+| `stream`      | The event stream broke or went quiet for too long            |
 
 `refused` is the key and nothing else. A caller reading it may ask for a new key
 without reading the sentence, which is the point of a kind — and a caller reading
@@ -106,9 +111,9 @@ it. A stopped container engine is `failed`, and asking again once it is running
 will succeed.
 
 `missing`, `misasked` and `failed` always carry lemonfiber's own sentence: a body
-this package cannot read is reported as `unreachable` whatever status carried it,
-so a page from something standing in front of lemonfiber is never passed off as its
-account of what there is.
+this package cannot read is reported as `unreachable` whatever failure status
+carried it, so a page from something standing in front of lemonfiber is never
+passed off as its account of what there is.
 
 ## `src/generated/` is not yours to edit
 
