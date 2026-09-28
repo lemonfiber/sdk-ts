@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 7008624f60cfd94bca598e3361f3167044903fc4  ·  api_version 1
+// Source: 950df25bccab0097a0f26a3ee8301ae05d48839e  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -157,6 +157,13 @@ export type PluginVerdict =
        * What stopped it being run.
        */
       why: string;
+    }
+  | {
+      /**
+       * Each declared recording, what it held, and why it is one the assertion fails on.
+       */
+      declared: PluginFailingAsDeclared[];
+      outcome: "failing-as-declared";
     };
 /**
  * How a single check turned out.
@@ -5610,6 +5617,40 @@ export interface PluginProving {
   why: string;
 }
 /**
+ * One recording an assertion fails on as its manifest declares.
+ */
+export interface PluginFailingAsDeclared {
+  /**
+   * The constraint of the expectation that fails there.
+   */
+  constraint:
+    | "status"
+    | "json"
+    | "json_has_keys"
+    | "json_types"
+    | "json_at_least"
+    | "json_array_min"
+    | "json_is_absent"
+    | "content_type"
+    | "body_starts_with";
+  /**
+   * The recording.
+   */
+  fixture: string;
+  /**
+   * What the recording held there.
+   */
+  held: string;
+  /**
+   * Where within that constraint, for one that looks at places.
+   */
+  place?: string | null;
+  /**
+   * Why the manifest says this recording is one the assertion fails on.
+   */
+  reason: string;
+}
+/**
  * What putting a run back came to.
  *
  * A report rather than a bare list, because it is what an envelope carries and an
@@ -6118,13 +6159,9 @@ export interface Contribution {
    */
   expect?: Expect | null;
   /**
-   * A recorded response the check must fail on.
-   *
-   * For a check whose passing state cannot be recorded, such as one that needs an
-   * account nobody holds: the state it exists to find can be, and proving the check
-   * holds it to firing there. It may name the same file as `fixture`.
+   * Recordings the check fails on, each with the constraint that fails there and why.
    */
-  fires_on?: string | null;
+  expected?: PluginExpectedFailure[];
   /**
    * The recorded response the check is proved against.
    */
@@ -6228,6 +6265,55 @@ export interface Expect {
    * The status the answer must carry.
    */
   status?: number | null;
+}
+/**
+ * A recording an assertion fails on, the one constraint of its expectation that fails
+ * there, and why.
+ *
+ * For an assertion whose passing state nobody can record, such as a check that a server
+ * has an owner where claiming one needs an account the plugin's CI does not hold: the
+ * state it exists to find can be recorded, and the declaration says which constraint
+ * tells the two states apart. It changes the verdict on that recording and on nothing
+ * else — the live service and every other recording are held to the expectation as it
+ * is written.
+ *
+ * It names a constraint rather than only a recording, because a recording that began
+ * failing for another reason — a truncated file, an error recorded by mistake — would
+ * otherwise read as failing as declared, excusing a failure nobody had looked at.
+ */
+export interface PluginExpectedFailure {
+  /**
+   * The key of the expectation that fails on the recording, and one it carries.
+   */
+  constraint:
+    | "status"
+    | "json"
+    | "json_has_keys"
+    | "json_types"
+    | "json_at_least"
+    | "json_array_min"
+    | "json_is_absent"
+    | "content_type"
+    | "body_starts_with";
+  /**
+   * The recording the assertion fails on. It may be the assertion's own `fixture`.
+   */
+  fixture: string;
+  /**
+   * Where within that constraint it fails, written exactly as the expectation writes
+   * it. Present for a key-wise constraint and absent for one about the whole answer.
+   */
+  place?: string | null;
+  /**
+   * Why this recording is one the assertion fails on. Reported with the verdict every
+   * time.
+   */
+  reason: string;
+  /**
+   * `fails`, and nothing else: passing is what the expectation already says, and
+   * could-not-run is never excused.
+   */
+  verdict: "fails";
 }
 /**
  * What is asked, and where.
