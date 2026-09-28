@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: aba9f8a46865e2f7340def73f2a02da53ce558d9  ·  api_version 1
+// Source: 7008624f60cfd94bca598e3361f3167044903fc4  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -6818,6 +6818,14 @@ export interface ProvenanceReport {
  * Where one service comes from, as the stack declares it.
  */
 export interface ServiceProvenance {
+  /**
+   * The digest of the image that runs, where the stack names one.
+   *
+   * Beside the tag rather than instead of it: the tag is the version somebody reads,
+   * and the digest is the one image that version was when it was pinned, which is
+   * what is pulled and what somebody verifies against the registry.
+   */
+  digest?: string | null;
   /**
    * The service's id, which is also its Compose service name.
    */
