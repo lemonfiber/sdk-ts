@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 950df25bccab0097a0f26a3ee8301ae05d48839e  ·  api_version 1
+// Source: 59edb5b826b1b5a74603607180745c4b206dc4ee  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -581,6 +581,24 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  certificate: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: CertificateReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   clients: {
     /**
      * The output contract's version.
@@ -947,6 +965,24 @@ export interface Contract {
      */
     api_version: number;
     data: Leaving;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  pairing: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Pairing;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -2320,6 +2356,25 @@ export interface CataloguedService {
    * Bazarr finds subtitles says nothing about whether its being down matters.
    */
   without_it: string;
+}
+/**
+ * The payload.
+ */
+export interface CertificateReport {
+  /**
+   * What replacing it means for every phone already paired.
+   */
+  consequence: string;
+  /**
+   * What a phone would pin now: the new certificate where it was replaced, the one
+   * kept where it was not, and nothing where none has been made.
+   */
+  fingerprint?: string | null;
+  /**
+   * Whether it was replaced. Unconfirmed, it is not, and what replacing it costs is
+   * what is said.
+   */
+  replaced: boolean;
 }
 /**
  * The payload.
@@ -5402,6 +5457,54 @@ export interface Elsewhere {
    * The service, by the id the stack declares it under.
    */
   service: string;
+}
+/**
+ * The payload.
+ */
+export interface Pairing {
+  /**
+   * What is worth knowing about the address itself, where anything is.
+   */
+  caution?: string | null;
+  material: PairingMaterial;
+  /**
+   * What would make every paired phone refuse this machine, said now rather than
+   * discovered then.
+   */
+  replacing: string;
+  /**
+   * When it stops being good, as a date and a time of day.
+   */
+  until: string;
+  /**
+   * The material as the one line a code carries and a person types.
+   */
+  written: string;
+}
+/**
+ * The material itself.
+ */
+export interface PairingMaterial {
+  /**
+   * Where the phone reaches the stack: an `https` address on the household network.
+   */
+  address: string;
+  /**
+   * When the material stops being good, in seconds since the Unix epoch.
+   */
+  expires: number;
+  /**
+   * The certificate that address presents: SHA-256 over its DER encoding, in
+   * lower-case hex. Not the digest of its public key.
+   */
+  fingerprint: string;
+  /**
+   * The stack's own identifier: opaque, minted once from nothing and kept, and the
+   * same across every issue of the material, a change of address and a replacement of
+   * the certificate. Not the stack's name and not its version, and it carries nothing
+   * about the household or anybody in it.
+   */
+  stack: string;
 }
 /**
  * The payload.
@@ -9697,6 +9800,9 @@ export type BundleEnvelope = Contract["bundle"];
 /** The envelope carrying `catalogue`. */
 export type CatalogueEnvelope = Contract["catalogue"];
 
+/** The envelope carrying `certificate`. */
+export type CertificateEnvelope = Contract["certificate"];
+
 /** The envelope carrying `clients`. */
 export type ClientsEnvelope = Contract["clients"];
 
@@ -9759,6 +9865,9 @@ export type MusicEnvelope = Contract["music"];
 
 /** The envelope carrying `outbound`. */
 export type OutboundEnvelope = Contract["outbound"];
+
+/** The envelope carrying `pairing`. */
+export type PairingEnvelope = Contract["pairing"];
 
 /** The envelope carrying `plugins`. */
 export type PluginsEnvelope = Contract["plugins"];
@@ -9857,7 +9966,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -9870,6 +9979,7 @@ export interface ByKind {
   "beside": BesideEnvelope;
   "bundle": BundleEnvelope;
   "catalogue": CatalogueEnvelope;
+  "certificate": CertificateEnvelope;
   "clients": ClientsEnvelope;
   "config": ConfigEnvelope;
   "credentials": CredentialsEnvelope;
@@ -9891,6 +10001,7 @@ export interface ByKind {
   "migration": MigrationEnvelope;
   "music": MusicEnvelope;
   "outbound": OutboundEnvelope;
+  "pairing": PairingEnvelope;
   "plugins": PluginsEnvelope;
   "preview": PreviewEnvelope;
   "provenance": ProvenanceEnvelope;
