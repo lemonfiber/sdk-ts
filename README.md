@@ -74,6 +74,28 @@ An action's name and its arguments are the command line's own. A name this
 surface does not offer is refused rather than invented, and a field no action
 takes is refused rather than ignored.
 
+A support bundle is a file, not a document, so it arrives as a `Blob` with the
+type lemonfiber served it as. Ask by the name it was written under, or by the
+payload the `support` action answered with once it wrote one:
+
+```ts
+import { isKind } from "@lemonfiber/sdk-ts";
+
+const made = await opened.client.act("support", { write: true });
+if (made.ok && isKind(made.value, "bundle")) {
+  const { path } = made.value.data; // absent where the run described a bundle and wrote none
+  if (typeof path === "string") {
+    const file = await opened.client.bundle({ path }); // or .bundle(name)
+    if (file.ok) offerDownload(file.value); // a Blob, for URL.createObjectURL
+    if (!file.ok) report(file.problem, file.said); // `said` is the refusal's body, whole
+  }
+}
+```
+
+`take` is the same reading for any endpoint that answers with a file. A refusal on
+either is read as every other one is, and carries its body as `said` besides:
+the whole error envelope, and the sentence a turned-away request was answered with.
+
 Live updates arrive as envelopes. Anything gathered before a break in the
 connection is marked out of date rather than shown as current:
 

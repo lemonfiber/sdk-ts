@@ -6,6 +6,7 @@
 import { address } from "./address.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
+import type { Bundle } from "./generated/contract.js";
 import { failed, misasked, missing, refused, unreachable, type Problem } from "./problem.js";
 
 /**
@@ -25,11 +26,49 @@ export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
+ *
+ * `blob` is read for a file lemonfiber hands over and for nothing else, so a
+ * reply without it answers every request but those. `fetch`'s reply has it.
  */
 export type Sending = (
   url: string,
   init: { method: string; headers: Record<string, string>; body?: string },
-) => Promise<{ ok: boolean; status: number; text: () => Promise<string> }>;
+) => Promise<{
+  ok: boolean;
+  status: number;
+  text: () => Promise<string>;
+  blob?: () => Promise<Blob>;
+}>;
+
+/**
+ * One reply, as `sending` handed it back.
+ */
+type Answer = Awaited<ReturnType<Sending>>;
+
+/**
+ * A file lemonfiber handed over, or why it did not.
+ *
+ * The file is kept as it arrived, bytes and type both, so a browser can offer it
+ * as a download without decoding it first.
+ *
+ * A refusal carries the body it arrived with, whole, as `said`. `problem` is the
+ * reading `refusalIn` gives every other request; `said` is what that reading
+ * leaves out — every field of an error envelope beyond its summary, and the
+ * sentence a turned-away request was answered with, which `refused` never
+ * carries. It is absent where nothing arrived to carry.
+ */
+export type Handed = { ok: true; value: Blob } | { ok: false; problem: Problem; said?: string };
+
+/**
+ * Where a support bundle was written, as the `support` action's `bundle` payload
+ * says. The payload itself is one, once its `path` is known to be there.
+ *
+ * Only a written one: a payload without a `path` described a bundle and wrote
+ * none, so there is no file to ask for.
+ */
+export interface Written {
+  path: NonNullable<Bundle["path"]>;
+}
 
 export interface Talking {
   /**
@@ -48,8 +87,9 @@ export type Opened = { ok: true; client: Client } | { ok: false; problem: Proble
 /**
  * Talks to one running lemonfiber.
  *
- * Every reply is read through the envelope, so a version this package cannot
- * speak is refused rather than half-understood.
+ * Every reply that is a document is read through the envelope, so a version
+ * this package cannot speak is refused rather than half-understood. A file is
+ * handed over as the bytes that arrived.
  */
 export class Client {
   readonly #base: string;
@@ -96,37 +136,111 @@ export class Client {
     return this.#ask<T>("POST", `/api/actions/${name}`, JSON.stringify(body));
   }
 
+  /**
+   * Asks for what lemonfiber hands over as a file rather than as a document.
+   *
+   * The reply is not read through the envelope, since there is none; it is kept
+   * as the bytes that arrived. A refusal is read as every other one is, and keeps
+   * its body besides.
+   */
+  async take(endpoint: string): Promise<Handed> {
+    const answer = await this.#send("GET", `/api/${endpoint}`, "*/*");
+    if (answer === undefined) return { ok: false, problem: unreachable() };
+
+    if (!answer.ok) {
+      const said = await textOf(answer);
+      if (said === undefined) return { ok: false, problem: unreachable() };
+      return { ok: false, problem: refusalIn(answer.status, said), said };
+    }
+
+    const kept = await blobOf(answer);
+    if (kept === undefined) return { ok: false, problem: unreachable() };
+    return { ok: true, value: kept };
+  }
+
+  /**
+   * One support bundle lemonfiber kept, handed over whole.
+   *
+   * Asked for by the name it was written under, or by the `bundle` payload the
+   * `support` action answered with, whose `path` ends in that name. The name is
+   * sent as one path segment, so a name carrying a separator reaches lemonfiber as
+   * written and is refused there by name.
+   */
+  async bundle(written: string | Written): Promise<Handed> {
+    const name = typeof written === "string" ? written : lastSegment(written.path);
+    return this.take(`bundle/${encodeURIComponent(name)}`);
+  }
+
   async #ask<T>(method: string, path: string, body?: string): Promise<Reading<Envelope<T>>> {
-    const headers: Record<string, string> = {
-      [TOKEN_HEADER]: this.#token,
-      Accept: "application/json",
-      // Part of what the request is, rather than assigned onto a value that
-      // was already complete a line earlier.
-      ...(body !== undefined && { "Content-Type": "application/json" }),
-    };
+    const answer = await this.#send(method, path, "application/json", body);
+    if (answer === undefined) return { ok: false, problem: unreachable() };
 
-    let answer;
-    try {
-      answer = await this.#sending(`${this.#base}${path}`, {
-        method,
-        headers,
-        ...(body !== undefined && { body }),
-      });
-    } catch {
-      return { ok: false, problem: unreachable() };
-    }
-
-    let said: string;
-    try {
-      said = await answer.text();
-    } catch {
-      return { ok: false, problem: unreachable() };
-    }
+    const said = await textOf(answer);
+    if (said === undefined) return { ok: false, problem: unreachable() };
 
     if (!answer.ok) return { ok: false, problem: refusalIn(answer.status, said) };
 
     return parse<T>(said);
   }
+
+  /**
+   * The reply to one request, or nothing where none arrived.
+   */
+  async #send(
+    method: string,
+    path: string,
+    accept: string,
+    body?: string,
+  ): Promise<Answer | undefined> {
+    const headers: Record<string, string> = {
+      [TOKEN_HEADER]: this.#token,
+      Accept: accept,
+      // Part of what the request is, rather than assigned onto a value that
+      // was already complete a line earlier.
+      ...(body !== undefined && { "Content-Type": "application/json" }),
+    };
+
+    try {
+      return await this.#sending(`${this.#base}${path}`, {
+        method,
+        headers,
+        ...(body !== undefined && { body }),
+      });
+    } catch {
+      return undefined;
+    }
+  }
+}
+
+/**
+ * A reply's body as text, or nothing where it could not be read.
+ */
+async function textOf(answer: Answer): Promise<string | undefined> {
+  try {
+    return await answer.text();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * A reply's body as the bytes that arrived, or nothing where it could not be
+ * read as bytes.
+ */
+async function blobOf(answer: Answer): Promise<Blob | undefined> {
+  if (answer.blob === undefined) return undefined;
+  try {
+    return await answer.blob();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The file a path names: whatever follows its last separator, of either kind.
+ */
+function lastSegment(path: string): string {
+  return path.slice(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
 }
 
 /**

@@ -2,10 +2,12 @@ export { address, type Address } from "./address.js";
 export {
   Client,
   refusalIn,
+  type Handed,
   type Opened,
   type Query,
   type Sending,
   type Talking,
+  type Written,
 } from "./client.js";
 export { API_VERSION, isKind, parse, read, type Envelope, type Reading } from "./envelope.js";
 export { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/contract.js";
