@@ -29,10 +29,15 @@ export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
  *
  * `blob` is read for a file lemonfiber hands over and for nothing else, so a
  * reply without it answers every request but those. `fetch`'s reply has it.
+ *
+ * `redirect` is always `"error"`: an answer pointing somewhere else is not
+ * followed, so the token goes to the address it was given for and nowhere
+ * else. `fetch` honours it as given; a `sending` of any other kind has to as
+ * well.
  */
 export type Sending = (
   url: string,
-  init: { method: string; headers: Record<string, string>; body?: string },
+  init: { method: string; headers: Record<string, string>; body?: string; redirect: "error" },
 ) => Promise<{
   ok: boolean;
   status: number;
@@ -205,6 +210,7 @@ export class Client {
         method,
         headers,
         ...(body !== undefined && { body }),
+        redirect: "error",
       });
     } catch {
       return undefined;

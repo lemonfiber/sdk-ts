@@ -3,6 +3,7 @@
  *
  * Spec: 20-architecture/contracts/web-api.md
  */
+import { address } from "./address.js";
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";
 import { streamLost, unreachable, type Problem } from "./problem.js";
@@ -42,13 +43,19 @@ export type Arrival<T> =
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
+ *
+ * `redirect` is always `"error"`, for the reason `Sending`'s is.
  */
 export type Fetching = (
   url: string,
-  init: { headers: Record<string, string>; signal: AbortSignal },
+  init: { headers: Record<string, string>; signal: AbortSignal; redirect: "error" },
 ) => Promise<{ ok: boolean; body: ReadableStream<Uint8Array> | null }>;
 
 export interface Following {
+  /**
+   * The stream's own address on the machine lemonfiber runs on, read as
+   * `Client.at` reads one, and refused as it refuses one.
+   */
   url: string;
   token: string;
   fetching: Fetching;
@@ -91,8 +98,17 @@ interface Opening {
  *
  * On a break every held value cools: a value gathered before a gap is not
  * current, whatever the transport reports about the gap.
+ *
+ * An address that is not on this machine, or carries more than an address, is
+ * lost before anything is sent: the token goes nowhere it was not given for.
  */
 export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>> {
+  const where = address(options.url);
+  if (!where.ok) {
+    yield { at: "lost", problem: where.problem };
+    return;
+  }
+
   const now = options.now ?? (() => Date.now());
   const silenceAllowedMs = options.silenceAllowedMs ?? SILENCE_ALLOWED_MS;
   const reconnectsAllowed = options.reconnectsAllowed ?? RECONNECTS_ALLOWED;
@@ -102,7 +118,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
   let reconnects = 0;
 
   for (;;) {
-    const body = await open(options, lastEventId);
+    const body = await open(options, where.base, lastEventId);
 
     if (body === undefined) {
       ledger.cool();
@@ -272,6 +288,7 @@ function silence(ms: number, until: AbortSignal): Promise<Heard> {
  */
 async function open(
   options: Following,
+  url: string,
   lastEventId: string | undefined,
 ): Promise<ReadableStream<Uint8Array> | undefined> {
   const headers: Record<string, string> = {
@@ -284,9 +301,10 @@ async function open(
   };
 
   try {
-    const answer = await options.fetching(options.url, {
+    const answer = await options.fetching(url, {
       headers,
       signal: options.signal ?? new AbortController().signal,
+      redirect: "error",
     });
     return answer.ok && answer.body !== null ? answer.body : undefined;
   } catch {
