@@ -109,6 +109,12 @@ for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: 
 }
 ```
 
+The stream's address is read the way `Client.at` reads one, so an address that is not on this
+machine, or carries more than an address, arrives as `lost` and nothing is sent to it. No request
+either of them makes follows an answer pointing somewhere else: every request asks for
+`redirect: "error"`, which `fetch` honours, so the token reaches the address it was given for
+and no other. A `sending` or `fetching` that is not `fetch` has to honour it too.
+
 Nothing throws for an expected failure. A call returns either a value or a
 `Problem` carrying a sentence written for a person to read.
 
