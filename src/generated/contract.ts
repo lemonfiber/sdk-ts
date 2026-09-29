@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 59edb5b826b1b5a74603607180745c4b206dc4ee  ·  api_version 1
+// Source: fdc2ed1466ad4c1cf171af071cfe7c1629ffb970  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5466,6 +5466,11 @@ export interface Pairing {
    * What is worth knowing about the address itself, where anything is.
    */
   caution?: string | null;
+  /**
+   * The fingerprint in the short form a person compares with what the phone shows
+   * after typing the line in, as [`comparable`] derives it.
+   */
+  compare: string;
   material: PairingMaterial;
   /**
    * What would make every paired phone refuse this machine, said now rather than
@@ -7799,7 +7804,7 @@ export interface Protocols {
 export interface Reckoning {
   /**
    * What this offer names itself, so an answer to it can say which offer it was
-   * answering.
+   * answering. The answer is this name, and nothing else is a yes to a cleanup.
    */
   agreement: string;
   /**
@@ -7838,7 +7843,7 @@ export interface Reckoning {
    */
   reclaimable: Consumption[];
   /**
-   * What became of a confirmed cleanup, where one was asked for.
+   * What became of an answered cleanup, where the offer was answered.
    */
   reclaimed?: Reclaimed | null;
   /**
@@ -7987,7 +7992,7 @@ export interface Outsized {
   times_typical: number;
 }
 /**
- * What became of a confirmed cleanup.
+ * What became of an answered cleanup.
  */
 export interface Reclaimed {
   /**
@@ -7995,13 +8000,18 @@ export interface Reclaimed {
    */
   bytes: number;
   /**
-   * The paths that were taken.
+   * The paths that were taken, or would have been in a rehearsal.
    */
   gone: string[];
   /**
    * What could not be taken, and what the platform said about it.
    */
   left: SpaceLeft[];
+  /**
+   * Whether this was a rehearsal. Rehearsed, `gone` and `bytes` are what would have
+   * been taken and nothing was: no room was freed.
+   */
+  rehearsed: boolean;
 }
 /**
  * Something a cleanup could not take.
