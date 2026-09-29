@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 9829145fea787f88d8172c6727fefa6b684d8f04  ·  api_version 1
+// Source: 8d312584bfab29eea9d354e058f66627bf5502be  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5507,7 +5507,7 @@ export interface Outbound {
   /**
    * Which request this is.
    */
-  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates";
+  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates" | "plugin-source";
   /**
    * Exactly what travels in the request.
    */
@@ -5673,6 +5673,15 @@ export interface PluginInstalls {
    * read it.
    */
   removal?: PluginRemoval | null;
+  /**
+   * Whether each installed plugin's source can still be fetched, asked now.
+   *
+   * Filled on the reading of what is installed and nowhere else, for the reason
+   * `substituted` is: it is the one read an operator makes of what each plugin is
+   * doing, and the one moment this machine asks anybody where a plugin came from. A
+   * run that installs, updates or removes one leaves it empty.
+   */
+  sources?: PluginSource[];
   /**
    * Every capability the operator chose an installed plugin's service to fill.
    *
@@ -6362,6 +6371,15 @@ export interface PluginInstalled {
    */
   provides?: string[];
   /**
+   * The commit it was installed at, where it came from a git source.
+   *
+   * The one commit the revision named at install resolved to, so what was installed
+   * can be told from whatever that source serves now. Empty for a plugin installed
+   * from a directory, which has no revision to name, and for a record written before
+   * this was kept.
+   */
+  revision?: string;
+  /**
    * What was placed, one entry per service the plugin declares.
    */
   services: PluginPlaced[];
@@ -6776,6 +6794,15 @@ export interface PluginInstalled1 {
    */
   provides?: string[];
   /**
+   * The commit it was installed at, where it came from a git source.
+   *
+   * The one commit the revision named at install resolved to, so what was installed
+   * can be told from whatever that source serves now. Empty for a plugin installed
+   * from a directory, which has no revision to name, and for a record written before
+   * this was kept.
+   */
+  revision?: string;
+  /**
    * What was placed, one entry per service the plugin declares.
    */
   services: PluginPlaced[];
@@ -6884,6 +6911,40 @@ export interface UndoReversal1 {
    * would do, what would go back.
    */
   reversed: Undo[];
+}
+/**
+ * Whether one installed plugin's source can still be fetched.
+ */
+export interface PluginSource {
+  /**
+   * The source the record says it came from.
+   */
+  from: string;
+  /**
+   * The plugin, by its id.
+   */
+  plugin: string;
+  /**
+   * What asking it came to.
+   */
+  standing:
+    | {
+        standing: "reachable";
+      }
+    | {
+        standing: "unreachable";
+        /**
+         * What asking it said.
+         */
+        why: string;
+      }
+    | {
+        standing: "unasked";
+        /**
+         * Why nothing was asked.
+         */
+        why: string;
+      };
 }
 /**
  * A capability the operator chose one of a plugin's services to fill.
