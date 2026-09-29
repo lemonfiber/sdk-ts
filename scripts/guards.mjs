@@ -13,14 +13,17 @@ const LINE_CAP = 550;
 Every file under `dir`, recursively.
 */
 async function walk(dir) {
-  const found = [];
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const path = join(dir, entry.name);
-    if (entry.isDirectory()) found.push(...(await walk(path)));
-    else found.push(path);
-  }
-  return found;
+  const entries = await readdir(dir, { withFileTypes: true, recursive: true });
+  return entries
+    .filter((entry) => !entry.isDirectory())
+    .map((entry) => join(entry.parentPath, entry.name));
 }
+
+/**
+Each file beside its text, read together.
+*/
+const readAll = (paths) =>
+  Promise.all(paths.map(async (path) => [path, await readFile(path, "utf8")]));
 
 const failures = [];
 const at = (line) => (line === null ? "" : `:${String(line)}`);
@@ -58,8 +61,9 @@ const readSomething = (what, found) => {
 
 readSomething("src", files);
 
-for (const file of files) {
-  const text = await readFile(file, "utf8");
+const sources = await readAll(files);
+
+for (const [file, text] of sources) {
   const lines = text.split("\n");
 
   lines.forEach((line, index) => {
@@ -144,8 +148,9 @@ const MAY_REACH = "contract-sync.mjs";
 
 let sawGenerator = false;
 
-for (const file of scripts) {
-  const text = await readFile(file, "utf8");
+const scriptSources = await readAll(scripts);
+
+for (const [file, text] of scriptSources) {
   // A test names a URL as data — a `$schema` in a fixture is not a reach — and
   // the rule is about what generation does, not about what a test says.
   const vendoring = file.endsWith(MAY_REACH) || file.endsWith(".test.mjs");
