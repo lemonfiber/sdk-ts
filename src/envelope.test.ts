@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { API_VERSION, isKind, parse, read } from "./envelope.js";
-import { CONTRACT_API_VERSION } from "./generated/contract.js";
+import { CONTRACT_API_VERSION, type ByKind } from "./generated/contract.js";
 
 const good = { api_version: API_VERSION, kind: "status", data: { free: 412 } };
 
@@ -83,6 +83,61 @@ describe("isKind", () => {
     expect(got.ok).toBe(true);
     if (!got.ok) return;
     expect(isKind(got.value, "word")).toBe(false);
+  });
+
+  it("narrows a hand-off to the report it carries", () => {
+    const report: ByKind["handoff"]["data"] = {
+      name: "sam",
+      address: "http://192.168.1.20:8096",
+      state: "ready",
+      quick_connect: true,
+      rehearsed: false,
+      steps: ["Open Findroid", "Scan the code"],
+      sessions: [{ client: "Jellyfin Web", device: "Firefox", last_seen: null }],
+      clients: [
+        {
+          client: "Findroid",
+          code: "http://192.168.1.20:8096",
+          deep_link: false,
+          device: "Android phone",
+          open_source: true,
+        },
+      ],
+    };
+    const got = read<unknown>({ api_version: API_VERSION, kind: "handoff", data: report });
+
+    expect(got.ok).toBe(true);
+    if (!got.ok) return;
+    expect(isKind(got.value, "handoff")).toBe(true);
+    if (!isKind(got.value, "handoff")) return;
+    expect(got.value.data.state).toBe("ready");
+    expect(got.value.data.clients.map((client) => [client.code, client.deep_link])).toEqual([
+      ["http://192.168.1.20:8096", false],
+    ]);
+  });
+
+  it("carries whether a device's app is open source, and the link that opens it", () => {
+    const device: ByKind["clients"]["data"]["devices"][number] = {
+      client: "Swiftfin",
+      device: "iPhone",
+      support: "good",
+      open_source: true,
+      deep_link: "swiftfin://connect?server={address}",
+    };
+    const got = read<unknown>({
+      api_version: API_VERSION,
+      kind: "clients",
+      data: { devices: [device], nothing_is_installed: "", only_at_home: "", trouble: [] },
+    });
+
+    expect(got.ok).toBe(true);
+    if (!got.ok) return;
+    expect(isKind(got.value, "clients")).toBe(true);
+    if (!isKind(got.value, "clients")) return;
+    expect(got.value.data.devices[0]).toMatchObject({
+      open_source: true,
+      deep_link: "swiftfin://connect?server={address}",
+    });
   });
 });
 

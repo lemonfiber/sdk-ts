@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 2fd6d09277f8338669262c5778f34a64b60a49ec  ·  api_version 1
+// Source: 9829145fea787f88d8172c6727fefa6b684d8f04  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -749,6 +749,24 @@ export interface Contract {
      */
     api_version: number;
     data: Vocabulary;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  handoff: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: HandoffReport;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -2419,6 +2437,13 @@ export interface Device {
    */
   client: string;
   /**
+   * A link that opens the app already pointed at this server, where the app is known to
+   * take one, with `{address}` where the server's address goes. Absent otherwise, and a
+   * hand-off then carries the address alone as its code, which the app is pointed at by
+   * scanning or typing.
+   */
+  deep_link?: string | null;
+  /**
    * What somebody would call the device they are holding.
    */
   device: string;
@@ -2426,6 +2451,11 @@ export interface Device {
    * What to do instead where this is a bad device to be stuck with.
    */
   instead?: string | null;
+  /**
+   * Whether the app named is open source. A closed one may be named, with this false
+   * beside it, and is never the one recommended.
+   */
+  open_source: boolean;
   /**
    * How well served it is.
    */
@@ -4431,6 +4461,108 @@ export interface Term {
    * The word as it appears in the interface.
    */
   word: string;
+}
+/**
+ * The payload.
+ */
+export interface HandoffReport {
+  /**
+   * The address the code carries. Absent where there is no address to carry, which is
+   * one of the ways a hand-off fails.
+   */
+  address?: string | null;
+  /**
+   * What is worth knowing about that address, where anything is: most often that it
+   * answers only on the home network.
+   */
+  caution?: string | null;
+  /**
+   * The apps to point a device at the stack with, each with its code.
+   */
+  clients: HandoffClient[];
+  /**
+   * When a code was first issued for them, as an instant. Absent until one is.
+   */
+  issued?: string | null;
+  /**
+   * Who it is for, as the media server spells their account where it holds one, and as
+   * it was asked for otherwise.
+   */
+  name: string;
+  /**
+   * Whether the media server offers the sign-in by short code, where one account already
+   * signed in approves another device.
+   */
+  quick_connect: boolean;
+  /**
+   * Why it stands there, where that is not the state itself: what to do for an account
+   * that is not there, and what stopped one that failed.
+   */
+  reason?: string | null;
+  /**
+   * Whether this was a rehearsal, in which no issue was written down.
+   */
+  rehearsed: boolean;
+  /**
+   * The devices signed in to the account now, as the media server lists them.
+   */
+  sessions: HandoffSession[];
+  /**
+   * Where it stands.
+   */
+  state: "unprovisioned" | "ready" | "pending" | "connected" | "failed";
+  /**
+   * How the person signs in on the new device, one step at a time.
+   *
+   * **Guidance and never an approval.** Where the sign-in asks for a short code to be
+   * approved from a device they are already signed in on, that approval is theirs: it
+   * is the step that proves the person holding the new device is the person the
+   * account is for, and a program that took it for them would have proved nothing.
+   */
+  steps: string[];
+}
+/**
+ * One app a device can be pointed at the stack with, and the code that points it.
+ */
+export interface HandoffClient {
+  /**
+   * What to use on it.
+   */
+  client: string;
+  /**
+   * What the code for this app carries: a link that opens the app at this server where
+   * the app takes one, and the server's address otherwise.
+   */
+  code: string;
+  /**
+   * Whether [`code`](Self::code) is such a link rather than the address alone.
+   */
+  deep_link: boolean;
+  /**
+   * What somebody would call the device they are holding.
+   */
+  device: string;
+  /**
+   * Whether that app is open source. A closed one is never the recommended path.
+   */
+  open_source: boolean;
+}
+/**
+ * One device the media server lists as signed in to the account.
+ */
+export interface HandoffSession {
+  /**
+   * The app it signed in with.
+   */
+  client: string;
+  /**
+   * What the device calls itself.
+   */
+  device: string;
+  /**
+   * When the media server last heard from it, where it says.
+   */
+  last_seen?: string | null;
 }
 /**
  * The payload.
@@ -9842,6 +9974,9 @@ export type FrontDoorEnvelope = Contract["front-door"];
 /** The envelope carrying `glossary`. */
 export type GlossaryEnvelope = Contract["glossary"];
 
+/** The envelope carrying `handoff`. */
+export type HandoffEnvelope = Contract["handoff"];
+
 /** The envelope carrying `held`. */
 export type HeldEnvelope = Contract["held"];
 
@@ -9978,7 +10113,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -10001,6 +10136,7 @@ export interface ByKind {
   "forms": FormsEnvelope;
   "front-door": FrontDoorEnvelope;
   "glossary": GlossaryEnvelope;
+  "handoff": HandoffEnvelope;
   "held": HeldEnvelope;
   "history": HistoryEnvelope;
   "hosting": HostingEnvelope;
