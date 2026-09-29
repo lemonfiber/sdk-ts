@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: fdc2ed1466ad4c1cf171af071cfe7c1629ffb970  ·  api_version 1
+// Source: 2fd6d09277f8338669262c5778f34a64b60a49ec  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4950,11 +4950,13 @@ export interface LifecycleReport {
    */
   rehearsed: boolean;
   /**
-   * What each service ended up doing, where the action waited to find out.
+   * What each service ended up doing, where the action waited to find out, or
+   * where a start did not complete, read once when it ended.
    *
    * Empty for actions that do not wait. Stopping is finished when Compose
    * says it is, and surveying afterwards would only report the absence it
-   * was asked to produce.
+   * was asked to produce. A start that failed is not waited on, and names every
+   * service it addressed and those they depend on as the engine had them then.
    */
   services: Service[];
   /**
