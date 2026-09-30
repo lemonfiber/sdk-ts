@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 8e0a00cdce7e84a89cb87eb5e3e993152adc34cf  ·  api_version 1
+// Source: 3c0f78582d1b1a8fd2e7dcc8dc296e1394434cc2  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -103,6 +103,15 @@ export type PanelVpn =
       };
       panel: "unavailable";
     };
+/**
+ * What there is to do next about a hand-off, which each surface says in its own words.
+ *
+ * Carried as a name rather than as a sentence because the act is the same everywhere
+ * and the way to take it is not: a terminal names a command, and an app offers a
+ * control. A sentence written here would have to pick one of them, and every other
+ * surface would then be showing somebody an instruction it cannot carry out.
+ */
+export type HandoffRemedy = "invite" | "ask-again" | "start-server" | "record-address";
 /**
  * What a whole set of services amounts to.
  */
@@ -4532,14 +4541,20 @@ export interface HandoffReport {
    */
   quick_connect: boolean;
   /**
-   * Why it stands there, where that is not the state itself: what to do for an account
-   * that is not there, and what stopped one that failed.
+   * Why it stands there, where that is not the state itself: why an account that is not
+   * there stops it, and what stopped one that failed. In words any surface can show, so
+   * it names no command; what to do about it is [`remedy`](Self::remedy).
    */
   reason?: string | null;
   /**
    * Whether this was a rehearsal, in which no issue was written down.
    */
   rehearsed: boolean;
+  /**
+   * What there is to do next, where there is anything: named rather than said, so
+   * that each surface offers it in its own way.
+   */
+  remedy?: HandoffRemedy | null;
   /**
    * The devices signed in to the account now, as the media server lists them.
    */
@@ -4550,6 +4565,9 @@ export interface HandoffReport {
   state: "unprovisioned" | "ready" | "pending" | "connected" | "failed";
   /**
    * How the person signs in on the new device, one step at a time.
+   *
+   * Every step is something the person does on their device, in words any surface can
+   * show. Asking again afterwards is not one of them: that is [`remedy`](Self::remedy).
    *
    * **Guidance and never an approval.** Where the sign-in asks for a short code to be
    * approved from a device they are already signed in on, that approval is theirs: it
@@ -5655,7 +5673,8 @@ export interface Pairing {
   material: PairingMaterial;
   /**
    * What would make every paired phone refuse this machine, said now rather than
-   * discovered then.
+   * discovered then. In words any surface can show: how the certificate is replaced
+   * is each surface's own to say, so this names no command.
    */
   replacing: string;
   /**
