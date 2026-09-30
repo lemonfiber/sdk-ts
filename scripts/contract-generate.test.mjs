@@ -6,7 +6,7 @@
  * so node still resolves the generator's dependency.
  */
 import { spawnSync } from "node:child_process";
-import { cp, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -183,4 +183,172 @@ describe("generating from a contract this package does not implement", () => {
     expect(result.status).toBe(0);
     expect(existsSync(written())).toBe(true);
   });
+});
+
+/** The one kind every contract here carries, beside the refusals it lists. */
+const listing = (refusals) => ({ ...contract(1), refusals });
+
+/** A refusal as the contract lists one. */
+const refusal = (name, status, description = "Raised when the request was refused.") => ({
+  name,
+  status,
+  description,
+});
+
+const writeContract = (body) =>
+  writeFile(join(tree, "contract", "web-api.contract.json"), JSON.stringify(body));
+
+describe("generating the refusal codes", () => {
+  it("writes an empty list from a contract that lists none", async () => {
+    await writeContract(contract(1));
+
+    const result = run();
+    const source = await readFile(written(), "utf8");
+
+    expect(result.status).toBe(0);
+    expect(source).toContain("export type RefusalCode = never;");
+    expect(source).toContain("> = {};");
+  });
+
+  it("writes every code the contract lists, with what it says of each", async () => {
+    await writeContract(
+      listing({
+        "ADMIT-6": refusal("NOT_YOURS", 403, "Raised when the account may not ask for this."),
+        "ADMIT-4": refusal("NOT_ADMITTED", 403),
+        "READ-1": refusal("NOT_HERE", 404),
+      }),
+    );
+
+    const result = run();
+    const generated = await import(written());
+
+    expect(result.status).toBe(0);
+    expect(Object.keys(generated.REFUSAL_CODES)).toEqual(["ADMIT-4", "ADMIT-6", "READ-1"]);
+    expect(generated.REFUSAL_CODES["ADMIT-6"]).toEqual(
+      refusal("NOT_YOURS", 403, "Raised when the account may not ask for this."),
+    );
+    expect(await readFile(written(), "utf8")).toContain(
+      'export type RefusalCode = "ADMIT-4" | "ADMIT-6" | "READ-1";',
+    );
+  });
+
+  it("writes a guard that knows the listed codes and no others", async () => {
+    await writeContract(listing({ "ADMIT-4": refusal("NOT_ADMITTED", 403) }));
+
+    run();
+    const { isRefusalCode } = await import(written());
+
+    expect(isRefusalCode("ADMIT-4")).toBe(true);
+    expect(isRefusalCode("ADMIT-5")).toBe(false);
+    expect(isRefusalCode("toString")).toBe(false);
+  });
+
+  it.each([
+    ["a list", []],
+    ["a string", "ADMIT-4"],
+    ["null", null],
+  ])("refuses refusals that are %s, and writes nothing", async (_what, refusals) => {
+    await writeContract(listing(refusals));
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("keyed by code");
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it.each([
+    [
+      "a refusal that is not an object",
+      { "ADMIT-4": "NOT_ADMITTED" },
+      "ADMIT-4: not an object",
+    ],
+    [
+      "a name not in SCREAMING_SNAKE",
+      { "ADMIT-4": refusal("notAdmitted", 403) },
+      "ADMIT-4: name",
+    ],
+    ["no name", { "ADMIT-4": { status: 403, description: "Raised." } }, "ADMIT-4: name"],
+    [
+      "a status that is a success",
+      { "ADMIT-4": refusal("NOT_ADMITTED", 200) },
+      "ADMIT-4: status",
+    ],
+    [
+      "a status that is not a number",
+      { "ADMIT-4": refusal("NOT_ADMITTED", "403") },
+      "ADMIT-4: status",
+    ],
+    [
+      "a status past any refusal",
+      { "ADMIT-4": refusal("NOT_ADMITTED", 600) },
+      "ADMIT-4: status",
+    ],
+    [
+      "an empty description",
+      { "ADMIT-4": refusal("NOT_ADMITTED", 403, " ") },
+      "ADMIT-4: description",
+    ],
+    ["an empty code", { "": refusal("NOT_ADMITTED", 403) }, '"": not a code'],
+    [
+      "a code padded with spaces",
+      { " ADMIT-4": refusal("NOT_ADMITTED", 403) },
+      '" ADMIT-4": not a code',
+    ],
+    ["a code with no number", { ADMIT: refusal("NOT_ADMITTED", 403) }, '"ADMIT": not a code'],
+    [
+      "a code that would set a prototype",
+      JSON.parse('{"__proto__": {"name": "NOT_ADMITTED", "status": 403, "description": "x"}}'),
+      '"__proto__": not a code',
+    ],
+  ])("refuses %s, naming the code", async (_what, refusals, named) => {
+    await writeContract(listing(refusals));
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(named);
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it("names every refusal that is wrong, not only the first", async () => {
+    await writeContract(
+      listing({ "ADMIT-4": refusal("admitted", 403), "ADMIT-5": refusal("ELSEWHERE", 99) }),
+    );
+
+    const result = run();
+
+    expect(result.stderr).toContain("ADMIT-4: name");
+    expect(result.stderr).toContain("ADMIT-5: status");
+  });
+
+  it("refuses one name under two codes, naming both", async () => {
+    await writeContract(
+      listing({
+        "ADMIT-4": refusal("NOT_ADMITTED", 403),
+        "ADMIT-5": refusal("NOT_ADMITTED", 403),
+      }),
+    );
+
+    const result = run();
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("ADMIT-5: name NOT_ADMITTED is also the name of ADMIT-4");
+    expect(existsSync(written())).toBe(false);
+  });
+
+  it.each(["RefusalCode", "REFUSAL_CODES", "isRefusalCode"])(
+    "refuses a definition named %s, which this generator writes",
+    async (name) => {
+      const collides = contract(1);
+      collides.kinds.word.$defs = { [name]: { type: "object" } };
+      await writeContract(collides);
+
+      const result = run();
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(name);
+      expect(existsSync(written())).toBe(false);
+    },
+  );
 });

@@ -10323,3 +10323,15 @@ export interface ByKind {
 
 /** The wire version these types were generated for. */
 export const CONTRACT_API_VERSION = 1;
+
+/** Every code a refusal may carry. */
+export type RefusalCode = never;
+
+/** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
+export const REFUSAL_CODES: Readonly<
+  Record<RefusalCode, { readonly name: string; readonly status: number; readonly description: string }>
+> = {};
+
+/** Whether a code is one the contract lists as a refusal's. */
+export const isRefusalCode = (value: string): value is RefusalCode =>
+  Object.hasOwn(REFUSAL_CODES, value);

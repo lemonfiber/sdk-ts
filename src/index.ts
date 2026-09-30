@@ -10,7 +10,14 @@ export {
   type Written,
 } from "./client.js";
 export { API_VERSION, isKind, parse, read, type Envelope, type Reading } from "./envelope.js";
-export { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/contract.js";
+export {
+  CONTRACT_API_VERSION,
+  isRefusalCode,
+  REFUSAL_CODES,
+  type ByKind,
+  type Kind,
+  type RefusalCode,
+} from "./generated/contract.js";
 export {
   follow,
   HEARTBEAT_MS,
@@ -23,6 +30,7 @@ export {
 } from "./events.js";
 export { Ledger, type Held } from "./ledger.js";
 export {
+  declined,
   failed,
   malformed,
   misasked,

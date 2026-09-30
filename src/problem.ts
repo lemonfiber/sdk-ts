@@ -3,10 +3,12 @@
  *
  * Spec: 10-functional/features/g-ux/g4-error-model.md
  */
+import type { RefusalCode } from "./generated/contract.js";
 
 export type ProblemKind =
   | "unreachable"
   | "refused"
+  | "declined"
   | "missing"
   | "misasked"
   | "failed"
@@ -20,6 +22,13 @@ export interface Problem {
    * Plain language. No status codes, no stack traces, no jargon.
    */
   message: string;
+  /**
+   * Why lemonfiber refused, where it said so with a code the contract lists.
+   *
+   * A code the contract does not list is not carried: it reads as none, and the
+   * refusal is read by its status alone.
+   */
+  code?: RefusalCode;
 }
 
 export const problem = (kind: ProblemKind, message: string): Problem => ({ kind, message });
@@ -34,8 +43,8 @@ export const unreachable = (): Problem =>
  * remedy is always the same one and a caller reading this kind may act on it
  * without reading anything further.
  *
- * It takes no sentence. What lemonfiber says when it turns a request away names a
- * symptom of the key, and a sentence carried here would make this kind mean
+ * It takes no sentence. What lemonfiber says when it turns a request away for the
+ * key names a symptom of it, and a sentence carried here would make this kind mean
  * whatever the sentence happened to say — which is what it used to mean, and what
  * left a stopped container engine asking an operator for a new key.
  */
@@ -44,6 +53,23 @@ export const refused = (): Problem =>
     "refused",
     "lemonfiber refused that. The key this page is using is not the one it is expecting — reopen it from the address lemonfiber printed.",
   );
+
+/**
+ * lemonfiber turned the request away for a reason that is not the key.
+ *
+ * Who is asking, or where from, is what it objects to: a page served from an
+ * address other than the one lemonfiber is listening on, an account asking for
+ * what is not its own, a password that was not the one, or a media server that
+ * could not say whether the account is still anybody. Each has its own remedy and
+ * none of them is a new key, so this is never `refused`.
+ *
+ * The code says which it is, and a caller decides from the code rather than from
+ * the sentence. The sentence is lemonfiber's own, written for a person to read.
+ */
+export const declined = (said: string, code: RefusalCode): Problem => ({
+  ...problem("declined", said),
+  code,
+});
 
 /**
  * lemonfiber has nothing by the name the request gave.

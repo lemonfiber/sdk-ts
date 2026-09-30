@@ -121,16 +121,17 @@ Nothing throws for an expected failure. A call returns either a value or a
 `problem.kind` says which sort of refusal it was, so a caller need not read the
 sentence to know what to do with it:
 
-| `kind`        | What it means                                                |
-| ------------- | ------------------------------------------------------------ |
-| `missing`     | lemonfiber has nothing by the name the request gave          |
-| `misasked`    | It could not answer the request as it was asked              |
-| `failed`      | It understood the request and its own answering failed       |
-| `refused`     | The key this page is using is not the one this run expects   |
-| `unreachable` | Nothing lemonfiber wrote came back at all                    |
-| `version`     | The reply is in an `api_version` this package does not speak |
-| `malformed`   | What arrived as an answer was not a lemonfiber envelope      |
-| `stream`      | The event stream broke or went quiet for too long            |
+| `kind`        | What it means                                                   |
+| ------------- | --------------------------------------------------------------- |
+| `missing`     | lemonfiber has nothing by the name the request gave             |
+| `misasked`    | It could not answer the request as it was asked                 |
+| `failed`      | It understood the request and its own answering failed          |
+| `refused`     | The key this page is using is not the one this run expects      |
+| `declined`    | It turned away who is asking, or where from, for another reason |
+| `unreachable` | Nothing lemonfiber wrote came back at all                       |
+| `version`     | The reply is in an `api_version` this package does not speak    |
+| `malformed`   | What arrived as an answer was not a lemonfiber envelope         |
+| `stream`      | The event stream broke or went quiet for too long               |
 
 `refused` is the key and nothing else. A caller reading it may ask for a new key
 without reading the sentence, which is the point of a kind — and a caller reading
@@ -138,10 +139,21 @@ without reading the sentence, which is the point of a kind — and a caller read
 it. A stopped container engine is `failed`, and asking again once it is running
 will succeed.
 
-`missing`, `misasked` and `failed` always carry lemonfiber's own sentence: a body
-this package cannot read is reported as `unreachable` whatever failure status
-carried it, so a page from something standing in front of lemonfiber is never
-passed off as its account of what there is.
+A refusal whose `error` envelope names a code the contract lists carries it as
+`problem.code`, typed `RefusalCode`, and a caller decides what the refusal means
+from that code rather than from the sentence. At 401 or 403 the code decides the
+kind: the key's code is `refused`, and every other listed code is `declined`,
+carrying lemonfiber's own sentence — a page served from the wrong address, an
+account asking for what is not its own, a wrong password, a media server that
+could not vouch for the account. A refusal carrying no code, or one the contract
+does not list, is read by its status alone. `REFUSAL_CODES` holds what the
+contract says of each code, and `isRefusalCode` tells a listed one from any other
+string; both are generated, and no code is written by hand.
+
+`missing`, `misasked`, `failed` and `declined` always carry lemonfiber's own
+sentence: a body this package cannot read is reported as `unreachable`, or as
+`refused` at 401 and 403, so a page from something standing in front of lemonfiber
+is never passed off as its account of what there is.
 
 ## `src/generated/` is not yours to edit
 
