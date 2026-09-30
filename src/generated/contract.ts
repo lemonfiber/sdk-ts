@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 01579a458a4ed3237e077a369d83f1a3e2bfbbe5  ·  api_version 1
+// Source: 23ed6123641f70109620e9e4b6ecb36365461d2f  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -107,6 +107,15 @@ export type PanelVpn =
  * What a whole set of services amounts to.
  */
 export type Condition = "inactive" | "degraded" | "partial" | "active";
+/**
+ * How bad a line says it is.
+ *
+ * Ordered, so a filter can ask for "warnings and worse" without a table of which
+ * level outranks which. Deliberately coarse: these six are what services agree
+ * on, and a seventh that only one of them writes would be a level nobody could filter
+ * by across the stack.
+ */
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 /**
  * What became of asking one service to re-search its existing content.
  */
@@ -3228,6 +3237,14 @@ export interface Alert {
    */
   check: string;
   /**
+   * How the service it is about exited, where it has and the engine said;
+   * where several were grouped, how the first of them did.
+   *
+   * The technical half of what happened, kept out of the summary so the plain
+   * words lead, and here for whoever wants the code.
+   */
+  exit?: number | null;
+  /**
    * What kind of event it is, shared by every instance of it.
    */
   kind: string;
@@ -3417,6 +3434,13 @@ export interface Affected {
    * What is also wrong because of this, counted with it rather than again.
    */
   downstream: string[];
+  /**
+   * How the service it is about exited, where it has and the engine said.
+   *
+   * The technical half of what happened, kept out of the summary so the plain
+   * words lead, and here for whoever wants the code.
+   */
+  exit?: number | null;
   /**
    * What it costs the operator. The line expands to items an operator can act
    * on, and an item that states only the event leaves the judgement it was
@@ -5294,6 +5318,15 @@ export interface LogLine {
    * rather than replaced by an arrival time.
    */
   at?: string | null;
+  /**
+   * How bad the line says it is, in one lowercase word.
+   *
+   * Absent where the line says nothing about itself. It is never guessed from
+   * the stream the line arrived on or from the words in it: most of this stack
+   * writes ordinary progress to standard error, and a line saying it could not
+   * find something is often a routine miss.
+   */
+  level?: LogLevel | null;
   /**
    * The line, without its trailing newline.
    */
