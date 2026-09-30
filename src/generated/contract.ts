@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: c1ccda0afcca37266c325c0750f0216cfc640098  ·  api_version 1
+// Source: 01579a458a4ed3237e077a369d83f1a3e2bfbbe5  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5520,7 +5520,8 @@ export interface Outbound {
   /**
    * Which request this is.
    */
-  reach: "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates" | "plugin-source";
+  reach:
+    "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates" | "plugin-source" | "catalogue";
   /**
    * Exactly what travels in the request.
    */
@@ -6410,6 +6411,14 @@ export interface PluginInstalled {
    */
   services: PluginPlaced[];
   /**
+   * What signed it: the key the catalogue index it was resolved through verified
+   * against, named with its fingerprint.
+   *
+   * Empty for a plugin installed from a source the operator named, which nothing
+   * signed, and for a record written before this was kept.
+   */
+  signed?: string;
+  /**
    * The plugin's own content version, as it stood when it was installed.
    */
   version: string;
@@ -6668,10 +6677,10 @@ export interface PluginDeclaration {
   /**
    * Whether anybody reviewed it before it was installed.
    *
-   * False for every install from a path an operator named — which is every install
-   * this build makes. Carried rather than left implicit, because an unreviewed
-   * plugin is to be said to be one for as long as it is installed, and a field that
-   * is only ever false today is still the field a reviewed install will set.
+   * True for a plugin installed by name through a catalogue index whose signature
+   * verified, and false for every install from a source an operator named. Carried
+   * rather than left implicit, because an unreviewed plugin is to be said to be one
+   * for as long as it is installed.
    */
   reviewed?: boolean;
   /**
@@ -6832,6 +6841,14 @@ export interface PluginInstalled1 {
    * What was placed, one entry per service the plugin declares.
    */
   services: PluginPlaced[];
+  /**
+   * What signed it: the key the catalogue index it was resolved through verified
+   * against, named with its fingerprint.
+   *
+   * Empty for a plugin installed from a source the operator named, which nothing
+   * signed, and for a record written before this was kept.
+   */
+  signed?: string;
   /**
    * The plugin's own content version, as it stood when it was installed.
    */
