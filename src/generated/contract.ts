@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 8d312584bfab29eea9d354e058f66627bf5502be  ·  api_version 1
+// Source: c1ccda0afcca37266c325c0750f0216cfc640098  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -4126,6 +4126,19 @@ export interface Finding {
    */
   service?: string | null;
   /**
+   * What the stack calls that service in front of an operator.
+   *
+   * Carried beside the id rather than left for a surface to derive, because the id is
+   * a key and not a name: capitalising `qbittorrent` does not arrive at qBittorrent,
+   * and the stack has already written the name down. Absent where the finding is about
+   * no service, and where the stack declares no service by that id — an id standing in
+   * for a name would put the key back in front of the operator.
+   *
+   * Set after the run, like [`Self::caused_by`], from the same manifest that says
+   * which service depends on which.
+   */
+  service_name?: string | null;
+  /**
    * The one-line summary of what was checked.
    */
   title: string;
@@ -6210,6 +6223,19 @@ export interface Finding1 {
    * thing wrong.
    */
   service?: string | null;
+  /**
+   * What the stack calls that service in front of an operator.
+   *
+   * Carried beside the id rather than left for a surface to derive, because the id is
+   * a key and not a name: capitalising `qbittorrent` does not arrive at qBittorrent,
+   * and the stack has already written the name down. Absent where the finding is about
+   * no service, and where the stack declares no service by that id — an id standing in
+   * for a name would put the key back in front of the operator.
+   *
+   * Set after the run, like [`Self::caused_by`], from the same manifest that says
+   * which service depends on which.
+   */
+  service_name?: string | null;
   /**
    * The one-line summary of what was checked.
    */
