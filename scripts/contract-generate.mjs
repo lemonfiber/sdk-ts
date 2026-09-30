@@ -86,6 +86,73 @@ const kinds = Object.keys(artefact.kinds).sort((a, b) => (a < b ? -1 : 1));
 
 if (kinds.length === 0) stop("The vendored contract describes no kinds.");
 
+/** A problem code, as the core spells one: `ADMIT-4`. */
+const CODE = /^[A-Z][A-Z0-9]*-\d+$/;
+
+/** A registry name, as the core spells one: `NOT_ADMITTED`. */
+const SCREAMING_SNAKE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$/;
+
+const isRecord = (value) =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * Everything wrong with one listed refusal, as lines naming its code.
+ *
+ * The status is one a refusal is answered with, so a 2xx or a 3xx listed here is
+ * a listing that says a success refuses.
+ */
+function* wrongWith(code, entry) {
+  if (!CODE.test(code))
+    yield `${JSON.stringify(code)}: not a code, which is a prefix and a number`;
+  if (!isRecord(entry)) {
+    yield `${code}: not an object`;
+    return;
+  }
+  if (typeof entry.name !== "string" || !SCREAMING_SNAKE.test(entry.name))
+    yield `${code}: name ${JSON.stringify(entry.name)} is not SCREAMING_SNAKE`;
+  if (!Number.isInteger(entry.status) || entry.status < 400 || entry.status > 599)
+    yield `${code}: status ${JSON.stringify(entry.status)} is not a refusal's status`;
+  if (typeof entry.description !== "string" || entry.description.trim() === "")
+    yield `${code}: description ${JSON.stringify(entry.description)} is not a sentence`;
+}
+
+/**
+ * The codes a refusal may carry, as the contract lists them, or none.
+ *
+ * An artefact older than the list has no `refusals`, and reads as listing no code
+ * rather than as an error, so a consumer compiles against every artefact.
+ */
+const listed = Object.hasOwn(artefact, "refusals") ? artefact.refusals : {};
+
+if (!isRecord(listed)) {
+  stop(
+    `The vendored contract's refusals are ${JSON.stringify(listed)}, and they are ` +
+      "an object keyed by code.",
+  );
+}
+
+const codes = Object.keys(listed).sort((a, b) => (a < b ? -1 : 1));
+
+const malformed = codes.flatMap((code) => [...wrongWith(code, listed[code])]);
+
+// One name under two codes leaves a caller looking a refusal up by name with two
+// answers.
+const namedBy = new Map();
+for (const code of codes) {
+  const name = listed[code]?.name;
+  if (typeof name !== "string") continue;
+  if (namedBy.has(name))
+    malformed.push(`${code}: name ${name} is also the name of ${namedBy.get(name)}`);
+  else namedBy.set(name, code);
+}
+
+if (malformed.length > 0) {
+  stop(
+    "The vendored contract lists a refusal this generator cannot write:\n  " +
+      malformed.join("\n  "),
+  );
+}
+
 /** PascalCase, so `walkthrough` becomes `Walkthrough`. */
 const typeName = (kind) =>
   kind
@@ -110,7 +177,7 @@ const definitionsOf = (kind) => artefact.kinds[kind].$defs ?? {};
  * The names this file writes itself, and what each one means here.
  *
  * Every definition hoisted out of a kind's `$defs` lands in this module's one
- * scope, beside these four and one `…Envelope` per kind. Nothing coordinates
+ * scope, beside the names below and one `…Envelope` per kind. Nothing coordinates
  * the two authorities writing into it — the contract names its definitions and
  * this generator names its own — so a definition taking one of these names is
  * emitted twice under it.
@@ -120,6 +187,9 @@ const OWNED = new Map([
   ["Kind", "the union of every kind the server may send"],
   ["ByKind", "the envelope each kind carries"],
   ["CONTRACT_API_VERSION", "the wire version these types were generated for"],
+  ["RefusalCode", "the union of every code a refusal may carry"],
+  ["REFUSAL_CODES", "what the contract says of each refusal code"],
+  ["isRefusalCode", "whether a code is one the contract lists"],
   ...kinds.map((kind) => [`${typeName(kind)}Envelope`, `the envelope carrying \`${kind}\``]),
 ]);
 
@@ -139,7 +209,7 @@ const taken = kinds.flatMap((kind) =>
  * for a reason none of those errors mentions. One rename is the fix and none of
  * the errors asks for it.
  *
- * The name moves in the contract rather than here. All five are this package's
+ * The name moves in the contract rather than here. Each of them is this package's
  * published surface — `Kind` and `ByKind` are what a caller writes
  * `<K extends Kind>` against — so moving one of them instead would break every
  * caller to spare the producer a rename.
@@ -224,9 +294,32 @@ parts.push(
   "/** The wire version these types were generated for. */",
   `export const CONTRACT_API_VERSION = ${String(artefact.api_version)};`,
   "",
+  "/** Every code a refusal may carry. */",
+  `export type RefusalCode = ${codes.length === 0 ? "never" : codes.map((code) => JSON.stringify(code)).join(" | ")};`,
+  "",
+  "/** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */",
+  "export const REFUSAL_CODES: Readonly<",
+  "  Record<RefusalCode, { readonly name: string; readonly status: number; readonly description: string }>",
+  ...(codes.length === 0
+    ? ["> = {};"]
+    : [
+        "> = {",
+        ...codes.map((code) => {
+          const { name, status, description } = listed[code];
+          return `  ${JSON.stringify(code)}: { name: ${JSON.stringify(name)}, status: ${String(status)}, description: ${JSON.stringify(description)} },`;
+        }),
+        "};",
+      ]),
+  "",
+  "/** Whether a code is one the contract lists as a refusal's. */",
+  "export const isRefusalCode = (value: string): value is RefusalCode =>",
+  "  Object.hasOwn(REFUSAL_CODES, value);",
+  "",
 );
 
 await mkdir(dirname(OUT), { recursive: true });
 await writeFile(OUT, parts.join("\n"));
 
-console.log(`generated ${kinds.length} kinds from ${stamp} -> src/generated/contract.ts`);
+console.log(
+  `generated ${kinds.length} kinds and ${codes.length} refusal codes from ${stamp} -> src/generated/contract.ts`,
+);

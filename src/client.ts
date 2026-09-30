@@ -6,8 +6,21 @@
 import { address } from "./address.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
-import type { Bundle } from "./generated/contract.js";
-import { failed, misasked, missing, refused, unreachable, type Problem } from "./problem.js";
+import {
+  isRefusalCode,
+  REFUSAL_CODES,
+  type Bundle,
+  type RefusalCode,
+} from "./generated/contract.js";
+import {
+  declined,
+  failed,
+  misasked,
+  missing,
+  refused,
+  unreachable,
+  type Problem,
+} from "./problem.js";
 
 /**
  * One value a query parameter can carry.
@@ -250,12 +263,51 @@ function lastSegment(path: string): string {
 }
 
 /**
- * Whether a status is lemonfiber saying the key is wrong.
+ * Whether a status is lemonfiber turning away who is asking.
  *
- * Both are read: 403 is what it answers with, and 401 is what a proxy in front of
- * it may answer with instead.
+ * Both are read: 403 is what it answers most of them with, 401 is what it answers
+ * a wrong password with, and 401 is what a proxy in front of it may answer with
+ * instead.
  */
 const wasTurnedAway = (status: number): boolean => status === 403 || status === 401;
+
+/**
+ * The registry name of the refusal that is the key: the request carried nothing
+ * this run admits.
+ *
+ * Its code is read from the contract's list by this name, so no code is written
+ * here.
+ */
+const THE_KEY = "NOT_ADMITTED";
+
+/**
+ * Whether a refusal's code is the key's.
+ */
+function isTheKey(code: RefusalCode): boolean {
+  const listed: { readonly name: string } = REFUSAL_CODES[code];
+  return listed.name === THE_KEY;
+}
+
+/**
+ * What an answer's body said: the one sentence it holds, and the code it named,
+ * as it arrived.
+ */
+interface Said {
+  sentence?: string;
+  code?: string;
+}
+
+/**
+ * Whether a code arrived and is one the contract lists. Any other reads as none.
+ */
+const isListed = (code: string | undefined): code is RefusalCode =>
+  code !== undefined && isRefusalCode(code);
+
+/**
+ * A problem carrying the code it was refused with, where the contract lists it.
+ */
+const carrying = (problem: Problem, code: string | undefined): Problem =>
+  isListed(code) ? { ...problem, code } : problem;
 
 /**
  * What opens something other than a sentence: a JSON body, or markup from
@@ -296,7 +348,7 @@ const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
  * A refusal lemonfiber wrote a sentence for is that sentence, under the kind its
  * status warrants. A failure whose body holds no sentence this package can read is
  * reported as not answering: a body it cannot read tells it no more than silence
- * would, whatever status carried it.
+ * would, whatever status other than 401 or 403 carried it.
  *
  * What that rules out is a document, not a stranger. A page and a body of JSON
  * that is not this envelope are both refused, and a plain sentence is taken as
@@ -307,57 +359,71 @@ const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
  * would close that door by discarding the surface's own refusals, which is the
  * larger loss of the two.
  *
- * The key is the one refusal read from the status alone, and it is the only one
- * `refused` is ever built from. Everything else that answered in words is the
- * request's fault or the answering's, and a caller acting on `refused` is
- * therefore acting on the key and on nothing that merely arrived beside it.
+ * A refusal's code, where the contract lists it, is carried on the problem it is
+ * read as. A code the contract does not list reads as none.
+ *
+ * A request turned away at 401 or 403 is read from its code. The key's code is
+ * `refused`, carrying it. Any other listed code is `declined`, carrying the code
+ * and lemonfiber's sentence, since what it objects to is who is asking or where
+ * from and a new key would not help. No code, a code the contract does not list,
+ * or a listed code with no sentence beside it is read from the status alone,
+ * which for these two is the key — `refused`, carrying no code and no sentence.
  */
 export function refusalIn(status: number, body: string): Problem {
-  // 403, not 401: lemonfiber answers a bad token with the status that does not
-  // invite a browser to prompt for credentials it has no way to supply. Reading
-  // 401 here meant a rejected key arrived as "cannot reach it", so a page that
-  // should have asked for the key again reported the server down instead.
-  //
-  // Neither body is carried. Both sentences lemonfiber says here name a symptom,
-  // and the remedy for either is the one this message already gives.
-  if (wasTurnedAway(status)) return refused();
+  const said = saidIn(body);
+  if (wasTurnedAway(status)) return turnedAway(said);
 
-  const sentence = saidIn(body);
-  if (sentence === undefined) return unreachable();
+  if (said.sentence === undefined) return unreachable();
 
   const meant = MEANT_BY.get(status) ?? failed;
-  return meant(sentence);
+  return carrying(meant(said.sentence), said.code);
 }
 
 /**
- * The sentence lemonfiber refused with, or nothing where the body holds none.
+ * The problem a request turned away at 401 or 403 is, given what its body said.
+ */
+function turnedAway({ sentence, code }: Said): Problem {
+  if (!isListed(code)) return refused();
+  if (isTheKey(code)) return { ...refused(), code };
+  if (sentence === undefined) return refused();
+  return declined(sentence, code);
+}
+
+/**
+ * What lemonfiber refused with, or nothing where the body holds nothing it said.
  *
  * Two shapes arrive. An action lemonfiber does not offer, or an argument it does
- * not know, is answered in prose. A command that ran and failed is answered with
- * an `error` envelope, whose summary is that same one sentence. A body of any
+ * not know, is answered in prose, which carries no code. A command that ran and
+ * failed, and a request it turned away, are answered with an `error` envelope,
+ * whose summary is that same one sentence and whose code names why. A body of any
  * other shape did not come from lemonfiber and is not handed on as its words.
  */
-function saidIn(body: string): string | undefined {
+function saidIn(body: string): Said {
   const words = body.trim();
-  if (words === "") return undefined;
-  if (OPENS_A_STRUCTURE.test(words)) return summaryIn(words);
-  return words;
+  if (words === "") return {};
+  if (OPENS_A_STRUCTURE.test(words)) return errorIn(words);
+  return { sentence: words };
 }
 
 /**
- * The one plain sentence an `error` envelope carries.
+ * The one plain sentence an `error` envelope carries, and the code it names.
  *
- * The kind names the payload; it does not prove its shape. The summary is read
- * as something arriving off a wire, so an envelope labelled `error` that carries
- * no sentence yields none.
+ * The kind names the payload; it does not prove its shape. Each field is read as
+ * something arriving off a wire, so an envelope labelled `error` that carries no
+ * sentence yields none, and one whose code is not a string yields no code.
  */
-function summaryIn(body: string): string | undefined {
+function errorIn(body: string): Said {
   const envelope = parse<unknown>(body);
-  if (!envelope.ok || !isKind(envelope.value, "error")) return undefined;
+  if (!envelope.ok || !isKind(envelope.value, "error")) return {};
 
-  const summary: unknown = envelope.value.data.summary;
-  if (typeof summary !== "string" || summary.trim() === "") return undefined;
-  return summary.trim();
+  const data: unknown = envelope.value.data;
+  if (typeof data !== "object" || data === null) return {};
+
+  const { summary, code } = data as Record<string, unknown>;
+  return {
+    ...(typeof summary === "string" && summary.trim() !== "" && { sentence: summary.trim() }),
+    ...(typeof code === "string" && { code }),
+  };
 }
 
 /**

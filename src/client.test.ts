@@ -1,8 +1,47 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Client, refusalIn, type Sending } from "./client.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
+import type { RefusalCode } from "./generated/contract.js";
 import { refused, unreachable } from "./problem.js";
+
+// The vendored contract may list no refusal codes, so these tests read against a
+// list of their own, in the shape the generator writes one.
+vi.mock("./generated/contract.js", async (importOriginal) => {
+  const generated = await importOriginal<Record<string, unknown>>();
+  const listed: Record<string, { name: string; status: number; description: string }> = {
+    "ADMIT-4": {
+      name: "NOT_ADMITTED",
+      status: 403,
+      description: "Raised when a request carried no token or session this run admits.",
+    },
+    "ADMIT-6": {
+      name: "NOT_YOURS",
+      status: 403,
+      description: "Raised when the account asking may not ask for this.",
+    },
+    "ADMIT-8": {
+      name: "NOT_THE_PASSWORD",
+      status: 401,
+      description: "Raised when the password offered is not the one.",
+    },
+    "ADMIT-9": {
+      name: "TOO_MANY_ATTEMPTS",
+      status: 429,
+      description: "Raised when too many wrong passwords were offered lately.",
+    },
+    "READ-2": {
+      name: "NOTHING_BY_THAT_NAME",
+      status: 404,
+      description: "Raised when a read named something this product does not have.",
+    },
+  };
+  return {
+    ...generated,
+    REFUSAL_CODES: listed,
+    isRefusalCode: (value: string): value is RefusalCode => Object.hasOwn(listed, value),
+  };
+});
 
 /**
  * An `error` envelope carrying `data`, as lemonfiber answers a command that ran
@@ -435,5 +474,104 @@ describe("refusalIn", () => {
 
   it("reports an answer holding no sentence as not answering", () => {
     expect(refusalIn(500, " ".repeat(3))).toEqual(unreachable());
+  });
+});
+
+// A status groups refusals and the code tells them apart. Four different facts
+// share 403, and only one of them is the key.
+describe("a refusal that names why", () => {
+  /**
+   * The `error` envelope lemonfiber refuses with, naming `code`.
+   */
+  const refusing = (code: unknown, summary?: string): string =>
+    wentWrong({
+      code,
+      ...(summary !== undefined && { summary }),
+      meaning: "The request was not answered.",
+      remedies: [],
+      severity: "error",
+      state: "actionable",
+    });
+
+  const turnedAway = (status: number, text: string) =>
+    open(answering({ ok: false, status, text }, [])).read("status");
+
+  it("reads the key's code as the key, and carries the code", async () => {
+    const got = await turnedAway(403, refusing("ADMIT-4", "This run does not admit you."));
+
+    expect(got).toEqual({ ok: false, problem: { ...refused(), code: "ADMIT-4" } });
+  });
+
+  it("reads any other code it turned a request away with as declined, in its words", async () => {
+    const said = "That library belongs to another account.";
+    const got = await turnedAway(403, refusing("ADMIT-6", said));
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "declined", message: said, code: "ADMIT-6" },
+    });
+  });
+
+  it("reads a wrong password as declined, not as the key", async () => {
+    const said = "That is not the password.";
+    const got = await turnedAway(401, refusing("ADMIT-8", said));
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "declined", message: said, code: "ADMIT-8" },
+    });
+  });
+
+  it("reads a code the contract does not list by its status alone", async () => {
+    const got = await turnedAway(403, refusing("ADMIT-99", "Something new is wrong."));
+
+    expect(got).toEqual({ ok: false, problem: refused() });
+  });
+
+  it("reads a turned-away request that said nothing else as the key", async () => {
+    const got = await turnedAway(403, "This request carried no token, or not this run's.");
+
+    expect(got).toEqual({ ok: false, problem: refused() });
+  });
+
+  it("reads a listed code with no sentence beside it by its status alone", async () => {
+    const got = await turnedAway(403, refusing("ADMIT-6"));
+
+    expect(got).toEqual({ ok: false, problem: refused() });
+  });
+
+  it("reads a code that is not a string as none", async () => {
+    const got = await turnedAway(403, refusing(6, "That library belongs to another account."));
+
+    expect(got).toEqual({ ok: false, problem: refused() });
+  });
+
+  it("carries the code on a name lemonfiber does not have", async () => {
+    const said = "`kubernetes` is not one of the words this product explains";
+    const got = await turnedAway(404, refusing("READ-2", said));
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "missing", message: said, code: "READ-2" },
+    });
+  });
+
+  it("keeps every other status's reading, carrying the code", async () => {
+    const said = "Too many wrong passwords. Wait a minute and try again.";
+    const got = await turnedAway(429, refusing("ADMIT-9", said));
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "failed", message: said, code: "ADMIT-9" },
+    });
+  });
+
+  it.each([
+    [403, refused()],
+    [500, unreachable()],
+  ])("reads an error envelope carrying no payload at %s by its status", (status, problem) => {
+    const empty = JSON.stringify({ api_version: API_VERSION, kind: "error", data: null });
+
+    expect(refusalIn(status, empty)).toEqual(problem);
   });
 });
