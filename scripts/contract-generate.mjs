@@ -87,7 +87,7 @@ const kinds = Object.keys(artefact.kinds).sort((a, b) => (a < b ? -1 : 1));
 if (kinds.length === 0) stop("The vendored contract describes no kinds.");
 
 /** A problem code, as the core spells one: `ADMIT-4`. */
-const CODE = /^[A-Z][A-Z0-9]*-[0-9]+$/;
+const CODE = /^[A-Z][A-Z0-9]*-\d+$/;
 
 /** A registry name, as the core spells one: `NOT_ADMITTED`. */
 const SCREAMING_SNAKE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$/;
