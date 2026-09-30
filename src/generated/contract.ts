@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 23ed6123641f70109620e9e4b6ecb36365461d2f  ·  api_version 1
+// Source: 8e0a00cdce7e84a89cb87eb5e3e993152adc34cf  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -10325,12 +10325,47 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = never;
+export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "SERVE-6" | "SERVE-7";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
   Record<RefusalCode, { readonly name: string; readonly status: number; readonly description: string }>
-> = {};
+> = {
+  "ADMIT-10": { name: "NOT_A_PASSWORD", status: 400, description: "Raised when what was offered at the door is not a password." },
+  "ADMIT-4": { name: "NOT_ADMITTED", status: 403, description: "Raised when a request carried no token or session this run admits." },
+  "ADMIT-5": { name: "ELSEWHERE", status: 403, description: "Raised when a request said it came from somewhere this server is not." },
+  "ADMIT-6": { name: "NOT_YOURS", status: 403, description: "Raised when an account asked for something that is not its to ask for." },
+  "ADMIT-7": { name: "UNCONFIRMED", status: 403, description: "Raised when the media server could not say whether an account is still one." },
+  "ADMIT-8": { name: "NOT_THE_PASSWORD", status: 401, description: "Raised when the password offered at the door was wrong, or none is set." },
+  "ADMIT-9": { name: "TOO_MANY_ATTEMPTS", status: 429, description: "Raised when the door has been given too many wrong passwords lately." },
+  "ASK-1": { name: "NO_SUCH_ACTION", status: 404, description: "Raised where no action goes by the name that was asked for." },
+  "ASK-10": { name: "WRONG_METHOD", status: 405, description: "Raised where an endpoint was asked with a method it does not answer." },
+  "ASK-2": { name: "MISSING_ARGUMENT", status: 400, description: "Raised where an action was not given an argument it needs." },
+  "ASK-3": { name: "UNRECOGNISED_ARGUMENT", status: 400, description: "Raised where an argument was given a value that names nothing." },
+  "ASK-4": { name: "UNWANTED_ARGUMENT", status: 400, description: "Raised where an action was given an argument its command has nowhere to put." },
+  "ASK-5": { name: "ARGUMENTS_TOGETHER", status: 400, description: "Raised where two arguments that each name a different request arrived together." },
+  "ASK-6": { name: "NOT_ARGUMENTS", status: 400, description: "Raised where the body of an action is not arguments it can read." },
+  "ASK-7": { name: "NO_SUCH_JOB", status: 404, description: "Raised where a job was asked about that this run did not start." },
+  "ASK-8": { name: "NOT_AN_ANSWER", status: 400, description: "Raised where the body of a setup step is not an answer it can read." },
+  "ASK-9": { name: "NO_ENDPOINT", status: 404, description: "Raised where a path under the endpoints is one no endpoint answers." },
+  "READ-1": { name: "UNWANTED", status: 400, description: "Raised where a read was given a parameter its answer has nowhere to put." },
+  "READ-10": { name: "TOO_MANY_AT_ONCE", status: 400, description: "Raised where more holdings were asked for than one read answers with." },
+  "READ-11": { name: "NO_SUCH_GROUP", status: 400, description: "Raised where a diagnosis was narrowed to a group or check that is not one." },
+  "READ-12": { name: "NO_SUCH_REMOVAL", status: 400, description: "Raised where a removal was named that is none of the four there are." },
+  "READ-13": { name: "NO_UPDATE_OBJECT", status: 400, description: "Raised where moving forward was asked about and neither stack nor self named." },
+  "READ-14": { name: "NOT_A_LINE_COUNT", status: 400, description: "Raised where how many log lines to begin with is not a number within the ceiling." },
+  "READ-15": { name: "NOT_A_CHOICE", status: 400, description: "Raised where whether to keep reading is neither true nor false." },
+  "READ-2": { name: "REPEATED", status: 400, description: "Raised where a parameter carrying one value was given more than once." },
+  "READ-3": { name: "NO_SUCH_READ", status: 404, description: "Raised where no read goes by the name that was asked for." },
+  "READ-4": { name: "NO_TERM", status: 400, description: "Raised where a trace was asked for and named nothing to follow." },
+  "READ-5": { name: "NOT_A_SEASON", status: 400, description: "Raised where the season to narrow a trace to is not a number." },
+  "READ-6": { name: "NO_SETTING", status: 400, description: "Raised where a setting was asked for by an empty name." },
+  "READ-7": { name: "NO_MEMBER", status: 400, description: "Raised where a household member was asked for by an empty name." },
+  "READ-8": { name: "NO_SHELF_WITHOUT_A_MEMBER", status: 400, description: "Raised where a shelf was asked for and nobody was named whose it is." },
+  "READ-9": { name: "NOT_A_COUNT", status: 400, description: "Raised where how many holdings to answer with is not a whole number." },
+  "SERVE-6": { name: "UNRENDERABLE", status: 500, description: "Raised when an answer could not be rendered." },
+  "SERVE-7": { name: "NO_JOB_NAME", status: 500, description: "Raised when this machine will not supply the randomness a job is named with." },
+};
 
 /** Whether a code is one the contract lists as a refusal's. */
 export const isRefusalCode = (value: string): value is RefusalCode =>
