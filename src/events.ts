@@ -3,6 +3,7 @@
  *
  * Spec: 20-architecture/contracts/web-api.md
  */
+import { askedAgain } from "./again.js";
 import { address } from "./address.js";
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";
@@ -49,7 +50,7 @@ export type Arrival<T> =
 export type Fetching = (
   url: string,
   init: { headers: Record<string, string>; signal: AbortSignal; redirect: "error" },
-) => Promise<{ ok: boolean; body: ReadableStream<Uint8Array> | null }>;
+) => Promise<{ ok: boolean; status: number; body: ReadableStream<Uint8Array> | null }>;
 
 export interface Following {
   /**
@@ -300,14 +301,18 @@ async function open(
     ...(lastEventId !== undefined && { "Last-Event-ID": lastEventId }),
   };
 
-  try {
-    const answer = await options.fetching(url, {
-      headers,
-      signal: options.signal ?? new AbortController().signal,
-      redirect: "error",
-    });
-    return answer.ok && answer.body !== null ? answer.body : undefined;
-  } catch {
-    return undefined;
-  }
+  // Opening the stream is a read, so it is asked again before a passing failure
+  // is reported, the way every other read is.
+  const answer = await askedAgain(async () => {
+    try {
+      return await options.fetching(url, {
+        headers,
+        signal: options.signal ?? new AbortController().signal,
+        redirect: "error",
+      });
+    } catch {
+      return;
+    }
+  });
+  return answer?.ok === true && answer.body !== null ? answer.body : undefined;
 }

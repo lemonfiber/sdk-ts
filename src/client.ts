@@ -4,6 +4,7 @@
  * Spec: 20-architecture/contracts/web-api.md
  */
 import { address } from "./address.js";
+import { askedAgain } from "./again.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
 import {
@@ -141,7 +142,7 @@ export class Client {
    * Asks for what a command would print under `--json`.
    */
   async read<T>(endpoint: string, query: Query = {}): Promise<Reading<Envelope<T>>> {
-    return this.#ask<T>("GET", `/api/${endpoint}${search(query)}`);
+    return this.#ask<T>("GET", `/api/${endpoint}${search(query)}`, undefined, true);
   }
 
   /**
@@ -189,8 +190,18 @@ export class Client {
     return this.take(`bundle/${encodeURIComponent(name)}`);
   }
 
-  async #ask<T>(method: string, path: string, body?: string): Promise<Reading<Envelope<T>>> {
-    const answer = await this.#send(method, path, "application/json", body);
+  /**
+   * One request read through the envelope. A read is asked again before a
+   * passing failure is reported; anything else is asked once.
+   */
+  async #ask<T>(
+    method: string,
+    path: string,
+    body?: string,
+    isARead = false,
+  ): Promise<Reading<Envelope<T>>> {
+    const sent = () => this.#send(method, path, "application/json", body);
+    const answer = isARead ? await askedAgain(sent) : await sent();
     if (answer === undefined) return { ok: false, problem: unreachable() };
 
     const said = await textOf(answer);

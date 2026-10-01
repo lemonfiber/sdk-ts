@@ -134,7 +134,9 @@ describe("an answer pointing away from the stack", () => {
     if (!opened.ok) throw new Error(opened.problem.message);
 
     expect(await opened.client.read("status")).toEqual({ ok: false, problem: unreachable() });
-    expect(stack.tokens).toEqual([TOKEN]);
+    // A refused redirect arrives as nothing, which a read asks again, so the
+    // stack may be asked more than once. Every asking went to the stack.
+    expect(new Set(stack.tokens)).toEqual(new Set([TOKEN]));
     expect(target.connections()).toBe(0);
   });
 
@@ -147,7 +149,9 @@ describe("an answer pointing away from the stack", () => {
     );
 
     expect(first).toEqual({ at: "lost", problem: unreachable() });
-    expect(stack.tokens).toEqual([TOKEN]);
+    // A refused redirect arrives as nothing, which a read asks again, so the
+    // stack may be asked more than once. Every asking went to the stack.
+    expect(new Set(stack.tokens)).toEqual(new Set([TOKEN]));
     expect(target.connections()).toBe(0);
   });
 });
@@ -187,7 +191,7 @@ describe("live updates at an address", () => {
     const asked: string[] = [];
     const recording: Fetching = (to) => {
       asked.push(to);
-      return Promise.resolve({ ok: false, body: null });
+      return Promise.resolve({ ok: false, status: 404, body: null });
     };
 
     const stream = follow({ url, token: TOKEN, fetching: recording });

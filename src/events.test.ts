@@ -89,9 +89,9 @@ function serving(openings: (string[] | null)[], seen: Seen): Fetching {
     const chunks = openings[at];
     at += 1;
     if (chunks === undefined || chunks === null) {
-      return Promise.resolve({ ok: false, body: null });
+      return Promise.resolve({ ok: false, status: 404, body: null });
     }
-    return Promise.resolve({ ok: true, body: streaming(chunks) });
+    return Promise.resolve({ ok: true, status: 200, body: streaming(chunks) });
   };
 }
 
@@ -121,6 +121,7 @@ describe("follow", () => {
       fetching: () =>
         Promise.resolve({
           ok: true,
+          status: 200,
           body: holding([sent("status", { free: 7 })], { go: false }),
         }),
       reconnectsAllowed: 0,
@@ -232,7 +233,11 @@ describe("follow", () => {
       follow<{ free: number }>({
         ...base,
         fetching: () =>
-          Promise.resolve({ ok: true, body: holding([sent("status", { free: 412 })]) }),
+          Promise.resolve({
+            ok: true,
+            status: 200,
+            body: holding([sent("status", { free: 412 })]),
+          }),
         silenceAllowedMs: 5,
         reconnectsAllowed: 0,
       }),
@@ -260,7 +265,7 @@ describe("follow", () => {
     const got = await take(
       follow<{ free: number }>({
         ...base,
-        fetching: () => Promise.resolve({ ok: true, body: holding(beating) }),
+        fetching: () => Promise.resolve({ ok: true, status: 200, body: holding(beating) }),
         now: () => {
           clock += HEARTBEAT_MS;
           return clock;
@@ -349,7 +354,7 @@ describe("follow", () => {
     const given: AbortSignal[] = [];
     const watching: Fetching = (_url, init) => {
       given.push(init.signal);
-      return Promise.resolve({ ok: true, body: streaming([sent("status", 1)]) });
+      return Promise.resolve({ ok: true, status: 200, body: streaming([sent("status", 1)]) });
     };
 
     await take(follow({ ...base, fetching: watching, signal: gate.signal }), 1);
@@ -366,7 +371,7 @@ describe("follow", () => {
     const following = follow<number>({
       ...base,
       fetching: () =>
-        Promise.resolve({ ok: true, body: holding([sent("status", 1)], letting) }),
+        Promise.resolve({ ok: true, status: 200, body: holding([sent("status", 1)], letting) }),
       signal: gate.signal,
       reconnectsAllowed: 0,
     });
@@ -389,6 +394,7 @@ describe("follow", () => {
       seen.headers.push(init.headers);
       return Promise.resolve({
         ok: true,
+        status: 200,
         body: new ReadableStream<Uint8Array>({
           pull() {
             throw new Error("the connection went away");
