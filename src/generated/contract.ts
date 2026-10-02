@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 3c0f78582d1b1a8fd2e7dcc8dc296e1394434cc2  ·  api_version 1
+// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -142,6 +142,10 @@ export type Triggered =
       detail: string;
       state: "failed";
     };
+/**
+ * One of the three kinds of thing a surface can mark as new.
+ */
+export type NewsKind = "updates" | "requests" | "problems";
 /**
  * What the verdicts in a report were reached against.
  *
@@ -983,6 +987,42 @@ export interface Contract {
      */
     api_version: number;
     data: MusicReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  news: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Newest;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  "news-items": {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: News;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -3457,6 +3497,14 @@ export interface Affected {
    */
   meaning: string;
   /**
+   * When the stack first saw it wrong since it last saw it right, in whole
+   * seconds since the epoch.
+   *
+   * The condition's own stamp, kept between runs, so every surface that reports
+   * the check names the same moment and a restart does not make an old fault new.
+   */
+  onset: string;
+  /**
    * What to do about it, most likely first.
    */
   remedies: string[];
@@ -4089,6 +4137,16 @@ export interface Finding {
    * A stable identifier for the thing checked, such as `vpn.egress-match`.
    */
   check: string;
+  /**
+   * When the stack first saw this check wrong since it last saw it right, in whole
+   * seconds since the epoch.
+   *
+   * Set after the run from the store of conditions, like [`Self::said`], so it is
+   * the moment the health summary names for the same check and a restart does not
+   * move it. Absent where the finding says nothing is wrong, and where the checks
+   * ran for something other than a diagnosis.
+   */
+  onset?: string | null;
   /**
    * Whose check this is: one this build ships, or one a named plugin contributed.
    *
@@ -5537,6 +5595,114 @@ export interface MusicChoice {
 /**
  * The payload.
  */
+export interface Newest {
+  /**
+   * The checks most recently found wrong, each with its onset.
+   */
+  problems: NewsCheck[];
+  /**
+   * The numbers of the household's newest requests.
+   */
+  requests: number[];
+  /**
+   * The kinds that could not be read, as [`News::unread`] names them.
+   */
+  unread: NewsKind[];
+  /**
+   * The versions of the newest releases in the record this build carries.
+   */
+  updates: string[];
+}
+/**
+ * A check found wrong, by the check and when it went wrong.
+ */
+export interface NewsCheck {
+  /**
+   * The check that raised it.
+   */
+  check: string;
+  /**
+   * When the stack first saw it wrong since it last saw it right, in whole seconds
+   * since the epoch.
+   */
+  onset: string;
+}
+/**
+ * The payload.
+ */
+export interface News {
+  /**
+   * The checks found wrong, the most recent onset first.
+   */
+  problems: NewsProblem[];
+  /**
+   * What the household has asked for, highest number first.
+   */
+  requests: NewsRequest[];
+  /**
+   * The kinds that could not be read.
+   *
+   * A kind named here has an empty list because nothing could be read, not because
+   * nothing is there. A surface that took the empty list as everything there is
+   * would mark all of it as new once it could be read again.
+   */
+  unread: NewsKind[];
+  /**
+   * The releases in the record this build carries, newest first.
+   */
+  updates: NewsUpdate[];
+}
+/**
+ * One check found wrong, by the check and when it went wrong.
+ */
+export interface NewsProblem {
+  /**
+   * The check that raised it.
+   */
+  check: string;
+  /**
+   * When the stack first saw it wrong since it last saw it right, in whole seconds
+   * since the epoch: the same moment the health summary names for it.
+   */
+  onset: string;
+  /**
+   * What is wrong, in one line.
+   */
+  summary: string;
+}
+/**
+ * One request, by its number.
+ */
+export interface NewsRequest {
+  /**
+   * Who asked for it, by the name the media server holds them under.
+   */
+  by: string;
+  /**
+   * The number the request service files it under.
+   */
+  number: number;
+  /**
+   * What it is called, where a service has been told about it.
+   */
+  title?: string | null;
+}
+/**
+ * One release, by its version.
+ */
+export interface NewsUpdate {
+  /**
+   * What it set out to deliver, where the record says.
+   */
+  delivers?: string | null;
+  /**
+   * The version, without the tag's leading letter.
+   */
+  version: string;
+}
+/**
+ * The payload.
+ */
 export interface Leaving {
   /**
    * Every request lemonfiber makes on its own account, in a fixed order.
@@ -6207,6 +6373,16 @@ export interface Finding1 {
    * A stable identifier for the thing checked, such as `vpn.egress-match`.
    */
   check: string;
+  /**
+   * When the stack first saw this check wrong since it last saw it right, in whole
+   * seconds since the epoch.
+   *
+   * Set after the run from the store of conditions, like [`Self::said`], so it is
+   * the moment the health summary names for the same check and a restart does not
+   * move it. Absent where the finding says nothing is wrong, and where the checks
+   * ran for something other than a diagnosis.
+   */
+  onset?: string | null;
   /**
    * Whose check this is: one this build ships, or one a named plugin contributed.
    *
@@ -10166,6 +10342,12 @@ export type MigrationEnvelope = Contract["migration"];
 /** The envelope carrying `music`. */
 export type MusicEnvelope = Contract["music"];
 
+/** The envelope carrying `news`. */
+export type NewsEnvelope = Contract["news"];
+
+/** The envelope carrying `news-items`. */
+export type NewsItemsEnvelope = Contract["news-items"];
+
 /** The envelope carrying `outbound`. */
 export type OutboundEnvelope = Contract["outbound"];
 
@@ -10269,7 +10451,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "news" | "news-items" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -10304,6 +10486,8 @@ export interface ByKind {
   "log": LogEnvelope;
   "migration": MigrationEnvelope;
   "music": MusicEnvelope;
+  "news": NewsEnvelope;
+  "news-items": NewsItemsEnvelope;
   "outbound": OutboundEnvelope;
   "pairing": PairingEnvelope;
   "plugins": PluginsEnvelope;
