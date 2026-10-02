@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f  ·  api_version 1
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -1703,6 +1703,13 @@ export interface AdoptReport {
    */
   refusal?: string | null;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * Where the act stands.
    */
   stance: "unchanged" | "pending" | "blocked" | "applied";
@@ -1937,6 +1944,13 @@ export interface Sharing {
    * Where the month stands against it.
    */
   reached?: Reached | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * The override, where one is running or has just run out.
    */
@@ -2232,6 +2246,13 @@ export interface BesideReport {
    */
   refusal?: string | null;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * Where the act stands.
    */
   stance: "unchanged" | "pending" | "blocked" | "applied";
@@ -2270,6 +2291,13 @@ export interface Bundle {
    * Where it was written, or nothing where a run that writes nothing described it.
    */
   path?: string | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Where it would be written, on the run that only describes one.
    *
@@ -2446,6 +2474,13 @@ export interface CertificateReport {
    * kept where it was not, and nothing where none has been made.
    */
   fingerprint?: string | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Whether it was replaced. Unconfirmed, it is not, and what replacing it costs is
    * what is said.
@@ -2901,6 +2936,13 @@ export interface Inventory {
    */
   held: CredentialHeld[];
   protection: Protection;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * One value, where one was asked for.
    */
@@ -3557,6 +3599,13 @@ export interface HouseholdReport {
    * one person. Absent where the request service could not be asked.
    */
   policy?: Policy | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One household member: who they are, what they may watch, when they were last
@@ -4115,6 +4164,13 @@ export interface DoctorReport {
    * What the findings amount to, as one word.
    */
   overall: "healthy" | "degraded" | "broken" | "unknown";
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One thing a check established, and how it turned out.
@@ -4709,6 +4765,13 @@ export interface HeldReport {
    * The member this was asked for, by the name they are known by.
    */
   member: string;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One thing the household holds, as a member is shown it.
@@ -4830,6 +4893,13 @@ export interface HostingReport {
    * The service manager this platform has, or the absence of one.
    */
   manager: "launchd" | "systemd" | "unsupported";
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * What one run of this command did to the machine.
@@ -4933,6 +5003,13 @@ export interface HouseholdReport1 {
    * one person. Absent where the request service could not be asked.
    */
   policy?: Policy | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * The payload.
@@ -4954,6 +5031,13 @@ export interface ImportReport {
    * Why nothing was carried, where nothing was.
    */
   refusal?: string | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Where the act stands.
    */
@@ -5562,6 +5646,13 @@ export interface MusicReport {
    * that applied nothing.
    */
   outcome?: Triggered | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * The format chosen, what it means, and what it costs.
@@ -5896,6 +5987,13 @@ export interface PluginInstalls {
    * would report an install that did not happen.
    */
   installed: PluginInstalled1[];
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * What this run's removal came to, or nothing where it removed nothing.
    *
@@ -7560,6 +7658,13 @@ export interface QualityReport {
    * every stack-file diff is, so a key that drifted is named without its value.
    */
   overwritten?: StackEdit | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One preset in force, and what it means for the media it applies to — the
@@ -7651,6 +7756,13 @@ export interface HouseholdRemoval {
    */
   name: string;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * How many of their requests go with them.
    *
    * **They are destroyed, not reassigned.** The request service removes them by hand
@@ -7695,6 +7807,13 @@ export interface RepairReport {
    * What could be put right, whether or not it was.
    */
   offered: Repair1[];
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * A repair that has run out of chances, and where to go instead.
@@ -7814,6 +7933,13 @@ export interface Repair1 {
  */
 export interface ReplaceReport {
   /**
+   * What this offer names itself: the project and every service it would stop.
+   *
+   * The answer to it is this name, and nothing else is a yes to a replacement. Empty
+   * where there is nothing to stand in place of, because there is nothing to agree to.
+   */
+  agreement: string;
+  /**
    * The project that would be stood in place of.
    */
   project?: string | null;
@@ -7821,6 +7947,13 @@ export interface ReplaceReport {
    * Why nothing was stopped, where nothing was.
    */
   refusal?: string | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Where the act stands.
    */
@@ -7847,6 +7980,13 @@ export interface ResetReport {
    */
   confirmed: boolean;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * The operator's edits that were reverted — or, unconfirmed, that a reset would
    * revert — each with the diff of what is lost against what lemonfiber restores.
    */
@@ -7865,6 +8005,13 @@ export interface Restoration {
    * What was put back, or nothing where nothing was.
    */
   done?: RestoreReport | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   would: Preview;
 }
 /**
@@ -8312,6 +8459,13 @@ export interface Reckoning {
    * What became of an answered cleanup, where the offer was answered.
    */
   reclaimed?: Reclaimed | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * The volumes watched. Either filling stops the stack, so both are reported
    * whether or not they are the same drive.
@@ -8790,6 +8944,13 @@ export interface Letting {
    * What became of an answered offer, and nothing where the offer is all this is.
    */
   gone?: Gone | null;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One completed download, and what reclaiming it would come to.
@@ -8860,6 +9021,13 @@ export interface Stored {
    * Each thing kept, configuration first and then what can be made again.
    */
   kept: Kept[];
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Whether this run removed any of it.
    */
@@ -9010,6 +9178,13 @@ export interface SubstitutionReport {
    * which flags it passed.
    */
   applied: boolean;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   substitution: Substitution;
 }
 /**
@@ -9310,6 +9485,13 @@ export interface UndoReversal3 {
 export interface Uninstall {
   manifest: UninstallManifest;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * Whether anything was removed on this run.
    */
   removal:
@@ -9563,6 +9745,13 @@ export interface StackUpdateReport {
    */
   in_flight: string[];
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * Stack files the operator had edited, left as they set them rather than
    * overwritten with this build's own, each with the change that was held back.
    */
@@ -9801,6 +9990,13 @@ export interface UpgradeReport {
    * Per media type: its preset, that preset's cost, and — confirmed — the outcome.
    */
   media: UpgradeMedia[];
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
 }
 /**
  * One media type an upgrade covers: its chosen quality, that quality's cost, and —
@@ -10009,6 +10205,13 @@ export interface SupervisionReport {
    */
   reason: string;
   /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
+  /**
    * Whether stopping the services succeeded.
    */
   stopped: boolean;
@@ -10198,6 +10401,13 @@ export interface WizardReport {
    * Whether every applicable question is answered, so the plan can be applied.
    */
   ready_for_review: boolean;
+  /**
+   * Whether this was a rehearsal: what would have happened, with none of it done.
+   *
+   * Said in a field of its own so that a rehearsal is never told from the real run by
+   * its wording alone.
+   */
+  rehearsed: boolean;
   /**
    * Every question that applies on this machine and has no answer yet, in the
    * order they are put.
@@ -10528,7 +10738,7 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "SERVE-6" | "SERVE-7";
+export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -10551,6 +10761,8 @@ export const REFUSAL_CODES: Readonly<
   "ASK-7": { name: "NO_SUCH_JOB", status: 404, description: "Raised where a job was asked about that this run did not start." },
   "ASK-8": { name: "NOT_AN_ANSWER", status: 400, description: "Raised where the body of a setup step is not an answer it can read." },
   "ASK-9": { name: "NO_ENDPOINT", status: 404, description: "Raised where a path under the endpoints is one no endpoint answers." },
+  "GONE-2": { name: "ANOTHER_READING", status: 400, description: "Raised when an agreement names a reading of this machine that is not the one standing now." },
+  "MIGRATE-1": { name: "OFFER_MOVED", status: 400, description: "Raised when a replacement was agreed to for an offer that is not the one standing now." },
   "READ-1": { name: "UNWANTED", status: 400, description: "Raised where a read was given a parameter its answer has nowhere to put." },
   "READ-10": { name: "TOO_MANY_AT_ONCE", status: 400, description: "Raised where more holdings were asked for than one read answers with." },
   "READ-11": { name: "NO_SUCH_GROUP", status: 400, description: "Raised where a diagnosis was narrowed to a group or check that is not one." },
@@ -10566,8 +10778,11 @@ export const REFUSAL_CODES: Readonly<
   "READ-7": { name: "NO_MEMBER", status: 400, description: "Raised where a household member was asked for by an empty name." },
   "READ-8": { name: "NO_SHELF_WITHOUT_A_MEMBER", status: 400, description: "Raised where a shelf was asked for and nobody was named whose it is." },
   "READ-9": { name: "NOT_A_COUNT", status: 400, description: "Raised where how many holdings to answer with is not a whole number." },
+  "REPAIR-1": { name: "STALE", status: 400, description: "Raised when consent was given for an offer that no longer stands." },
+  "RESTORE-11": { name: "MOVED_ON", status: 400, description: "Raised when consent was given for a listing that no longer stands." },
   "SERVE-6": { name: "UNRENDERABLE", status: 500, description: "Raised when an answer could not be rendered." },
   "SERVE-7": { name: "NO_JOB_NAME", status: 500, description: "Raised when this machine will not supply the randomness a job is named with." },
+  "SPACE-6": { name: "ANOTHER_OFFER", status: 400, description: "Raised when an agreement names an offer that is not the one standing now." },
 };
 
 /** Whether a code is one the contract lists as a refusal's. */

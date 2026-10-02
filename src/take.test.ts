@@ -84,6 +84,7 @@ const written = (path: string): Bundle & { path: string } => ({
     terms: { filenames: false, revealed: [], window: "last 2000 lines" },
   },
   path,
+  rehearsed: false,
 });
 
 describe("take", () => {
