@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: b4c1223dbf8dd1db26e3fa31f299792e1576b050  ·  api_version 1
+// Source: 767a8600e8f9896052ba13a34ad97d45b618ff04  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -3643,7 +3643,7 @@ export interface HouseholdMember {
    * Where the account stands: an invitation still out or run out, a member who can
    * sign in, or one switched off.
    */
-  standing: "invited" | "expired" | "active" | "suspended";
+  standing: "invited" | "expired" | "declined" | "active" | "suspended";
   /**
    * What this member would be told, in the words they would read it in.
    *
