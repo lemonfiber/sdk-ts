@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 905074462b0d8eafa2de9f9d9f259c1feb0c7bb9  ·  api_version 1
+// Source: b4c1223dbf8dd1db26e3fa31f299792e1576b050  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5110,6 +5110,16 @@ export interface Invitation {
    * invitation because that is the copy somebody keeps.
    */
   caution?: string | null;
+  /**
+   * Where they can decline it instead, where the stack runs the decline service.
+   *
+   * A page on the household's own network that refuses this invitation and nothing
+   * else, and switches the account made for it off. Its token is in this address
+   * alone: offering the same person again mints a new one, and the old address stops
+   * declining anything. Absent on a rehearsal, for somebody already in the household,
+   * and where the stack runs no decline service.
+   */
+  decline?: string | null;
   /**
    * How many hours it stands before it is withdrawn.
    *
