@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 33ea43f663b186e38a0234e2df9745e405dd4708  ·  api_version 1
+// Source: 905074462b0d8eafa2de9f9d9f259c1feb0c7bb9  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -5337,6 +5337,16 @@ export interface Plan {
    */
   profiles: string[];
   /**
+   * Which of [`Self::services`] are already running, where a form's introspection
+   * asked the engine.
+   *
+   * Starting a form leaves what is already running as it is, so a running service
+   * is not one the start would bring up. Absent where nothing asked, which is every
+   * plan but a preview's; `null` where the engine would not say, which is never said
+   * as nothing running.
+   */
+  running?: string[] | null;
+  /**
    * The services those profiles start, in the order the stack declares them.
    *
    * A service belongs to exactly one profile, so a service two named forms
@@ -7548,6 +7558,16 @@ export interface Plan1 {
    * The profiles to activate, sorted so the command is reproducible.
    */
   profiles: string[];
+  /**
+   * Which of [`Self::services`] are already running, where a form's introspection
+   * asked the engine.
+   *
+   * Starting a form leaves what is already running as it is, so a running service
+   * is not one the start would bring up. Absent where nothing asked, which is every
+   * plan but a preview's; `null` where the engine would not say, which is never said
+   * as nothing running.
+   */
+  running?: string[] | null;
   /**
    * The services those profiles start, in the order the stack declares them.
    *
