@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 5540e6a62f0324eb3db1f83066bf25a7f4033ecb  ·  api_version 1
+// Source: 37b74e13a528fd75475dc30a983e3a4528b59db6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7067,6 +7067,13 @@ export interface PluginSecret {
  */
 export interface PluginPlaced {
   /**
+   * The adapter lemonfiber reaches it through, where the plugin named one.
+   *
+   * Defaulted for a record written before this was kept, which reads as naming
+   * none: a service operated generically, as it was when installed.
+   */
+  api?: Api | null;
+  /**
    * Where inside the container its one configuration directory is mounted.
    *
    * Resolved rather than optional. The record answers where the directory is, and
@@ -7087,6 +7094,10 @@ export interface PluginPlaced {
    * The registry path, carrying no pin of its own.
    */
   image: string;
+  /**
+   * The port it answers on inside the stack's network, where it declared one.
+   */
+  listens?: number | null;
   /**
    * What it is called, for a reader, which is what its dashboard entry is listed as.
    *
@@ -7121,6 +7132,35 @@ export interface PluginPlaced {
    * Whether the library is mounted for it.
    */
   takes_data: boolean;
+}
+/**
+ * How lemonfiber talks to a service when seeding.
+ *
+ * The same shape on a plugin's service as on the stack's own, which is what lets a
+ * plugin name one of these adapters rather than supply one of its own.
+ */
+export interface Api {
+  /**
+   * Where the credential comes from.
+   */
+  key_source: "config-xml" | "config-ini" | "config-json" | "config-yaml" | "api-settings" | "generated" | "none";
+  /**
+   * Selects the client implementation.
+   */
+  kind: "servarr" | "sabnzbd" | "qbittorrent" | "seerr" | "bindery" | "jellyfin" | "bazarr" | "audiobookshelf";
+  /**
+   * The file holding the credential, where one applies.
+   */
+  path?: string | null;
+  /**
+   * The major version of the service's HTTP API — the `/api/vN` path segment.
+   *
+   * Required for the `servarr` shape and read there, because that one shape
+   * spans two versions (Sonarr and Radarr at v3, Lidarr and Prowlarr at v1),
+   * so the version is data rather than a guess from a service's name. Absent
+   * for the other kinds, whose one fixed version their client already knows.
+   */
+  version?: number | null;
 }
 /**
  * One plugin's install, as it was decided.
