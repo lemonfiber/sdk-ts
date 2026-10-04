@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 37b74e13a528fd75475dc30a983e3a4528b59db6  ·  api_version 1
+// Source: 60695f36d8b8af57d669571c79659e82e6a11e43  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -8351,6 +8351,13 @@ export interface Wiring {
          */
         reason: string;
         state: "observed";
+      }
+    | {
+        /**
+         * What fills it, what asked, and why nothing connects them.
+         */
+        reason: string;
+        state: "unmatched";
       }
     | {
         /**
