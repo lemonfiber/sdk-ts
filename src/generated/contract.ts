@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 767a8600e8f9896052ba13a34ad97d45b618ff04  ·  api_version 1
+// Source: 5540e6a62f0324eb3db1f83066bf25a7f4033ecb  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -3114,6 +3114,13 @@ export interface Rotation {
          */
         detail: string;
         settled: "unproven";
+      }
+    | {
+        /**
+         * What did not answer, and what to run once it does.
+         */
+        detail: string;
+        settled: "replaced-unproven";
       }
     | {
         /**
