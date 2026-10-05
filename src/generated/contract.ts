@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 4eca083b55fa27b07edfdf93f69a45a4885514a6  ·  api_version 1
+// Source: 4c4e2748d017ba30ddf088e6bdfd5871f80c514c  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7113,6 +7113,16 @@ export interface PluginPlaced {
    * rather than leaving it off the panel.
    */
   name?: string;
+  /**
+   * The stack's own networks it joins beside the default one, because a stack service
+   * it stands in for is on them.
+   *
+   * Settled at install from the stack it was installed beside and written down, so
+   * the container lemonfiber writes for it stays a function of this record alone.
+   * Defaulted for a record written before this was kept, which reads as joining none
+   * and staying on the default network.
+   */
+  networks?: string[];
   /**
    * Every core capability this one service fills, which is what makes it a candidate
    * when the stack asks for one.
