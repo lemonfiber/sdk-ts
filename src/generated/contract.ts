@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 075bf96c15736a119a549ea20291f1bf5131b539  ·  api_version 1
+// Source: 4eca083b55fa27b07edfdf93f69a45a4885514a6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -9263,6 +9263,15 @@ export interface StuckEntry {
  */
 export interface SubstitutionReport {
   /**
+   * What this reading names itself, so a choice answering it can say which reading
+   * it answered.
+   *
+   * Named part by part — the choice itself, what fills the capability now, what asks
+   * for it, and what the change would leave unfilled — so a choice refused because the
+   * wiring moved is told which of those moved.
+   */
+  agreement: string;
+  /**
    * Whether it was written, or only worked out.
    *
    * A run that only says what it would do writes nothing and reports the same
@@ -9312,6 +9321,13 @@ export interface Substitution {
    * What fills it now, where anything does.
    */
   was?: string | null;
+  /**
+   * What the operator said about the choice, where they said anything.
+   *
+   * Read back as the choice's own `why` wherever the choice is read, and absent
+   * where nothing was said: nothing supplies a reason on the operator's behalf.
+   */
+  why?: string | null;
 }
 /**
  * A capability something asks for and nothing fills, and what asked for it.
@@ -10830,7 +10846,7 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-4" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9";
+export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-4" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -10885,6 +10901,12 @@ export const REFUSAL_CODES: Readonly<
   "STACK-7": { name: "STACK_MALFORMED", status: 500, description: "Raised when a manifest is not TOML at all." },
   "STACK-8": { name: "STACK_UNRECOGNISED", status: 500, description: "Raised when a manifest declares names this build does not know." },
   "STACK-9": { name: "STACK_NEEDS_NEWER", status: 500, description: "Raised when a stack names a newer lemonfiber than the one running." },
+  "WIRE-1": { name: "NO_SUCH_FILLER", status: 404, description: "A capability was named that no service in this stack provides." },
+  "WIRE-2": { name: "CANNOT_FILL", status: 400, description: "The service named cannot do the thing it was asked to fill." },
+  "WIRE-3": { name: "NOTHING_ASKS", status: 400, description: "Nothing in this stack asks for the capability, so a choice would change nothing." },
+  "WIRE-4": { name: "CHOICE_UNWRITABLE", status: 500, description: "The setting recording the choice could not be written." },
+  "WIRE-5": { name: "WIRING_MOVED", status: 400, description: "Raised when a choice answers an offer that was read against a wiring that has since moved." },
+  "WIRE-6": { name: "UNREASONABLE", status: 400, description: "Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character." },
 };
 
 /** Whether a code is one the contract lists as a refusal's. */
