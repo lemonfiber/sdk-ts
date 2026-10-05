@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 60695f36d8b8af57d669571c79659e82e6a11e43  ·  api_version 1
+// Source: bfd4c310164457fdcbb725b118752b61a1c4cbba  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -10822,7 +10822,7 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6";
+export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-4" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -10847,6 +10847,7 @@ export const REFUSAL_CODES: Readonly<
   "ASK-9": { name: "NO_ENDPOINT", status: 404, description: "Raised where a path under the endpoints is one no endpoint answers." },
   "GONE-2": { name: "ANOTHER_READING", status: 400, description: "Raised when an agreement names a reading of this machine that is not the one standing now." },
   "MIGRATE-1": { name: "OFFER_MOVED", status: 400, description: "Raised when a replacement was agreed to for an offer that is not the one standing now." },
+  "PLUGIN-4": { name: "UNRECORDED", status: 500, description: "The record of what is installed cannot be read." },
   "READ-1": { name: "UNWANTED", status: 400, description: "Raised where a read was given a parameter its answer has nowhere to put." },
   "READ-10": { name: "TOO_MANY_AT_ONCE", status: 400, description: "Raised where more holdings were asked for than one read answers with." },
   "READ-11": { name: "NO_SUCH_GROUP", status: 400, description: "Raised where a diagnosis was narrowed to a group or check that is not one." },
@@ -10867,6 +10868,15 @@ export const REFUSAL_CODES: Readonly<
   "SERVE-6": { name: "UNRENDERABLE", status: 500, description: "Raised when an answer could not be rendered." },
   "SERVE-7": { name: "NO_JOB_NAME", status: 500, description: "Raised when this machine will not supply the randomness a job is named with." },
   "SPACE-6": { name: "ANOTHER_OFFER", status: 400, description: "Raised when an agreement names an offer that is not the one standing now." },
+  "STACK-1": { name: "STACK_UNREADABLE", status: 500, description: "Raised when a stack directory holds no readable manifest." },
+  "STACK-2": { name: "STACK_UNUSABLE", status: 500, description: "Raised when a manifest is readable and this build cannot use it." },
+  "STACK-3": { name: "STACK_NOT_EMBEDDED", status: 500, description: "Raised when the embedded stack is not intact." },
+  "STACK-4": { name: "STACK_NOT_SET_UP", status: 500, description: "Raised when lemonfiber has nowhere to write the stack." },
+  "STACK-5": { name: "STACK_NOT_WRITTEN", status: 500, description: "Raised when the stack could not be written to disk." },
+  "STACK-6": { name: "STACK_INVALID", status: 500, description: "Raised when a manifest parses and breaks the contract." },
+  "STACK-7": { name: "STACK_MALFORMED", status: 500, description: "Raised when a manifest is not TOML at all." },
+  "STACK-8": { name: "STACK_UNRECOGNISED", status: 500, description: "Raised when a manifest declares names this build does not know." },
+  "STACK-9": { name: "STACK_NEEDS_NEWER", status: 500, description: "Raised when a stack names a newer lemonfiber than the one running." },
 };
 
 /** Whether a code is one the contract lists as a refusal's. */
