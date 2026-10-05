@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 4c4e2748d017ba30ddf088e6bdfd5871f80c514c  ·  api_version 1
+// Source: b2d3d48059e34ba6433a5bf4b31da36002735e94  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -8446,9 +8446,11 @@ export interface UpdateReport {
   /**
    * How this copy got onto the machine.
    */
-  installed: "homebrew" | "scoop" | "winget" | "cargo" | "distribution" | "installer" | "elsewhere" | "untellable";
+  installed:
+    "homebrew" | "scoop" | "winget" | "cargo" | "distribution" | "installer" | "elsewhere" | "image" | "untellable";
   /**
-   * Why there is nothing exact to type, where there is not.
+   * Why there is nothing exact to type, where there is not; or, where typing the
+   * command is not the whole of the move, what has to follow it.
    */
   instead?: string | null;
   /**
