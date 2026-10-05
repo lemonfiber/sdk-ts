@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: bfd4c310164457fdcbb725b118752b61a1c4cbba  ·  api_version 1
+// Source: 075bf96c15736a119a549ea20291f1bf5131b539  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7098,6 +7098,14 @@ export interface PluginPlaced {
    * The port it answers on inside the stack's network, where it declared one.
    */
   listens?: number | null;
+  /**
+   * The media it files, in the stack manifest's vocabulary, which decides what it
+   * comes to in each service that asks for what it provides.
+   *
+   * Defaulted for a record written before this was kept, which reads as filing
+   * nothing named.
+   */
+  media_types?: string[];
   /**
    * What it is called, for a reader, which is what its dashboard entry is listed as.
    *
