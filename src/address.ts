@@ -3,7 +3,7 @@
  *
  * Spec: 20-architecture/contracts/web-api.md
  */
-import { problem, type Problem } from "./problem.js";
+import { misconfigured, type Problem } from "./problem.js";
 
 /**
  * Whether a host is loopback without asking a resolver.
@@ -37,28 +37,27 @@ export function address(given: string): Address {
   try {
     url = new URL(given);
   } catch {
-    return { ok: false, problem: problem("refused", `“${given}” is not an address.`) };
+    return { ok: false, problem: misconfigured(`“${given}” is not an address.`) };
   }
 
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     return {
       ok: false,
-      problem: problem("refused", `lemonfiber is reached over http, not ${url.protocol}`),
+      problem: misconfigured(`lemonfiber is reached over http, not ${url.protocol}`),
     };
   }
 
   if (url.username !== "" || url.password !== "" || url.search !== "" || url.hash !== "") {
     return {
       ok: false,
-      problem: problem("refused", "That address carries more than an address."),
+      problem: misconfigured("That address carries more than an address."),
     };
   }
 
   if (!isLoopbackHost(url.hostname)) {
     return {
       ok: false,
-      problem: problem(
-        "refused",
+      problem: misconfigured(
         `lemonfiber runs on this machine, and “${url.hostname}” is somewhere else.`,
       ),
     };

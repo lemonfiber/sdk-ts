@@ -5,6 +5,7 @@
  */
 import { askedAgain } from "./again.js";
 import { address } from "./address.js";
+import { tokenProblem } from "./credential.js";
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";
 import { streamEnded, streamLost, unreachable, type Problem } from "./problem.js";
@@ -117,6 +118,12 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
   const where = address(options.url);
   if (!where.ok) {
     yield { at: "lost", problem: where.problem };
+    return;
+  }
+
+  const unusable = tokenProblem(options.token);
+  if (unusable !== undefined) {
+    yield { at: "lost", problem: unusable };
     return;
   }
 

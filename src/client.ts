@@ -5,10 +5,11 @@
  */
 import { address } from "./address.js";
 import { askedAgain } from "./again.js";
+import { tokenProblem } from "./credential.js";
 import { parse, type Envelope, type Reading } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
 import type { Bundle } from "./generated/index.js";
-import { refused, unreachable, type Problem } from "./problem.js";
+import { unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
 
 /**
@@ -110,18 +111,15 @@ export class Client {
   }
 
   /**
-   * Opens a client, refusing an address that is not on this machine.
+   * Opens a client, refusing an address that is not on this machine and a token
+   * no header can carry, each as a `configuration` problem.
    */
   static at(options: Talking): Opened {
     const where = address(options.url);
     if (!where.ok) return { ok: false, problem: where.problem };
 
-    if (options.token.trim() === "") {
-      return {
-        ok: false,
-        problem: refused(),
-      };
-    }
+    const unusable = tokenProblem(options.token);
+    if (unusable !== undefined) return { ok: false, problem: unusable };
 
     return { ok: true, client: new Client(where.base, options.token, options.sending) };
   }

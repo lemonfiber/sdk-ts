@@ -254,6 +254,19 @@ describe("follow", () => {
     expect(got).toEqual([{ at: "lost", problem: unreachable() }]);
   });
 
+  it("sends nothing with a token no header can carry", async () => {
+    const asked: string[] = [];
+    const recording: Fetching = (to) => {
+      asked.push(to);
+      return Promise.resolve({ ok: false, status: 404, body: null });
+    };
+
+    const got = await take(follow({ ...base, token: "a token", fetching: recording }), 2);
+
+    expect(got).toMatchObject([{ at: "lost", problem: { kind: "configuration" } }]);
+    expect(asked).toEqual([]);
+  });
+
   it("reports an unreadable event but keeps reading", async () => {
     const seen: Seen = { headers: [] };
     const got = await take(

@@ -126,17 +126,22 @@ Nothing throws for an expected failure. A call returns either a value or a
 `problem.kind` says which sort of refusal it was, so a caller need not read the
 sentence to know what to do with it:
 
-| `kind`        | What it means                                                   |
-| ------------- | --------------------------------------------------------------- |
-| `missing`     | lemonfiber has nothing by the name the request gave             |
-| `misasked`    | It could not answer the request as it was asked                 |
-| `failed`      | It understood the request and its own answering failed          |
-| `refused`     | The key this page is using is not the one this run expects      |
-| `declined`    | It turned away who is asking, or where from, for another reason |
-| `unreachable` | Nothing lemonfiber wrote came back at all                       |
-| `version`     | The reply is in an `api_version` this package does not speak    |
-| `malformed`   | What arrived as an answer was not a lemonfiber envelope         |
-| `stream`      | The event stream broke, went quiet for too long, or was closed  |
+| `kind`          | What it means                                                       |
+| --------------- | ------------------------------------------------------------------- |
+| `missing`       | lemonfiber has nothing by the name the request gave                 |
+| `misasked`      | It could not answer the request as it was asked                     |
+| `failed`        | It understood the request and its own answering failed              |
+| `configuration` | The address or the token handed in cannot be used; nothing was sent |
+| `refused`       | The key this page is using is not the one this run expects          |
+| `declined`      | It turned away who is asking, or where from, for another reason     |
+| `unreachable`   | Nothing lemonfiber wrote came back at all                           |
+| `version`       | The reply is in an `api_version` this package does not speak        |
+| `malformed`     | What arrived as an answer was not a lemonfiber envelope             |
+| `stream`        | The event stream broke, went quiet for too long, or was closed      |
+
+`configuration` is the caller's own: an address that is not one, not on this machine or
+carrying more than an address, or a token that is empty or holds a character a header cannot
+carry. It is answered before anything is sent, by `Client.at` and by `follow` alike.
 
 `refused` is the key and nothing else. A caller reading it may ask for a new key
 without reading the sentence, which is the point of a kind — and a caller reading

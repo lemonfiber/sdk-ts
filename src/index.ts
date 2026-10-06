@@ -29,6 +29,7 @@ export {
 } from "./events.js";
 export { Ledger, type Held } from "./ledger.js";
 export {
+  misconfigured,
   declined,
   failed,
   malformed,
