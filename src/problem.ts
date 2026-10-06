@@ -3,7 +3,7 @@
  *
  * Spec: 10-functional/features/g-ux/g4-error-model.md
  */
-import type { RefusalCode } from "./generated/contract.js";
+import type { RefusalCode } from "./generated/index.js";
 
 export type ProblemKind =
   | "unreachable"

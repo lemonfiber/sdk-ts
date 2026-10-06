@@ -2,12 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { Client, refusalIn, type Sending } from "./client.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
-import type { RefusalCode } from "./generated/contract.js";
+import type { RefusalCode } from "./generated/index.js";
 import { refused, unreachable } from "./problem.js";
 
 // The vendored contract may list no refusal codes, so these tests read against a
 // list of their own, in the shape the generator writes one.
-vi.mock("./generated/contract.js", async (importOriginal) => {
+vi.mock("./generated/index.js", async (importOriginal) => {
   const generated = await importOriginal<Record<string, unknown>>();
   const listed: Record<string, { name: string; status: number; description: string }> = {
     "ADMIT-4": {

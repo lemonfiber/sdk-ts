@@ -4,10 +4,10 @@ Structural guards. Collects every violation, then exits non-zero.
 */
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { LINE_CAP, linesIn } from "./line-cap.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const SRC = join(ROOT, "src");
-const LINE_CAP = 550;
 
 /**
 Every file under `dir`, recursively.
@@ -43,7 +43,16 @@ rather than beside the code it once explained.
 const IDENTIFIER = /\b[A-Z][A-Z0-9]*-R\d+\b/;
 const COMMENT = /^\s*(?:\/\/|\*|\/\*)/;
 
-const files = (await walk(SRC)).filter((f) => !f.includes("/generated/"));
+const everything = await walk(SRC);
+
+/**
+Whether a file is written by `contract:generate`. Its comments carry the
+contract's own descriptions, so it is held to the cap and to nothing else here:
+the rest is proved by regeneration producing no diff.
+*/
+const isGenerated = (file) => file.includes("/generated/");
+
+const files = everything.filter((f) => !isGenerated(f));
 
 /**
 Refuse a list nothing is in, before anything is claimed about what is in it.
@@ -111,12 +120,18 @@ for (const [file, text] of sources) {
     if (COMMENT.test(line) && IDENTIFIER.test(line))
       fail(file, at, "a requirement identifier in a comment — cite it in the commit");
   });
+}
 
-  if (!file.endsWith(".test.ts") && lines.length > LINE_CAP) {
+const generated = everything.filter((f) => isGenerated(f) && f.endsWith(".ts"));
+
+readSomething("src/generated", generated);
+
+for (const [file, text] of [...sources, ...(await readAll(generated))]) {
+  if (!file.endsWith(".test.ts") && linesIn(text) > LINE_CAP) {
     fail(
       file,
       null,
-      `${lines.length} lines, over the cap of ${LINE_CAP}. A file past it is one ` +
+      `${linesIn(text)} lines, over the cap of ${LINE_CAP}. A file past it is one ` +
         "nobody reads before editing. Split it along a seam it already has rather " +
         "than raising the cap",
     );
@@ -232,4 +247,4 @@ if (failures.length > 0) {
   for (const f of failures) console.error(`  ${f}`);
   process.exit(1);
 }
-console.log(`guards: clean (${files.length + scripts.length} files)`);
+console.log(`guards: clean (${files.length + generated.length + scripts.length} files)`);

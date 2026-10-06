@@ -17,7 +17,7 @@ export {
   type ByKind,
   type Kind,
   type RefusalCode,
-} from "./generated/contract.js";
+} from "./generated/index.js";
 export {
   follow,
   HEARTBEAT_MS,

@@ -3,7 +3,7 @@
  *
  * Spec: 20-architecture/contracts/web-api.md
  */
-import { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/contract.js";
+import { CONTRACT_API_VERSION, type ByKind, type Kind } from "./generated/index.js";
 import { malformed, wrongVersion, type Problem } from "./problem.js";
 
 /**

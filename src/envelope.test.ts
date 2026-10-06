@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { API_VERSION, isKind, parse, read } from "./envelope.js";
-import { CONTRACT_API_VERSION, type ByKind } from "./generated/contract.js";
+import { CONTRACT_API_VERSION, type ByKind } from "./generated/index.js";
 
 const good = { api_version: API_VERSION, kind: "status", data: { free: 412 } };
 
