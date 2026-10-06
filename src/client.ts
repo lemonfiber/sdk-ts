@@ -12,7 +12,7 @@ import {
   REFUSAL_CODES,
   type Bundle,
   type RefusalCode,
-} from "./generated/contract.js";
+} from "./generated/index.js";
 import {
   declined,
   failed,
