@@ -5,18 +5,13 @@
  */
 import { askedAgain } from "./again.js";
 import { address } from "./address.js";
-import { tokenProblem } from "./credential.js";
+import { TOKEN_HEADER, tokenProblem } from "./credential.js";
 import { parse, type Envelope } from "./envelope.js";
 import type { ByKind, Kind } from "./generated/index.js";
 import { Ledger } from "./ledger.js";
 import { streamEnded, streamLost, unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
 import { SseParser } from "./sse.js";
-
-/**
- * The header the per-run token travels in. Never a query parameter.
- */
-export const TOKEN_HEADER = "X-Lemonfiber-Token";
 
 /**
  * How often the server speaks when it has nothing to say.
@@ -86,6 +81,11 @@ export interface Following {
   silenceAllowedMs?: number;
   reconnectsAllowed?: number;
   signal?: AbortSignal;
+  /**
+   * Where what the stream said is held, so a caller can ask what is held, and
+   * how current it is, while following. A fresh one where none is given.
+   */
+  ledger?: Ledger;
 }
 
 /**
@@ -143,7 +143,7 @@ export async function* follow(options: Following): AsyncGenerator<Arrival> {
   const now = options.now ?? (() => Date.now());
   const silenceAllowedMs = options.silenceAllowedMs ?? SILENCE_ALLOWED_MS;
   const reconnectsAllowed = options.reconnectsAllowed ?? RECONNECTS_ALLOWED;
-  const ledger = new Ledger();
+  const ledger = options.ledger ?? new Ledger();
 
   let lastEventId: string | undefined;
   let reconnects = 0;

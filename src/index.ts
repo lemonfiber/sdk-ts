@@ -1,4 +1,5 @@
 export { address, type Address } from "./address.js";
+export { TOKEN_HEADER } from "./credential.js";
 export {
   Client,
   type Handed,
@@ -35,7 +36,6 @@ export {
   HEARTBEAT_MS,
   RECONNECTS_ALLOWED,
   SILENCE_ALLOWED_MS,
-  TOKEN_HEADER,
   type Arrival,
   type Fetching,
   type Following,

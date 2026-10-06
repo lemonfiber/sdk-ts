@@ -5,9 +5,8 @@
  */
 import { address } from "./address.js";
 import { askedAgain } from "./again.js";
-import { tokenProblem } from "./credential.js";
+import { TOKEN_HEADER, tokenProblem } from "./credential.js";
 import { parse, type Envelope, type Reading } from "./envelope.js";
-import { TOKEN_HEADER } from "./events.js";
 import type { Bundle } from "./generated/index.js";
 import { unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
