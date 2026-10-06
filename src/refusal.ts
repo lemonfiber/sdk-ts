@@ -197,7 +197,7 @@ function saidIn(body: string): Said {
  * sentence yields none, and one whose code is not a string yields no code.
  */
 function errorIn(body: string): Said {
-  const envelope = parse<unknown>(body);
+  const envelope = parse(body);
   if (!envelope.ok || !isKind(envelope.value, "error")) return {};
 
   const data: unknown = envelope.value.data;

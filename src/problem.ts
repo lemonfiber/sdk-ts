@@ -17,6 +17,7 @@ export type ProblemKind =
   | "too-many"
   | "version"
   | "malformed"
+  | "unrecognised"
   | "stream";
 
 export interface Problem {
@@ -150,6 +151,16 @@ export const tooMany = (said: string, retryAfterSeconds?: number): Problem => ({
 
 export const malformed = (): Problem =>
   problem("malformed", "That reply did not come from lemonfiber.");
+
+/**
+ * lemonfiber answered with a kind this package does not know, so the payload has
+ * no shape here to be read by. The running copy is likely newer than this page.
+ */
+export const unrecognised = (kind: string): Problem =>
+  problem(
+    "unrecognised",
+    `lemonfiber answered with “${kind}”, which this page does not know how to read. Reload the page; if that does not help, the two were built apart.`,
+  );
 
 export const wrongVersion = (mine: number, theirs: number): Problem =>
   problem(

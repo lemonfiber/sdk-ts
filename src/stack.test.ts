@@ -112,9 +112,7 @@ async function stackStreaming(): Promise<Pointing> {
  */
 const fetching: Fetching = (url, init) => fetch(url, init);
 
-const firstOf = async <T>(
-  stream: AsyncGenerator<Arrival<T>>,
-): Promise<Arrival<T> | undefined> => {
+const firstOf = async (stream: AsyncGenerator<Arrival>): Promise<Arrival | undefined> => {
   const step = await stream.next();
   await stream.return(undefined);
   return step.done === true ? undefined : step.value;
@@ -161,7 +159,7 @@ describe("live updates at an address", () => {
     const stack = await stackStreaming();
 
     const first = await firstOf(
-      follow<{ free: number }>({ url: `${stack.base}/api/events`, token: TOKEN, fetching }),
+      follow({ url: `${stack.base}/api/events`, token: TOKEN, fetching }),
     );
 
     expect(first).toEqual({ at: "live", kind: "status", data: { free: 1 } });

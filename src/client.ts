@@ -128,18 +128,15 @@ export class Client {
   /**
    * Asks for what a command would print under `--json`.
    */
-  async read<T>(endpoint: string, query: Query = {}): Promise<Reading<Envelope<T>>> {
-    return this.#ask<T>("GET", `/api/${endpoint}${search(query)}`, undefined, true);
+  async read(endpoint: string, query: Query = {}): Promise<Reading<Envelope>> {
+    return this.#ask("GET", `/api/${endpoint}${search(query)}`, undefined, true);
   }
 
   /**
    * Tells lemonfiber to do something the command line could also do.
    */
-  async act<T>(
-    name: string,
-    body: Record<string, unknown> = {},
-  ): Promise<Reading<Envelope<T>>> {
-    return this.#ask<T>("POST", `/api/actions/${name}`, JSON.stringify(body));
+  async act(name: string, body: Record<string, unknown> = {}): Promise<Reading<Envelope>> {
+    return this.#ask("POST", `/api/actions/${name}`, JSON.stringify(body));
   }
 
   /**
@@ -181,12 +178,12 @@ export class Client {
    * One request read through the envelope. A read is asked again before a
    * passing failure is reported; anything else is asked once.
    */
-  async #ask<T>(
+  async #ask(
     method: string,
     path: string,
     body?: string,
     isARead = false,
-  ): Promise<Reading<Envelope<T>>> {
+  ): Promise<Reading<Envelope>> {
     const sent = () => this.#send(method, path, "application/json", body);
     const answer = isARead ? await askedAgain(sent) : await sent();
     if (answer === undefined) return { ok: false, problem: unreachable() };
@@ -196,7 +193,7 @@ export class Client {
 
     if (!answer.ok) return { ok: false, problem: refusalOf(answer, said) };
 
-    return parse<T>(said);
+    return parse(said);
   }
 
   /**

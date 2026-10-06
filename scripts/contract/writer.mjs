@@ -61,6 +61,9 @@ const ENVELOPE_FIELDS = ["api_version", "kind", "data"];
 const OWNED = new Map([
   ["Kind", "the union of every kind the server may send"],
   ["ByKind", "the envelope each kind carries"],
+  ["KINDS", "every kind the server may send"],
+  ["isKnownKind", "whether a kind is one this package knows"],
+  ["Envelope", "the envelope of any kind the server may send"],
   ["CONTRACT_API_VERSION", "the wire version these types were generated for"],
   ["RefusalCode", "the union of every code a refusal may carry"],
   ["REFUSAL_CODES", "what the contract says of each refusal code"],

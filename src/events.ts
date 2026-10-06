@@ -6,7 +6,8 @@
 import { askedAgain } from "./again.js";
 import { address } from "./address.js";
 import { tokenProblem } from "./credential.js";
-import { parse } from "./envelope.js";
+import { parse, type Envelope } from "./envelope.js";
+import type { ByKind, Kind } from "./generated/index.js";
 import { Ledger } from "./ledger.js";
 import { streamEnded, streamLost, unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
@@ -42,11 +43,23 @@ export const RECONNECTS_ALLOWED = 5;
  * `lost` is the stream gone: refused, unreachable, broken or closed. An event
  * that could not be read is `unreadable`, and reading goes on after it.
  */
-export type Arrival<T> =
-  | { at: "live"; kind: string; data: T }
-  | { at: "stale"; kind: string; data: T; quietForMs: number }
+export type Arrival =
+  | ({ at: "live" } & Heard)
+  | ({ at: "stale"; quietForMs: number } & Heard)
   | { at: "unreadable"; problem: Problem }
   | { at: "lost"; problem: Problem };
+
+/**
+ * A kind and the payload the contract gives it, told apart by the kind, so
+ * narrowing an arrival by its `kind` types its `data`.
+ */
+export type Heard = { [K in Kind]: { kind: K; data: ByKind[K]["data"] } }[Kind];
+
+/**
+ * What an envelope said, as an arrival carries it.
+ */
+const heardIn = (envelope: Envelope): Heard =>
+  ({ kind: envelope.kind, data: envelope.data }) as Heard;
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
@@ -83,7 +96,7 @@ type Opened = { ok: true; body: ReadableStream<Uint8Array> } | { ok: false; prob
 /**
  * What one read of an opening produced.
  */
-type Heard = { heard: "words"; chunk: Uint8Array } | { heard: "end" } | { heard: "silence" };
+type Step = { heard: "words"; chunk: Uint8Array } | { heard: "end" } | { heard: "silence" };
 
 /**
  * What one opening of the stream needs in order to be read.
@@ -114,7 +127,7 @@ interface Opening {
  * An address that is not on this machine, or carries more than an address, is
  * lost before anything is sent: the token goes nowhere it was not given for.
  */
-export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>> {
+export async function* follow(options: Following): AsyncGenerator<Arrival> {
   const where = address(options.url);
   if (!where.ok) {
     yield { at: "lost", problem: where.problem };
@@ -155,7 +168,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
       signal: options.signal,
       broke: false,
     };
-    yield* readOpening<T>(opening);
+    yield* readOpening(opening);
 
     const quietForMs = ledger.quietForMs(now()) ?? silenceAllowedMs;
     ledger.cool();
@@ -164,8 +177,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
     for (const held of ledger.cooled(now())) {
       yield {
         at: "stale",
-        kind: held.kind,
-        data: held.data as T,
+        ...({ kind: held.kind, data: held.data } as Heard),
         quietForMs: held.quietForMs,
       };
     }
@@ -186,7 +198,7 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
  * body is let go of however the reading ends, since a reader still holding one
  * goes on draining a connection nobody is reading from.
  */
-async function* readOpening<T>(opening: Opening): AsyncGenerator<Arrival<T>> {
+async function* readOpening(opening: Opening): AsyncGenerator<Arrival> {
   const reader = opening.body.getReader();
   const parser = new SseParser();
   const decoder = new TextDecoder();
@@ -210,7 +222,7 @@ async function* readOpening<T>(opening: Opening): AsyncGenerator<Arrival<T>> {
 
       for (const event of events) {
         if (event.id !== undefined) opening.onId(event.id);
-        yield received<T>(event.data, opening);
+        yield received(event.data, opening);
       }
     }
   } finally {
@@ -237,13 +249,13 @@ async function letGo(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<v
 /**
  * One event's text, read and recorded.
  */
-function received<T>(text: string, opening: Opening): Arrival<T> {
-  const read = parse<T>(text);
+function received(text: string, opening: Opening): Arrival {
+  const read = parse(text);
 
   if (!read.ok) return { at: "unreadable", problem: read.problem };
 
   opening.ledger.record(read.value.kind, read.value.data, opening.now());
-  return { at: "live", kind: read.value.kind, data: read.value.data };
+  return { at: "live", ...heardIn(read.value) };
 }
 
 /**
@@ -258,7 +270,7 @@ function received<T>(text: string, opening: Opening): Arrival<T> {
 async function nextChunk(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   silenceAllowedMs: number,
-): Promise<Heard> {
+): Promise<Step> {
   const waiting = new AbortController();
   try {
     return await Promise.race([reading(reader), silence(silenceAllowedMs, waiting.signal)]);
@@ -270,7 +282,7 @@ async function nextChunk(
 /**
  * One read, ended by the stream rather than by the clock.
  */
-async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Heard> {
+async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Step> {
   try {
     const step = await reader.read();
     return step.done ? { heard: "end" } : { heard: "words", chunk: step.value };
@@ -282,7 +294,7 @@ async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise
 /**
  * A wait that ends in silence, dropped where a read got there first.
  */
-function silence(ms: number, until: AbortSignal): Promise<Heard> {
+function silence(ms: number, until: AbortSignal): Promise<Step> {
   return new Promise((tell) => {
     const bell = setTimeout(() => {
       tell({ heard: "silence" });
