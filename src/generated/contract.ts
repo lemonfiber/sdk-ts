@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 64097060028ada772e859b1139db31b9e41cb0da  ·  api_version 1
+// Source: 79bb11356f6a117d14293c49cd2d154164c5f439  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -6632,6 +6632,22 @@ export interface Undo {
         /**
          * The checksum of what was written between the markers, which has to still be
          * what is there for taking it out to be taking out lemonfiber's own work.
+         */
+        written: number;
+      }
+    | {
+        does: "rewind";
+        /**
+         * The file to write back.
+         */
+        path: string;
+        /**
+         * What to write back into it.
+         */
+        previous: string;
+        /**
+         * The checksum of what lemonfiber wrote, which has to still be what is there
+         * for writing the old text back to be undoing lemonfiber's own work.
          */
         written: number;
       }
