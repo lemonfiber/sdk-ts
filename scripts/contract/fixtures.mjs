@@ -27,13 +27,14 @@ export function kind(data, definitions) {
   return schema;
 }
 
-/** A whole artefact describing these kinds, and the refusals and key-callable actions where given. */
-export function artefact(kinds, { refusals, keyCallable, version = 1 } = {}) {
+/** A whole artefact describing these kinds, and the refusals, key-callable actions and reads where given. */
+export function artefact(kinds, { refusals, keyCallable, reads, version = 1 } = {}) {
   return {
     api_version: version,
     kinds,
     ...(refusals !== undefined && { refusals }),
     ...(keyCallable !== undefined && { key_callable: keyCallable }),
+    ...(reads !== undefined && { reads }),
   };
 }
 

@@ -3,6 +3,7 @@ export { TOKEN_HEADER } from "./credential.js";
 export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
 export {
   Client,
+  type DocumentRead,
   type Handed,
   type Opened,
   type Query,
@@ -26,7 +27,12 @@ export {
   REFUSAL_CODES,
   isKnownKind,
   KINDS,
+  READS,
+  FILES,
   type ByKind,
+  type ReadAnswer,
+  type ReadName,
+  type ReadQuery,
   type KeyCallable,
   type KeyCallableAction,
   type Kind,

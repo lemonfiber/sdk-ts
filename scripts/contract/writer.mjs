@@ -72,6 +72,12 @@ const OWNED = new Map([
   ["KeyCallable", "what the contract says of one action a key may call"],
   ["KEY_CALLABLE", "what the contract says of each action a key may call"],
   ["isKeyCallable", "whether an action is one a key may call"],
+  ["Scalar", "one value a query parameter carries"],
+  ["READS", "every read answered with a document"],
+  ["ReadName", "the name of a read answered with a document"],
+  ["ReadQuery", "what each read takes"],
+  ["ReadAnswer", "the envelope a read answers with"],
+  ["FILES", "every read answered with a file"],
 ]);
 
 /** A string literal inside an annotation, which names a value rather than a type. */

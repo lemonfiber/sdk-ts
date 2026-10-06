@@ -48,7 +48,7 @@ describe("a read", () => {
     "is asked again where a gateway answered %i, and takes the answer that came",
     async (status) => {
       const asked = { count: 0 };
-      const got = await settled(client(answeringInTurn([status, 200], asked)).read("status"));
+      const got = await settled(client(answeringInTurn([status, 200], asked)).read("explain"));
 
       expect(got).toMatchObject({ ok: true });
       expect(asked.count).toBe(2);
@@ -58,7 +58,7 @@ describe("a read", () => {
   it("is asked three times in all, then reports the last answer", async () => {
     const asked = { count: 0 };
     const got = await settled(
-      client(answeringInTurn([503, 503, 503, 200], asked)).read("status"),
+      client(answeringInTurn([503, 503, 503, 200], asked)).read("explain"),
     );
 
     expect(got).toMatchObject({ ok: false });
@@ -78,7 +78,7 @@ describe("a read", () => {
             signal: new AbortController().signal,
           });
     };
-    const got = await settled(client(silentOnce).read("status"));
+    const got = await settled(client(silentOnce).read("explain"));
 
     expect(got).toMatchObject({ ok: true });
     expect(count).toBe(2);
@@ -88,7 +88,7 @@ describe("a read", () => {
     "takes lemonfiber's own %i on the first answer",
     async (status) => {
       const asked = { count: 0 };
-      const got = await settled(client(answeringInTurn([status, 200], asked)).read("status"));
+      const got = await settled(client(answeringInTurn([status, 200], asked)).read("explain"));
 
       expect(got).toMatchObject({ ok: false });
       expect(asked.count).toBe(1);
