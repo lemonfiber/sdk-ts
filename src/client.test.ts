@@ -203,7 +203,7 @@ describe("read", () => {
   });
 
   it("reads the envelope out of the reply", async () => {
-    const got = await open(answering({}, [])).read<string>("word");
+    const got = await open(answering({}, [])).read("word");
     expect(got).toMatchObject({ ok: true, value: { kind: "word", data: "hello" } });
   });
 

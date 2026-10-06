@@ -8,13 +8,22 @@ export {
   type Talking,
   type Written,
 } from "./client.js";
-export { API_VERSION, isKind, parse, read, type Envelope, type Reading } from "./envelope.js";
+export {
+  API_VERSION,
+  isKind,
+  parse,
+  readEnvelope,
+  type Envelope,
+  type Reading,
+} from "./envelope.js";
 export {
   CONTRACT_API_VERSION,
   isKeyCallable,
   isRefusalCode,
   KEY_CALLABLE,
   REFUSAL_CODES,
+  isKnownKind,
+  KINDS,
   type ByKind,
   type KeyCallable,
   type KeyCallableAction,
@@ -30,6 +39,7 @@ export {
   type Arrival,
   type Fetching,
   type Following,
+  type Heard,
 } from "./events.js";
 export { Ledger, type Held } from "./ledger.js";
 export {
@@ -46,6 +56,7 @@ export {
   streamLost,
   tooMany,
   unreachable,
+  unrecognised,
   wrongVersion,
   type Problem,
   type ProblemKind,

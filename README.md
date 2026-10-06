@@ -52,7 +52,7 @@ dependencies** — a client library's dependency tree becomes every consumer's.
 the token is sent as a header and never placed in a URL.
 
 ```ts
-import { Client, follow } from "@lemonfiber/sdk-ts";
+import { Client, follow, isKind } from "@lemonfiber/sdk-ts";
 
 const opened = Client.at({
   url: "http://127.0.0.1:9000", // loopback only — anything else is refused
@@ -62,12 +62,21 @@ const opened = Client.at({
 if (!opened.ok) throw new Error(opened.problem.message);
 
 const status = await opened.client.read("status");
-if (status.ok) {
-  status.value.kind; // "status"
-  status.value.data; // the payload, shaped by kind
+if (status.ok && isKind(status.value, "status")) {
+  status.value.data; // the `status` payload, typed by the contract
 }
 
 await opened.client.act("restart", { forms: ["tv"], services: ["sonarr"] });
+```
+
+Every reply is an `Envelope`: the union of every kind's envelope the contract describes, told
+apart by `kind`. `isKind` narrows one to its kind, and so does comparing `kind` yourself. A reply
+whose kind this package does not know is `unrecognised` rather than passed on untyped. Every
+name the contract defines, each kind's payload and the shapes several kinds share among them,
+is exported from `@lemonfiber/sdk-ts/contract`:
+
+```ts
+import type { StatusReport } from "@lemonfiber/sdk-ts/contract";
 ```
 
 An action's name and its arguments are the command line's own. A name this
@@ -139,6 +148,7 @@ sentence to know what to do with it:
 | `unreachable`   | Nothing lemonfiber wrote came back at all                           |
 | `version`       | The reply is in an `api_version` this package does not speak        |
 | `malformed`     | What arrived as an answer was not a lemonfiber envelope             |
+| `unrecognised`  | The reply is of a kind this package does not know                   |
 | `stream`        | The event stream broke, went quiet for too long, or was closed      |
 
 `configuration` is the caller's own: an address that is not one, not on this machine or

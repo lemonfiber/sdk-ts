@@ -8,7 +8,14 @@ import {
   type Arrival,
   type Fetching,
 } from "./events.js";
-import { missing, refused, streamEnded, streamLost, unreachable } from "./problem.js";
+import {
+  missing,
+  refused,
+  streamEnded,
+  streamLost,
+  unreachable,
+  unrecognised,
+} from "./problem.js";
 
 /**
  * A stream that hands over `chunks` and then ends.
@@ -99,11 +106,8 @@ function serving(openings: (string[] | null)[], seen: Seen): Fetching {
 /**
  * The first `count` arrivals, or fewer if the stream ends.
  */
-async function take<T>(
-  stream: AsyncGenerator<Arrival<T>>,
-  count: number,
-): Promise<Arrival<T>[]> {
-  const got: Arrival<T>[] = [];
+async function take(stream: AsyncGenerator<Arrival>, count: number): Promise<Arrival[]> {
+  const got: Arrival[] = [];
   for await (const arrival of stream) {
     got.push(arrival);
     if (got.length >= count) break;
@@ -117,7 +121,7 @@ describe("follow", () => {
   // A server that gathers on a tick holds the connection open between snapshots,
   // so an opening that never ends is the ordinary case rather than the edge one.
   it("hands over an arrival before the opening has ended", async () => {
-    const following = follow<{ free: number }>({
+    const following = follow({
       ...base,
       fetching: () =>
         Promise.resolve({
@@ -138,7 +142,7 @@ describe("follow", () => {
   it("hands over what arrives", async () => {
     const seen: Seen = { headers: [] };
     const got = await take(
-      follow<{ free: number }>({
+      follow({
         ...base,
         fetching: serving([[sent("status", { free: 412 })]], seen),
         reconnectsAllowed: 0,
@@ -167,20 +171,37 @@ describe("follow", () => {
     const got = await take(
       follow({
         ...base,
-        fetching: serving([[sent("status", 1), sent("services", 2)]], seen),
+        fetching: serving([[sent("status", 1), sent("log", 2)]], seen),
         reconnectsAllowed: 0,
       }),
       2,
     );
 
-    expect(got.map((a) => (a.at === "live" ? a.kind : a.at))).toEqual(["status", "services"]);
+    expect(got.map((a) => (a.at === "live" ? a.kind : a.at))).toEqual(["status", "log"]);
+  });
+
+  it("reports an event of a kind this package does not know, and keeps reading", async () => {
+    const seen: Seen = { headers: [] };
+    const got = await take(
+      follow({
+        ...base,
+        fetching: serving([[sent("teleport", 1), sent("status", 2)]], seen),
+        reconnectsAllowed: 0,
+      }),
+      2,
+    );
+
+    expect(got).toEqual([
+      { at: "unreadable", problem: unrecognised("teleport") },
+      { at: "live", kind: "status", data: 2 },
+    ]);
   });
 
   it("reads an event split across two chunks", async () => {
     const seen: Seen = { headers: [] };
     const whole = sent("status", { free: 412 });
     const got = await take(
-      follow<{ free: number }>({
+      follow({
         ...base,
         fetching: serving([[whole.slice(0, 20), whole.slice(20)]], seen),
         reconnectsAllowed: 0,
@@ -298,7 +319,7 @@ describe("follow", () => {
   // arrives to prompt a reading of the clock.
   it("calls the stream broken once silence outlasts what is allowed", async () => {
     const got = await take(
-      follow<{ free: number }>({
+      follow({
         ...base,
         fetching: () =>
           Promise.resolve({
@@ -320,7 +341,7 @@ describe("follow", () => {
   it("names how long a stream that broke had been quiet", async () => {
     let clock = 0;
     const got = await take(
-      follow<{ free: number }>({
+      follow({
         ...base,
         fetching: () =>
           Promise.resolve({
@@ -379,7 +400,7 @@ describe("follow", () => {
     ];
 
     const got = await take(
-      follow<{ free: number }>({
+      follow({
         ...base,
         fetching: () => Promise.resolve({ ok: true, status: 200, body: holding(beating) }),
         now: () => {
@@ -399,7 +420,7 @@ describe("follow", () => {
   it("does not present what it held before a break as current", async () => {
     const seen: Seen = { headers: [] };
     const got = await take(
-      follow<number>({
+      follow({
         ...base,
         fetching: serving([[sent("status", 1)]], seen),
         reconnectsAllowed: 0,
@@ -484,7 +505,7 @@ describe("follow", () => {
   it("lets go of a stream that never ends when it is told to stop", async () => {
     const gate = new AbortController();
     const letting: Letting = { go: false };
-    const following = follow<number>({
+    const following = follow({
       ...base,
       fetching: () =>
         Promise.resolve({ ok: true, status: 200, body: holding([sent("status", 1)], letting) }),

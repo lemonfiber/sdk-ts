@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { API_VERSION, isKind, parse, read } from "./envelope.js";
+import { API_VERSION, isKind, parse, readEnvelope } from "./envelope.js";
 import { CONTRACT_API_VERSION, type ByKind } from "./generated/index.js";
+import { unrecognised } from "./problem.js";
 
 const good = { api_version: API_VERSION, kind: "status", data: { free: 412 } };
 
-describe("read", () => {
+describe("readEnvelope", () => {
   it("accepts an envelope this package speaks", () => {
-    const got = read<{ free: number }>(good);
+    const got = readEnvelope(good);
     expect(got).toEqual({ ok: true, value: good });
   });
 
   it("accepts data that is null, since absent and null differ", () => {
-    const got = read({ api_version: API_VERSION, kind: "status", data: null });
+    const got = readEnvelope({ api_version: API_VERSION, kind: "status", data: null });
     expect(got.ok).toBe(true);
   });
 
@@ -21,7 +22,7 @@ describe("read", () => {
     ["a number", 7],
     ["an array", []],
   ])("refuses %s", (_name, value) => {
-    const got = read(value);
+    const got = readEnvelope(value);
     expect(got).toMatchObject({ ok: false, problem: { kind: "malformed" } });
   });
 
@@ -32,12 +33,18 @@ describe("read", () => {
     ["a non-numeric api_version", { api_version: "1", kind: "status", data: {} }],
     ["a non-string kind", { api_version: API_VERSION, kind: 1, data: {} }],
   ])("refuses an envelope with %s", (_name, value) => {
-    expect(read(value)).toMatchObject({ ok: false, problem: { kind: "malformed" } });
+    expect(readEnvelope(value)).toMatchObject({ ok: false, problem: { kind: "malformed" } });
+  });
+
+  it("refuses a kind this package does not know, naming it", () => {
+    const got = readEnvelope({ api_version: API_VERSION, kind: "teleport", data: {} });
+    expect(got).toEqual({ ok: false, problem: unrecognised("teleport") });
+    expect(got.ok ? "" : got.problem.message).toContain("teleport");
   });
 
   // Name both versions, render nothing.
   it("refuses a wire version it cannot speak, naming both", () => {
-    const got = read({ ...good, api_version: API_VERSION + 1 });
+    const got = readEnvelope({ ...good, api_version: API_VERSION + 1 });
     expect(got.ok).toBe(false);
     if (got.ok) return;
     expect(got.problem.kind).toBe("version");
@@ -48,7 +55,7 @@ describe("read", () => {
 
 describe("parse", () => {
   it("reads an envelope out of JSON text", () => {
-    expect(parse<{ free: number }>(JSON.stringify(good))).toEqual({ ok: true, value: good });
+    expect(parse(JSON.stringify(good))).toEqual({ ok: true, value: good });
   });
 
   it("refuses text that is not JSON", () => {
@@ -69,7 +76,7 @@ describe("parse", () => {
 describe("isKind", () => {
   it("narrows an envelope to the kind it names", () => {
     const envelope = { api_version: API_VERSION, kind: "word", data: "anything" };
-    const got = read<unknown>(envelope);
+    const got = readEnvelope(envelope);
 
     expect(got.ok).toBe(true);
     if (!got.ok) return;
@@ -78,7 +85,7 @@ describe("isKind", () => {
 
   it("refuses an envelope carrying a different kind", () => {
     const envelope = { api_version: API_VERSION, kind: "log", data: "anything" };
-    const got = read<unknown>(envelope);
+    const got = readEnvelope(envelope);
 
     expect(got.ok).toBe(true);
     if (!got.ok) return;
@@ -104,7 +111,7 @@ describe("isKind", () => {
         },
       ],
     };
-    const got = read<unknown>({ api_version: API_VERSION, kind: "handoff", data: report });
+    const got = readEnvelope({ api_version: API_VERSION, kind: "handoff", data: report });
 
     expect(got.ok).toBe(true);
     if (!got.ok) return;
@@ -124,7 +131,7 @@ describe("isKind", () => {
       open_source: true,
       deep_link: "swiftfin://connect?server={address}",
     };
-    const got = read<unknown>({
+    const got = readEnvelope({
       api_version: API_VERSION,
       kind: "clients",
       data: { devices: [device], nothing_is_installed: "", only_at_home: "", trouble: [] },
