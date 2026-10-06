@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { Client } from "./client.js";
 import { API_VERSION } from "./envelope.js";
 import { follow, TOKEN_HEADER, type Arrival, type Fetching } from "./events.js";
-import { problem, unreachable } from "./problem.js";
+import { misconfigured, unreachable } from "./problem.js";
 
 /**
  * The token the stack printed, and nowhere else is meant to see.
@@ -199,7 +199,7 @@ describe("live updates at an address", () => {
 
     expect(first).toMatchObject({
       done: false,
-      value: { at: "lost", problem: { kind: "refused" } },
+      value: { at: "lost", problem: { kind: "configuration" } },
     });
     expect(first.value?.at === "lost" ? first.value.problem.message : "").toContain(said);
     expect(await stream.next()).toEqual({ done: true, value: undefined });
@@ -211,15 +211,13 @@ describe("live updates at an address", () => {
 
     expect(await firstOf(follow({ url, token: TOKEN, fetching }))).toEqual({
       at: "lost",
-      problem: problem(
-        "refused",
+      problem: misconfigured(
         "lemonfiber runs on this machine, and “example.com” is somewhere else.",
       ),
     });
     expect(Client.at({ url, token: TOKEN, sending: fetch })).toEqual({
       ok: false,
-      problem: problem(
-        "refused",
+      problem: misconfigured(
         "lemonfiber runs on this machine, and “example.com” is somewhere else.",
       ),
     });

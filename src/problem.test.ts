@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  misconfigured,
   failed,
   malformed,
   misasked,
@@ -13,6 +14,7 @@ import {
 } from "./problem.js";
 
 const every = [
+  misconfigured("The token is empty."),
   unreachable(),
   refused(),
   missing("`kubernetes` is not one of the words this product explains"),
@@ -38,6 +40,14 @@ describe("problem", () => {
       expect(p.message).not.toMatch(/undefined|null|\[object/);
     },
   );
+
+  it("tells the caller's own configuration apart from the key lemonfiber turned away", () => {
+    expect(misconfigured("That address carries more than an address.")).toEqual({
+      kind: "configuration",
+      message: "That address carries more than an address.",
+    });
+    expect(misconfigured("x").kind).not.toBe(refused().kind);
+  });
 
   it("names the key, which is the only thing a refusal is about", () => {
     expect(refused().message).toContain("reopen it from the address lemonfiber printed");

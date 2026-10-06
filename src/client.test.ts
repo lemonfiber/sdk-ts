@@ -92,15 +92,28 @@ describe("Client.at", () => {
       token: "t",
       sending: answering({}, []),
     });
-    expect(got).toMatchObject({ ok: false, problem: { kind: "refused" } });
+    expect(got).toMatchObject({ ok: false, problem: { kind: "configuration" } });
   });
 
   it.each([
-    ["empty", ""],
-    ["only spaces", " ".repeat(3)],
-  ])("refuses a token that is %s", (_n, token) => {
+    ["empty", "", "is empty"],
+    ["only spaces", " ".repeat(3), "is empty"],
+    ["carrying a space", "a token", "cannot carry"],
+    ["carrying a line break", "a-token\nX-Other: 1", "cannot carry"],
+    ["carrying a character outside ASCII", "tokén", "cannot carry"],
+  ])("refuses a token that is %s as configuration", (_n, token, said) => {
     const got = Client.at({ url: "http://127.0.0.1:7777", token, sending: answering({}, []) });
-    expect(got).toMatchObject({ ok: false, problem: { kind: "refused" } });
+    expect(got).toMatchObject({ ok: false, problem: { kind: "configuration" } });
+    expect(got.ok ? "" : got.problem.message).toContain(said);
+  });
+
+  it("opens with a token of visible characters", () => {
+    const got = Client.at({
+      url: "http://127.0.0.1:7777",
+      token: "a-run-token_0~!",
+      sending: answering({}, []),
+    });
+    expect(got.ok).toBe(true);
   });
 });
 

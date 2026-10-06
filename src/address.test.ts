@@ -31,13 +31,13 @@ describe("address", () => {
     ["a near miss", "http://127.example.com:7777"],
     ["loopback mapped into IPv6", "http://[::ffff:127.0.0.1]:7777"],
   ])("refuses %s", (_name, given) => {
-    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "refused" } });
+    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "configuration" } });
   });
 
   it("refuses something that is not an address at all", () => {
     expect(address("not an address")).toMatchObject({
       ok: false,
-      problem: { kind: "refused" },
+      problem: { kind: "configuration" },
     });
   });
 
@@ -45,7 +45,7 @@ describe("address", () => {
     ["a scheme it does not speak", "ftp://127.0.0.1:7777"],
     ["a websocket scheme", "ws://127.0.0.1:7777"],
   ])("refuses %s", (_name, given) => {
-    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "refused" } });
+    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "configuration" } });
   });
 
   it.each([
@@ -53,6 +53,6 @@ describe("address", () => {
     ["a query string", "http://127.0.0.1:7777?token=secret"],
     ["a fragment", "http://127.0.0.1:7777#somewhere"],
   ])("refuses an address carrying %s", (_name, given) => {
-    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "refused" } });
+    expect(address(given)).toMatchObject({ ok: false, problem: { kind: "configuration" } });
   });
 });

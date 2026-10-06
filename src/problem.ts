@@ -6,6 +6,7 @@
 import type { RefusalCode } from "./generated/index.js";
 
 export type ProblemKind =
+  | "configuration"
   | "unreachable"
   | "refused"
   | "declined"
@@ -32,6 +33,15 @@ export interface Problem {
 }
 
 export const problem = (kind: ProblemKind, message: string): Problem => ({ kind, message });
+
+/**
+ * What the caller handed over cannot be used: an address that is not one, or
+ * not on this machine, or a token that is empty or not one a header can carry.
+ *
+ * Nothing was sent. The remedy is in the caller's own configuration, which is
+ * what tells this from `refused`: that one is the key lemonfiber turned away.
+ */
+export const misconfigured = (message: string): Problem => problem("configuration", message);
 
 export const unreachable = (): Problem =>
   problem("unreachable", "lemonfiber is not answering. It may have been stopped.");
