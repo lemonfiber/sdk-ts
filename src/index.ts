@@ -36,6 +36,7 @@ export {
   missing,
   problem,
   refused,
+  streamEnded,
   streamLost,
   unreachable,
   wrongVersion,

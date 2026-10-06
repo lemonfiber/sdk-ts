@@ -8,7 +8,7 @@ import {
   type Arrival,
   type Fetching,
 } from "./events.js";
-import { missing, refused, unreachable } from "./problem.js";
+import { missing, refused, streamEnded, streamLost, unreachable } from "./problem.js";
 
 /**
  * A stream that hands over `chunks` and then ends.
@@ -265,7 +265,7 @@ describe("follow", () => {
       2,
     );
 
-    expect(got[0]).toMatchObject({ at: "lost", problem: { kind: "malformed" } });
+    expect(got[0]).toMatchObject({ at: "unreadable", problem: { kind: "malformed" } });
     expect(got[1]).toMatchObject({ at: "live", kind: "status" });
   });
 
@@ -277,7 +277,7 @@ describe("follow", () => {
       1,
     );
 
-    expect(got[0]).toMatchObject({ at: "lost", problem: { kind: "version" } });
+    expect(got[0]).toMatchObject({ at: "unreadable", problem: { kind: "version" } });
   });
 
   // Silence is a break, and what survives it is stale. A stream that has gone
@@ -302,6 +302,54 @@ describe("follow", () => {
     expect(got[0]).toMatchObject({ at: "live", kind: "status" });
     expect(got[1]).toMatchObject({ at: "lost", problem: { kind: "stream" } });
     expect(got[2]).toMatchObject({ at: "stale", kind: "status", data: { free: 412 } });
+  });
+
+  it("names how long a stream that broke had been quiet", async () => {
+    let clock = 0;
+    const got = await take(
+      follow<{ free: number }>({
+        ...base,
+        fetching: () =>
+          Promise.resolve({
+            ok: true,
+            status: 200,
+            body: holding([sent("status", { free: 412 })]),
+          }),
+        now: () => {
+          clock += 20_000;
+          return clock;
+        },
+        silenceAllowedMs: 5,
+        reconnectsAllowed: 0,
+      }),
+      2,
+    );
+
+    expect(got[1]).toEqual({ at: "lost", problem: streamLost(20_000) });
+  });
+
+  it("names the wait allowed for a stream that broke before anything arrived", async () => {
+    const got = await take(
+      follow({
+        ...base,
+        fetching: () => Promise.resolve({ ok: true, status: 200, body: holding([]) }),
+        silenceAllowedMs: 5,
+        reconnectsAllowed: 0,
+      }),
+      1,
+    );
+
+    expect(got[0]).toEqual({ at: "lost", problem: streamLost(5) });
+  });
+
+  it("reports a stream the server closed as closed rather than as quiet", async () => {
+    const seen: Seen = { headers: [] };
+    const got = await take(
+      follow({ ...base, fetching: serving([[sent("status", 1)]], seen), reconnectsAllowed: 0 }),
+      2,
+    );
+
+    expect(got[1]).toEqual({ at: "lost", problem: streamEnded() });
   });
 
   // What the server sends when it has nothing to say is a comment line and
