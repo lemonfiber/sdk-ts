@@ -8,6 +8,7 @@ import { address } from "./address.js";
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";
 import { streamLost, unreachable, type Problem } from "./problem.js";
+import { refusalIn } from "./refusal.js";
 import { SseParser } from "./sse.js";
 
 /**
@@ -70,6 +71,11 @@ export interface Following {
 }
 
 /**
+ * An opened stream's body, or why there is none.
+ */
+type Opened = { ok: true; body: ReadableStream<Uint8Array> } | { ok: false; problem: Problem };
+
+/**
  * What one read of an opening produced.
  */
 type Heard = { heard: "words"; chunk: Uint8Array } | { heard: "end" } | { heard: "silence" };
@@ -119,16 +125,16 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
   let reconnects = 0;
 
   for (;;) {
-    const body = await open(options, where.base, lastEventId);
+    const opened = await open(options, where.base, lastEventId);
 
-    if (body === undefined) {
+    if (!opened.ok) {
       ledger.cool();
-      yield { at: "lost", problem: unreachable() };
+      yield { at: "lost", problem: opened.problem };
       return;
     }
 
     const opening: Opening = {
-      body,
+      body: opened.body,
       ledger,
       now,
       silenceAllowedMs,
@@ -283,6 +289,10 @@ function silence(ms: number, until: AbortSignal): Promise<Heard> {
 /**
  * Opens the stream, resuming from `lastEventId` where there is one.
  *
+ * A stream nothing answered is `unreachable`. A refusal is read as every other
+ * refusal is, from its status and its body, so a key the run does not admit is
+ * `refused` and a stream the server does not serve is `missing`.
+ *
  * The caller's own way of stopping is what the request is given, so a stop said
  * before this reaches the network is a request that is never made. A caller that
  * gave none is given one nothing ever raises.
@@ -291,7 +301,7 @@ async function open(
   options: Following,
   url: string,
   lastEventId: string | undefined,
-): Promise<ReadableStream<Uint8Array> | undefined> {
+): Promise<Opened> {
   const headers: Record<string, string> = {
     [TOKEN_HEADER]: options.token,
     Accept: "text/event-stream",
@@ -314,5 +324,21 @@ async function open(
       return;
     }
   });
-  return answer?.ok === true && answer.body !== null ? answer.body : undefined;
+  if (answer === undefined) return { ok: false, problem: unreachable() };
+  if (!answer.ok)
+    return { ok: false, problem: refusalIn(answer.status, await textOf(answer.body)) };
+  if (answer.body === null) return { ok: false, problem: unreachable() };
+  return { ok: true, body: answer.body };
+}
+
+/**
+ * A refusal's body as text, or nothing where there is none or it could not be read.
+ */
+async function textOf(body: ReadableStream<Uint8Array> | null): Promise<string> {
+  if (body === null) return "";
+  try {
+    return await new Response(body).text();
+  } catch {
+    return "";
+  }
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { Client, refusalIn, type Sending } from "./client.js";
+import { Client, type Sending } from "./client.js";
+import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
 import type { RefusalCode } from "./generated/index.js";

@@ -8,6 +8,7 @@ import {
   type Arrival,
   type Fetching,
 } from "./events.js";
+import { missing, refused, unreachable } from "./problem.js";
 
 /**
  * A stream that hands over `chunks` and then ends.
@@ -197,6 +198,60 @@ describe("follow", () => {
     expect(got).toEqual([
       { at: "lost", problem: expect.objectContaining({ kind: "unreachable" }) },
     ]);
+  });
+
+  it("reports a stream the run refuses as the refusal it is", async () => {
+    const refusing =
+      (status: number, said: string | undefined): Fetching =>
+      () =>
+        Promise.resolve({
+          ok: false,
+          status,
+          body: said === undefined ? null : streaming([said]),
+        });
+    const turnedAway = JSON.stringify({
+      api_version: API_VERSION,
+      kind: "error",
+      data: { summary: "That key is not this run's.", code: "ADMIT-4" },
+    });
+
+    const noKey = await take(follow({ ...base, fetching: refusing(403, undefined) }), 2);
+    const theKey = await take(follow({ ...base, fetching: refusing(403, turnedAway) }), 2);
+    const nothingThere = await take(
+      follow({ ...base, fetching: refusing(404, "No endpoint answers /api/events.") }),
+      2,
+    );
+
+    expect(noKey).toEqual([{ at: "lost", problem: refused() }]);
+    expect(theKey).toEqual([{ at: "lost", problem: { ...refused(), code: "ADMIT-4" } }]);
+    expect(nothingThere).toEqual([
+      { at: "lost", problem: missing("No endpoint answers /api/events.") },
+    ]);
+  });
+
+  it("reads a refusal whose body cannot be read by its status alone", async () => {
+    const breaking: Fetching = () =>
+      Promise.resolve({
+        ok: false,
+        status: 403,
+        body: new ReadableStream<Uint8Array>({
+          pull(controller) {
+            controller.error(new Error("cut off"));
+          },
+        }),
+      });
+
+    const got = await take(follow({ ...base, fetching: breaking }), 2);
+
+    expect(got).toEqual([{ at: "lost", problem: refused() }]);
+  });
+
+  it("reports an opening that carried no body as nothing answering", async () => {
+    const empty: Fetching = () => Promise.resolve({ ok: true, status: 200, body: null });
+
+    const got = await take(follow({ ...base, fetching: empty }), 2);
+
+    expect(got).toEqual([{ at: "lost", problem: unreachable() }]);
   });
 
   it("reports an unreadable event but keeps reading", async () => {
