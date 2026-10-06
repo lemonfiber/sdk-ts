@@ -46,6 +46,7 @@ export type Sending = (
   status: number;
   text: () => Promise<string>;
   blob?: () => Promise<Blob>;
+  headers?: { get: (name: string) => string | null };
 }>;
 
 /**
@@ -155,7 +156,7 @@ export class Client {
     if (!answer.ok) {
       const said = await textOf(answer);
       if (said === undefined) return { ok: false, problem: unreachable() };
-      return { ok: false, problem: refusalIn(answer.status, said), said };
+      return { ok: false, problem: refusalOf(answer, said), said };
     }
 
     const kept = await blobOf(answer);
@@ -193,7 +194,7 @@ export class Client {
     const said = await textOf(answer);
     if (said === undefined) return { ok: false, problem: unreachable() };
 
-    if (!answer.ok) return { ok: false, problem: refusalIn(answer.status, said) };
+    if (!answer.ok) return { ok: false, problem: refusalOf(answer, said) };
 
     return parse<T>(said);
   }
@@ -226,6 +227,13 @@ export class Client {
       return undefined;
     }
   }
+}
+
+/**
+ * The problem a reply that was not a success is, its `Retry-After` included.
+ */
+function refusalOf(answer: Answer, said: string): Problem {
+  return refusalIn(answer.status, said, answer.headers?.get("Retry-After"));
 }
 
 /**

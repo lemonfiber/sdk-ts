@@ -4,7 +4,7 @@ import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./events.js";
 import type { RefusalCode } from "./generated/index.js";
-import { refused, unreachable } from "./problem.js";
+import { refused, tooMany, unreachable } from "./problem.js";
 
 // The vendored contract may list no refusal codes, so these tests read against a
 // list of their own, in the shape the generator writes one.
@@ -30,6 +30,11 @@ vi.mock("./generated/index.js", async (importOriginal) => {
       name: "TOO_MANY_ATTEMPTS",
       status: 429,
       description: "Raised when too many wrong passwords were offered lately.",
+    },
+    "STACK-1": {
+      name: "STACK_UNREADABLE",
+      status: 500,
+      description: "Raised when a stack directory holds no readable manifest.",
     },
     "READ-2": {
       name: "NOTHING_BY_THAT_NAME",
@@ -471,6 +476,9 @@ describe("refusalIn", () => {
     [403, "no", "refused"],
     [404, "There is no action named `retry-imprt`.", "missing"],
     [400, "The action `config-set` needs `key`, which was not given.", "misasked"],
+    [405, "That endpoint is not asked with DELETE.", "misasked"],
+    [409, "A restart is already running on this stack.", "busy"],
+    [429, "Too many wrong passwords lately.", "too-many"],
     [500, "The container engine is not answering.", "failed"],
     [503, "Sonarr would not answer.", "failed"],
   ])("reads a %s carrying words as %s", (status, said, kind) => {
@@ -488,6 +496,32 @@ describe("refusalIn", () => {
 
   it("reports an answer holding no sentence as not answering", () => {
     expect(refusalIn(500, " ".repeat(3))).toEqual(unreachable());
+  });
+
+  it("carries how long is left where too many attempts said so in seconds", () => {
+    const said = "Too many wrong passwords lately.";
+
+    expect(refusalIn(429, said, "30")).toEqual(tooMany(said, 30));
+    expect(refusalIn(429, said, " 7 ")).toEqual(tooMany(said, 7));
+    expect(refusalIn(429, said, "Wed, 21 Oct 2026 07:28:00 GMT")).toEqual(tooMany(said));
+    expect(refusalIn(429, said, null)).toEqual(tooMany(said));
+    expect(refusalIn(429, said)).toEqual({ kind: "too-many", message: said });
+  });
+
+  it("reads Retry-After off the reply a read was refused with", async () => {
+    const said = "Too many wrong passwords lately.";
+    const sending: Sending = () =>
+      Promise.resolve({
+        ok: false,
+        status: 429,
+        text: () => Promise.resolve(said),
+        headers: { get: (name: string) => (name === "Retry-After" ? "12" : null) },
+      });
+
+    expect(await open(sending).read("status")).toEqual({
+      ok: false,
+      problem: tooMany(said, 12),
+    });
   });
 });
 
@@ -570,13 +604,23 @@ describe("a refusal that names why", () => {
     });
   });
 
-  it("keeps every other status's reading, carrying the code", async () => {
+  it("reads too many attempts as `too-many`, carrying the code", async () => {
     const said = "Too many wrong passwords. Wait a minute and try again.";
     const got = await turnedAway(429, refusing("ADMIT-9", said));
 
     expect(got).toEqual({
       ok: false,
-      problem: { kind: "failed", message: said, code: "ADMIT-9" },
+      problem: { kind: "too-many", message: said, code: "ADMIT-9" },
+    });
+  });
+
+  it("keeps every other status's reading, carrying the code", async () => {
+    const said = "The stack directory holds no readable manifest.";
+    const got = await turnedAway(500, refusing("STACK-1", said));
+
+    expect(got).toEqual({
+      ok: false,
+      problem: { kind: "failed", message: said, code: "STACK-1" },
     });
   });
 

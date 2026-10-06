@@ -33,6 +33,7 @@ export {
 } from "./events.js";
 export { Ledger, type Held } from "./ledger.js";
 export {
+  busy,
   misconfigured,
   declined,
   failed,
@@ -43,6 +44,7 @@ export {
   refused,
   streamEnded,
   streamLost,
+  tooMany,
   unreachable,
   wrongVersion,
   type Problem,

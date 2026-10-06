@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  busy,
   misconfigured,
   failed,
   malformed,
@@ -9,12 +10,15 @@ import {
   refused,
   streamEnded,
   streamLost,
+  tooMany,
   unreachable,
   wrongVersion,
 } from "./problem.js";
 
 const every = [
   misconfigured("The token is empty."),
+  busy("A restart is already running on this stack."),
+  tooMany("Too many wrong passwords lately.", 30),
   unreachable(),
   refused(),
   missing("`kubernetes` is not one of the words this product explains"),
