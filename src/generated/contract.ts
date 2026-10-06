@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 075b70f01267ae14f7c59df6f7b9d94d52fbe493  ·  api_version 1
+// Source: 2112d04d879bc16f9a6f9f44aa4027613a48b803  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -11299,7 +11299,7 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -11364,7 +11364,8 @@ export const REFUSAL_CODES: Readonly<
   "READ-12": { name: "NO_SUCH_REMOVAL", status: 400, description: "Raised where a removal was named that is none of the four there are." },
   "READ-13": { name: "NO_UPDATE_OBJECT", status: 400, description: "Raised where moving forward was asked about and neither stack nor self named." },
   "READ-14": { name: "NOT_A_LINE_COUNT", status: 400, description: "Raised where how many log lines to begin with is not a number within the ceiling." },
-  "READ-15": { name: "NOT_A_CHOICE", status: 400, description: "Raised where whether to keep reading is neither true nor false." },
+  "READ-15": { name: "NOT_A_CHOICE", status: 400, description: "Raised where a parameter that takes a yes or a no is neither true nor false." },
+  "READ-16": { name: "MEMBER_AND_DEFAULTS", status: 400, description: "Raised where a household read named a member and asked for the household's defaults as well." },
   "READ-2": { name: "REPEATED", status: 400, description: "Raised where a parameter carrying one value was given more than once." },
   "READ-3": { name: "NO_SUCH_READ", status: 404, description: "Raised where no read goes by the name that was asked for." },
   "READ-4": { name: "NO_TERM", status: 400, description: "Raised where a trace was asked for and named nothing to follow." },
