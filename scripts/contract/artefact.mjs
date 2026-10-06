@@ -155,6 +155,50 @@ export function refusalsOf(artefact) {
   return listed;
 }
 
+/** Why one entry of the actions a key may call cannot be written, one reason at a time. */
+function* wrongWithAction(entry, at) {
+  if (!isRecord(entry)) {
+    yield `entry ${String(at)}: not an object`;
+    return;
+  }
+  if (typeof entry.action !== "string" || !/^[a-z][a-z0-9-]*$/.test(entry.action))
+    yield `entry ${String(at)}: action ${JSON.stringify(entry.action)} is not an action's name`;
+  for (const flag of ["disturbs", "rehearsal"]) {
+    if (typeof entry[flag] !== "boolean")
+      yield `entry ${String(at)}: ${flag} ${JSON.stringify(entry[flag])} is not true or false`;
+  }
+}
+
+/**
+ * The actions an integration key may call, as the contract lists them, in its
+ * order, or none.
+ *
+ * An artefact older than the list has no `key_callable`, and reads as listing no
+ * action rather than as an error, so a consumer compiles against every artefact.
+ */
+export function keyCallableOf(artefact) {
+  const listed = Object.hasOwn(artefact, "key_callable") ? artefact.key_callable : [];
+  if (!Array.isArray(listed)) {
+    refuse(
+      `The vendored contract's key_callable is ${JSON.stringify(listed)}, and it is a list of actions.`,
+    );
+  }
+  const malformed = listed.flatMap((entry, at) => [...wrongWithAction(entry, at)]);
+  const seen = new Set();
+  for (const entry of listed) {
+    if (!isRecord(entry) || typeof entry.action !== "string") continue;
+    if (seen.has(entry.action)) malformed.push(`${entry.action}: listed twice`);
+    seen.add(entry.action);
+  }
+  if (malformed.length > 0) {
+    refuse(
+      "The vendored contract lists an action a key may call that this generator cannot write:\n  " +
+        malformed.join("\n  "),
+    );
+  }
+  return listed;
+}
+
 /** The vendored artefact under `root`, and the revision it was taken from. */
 export async function readArtefact(root) {
   const stamp = (await readFile(join(root, "contract", "VERSION"), "utf8").catch(() => UNKNOWN)).trim();

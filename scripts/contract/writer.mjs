@@ -65,6 +65,10 @@ const OWNED = new Map([
   ["RefusalCode", "the union of every code a refusal may carry"],
   ["REFUSAL_CODES", "what the contract says of each refusal code"],
   ["isRefusalCode", "whether a code is one the contract lists"],
+  ["KeyCallableAction", "the union of every action an integration key may call"],
+  ["KeyCallable", "what the contract says of one action a key may call"],
+  ["KEY_CALLABLE", "what the contract says of each action a key may call"],
+  ["isKeyCallable", "whether an action is one a key may call"],
 ]);
 
 /** A string literal inside an annotation, which names a value rather than a type. */
