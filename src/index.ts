@@ -1,7 +1,6 @@
 export { address, type Address } from "./address.js";
 export {
   Client,
-  refusalIn,
   type Handed,
   type Opened,
   type Query,
@@ -43,4 +42,5 @@ export {
   type Problem,
   type ProblemKind,
 } from "./problem.js";
+export { refusalIn } from "./refusal.js";
 export { SseParser, type SseEvent } from "./sse.js";
