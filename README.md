@@ -194,8 +194,9 @@ contract says of each code, and `isRefusalCode` tells a listed one from any othe
 string; both are generated, and no code is written by hand.
 
 `KEY_CALLABLE` holds the actions an integration key may call, in the contract's order, each
-with whether calling it disturbs the running system and whether it takes `dry_run`, so it can
-be rehearsed first. `isKeyCallable` tells one of them from any other action's name. Both are
+with whether calling it disturbs the running system, whether it takes `dry_run`, so it can be
+rehearsed first, and whether calling it again with the same arguments leaves the stack as
+calling it once did. `isKeyCallable` tells one of them from any other action's name. Both are
 generated from the contract's list.
 
 `missing`, `misasked`, `failed` and `declined` always carry lemonfiber's own
