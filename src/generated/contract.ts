@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 2112d04d879bc16f9a6f9f44aa4027613a48b803  ·  api_version 1
+// Source: 64097060028ada772e859b1139db31b9e41cb0da  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -7390,11 +7390,15 @@ export interface PluginRecipe {
  */
 export interface PluginPair {
   /**
-   * What approving this pair is written as, on the command line and over the web.
+   * What approving this pair is written as, on the command line and over the web,
+   * where it carries the value to a host outside the stack. Absent where it reaches
+   * a service in this stack, which takes nothing off the machine and asks for no
+   * approval.
    */
-  approval: string;
+  approval?: string;
   /**
-   * Whose value it is, as the step that captures it says; empty where no step does.
+   * Whose value it is, as its input or the step that captures it says; empty where
+   * neither does.
    */
   origin: string;
   /**
