@@ -2,8 +2,9 @@ import { createServer as createHttpServer, type Server as HttpServer } from "nod
 import { createServer as createTcpServer, type Server as TcpServer } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
 import { Client } from "./client.js";
+import { TOKEN_HEADER } from "./credential.js";
 import { API_VERSION } from "./envelope.js";
-import { follow, TOKEN_HEADER, type Arrival, type Fetching } from "./events.js";
+import { follow, type Arrival, type Fetching } from "./events.js";
 import { misconfigured, unreachable } from "./problem.js";
 
 /**

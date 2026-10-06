@@ -123,6 +123,9 @@ for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: 
 or closed by the server — and each says which. An event that could not be read, or that is in
 an `api_version` this package does not speak, is `unreadable`, and the stream goes on.
 
+Hand `follow` a `Ledger` to ask what the stream holds while it runs: `ledger.held(kind, now)`
+is the last value for one kind, live or stale, and `ledger.all(now)` is every one of them.
+
 The stream's address is read the way `Client.at` reads one, so an address that is not on this
 machine, or carries more than an address, arrives as `lost` and nothing is sent to it. No request
 either of them makes follows an answer pointing somewhere else: every request asks for

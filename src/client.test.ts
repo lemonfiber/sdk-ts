@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Client, type Sending } from "./client.js";
 import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
-import { TOKEN_HEADER } from "./events.js";
+import { TOKEN_HEADER } from "./credential.js";
 import type { RefusalCode } from "./generated/index.js";
 import { refused, tooMany, unreachable } from "./problem.js";
 

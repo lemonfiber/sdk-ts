@@ -6,6 +6,11 @@
 import { misconfigured, type Problem } from "./problem.js";
 
 /**
+ * The header every credential travels in. Never a query parameter.
+ */
+export const TOKEN_HEADER = "X-Lemonfiber-Token";
+
+/**
  * What a token is written in: visible ASCII, nothing a header could be split on.
  */
 const VISIBLE = /^[\u{21}-\u{7E}]+$/u;

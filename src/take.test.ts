@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Client, type Sending } from "./client.js";
 import { API_VERSION } from "./envelope.js";
-import { TOKEN_HEADER } from "./events.js";
+import { TOKEN_HEADER } from "./credential.js";
 import type { Bundle } from "./generated/index.js";
 import { refused, unreachable } from "./problem.js";
 

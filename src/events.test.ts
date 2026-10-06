@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { TOKEN_HEADER } from "./credential.js";
 import { API_VERSION } from "./envelope.js";
 import {
   follow,
   HEARTBEAT_MS,
   SILENCE_ALLOWED_MS,
-  TOKEN_HEADER,
   type Arrival,
   type Fetching,
 } from "./events.js";
+import { Ledger } from "./ledger.js";
 import {
   missing,
   refused,
@@ -415,6 +416,23 @@ describe("follow", () => {
 
     expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 7 } });
     expect(got[1]).toEqual({ at: "live", kind: "status", data: { free: 6 } });
+  });
+
+  it("holds what arrives in the ledger it was given, and cools it on a break", async () => {
+    const seen: Seen = { headers: [] };
+    const ledger = new Ledger();
+    const stream = follow({
+      ...base,
+      fetching: serving([[sent("status", 1)]], seen),
+      reconnectsAllowed: 0,
+      ledger,
+    });
+
+    await stream.next();
+    expect(ledger.held("status", 0)).toEqual({ at: "live", kind: "status", data: 1 });
+
+    await stream.next();
+    expect(ledger.held("status", 0)).toMatchObject({ at: "stale", kind: "status", data: 1 });
   });
 
   it("does not present what it held before a break as current", async () => {
