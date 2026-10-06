@@ -4,6 +4,7 @@
 // Regenerate with `npm run contract:generate`.
 
 export * from "./envelope.js";
+export * from "./key-callable.js";
 export * from "./kinds.js";
 export * from "./refusals.js";
 export * from "./shared.js";

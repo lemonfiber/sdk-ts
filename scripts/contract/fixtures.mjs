@@ -27,9 +27,14 @@ export function kind(data, definitions) {
   return schema;
 }
 
-/** A whole artefact describing these kinds, and the refusals where given. */
-export function artefact(kinds, { refusals, version = 1 } = {}) {
-  return { api_version: version, kinds, ...(refusals !== undefined && { refusals }) };
+/** A whole artefact describing these kinds, and the refusals and key-callable actions where given. */
+export function artefact(kinds, { refusals, keyCallable, version = 1 } = {}) {
+  return {
+    api_version: version,
+    kinds,
+    ...(refusals !== undefined && { refusals }),
+    ...(keyCallable !== undefined && { key_callable: keyCallable }),
+  };
 }
 
 /** A fresh tree to generate into, holding a vendored artefact and the revision it came from. */

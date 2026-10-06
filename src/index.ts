@@ -11,9 +11,13 @@ export {
 export { API_VERSION, isKind, parse, read, type Envelope, type Reading } from "./envelope.js";
 export {
   CONTRACT_API_VERSION,
+  isKeyCallable,
   isRefusalCode,
+  KEY_CALLABLE,
   REFUSAL_CODES,
   type ByKind,
+  type KeyCallable,
+  type KeyCallableAction,
   type Kind,
   type RefusalCode,
 } from "./generated/index.js";

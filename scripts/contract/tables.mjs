@@ -33,6 +33,41 @@ export function envelopeModule(kinds) {
   };
 }
 
+/** The module of the actions an integration key may call, and what the contract says of each. */
+export function keyCallableModule(listed) {
+  const union = listed.length === 0 ? "never" : listed.map(({ action }) => JSON.stringify(action)).join(" | ");
+  const entries = listed.map(
+    ({ action, disturbs, rehearsal }) =>
+      `  ${JSON.stringify(action)}: { disturbs: ${String(disturbs)}, rehearsal: ${String(rehearsal)} },`,
+  );
+  return {
+    path: ["key-callable"],
+    summary: "Every action an integration key may call, and what the contract says of each.",
+    imports: new Map(),
+    body: [
+      "/** Every action a key may call; any other is refused to a key, naming its scope. */",
+      `export type KeyCallableAction = ${union};`,
+      "",
+      "/** What the contract says of one action a key may call. */",
+      "export interface KeyCallable {",
+      "  /** Whether calling it disturbs the running system. */",
+      "  readonly disturbs: boolean;",
+      "  /** Whether it takes `dry_run`, so it can be rehearsed before the real call is offered. */",
+      "  readonly rehearsal: boolean;",
+      "}",
+      "",
+      "/** What the contract says of each action a key may call, in the order it lists them. */",
+      ...(listed.length === 0
+        ? ["export const KEY_CALLABLE: Readonly<Record<KeyCallableAction, KeyCallable>> = {};"]
+        : ["export const KEY_CALLABLE: Readonly<Record<KeyCallableAction, KeyCallable>> = {", ...entries, "};"]),
+      "",
+      "/** Whether an action is one the contract says a key may call. */",
+      "export const isKeyCallable = (value: string): value is KeyCallableAction =>",
+      "  Object.hasOwn(KEY_CALLABLE, value);",
+    ],
+  };
+}
+
 /** The module of the refusal codes the contract lists, and what it says of each. */
 export function refusalsModule(listed) {
   const codes = Object.keys(listed).toSorted(byCodePoint);
