@@ -35,26 +35,43 @@ function isPassing(answer: { status: number } | undefined): boolean {
  * Written out attempt by attempt rather than as a loop: each waits on the one
  * before, and three is few enough to read. The last answer is handed back as
  * it came, so a caller reads a refusal the way it did before reads were retried.
+ *
+ * Every pause ends early when `ending` is raised, and no further attempt is made
+ * once it is: what came back so far is handed back, nothing where nothing did.
  */
 export async function askedAgain<A extends { status: number }>(
   ask: () => Promise<A | undefined>,
+  ending?: AbortSignal,
 ): Promise<A | undefined> {
   const first = await ask();
   if (!isPassing(first)) return first;
 
-  await waited(FIRST_WAIT_MS);
+  if (!(await waited(FIRST_WAIT_MS, ending))) return first;
   const second = await ask();
   if (!isPassing(second)) return second;
 
-  await waited(FIRST_WAIT_MS * 2);
+  if (!(await waited(FIRST_WAIT_MS * 2, ending))) return second;
   return ask();
 }
 
 /**
- * A pause of this many milliseconds.
+ * A pause of this many milliseconds, cut short where `ending` is raised.
+ * Whether it ran its full length.
  */
-function waited(milliseconds: number): Promise<void> {
+function waited(milliseconds: number, ending?: AbortSignal): Promise<boolean> {
   return new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
+    if (ending?.aborted === true) {
+      resolve(false);
+      return;
+    }
+    const cut = (): void => {
+      clearTimeout(pause);
+      resolve(false);
+    };
+    const pause = setTimeout(() => {
+      ending?.removeEventListener("abort", cut);
+      resolve(true);
+    }, milliseconds);
+    ending?.addEventListener("abort", cut, { once: true });
   });
 }

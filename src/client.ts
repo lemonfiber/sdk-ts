@@ -6,6 +6,15 @@
 import { address } from "./address.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
+import {
+  callFor,
+  DEFAULT_TIMEOUT_MS,
+  isAWait,
+  notAWait,
+  within,
+  type Asking,
+  type Call,
+} from "./deadline.js";
 import { parse, type Envelope, type Reading } from "./envelope.js";
 import type { Bundle } from "./generated/index.js";
 import { unreachable, type Problem } from "./problem.js";
@@ -36,10 +45,21 @@ export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
  * followed, so the token goes to the address it was given for and nowhere
  * else. `fetch` honours it as given; a `sending` of any other kind has to as
  * well.
+ *
+ * `signal` is raised when the call runs out of time or its caller stops it, and
+ * `fetch` gives up on the request and on reading its body when it is. A
+ * `sending` of any other kind has to as well, or a call waits on it past its
+ * deadline.
  */
 export type Sending = (
   url: string,
-  init: { method: string; headers: Record<string, string>; body?: string; redirect: "error" },
+  init: {
+    method: string;
+    headers: Record<string, string>;
+    body?: string;
+    redirect: "error";
+    signal: AbortSignal;
+  },
 ) => Promise<{
   ok: boolean;
   status: number;
@@ -88,6 +108,11 @@ export interface Talking {
    */
   token: string;
   sending: Sending;
+  /**
+   * The longest any one call waits for its answer, every attempt at it
+   * included. `DEFAULT_TIMEOUT_MS` where none is given; a call may give its own.
+   */
+  timeoutMs?: number;
 }
 
 export type Opened = { ok: true; client: Client } | { ok: false; problem: Problem };
@@ -103,16 +128,19 @@ export class Client {
   readonly #base: string;
   readonly #token: string;
   readonly #sending: Sending;
+  readonly #timeoutMs: number;
 
-  private constructor(base: string, token: string, sending: Sending) {
+  private constructor(base: string, token: string, sending: Sending, timeoutMs: number) {
     this.#base = base;
     this.#token = token;
     this.#sending = sending;
+    this.#timeoutMs = timeoutMs;
   }
 
   /**
-   * Opens a client, refusing an address that is not on this machine and a token
-   * no header can carry, each as a `configuration` problem.
+   * Opens a client, refusing an address that is not on this machine, a token no
+   * header can carry and a wait that is not a length of time, each as a
+   * `configuration` problem.
    */
   static at(options: Talking): Opened {
     const where = address(options.url);
@@ -121,21 +149,35 @@ export class Client {
     const unusable = tokenProblem(options.token);
     if (unusable !== undefined) return { ok: false, problem: unusable };
 
-    return { ok: true, client: new Client(where.base, options.token, options.sending) };
+    const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    if (!isAWait(timeoutMs)) return { ok: false, problem: notAWait(timeoutMs) };
+
+    return {
+      ok: true,
+      client: new Client(where.base, options.token, options.sending, timeoutMs),
+    };
   }
 
   /**
    * Asks for what a command would print under `--json`.
    */
-  async read(endpoint: string, query: Query = {}): Promise<Reading<Envelope>> {
-    return this.#ask("GET", `/api/${endpoint}${search(query)}`, undefined, true);
+  async read(
+    endpoint: string,
+    query: Query = {},
+    asking: Asking = {},
+  ): Promise<Reading<Envelope>> {
+    return this.#ask("GET", `/api/${endpoint}${search(query)}`, asking, undefined, true);
   }
 
   /**
    * Tells lemonfiber to do something the command line could also do.
    */
-  async act(name: string, body: Record<string, unknown> = {}): Promise<Reading<Envelope>> {
-    return this.#ask("POST", `/api/actions/${name}`, JSON.stringify(body));
+  async act(
+    name: string,
+    body: Record<string, unknown> = {},
+    asking: Asking = {},
+  ): Promise<Reading<Envelope>> {
+    return this.#ask("POST", `/api/actions/${name}`, asking, JSON.stringify(body));
   }
 
   /**
@@ -145,19 +187,26 @@ export class Client {
    * as the bytes that arrived. A refusal is read as every other one is, and keeps
    * its body besides.
    */
-  async take(endpoint: string): Promise<Handed> {
-    const answer = await this.#send("GET", `/api/${endpoint}`, "*/*");
-    if (answer === undefined) return { ok: false, problem: unreachable() };
+  async take(endpoint: string, asking: Asking = {}): Promise<Handed> {
+    const call = this.#call(asking);
+    if (!call.ok) return call;
+    const { signal, ended, release } = call.value;
+    try {
+      const answer = await this.#send("GET", `/api/${endpoint}`, "*/*", signal);
+      if (answer === undefined) return { ok: false, problem: ended() ?? unreachable() };
 
-    if (!answer.ok) {
-      const said = await textOf(answer);
-      if (said === undefined) return { ok: false, problem: unreachable() };
-      return { ok: false, problem: refusalOf(answer, said), said };
+      if (!answer.ok) {
+        const said = await within(answer.text(), signal);
+        if (said === undefined) return { ok: false, problem: ended() ?? unreachable() };
+        return { ok: false, problem: refusalOf(answer, said), said };
+      }
+
+      const kept = await within(blobOf(answer), signal);
+      if (kept === undefined) return { ok: false, problem: ended() ?? unreachable() };
+      return { ok: true, value: kept };
+    } finally {
+      release();
     }
-
-    const kept = await blobOf(answer);
-    if (kept === undefined) return { ok: false, problem: unreachable() };
-    return { ok: true, value: kept };
   }
 
   /**
@@ -168,40 +217,61 @@ export class Client {
    * sent as one path segment, so a name carrying a separator reaches lemonfiber as
    * written and is refused there by name.
    */
-  async bundle(written: string | Written): Promise<Handed> {
+  async bundle(written: string | Written, asking: Asking = {}): Promise<Handed> {
     const name = typeof written === "string" ? written : lastSegment(written.path);
-    return this.take(`bundle/${encodeURIComponent(name)}`);
+    return this.take(`bundle/${encodeURIComponent(name)}`, asking);
+  }
+
+  /**
+   * One call's deadline: the caller's wait where it gave one, the client's
+   * otherwise, ended early by the caller's own signal.
+   */
+  #call(asking: Asking): Reading<Call> {
+    const timeoutMs = asking.timeoutMs ?? this.#timeoutMs;
+    if (!isAWait(timeoutMs)) return { ok: false, problem: notAWait(timeoutMs) };
+    return { ok: true, value: callFor(timeoutMs, asking.signal) };
   }
 
   /**
    * One request read through the envelope. A read is asked again before a
-   * passing failure is reported; anything else is asked once.
+   * passing failure is reported; anything else is asked once. Every attempt
+   * shares the call's one deadline, and a call that runs out of it, or that its
+   * caller stops, says which.
    */
   async #ask(
     method: string,
     path: string,
+    asking: Asking,
     body?: string,
     isARead = false,
   ): Promise<Reading<Envelope>> {
-    const sent = () => this.#send(method, path, "application/json", body);
-    const answer = isARead ? await askedAgain(sent) : await sent();
-    if (answer === undefined) return { ok: false, problem: unreachable() };
+    const call = this.#call(asking);
+    if (!call.ok) return call;
+    const { signal, ended, release } = call.value;
+    try {
+      const sent = () => this.#send(method, path, "application/json", signal, body);
+      const answer = isARead ? await askedAgain(sent, signal) : await sent();
+      if (answer === undefined) return { ok: false, problem: ended() ?? unreachable() };
 
-    const said = await textOf(answer);
-    if (said === undefined) return { ok: false, problem: unreachable() };
+      const said = await within(answer.text(), signal);
+      if (said === undefined) return { ok: false, problem: ended() ?? unreachable() };
 
-    if (!answer.ok) return { ok: false, problem: refusalOf(answer, said) };
+      if (!answer.ok) return { ok: false, problem: refusalOf(answer, said) };
 
-    return parse(said);
+      return parse(said);
+    } finally {
+      release();
+    }
   }
 
   /**
-   * The reply to one request, or nothing where none arrived.
+   * The reply to one request, or nothing where none arrived before `signal`.
    */
   async #send(
     method: string,
     path: string,
     accept: string,
+    signal: AbortSignal,
     body?: string,
   ): Promise<Answer | undefined> {
     const headers: Record<string, string> = {
@@ -212,16 +282,16 @@ export class Client {
       ...(body !== undefined && { "Content-Type": "application/json" }),
     };
 
-    try {
-      return await this.#sending(`${this.#base}${path}`, {
+    return within(
+      this.#sending(`${this.#base}${path}`, {
         method,
         headers,
         ...(body !== undefined && { body }),
         redirect: "error",
-      });
-    } catch {
-      return undefined;
-    }
+        signal,
+      }),
+      signal,
+    );
   }
 }
 
@@ -233,27 +303,11 @@ function refusalOf(answer: Answer, said: string): Problem {
 }
 
 /**
- * A reply's body as text, or nothing where it could not be read.
+ * A reply's body as the bytes that arrived, or nothing where it cannot be read
+ * as bytes.
  */
-async function textOf(answer: Answer): Promise<string | undefined> {
-  try {
-    return await answer.text();
-  } catch {
-    return undefined;
-  }
-}
-
-/**
- * A reply's body as the bytes that arrived, or nothing where it could not be
- * read as bytes.
- */
-async function blobOf(answer: Answer): Promise<Blob | undefined> {
-  if (answer.blob === undefined) return undefined;
-  try {
-    return await answer.blob();
-  } catch {
-    return undefined;
-  }
+function blobOf(answer: Answer): Promise<Blob | undefined> {
+  return answer.blob === undefined ? Promise.resolve(undefined) : answer.blob();
 }
 
 /**

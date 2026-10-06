@@ -346,7 +346,7 @@ async function open(
     } catch {
       return;
     }
-  });
+  }, options.signal);
   if (answer === undefined) return { ok: false, problem: unreachable() };
   if (!answer.ok)
     return { ok: false, problem: refusalIn(answer.status, await textOf(answer.body)) };

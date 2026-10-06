@@ -1,5 +1,6 @@
 export { address, type Address } from "./address.js";
 export { TOKEN_HEADER } from "./credential.js";
+export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
 export {
   Client,
   type Handed,
@@ -45,6 +46,7 @@ export { Ledger, type Held } from "./ledger.js";
 export {
   busy,
   misconfigured,
+  outOfTime,
   declined,
   failed,
   malformed,
@@ -52,6 +54,7 @@ export {
   missing,
   problem,
   refused,
+  stopped,
   streamEnded,
   streamLost,
   tooMany,
