@@ -7,7 +7,7 @@ import { askedAgain } from "./again.js";
 import { address } from "./address.js";
 import { parse } from "./envelope.js";
 import { Ledger } from "./ledger.js";
-import { streamLost, unreachable, type Problem } from "./problem.js";
+import { streamEnded, streamLost, unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
 import { SseParser } from "./sse.js";
 
@@ -37,10 +37,14 @@ export const RECONNECTS_ALLOWED = 5;
 
 /**
  * What a follower is handed.
+ *
+ * `lost` is the stream gone: refused, unreachable, broken or closed. An event
+ * that could not be read is `unreadable`, and reading goes on after it.
  */
 export type Arrival<T> =
   | { at: "live"; kind: string; data: T }
   | { at: "stale"; kind: string; data: T; quietForMs: number }
+  | { at: "unreadable"; problem: Problem }
   | { at: "lost"; problem: Problem };
 
 /**
@@ -146,9 +150,9 @@ export async function* follow<T>(options: Following): AsyncGenerator<Arrival<T>>
     };
     yield* readOpening<T>(opening);
 
-    const quietForMs = ledger.quietForMs(now()) ?? 0;
+    const quietForMs = ledger.quietForMs(now()) ?? silenceAllowedMs;
     ledger.cool();
-    yield { at: "lost", problem: streamLost(opening.broke ? quietForMs : silenceAllowedMs) };
+    yield { at: "lost", problem: opening.broke ? streamLost(quietForMs) : streamEnded() };
 
     for (const held of ledger.cooled(now())) {
       yield {
@@ -229,7 +233,7 @@ async function letGo(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<v
 function received<T>(text: string, opening: Opening): Arrival<T> {
   const read = parse<T>(text);
 
-  if (!read.ok) return { at: "lost", problem: read.problem };
+  if (!read.ok) return { at: "unreadable", problem: read.problem };
 
   opening.ledger.record(read.value.kind, read.value.data, opening.now());
   return { at: "live", kind: read.value.kind, data: read.value.data };

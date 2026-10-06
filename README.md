@@ -105,9 +105,14 @@ const url = "http://127.0.0.1:9000/api/events"; // the stream's own address, not
 for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: fetch })) {
   if (arrival.at === "live") draw(arrival.kind, arrival.data);
   if (arrival.at === "stale") markOutOfDate(arrival.quietForMs);
+  if (arrival.at === "unreadable") note(arrival.problem.message); // one event; reading goes on
   if (arrival.at === "lost") report(arrival.problem.message);
 }
 ```
+
+`lost` is the stream gone — refused, unreachable, quiet for longer than the heartbeat allows,
+or closed by the server — and each says which. An event that could not be read, or that is in
+an `api_version` this package does not speak, is `unreadable`, and the stream goes on.
 
 The stream's address is read the way `Client.at` reads one, so an address that is not on this
 machine, or carries more than an address, arrives as `lost` and nothing is sent to it. No request
@@ -131,7 +136,7 @@ sentence to know what to do with it:
 | `unreachable` | Nothing lemonfiber wrote came back at all                       |
 | `version`     | The reply is in an `api_version` this package does not speak    |
 | `malformed`   | What arrived as an answer was not a lemonfiber envelope         |
-| `stream`      | The event stream broke or went quiet for too long               |
+| `stream`      | The event stream broke, went quiet for too long, or was closed  |
 
 `refused` is the key and nothing else. A caller reading it may ask for a new key
 without reading the sentence, which is the point of a kind — and a caller reading

@@ -120,6 +120,15 @@ export const wrongVersion = (mine: number, theirs: number): Problem =>
     `This page speaks version ${String(mine)} of lemonfiber's interface and the copy running speaks version ${String(theirs)}. Reload the page; if that does not help, the two were built apart.`,
   );
 
+/**
+ * The server closed the stream. Nothing went quiet, so no silence is named.
+ */
+export const streamEnded = (): Problem =>
+  problem(
+    "stream",
+    "The connection was closed. Everything shown is the last thing confirmed, not what is true now.",
+  );
+
 export const streamLost = (quietForMs: number): Problem =>
   problem(
     "stream",

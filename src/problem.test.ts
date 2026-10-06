@@ -6,6 +6,7 @@ import {
   missing,
   problem,
   refused,
+  streamEnded,
   streamLost,
   unreachable,
   wrongVersion,
@@ -20,6 +21,7 @@ const every = [
   malformed(),
   wrongVersion(1, 2),
   streamLost(30_000),
+  streamEnded(),
   problem("stream", "anything"),
 ];
 
