@@ -6,11 +6,13 @@
 import { isKind, parse } from "./envelope.js";
 import { isRefusalCode, REFUSAL_CODES, type RefusalCode } from "./generated/index.js";
 import {
+  busy,
   declined,
   failed,
   misasked,
   missing,
   refused,
+  tooMany,
   unreachable,
   type Problem,
 } from "./problem.js";
@@ -74,9 +76,11 @@ const OPENS_A_STRUCTURE = /^[<[{]/;
  * lemonfiber settles where a problem lies at the point the problem is raised — in
  * what the request named, in how it asked, or in the answering — and answers with
  * the status that carries that reading, so this is read back rather than guessed
- * at from the sentence. Two of the three are the request's, and they are the two
- * listed. The third needs no entry: a status faulting neither what was named nor
- * how it was asked leaves the answering, which is `failed`.
+ * at from the sentence. Two of the three are the request's: what it named (404)
+ * and how it asked (400, and 405 for a method the endpoint does not answer). Work
+ * stopped because other work held the stack is 409, which is neither, and is
+ * `busy`. A status faulting neither what was named nor how it was asked leaves
+ * the answering, which is `failed`.
  *
  * Falling through to `failed` rather than listing 500 is deliberate. A status
  * nothing here recognises is then read as a failure of the answering rather than
@@ -87,7 +91,20 @@ const OPENS_A_STRUCTURE = /^[<[{]/;
 const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
   [400, misasked],
   [404, missing],
+  [405, misasked],
+  [409, busy],
 ]);
+
+/**
+ * The status too many wrong attempts are answered with.
+ */
+const TOO_MANY = 429;
+
+/**
+ * A `Retry-After` that is a count of seconds. A date is not read: one read wrong
+ * is a wait that ends before the door opens.
+ */
+const SECONDS = /^\d+$/;
 
 /**
  * The problem an answer that was not a success is, given the body it arrived
@@ -121,15 +138,29 @@ const MEANT_BY: ReadonlyMap<number, (said: string) => Problem> = new Map([
  * from and a new key would not help. No code, a code the contract does not list,
  * or a listed code with no sentence beside it is read from the status alone,
  * which for these two is the key — `refused`, carrying no code and no sentence.
+ *
+ * Too many wrong attempts, at 429, is `too-many`, carrying how many seconds are
+ * left where `retryAfter`, the answer's `Retry-After`, gives a count of them.
  */
-export function refusalIn(status: number, body: string): Problem {
+export function refusalIn(status: number, body: string, retryAfter?: string | null): Problem {
   const said = saidIn(body);
   if (wasTurnedAway(status)) return turnedAway(said);
 
   if (said.sentence === undefined) return unreachable();
 
+  if (status === TOO_MANY)
+    return carrying(tooMany(said.sentence, secondsIn(retryAfter)), said.code);
+
   const meant = MEANT_BY.get(status) ?? failed;
   return carrying(meant(said.sentence), said.code);
+}
+
+/**
+ * The seconds a `Retry-After` names, or nothing where it names none.
+ */
+function secondsIn(retryAfter: string | null | undefined): number | undefined {
+  const written = retryAfter?.trim();
+  return written !== undefined && SECONDS.test(written) ? Number(written) : undefined;
 }
 
 /**

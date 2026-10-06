@@ -131,6 +131,8 @@ sentence to know what to do with it:
 | `missing`       | lemonfiber has nothing by the name the request gave                 |
 | `misasked`      | It could not answer the request as it was asked                     |
 | `failed`        | It understood the request and its own answering failed              |
+| `busy`          | Other work held the stack; the same request may be sent again       |
+| `too-many`      | Too many wrong attempts lately; `retryAfterSeconds` where said      |
 | `configuration` | The address or the token handed in cannot be used; nothing was sent |
 | `refused`       | The key this page is using is not the one this run expects          |
 | `declined`      | It turned away who is asking, or where from, for another reason     |

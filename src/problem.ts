@@ -13,6 +13,8 @@ export type ProblemKind =
   | "missing"
   | "misasked"
   | "failed"
+  | "busy"
+  | "too-many"
   | "version"
   | "malformed"
   | "stream";
@@ -30,6 +32,11 @@ export interface Problem {
    * refusal is read by its status alone.
    */
   code?: RefusalCode;
+  /**
+   * How many seconds are left before lemonfiber listens again, on a `too-many`
+   * refusal whose answer said.
+   */
+  retryAfterSeconds?: number;
 }
 
 export const problem = (kind: ProblemKind, message: string): Problem => ({ kind, message });
@@ -120,6 +127,26 @@ export const misasked = (said: string): Problem => problem("misasked", said);
  * since this is built from words that arrived and from nothing else.
  */
 export const failed = (said: string): Problem => problem("failed", said);
+
+/**
+ * Other work held the stack, so lemonfiber did not start this.
+ *
+ * Nothing about the request is wrong and nothing failed: the same request may be
+ * sent again once the work holding the stack is done. The sentence is
+ * lemonfiber's own.
+ */
+export const busy = (said: string): Problem => problem("busy", said);
+
+/**
+ * Too many wrong attempts lately, so lemonfiber is not listening to more for now.
+ *
+ * Waiting is what clears it, and another attempt is what extends it. Where the
+ * answer said how long, it is carried as `retryAfterSeconds`.
+ */
+export const tooMany = (said: string, retryAfterSeconds?: number): Problem => ({
+  ...problem("too-many", said),
+  ...(retryAfterSeconds !== undefined && { retryAfterSeconds }),
+});
 
 export const malformed = (): Problem =>
   problem("malformed", "That reply did not come from lemonfiber.");
