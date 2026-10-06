@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 07fa30cbac80749e9b101d47adf14d191afe200c  ·  api_version 1
+// Source: 075b70f01267ae14f7c59df6f7b9d94d52fbe493  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -11299,7 +11299,7 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -11350,6 +11350,8 @@ export const REFUSAL_CODES: Readonly<
   "PLUGIN-29": { name: "CATALOGUE_REPLACED", status: 500, description: "Raised when the catalogue's index verifies and is older than the newest one this machine has verified." },
   "PLUGIN-3": { name: "REFUSED", status: 400, description: "The manifest is read and this build refuses what it declares." },
   "PLUGIN-30": { name: "NEWEST_UNKEPT", status: 500, description: "Raised when the record of the newest catalogue index this machine verified cannot be read or written." },
+  "PLUGIN-31": { name: "SCHEME_REFUSED", status: 400, description: "Raised when a git source is named over a transport other than https, before anything is asked of it." },
+  "PLUGIN-32": { name: "ADDRESS_REFUSED", status: 400, description: "Raised when a git source's host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified." },
   "PLUGIN-4": { name: "UNRECORDED", status: 500, description: "The record of what is installed cannot be read." },
   "PLUGIN-5": { name: "ALREADY", status: 400, description: "The plugin is installed already." },
   "PLUGIN-6": { name: "NOWHERE", status: 500, description: "There is no stack on this machine to put a plugin's container in." },
