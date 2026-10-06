@@ -8,293 +8,119 @@
 <h1 align="center">Lemonfiber &mdash; sdk-ts</h1>
 
 <p align="center">
-  The TypeScript client for lemonfiber's local web API. Typed calls, a typed
-  event stream, and a typed error &mdash; packaged as
-  <code>@lemonfiber/sdk-ts</code>.
+  <code>@lemonfiber/sdk-ts</code>: a TypeScript client for the web API that
+  <a href="https://github.com/lemonfiber/lemonfiber">lemonfiber</a> serves on
+  your machine. For anyone writing a script, tool or web page that reads or
+  controls a lemonfiber media stack.
 </p>
 
 <p align="center">
-  <img alt="Status" src="https://img.shields.io/badge/status-unreleased-F0C419?labelColor=17160F">
   <img alt="Licence" src="https://img.shields.io/badge/licence-Hippocratic%203.0-17160F">
 </p>
 
 ---
 
-> **Status: unreleased.** The typed calls, the event stream and the generated
-> types are all in and exported; the package is not on npm yet. Full account in
-> the spec:
-> [`30-repos/sdk-ts.md`](https://github.com/lemonfiber/spec/blob/main/30-repos/sdk-ts.md).
+It gives you typed calls, a typed live event stream and typed errors, with no
+runtime dependencies. It runs in Node and in the browser, and it only talks to a
+lemonfiber running on the same machine.
 
-## What it is
+**Not on npm.** There is no release yet; install it from GitHub at a commit.
 
-A library with **no user interface and no server**. It speaks the
-[web API](https://github.com/lemonfiber/spec/blob/main/20-architecture/contracts/web-api.md)
-and exposes it as typed calls, a typed event stream, and a typed error. It is the
-only thing [`lemonfiber-web`](https://github.com/lemonfiber/lemonfiber-web) uses to
-talk to the core, and the first thing any other consumer should reach for.
+## Requirements
 
-It is a **peer** of [`sdk-php`](https://github.com/lemonfiber/sdk-php), not its
-original — both implement one specification, and neither is the reference for the
-other. Where this client disagrees with the contract, this client is wrong.
+- Node 26 or newer, or a current browser.
+- lemonfiber, serving its web API with `lemonfiber ui` on the same machine.
 
 ## Install
 
+Pin a commit from [the commit list](https://github.com/lemonfiber/sdk-ts/commits/main):
+
 ```console
-npm install @lemonfiber/sdk-ts
+npm install github:lemonfiber/sdk-ts#<commit>
 ```
 
-Requires Node **26 or newer**, or any modern browser. It has **no runtime
-dependencies** — a client library's dependency tree becomes every consumer's.
+npm builds the package as it installs it.
 
-## Use
+## Quick start
 
-`lemonfiber` prints an address and a token when it starts serving. Pass both in;
-the token is sent as a header and never placed in a URL.
+Start lemonfiber's web API. It prints the address and a token for this run:
+
+```console
+$ lemonfiber ui --port 9000 --no-browser
+lemonfiber is serving at:
+  http://[::1]:9000
+  http://127.0.0.1:9000
+…
+The token for this run, which the page will ask you for:
+  <token>
+```
+
+Then ask it how the stack is doing. Save this as `status.ts`:
 
 ```ts
-import { Client, follow, isKind } from "@lemonfiber/sdk-ts";
+import { Client } from "@lemonfiber/sdk-ts";
 
 const opened = Client.at({
-  url: "http://127.0.0.1:9000", // loopback only — anything else is refused
-  token: printedByLemonfiber,
+  url: "http://127.0.0.1:9000",
+  token: process.env.LEMONFIBER_TOKEN ?? "",
   sending: fetch,
 });
 if (!opened.ok) throw new Error(opened.problem.message);
 
 const status = await opened.client.read("status");
-if (status.ok && isKind(status.value, "status")) {
-  status.value.data; // the `status` payload, typed by the contract
-}
-
-await opened.client.act("restart", { forms: ["tv"], services: ["sonarr"] });
+if (!status.ok) throw new Error(status.problem.message);
+console.log(status.value.data.condition, status.value.data.active_forms);
 ```
 
-`read` takes a read by the name the contract lists it under — `status`, `front-door`,
-`requests` — with the parameters that read takes, typed by the contract's list, and answers
-with the envelope of a kind the contract lists for it. `READS` is that list, generated with
-the rest of the contract; an answer of a kind it does not list for the read is `unrecognised`.
-The logs, answered with a line per envelope rather than one document, are not among the names
-`read` takes.
-
-Every reply is an `Envelope`: the union of every kind's envelope the contract describes, told
-apart by `kind`. `isKind` narrows one to its kind, and so does comparing `kind` yourself. A reply
-whose kind this package does not know is `unrecognised` rather than passed on untyped. Every
-name the contract defines, each kind's payload and the shapes several kinds share among them,
-is exported from `@lemonfiber/sdk-ts/contract`:
-
-```ts
-import type { StatusReport } from "@lemonfiber/sdk-ts/contract";
-```
-
-An action's name and its arguments are the command line's own. A name this
-surface does not offer is refused rather than invented, and a field no action
-takes is refused rather than ignored.
-
-Every call waits at most `timeoutMs`, ten seconds unless `Client.at` is given another, and
-that wait is the whole call: a read asked again after a gateway could not reach lemonfiber
-shares it, and a wait that runs out during the pause before an attempt ends the call there. A
-call may give its own wait, and a signal of its own to stop it with:
-
-```ts
-const stopping = new AbortController();
-const status = await opened.client.read(
-  "status",
-  {},
-  { timeoutMs: 3000, signal: stopping.signal },
-);
-```
-
-A call that runs out of time, or that its caller stops, comes back `unreachable` saying which.
-The signal reaches `sending` as `init.signal`, which `fetch` honours; a call is let go of at its
-deadline even by a `sending` that does not.
-
-A support bundle is a file, not a document, so it arrives as a `Blob` with the
-type lemonfiber served it as. Ask by the name it was written under, or by the
-payload the `support` action answered with once it wrote one:
-
-```ts
-import { isKind } from "@lemonfiber/sdk-ts";
-
-const made = await opened.client.act("support", { write: true });
-if (made.ok && isKind(made.value, "bundle")) {
-  const { path } = made.value.data; // absent where the run described a bundle and wrote none
-  if (typeof path === "string") {
-    const file = await opened.client.bundle({ path }); // or .bundle(name)
-    if (file.ok) offerDownload(file.value); // a Blob, for URL.createObjectURL
-    if (!file.ok) report(file.problem, file.said); // `said` is the refusal's body, whole
-  }
-}
-```
-
-`take` is the same reading for any endpoint that answers with a file. A refusal on
-either is read as every other one is, and carries its body as `said` besides:
-the whole error envelope, and the sentence a turned-away request was answered with.
-
-Live updates arrive as envelopes. Anything gathered before a break in the
-connection is marked out of date rather than shown as current:
-
-```ts
-const url = "http://127.0.0.1:9000/api/events"; // the stream's own address, not the base
-
-for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: fetch })) {
-  if (arrival.at === "live") draw(arrival.kind, arrival.data);
-  if (arrival.at === "stale") markOutOfDate(arrival.quietForMs);
-  if (arrival.at === "unreadable") note(arrival.problem.message); // one event; reading goes on
-  if (arrival.at === "lost") report(arrival.problem.message);
-}
-```
-
-`lost` is the stream gone — refused, unreachable, quiet for longer than the heartbeat allows,
-or closed by the server — and each says which. An event that could not be read, or that is in
-an `api_version` this package does not speak, is `unreadable`, and the stream goes on.
-
-Hand `follow` a `Ledger` to ask what the stream holds while it runs: `ledger.held(kind, now)`
-is the last value for one kind, live or stale, and `ledger.all(now)` is every one of them.
-
-The stream's address is read the way `Client.at` reads one, so an address that is not on this
-machine, or carries more than an address, arrives as `lost` and nothing is sent to it. No request
-either of them makes follows an answer pointing somewhere else: every request asks for
-`redirect: "error"`, which `fetch` honours, so the token reaches the address it was given for
-and no other. A `sending` or `fetching` that is not `fetch` has to honour it too.
-
-Nothing throws for an expected failure. A call returns either a value or a
-`Problem` carrying a sentence written for a person to read.
-
-`problem.kind` says which sort of refusal it was, so a caller need not read the
-sentence to know what to do with it:
-
-| `kind`          | What it means                                                       |
-| --------------- | ------------------------------------------------------------------- |
-| `missing`       | lemonfiber has nothing by the name the request gave                 |
-| `misasked`      | It could not answer the request as it was asked                     |
-| `failed`        | It understood the request and its own answering failed              |
-| `busy`          | Other work held the stack; the same request may be sent again       |
-| `too-many`      | Too many wrong attempts lately; `retryAfterSeconds` where said      |
-| `configuration` | The address or the token handed in cannot be used; nothing was sent |
-| `refused`       | The key this page is using is not the one this run expects          |
-| `declined`      | It turned away who is asking, or where from, for another reason     |
-| `unreachable`   | Nothing lemonfiber wrote came back at all                           |
-| `version`       | The reply is in an `api_version` this package does not speak        |
-| `malformed`     | What arrived as an answer was not a lemonfiber envelope             |
-| `unrecognised`  | The reply is of a kind this package does not know                   |
-| `stream`        | The event stream broke, went quiet for too long, or was closed      |
-
-`configuration` is the caller's own: an address that is not one, not on this machine or
-carrying more than an address, or a token that is empty or holds a character a header cannot
-carry. It is answered before anything is sent, by `Client.at` and by `follow` alike.
-
-`refused` is the key and nothing else. A caller reading it may ask for a new key
-without reading the sentence, which is the point of a kind — and a caller reading
-`failed` may not, because what failed is behind the answer rather than in front of
-it. A stopped container engine is `failed`, and asking again once it is running
-will succeed.
-
-A refusal whose `error` envelope names a code the contract lists carries it as
-`problem.code`, typed `RefusalCode`, and a caller decides what the refusal means
-from that code rather than from the sentence. At 401 or 403 the code decides the
-kind: the key's code is `refused`, and every other listed code is `declined`,
-carrying lemonfiber's own sentence — a page served from the wrong address, an
-account asking for what is not its own, a wrong password, a media server that
-could not vouch for the account. A refusal carrying no code, or one the contract
-does not list, is read by its status alone. `REFUSAL_CODES` holds what the
-contract says of each code, and `isRefusalCode` tells a listed one from any other
-string; both are generated, and no code is written by hand.
-
-`KEY_CALLABLE` holds the actions an integration key may call, in the contract's order, each
-with whether calling it disturbs the running system, whether it takes `dry_run`, so it can be
-rehearsed first, and whether calling it again with the same arguments leaves the stack as
-calling it once did. `isKeyCallable` tells one of them from any other action's name. Both are
-generated from the contract's list.
-
-`missing`, `misasked`, `failed` and `declined` always carry lemonfiber's own
-sentence: a body this package cannot read is reported as `unreachable`, or as
-`refused` at 401 and 403, so a page from something standing in front of lemonfiber
-is never passed off as its account of what there is.
-
-## `src/generated/` is not yours to edit
-
-**Everything under [`src/generated/`](src/generated/) is written by
-`npm run contract:generate`** from the vendored
-[`contract/web-api.contract.json`](contract/), which `lemonfiber` produces from the
-Rust types that actually serialise the reply. **Never edit it by hand** — a
-hand-written response shape is a second source of truth for the contract, which
-`ARCH-R58` forbids.
-
-A change belongs in those Rust types; everything downstream follows from that. The
-`contract:check` gate regenerates and diffs, so a hand edit fails CI rather than
-merging:
+Run it with the token lemonfiber printed:
 
 ```console
-npm run contract:sync -- v1.0.0   # pull the contract at that revision
-npm run contract:generate         # rewrite src/generated/ from it
+$ LEMONFIBER_TOKEN=<token> node status.ts
+active [ 'library' ]
 ```
 
-The revision is required and is a release tag or a full 40-character commit hash.
-There is no default: an abbreviated hash names one artefact today and may not
-later, and a sync with no revision at all would vendor whatever `main` happened
-to hold at the moment it ran.
+That is the output with only the `library` form running and healthy. A form is a
+named part of the stack, such as `library` or `tv`; see
+[forms](https://docs.lemonfiber.app/running/forms-and-slices/).
 
-Why it works this way:
-[ADR-0014](https://github.com/lemonfiber/spec/blob/main/00-overview/decisions/0014-one-generated-contract-for-every-sdk.md).
+Nothing throws for an expected failure: every call returns either
+`{ ok: true, value }` or `{ ok: false, problem }`, and `problem.message` is a
+sentence you can show a person.
 
-## The gate
+## Where to go next
 
-```console
-npm ci
-npm run ci
-```
-
-That is the whole of what CI runs over this package's own source — the `gate` job
-runs exactly `npm run ci` — and it is not the whole of CI. What it leaves out is
-named in the [`justfile`](justfile) beside `just ci`, which runs the same command:
-the four commit rules, which `.githooks/commit-msg` refuses before the push;
-`contract-drift`, which fetches the served artefact; and the forge-side jobs.
-
-The individual steps are the `scripts` in [`package.json`](package.json), and each
-runs on its own while you work — `npm test` for the fast loop.
-
-`npm ci` is also what turns on this repository's pre-push hook, which refuses a
-push that would leave a branch carrying no commit `origin/main` does not — what
-pushing the trunk over a feature branch looks like. npm's `prepare` script does
-it, so `npm install` serves too. A clone nobody has installed into has no hook:
-it is `git config core.hooksPath .githooks`, per clone, and git cannot read
-`.githooks/` on its own.
-
-The bar is the Rust workspace's, in its TypeScript equivalents: **100% coverage**
-across lines, statements, branches and functions; `strict` with
-`noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`; `typescript-eslint`
-`strictTypeChecked` with zero warnings tolerated. There are no escape hatches, and
-a threshold is not a target to negotiate.
-
-## Two version numbers
-
-They do different jobs, and conflating them is the mistake to avoid. **The
-package** carries semver. **`api_version`** is a monotonic integer describing the
-wire, and `CONTRACT_API_VERSION` is the one this package speaks. Many package
-versions may speak one wire version. A reply in a version it cannot speak is
-refused, naming both (`ARCH-R55`).
-
-Releases are recorded in [CHANGELOG.md](CHANGELOG.md), generated from the commit
-history rather than kept by hand.
+- [The guide](docs/guide.md): actions, files, the live event stream, every kind
+  of problem, refusal codes and version handling.
+- [The web API](https://docs.lemonfiber.app/api/): the envelope every answer
+  arrives in, every payload kind and the field-by-field reference.
+- [The command reference](https://docs.lemonfiber.app/commands/every-command/):
+  every read and action is a command, and takes the same arguments.
 
 ## Contributing
 
-The spec is **canonical**: every change cites a spec identifier that already
-exists. Routine maintenance cites `GOV-R12`.
+```console
+npm ci        # installs, builds and turns on the git hooks
+npm run ci    # format, lint, types, guards, contract check, tests at 100% coverage, build
+```
 
-- [Contributing guide](https://github.com/lemonfiber/.github/blob/main/CONTRIBUTING.md)
-  · [Support](https://github.com/lemonfiber/.github/blob/main/SUPPORT.md)
-  · [Security](https://github.com/lemonfiber/.github/blob/main/SECURITY.md)
-  · [Code of conduct](https://github.com/lemonfiber/.github/blob/main/CODE_OF_CONDUCT.md)
-- [ADR-0013](https://github.com/lemonfiber/spec/blob/main/00-overview/decisions/0013-an-sdk-owns-the-api-client.md)
-  — why the SDK exists and is separate
-- [The full spec page for this repo](https://github.com/lemonfiber/spec/blob/main/30-repos/sdk-ts.md)
+`src/generated/` is generated from lemonfiber's contract and never edited by hand;
+the [guide](docs/guide.md#where-the-types-come-from) says how to regenerate it.
+Every change cites a requirement in the
+[specification](https://github.com/lemonfiber/spec); start with the
+[contributing guide](https://github.com/lemonfiber/spec/blob/main/50-governance/contributing.md).
+Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
+## Security
+
+Report a vulnerability privately, as the
+[security policy](https://github.com/lemonfiber/.github/blob/main/SECURITY.md)
+describes. Do not open a public issue.
 
 ## Licence
 
-[Hippocratic License 3.0](LICENSE) — ethical-source, source-available,
-deliberately not OSI-approved. See the
-[rationale](https://github.com/lemonfiber/spec/blob/main/90-appendix/license-rationale.md).
+[Hippocratic License 3.0](LICENSE): source-available and ethical-source, not
+OSI-approved. The [licence rationale](https://github.com/lemonfiber/spec/blob/main/90-appendix/license-rationale.md)
+explains what that means for you. Made by NightWorksIO.
 
 ---
 
