@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// Source: 455f620b543ad0229af5236a8ed0a5d929dffdf8  ·  api_version 1
+// Source: 07fa30cbac80749e9b101d47adf14d191afe200c  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -18,6 +18,10 @@ export type Pulling = "fetching" | "stopped";
  * Where a month stands against a declared cap.
  */
 export type Reached = "within" | "warning" | "exceeded";
+/**
+ * What one capability comes to for the credential that asked.
+ */
+export type CapabilityState = "available" | "unconfigured" | "unpermitted";
 /**
  * What proving a credential against its live service established — never the
  * input, only the outcome.
@@ -585,6 +589,24 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  capabilities: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: Capabilities;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   catalogue: {
     /**
      * The output contract's version.
@@ -927,6 +949,24 @@ export interface Contract {
   /**
    * The wrapper every machine-readable payload arrives in.
    */
+  keys: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: KeyListing;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
   lifecycle: {
     /**
      * The output contract's version.
@@ -969,6 +1009,24 @@ export interface Contract {
      */
     api_version: number;
     data: MigrationReport;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  "minted-key": {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: MintedKey;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -1059,6 +1117,24 @@ export interface Contract {
      */
     api_version: number;
     data: Pairing;
+    /**
+     * The machine this answer is about, where it is not the one lemonfiber runs on.
+     */
+    host?: string | null;
+    /**
+     * Which payload this is, so a consumer can branch before parsing `data`.
+     */
+    kind: string;
+  };
+  /**
+   * The wrapper every machine-readable payload arrives in.
+   */
+  pausing: {
+    /**
+     * The output contract's version.
+     */
+    api_version: number;
+    data: PausingReport;
     /**
      * The machine this answer is about, where it is not the one lemonfiber runs on.
      */
@@ -2383,6 +2459,18 @@ export interface Terms {
    * How much of the logs was taken, said as it would be said aloud.
    */
   window: string;
+}
+/**
+ * The payload.
+ */
+export interface Capabilities {
+  /**
+   * What each comes to for the credential that asked. A request this stack does
+   * not have is absent rather than listed as anything.
+   */
+  capabilities: {
+    [k: string]: CapabilityState;
+  };
 }
 /**
  * The payload.
@@ -5247,6 +5335,64 @@ export interface Started {
 /**
  * The payload.
  */
+export interface KeyListing {
+  /**
+   * In the order they were minted.
+   */
+  keys: ListedKey[];
+  /**
+   * What a purpose in the listing is worth, said with it.
+   */
+  purposes: string;
+  /**
+   * Whether this was a rehearsal: what revoking would come to, with nothing revoked.
+   */
+  rehearsed: boolean;
+  /**
+   * The key this run revoked, where it revoked one.
+   */
+  revoked?: string | null;
+}
+/**
+ * One key as the listing shows it, without its secret.
+ */
+export interface ListedKey {
+  /**
+   * Whether a household member minted it for themselves.
+   */
+  member_minted: boolean;
+  /**
+   * When it was minted.
+   */
+  minted: string;
+  /**
+   * The name it was minted under.
+   */
+  name: string;
+  /**
+   * What the minter said it is for. A declaration, not something the core verified.
+   */
+  purpose: "home-assistant" | "mcp" | "other";
+  /**
+   * When it was revoked, where it has been.
+   */
+  revoked?: string | null;
+  /**
+   * What it admits: `read`, `act` or `member:<name>`.
+   */
+  scope: string;
+  /**
+   * Where it stands.
+   */
+  state: "active" | "revoked" | "orphaned" | "unconfirmed";
+  /**
+   * When it was last admitted, where it has been.
+   */
+  used?: string | null;
+}
+/**
+ * The payload.
+ */
 export interface LifecycleReport {
   /**
    * The Compose subcommand that was run.
@@ -5662,6 +5808,42 @@ export interface OccupantReport {
 /**
  * The payload.
  */
+export interface MintedKey {
+  /**
+   * Where a client on another machine reaches the stack: the `https` address it was
+   * last served at on the network. Absent where it has never been served that way.
+   */
+  address?: string | null;
+  /**
+   * What is worth knowing before handing the key over, where anything is: how to
+   * serve the stack so another machine can reach it.
+   */
+  caution?: string | null;
+  /**
+   * The name it was minted under.
+   */
+  name: string;
+  /**
+   * The certificate that address presents: SHA-256 over its DER encoding, in
+   * lower-case hex. A client off this machine pins it.
+   */
+  pin?: string | null;
+  /**
+   * What the minter said it is for.
+   */
+  purpose: "home-assistant" | "mcp" | "other";
+  /**
+   * What it admits: `read`, `act` or `member:<name>`.
+   */
+  scope: string;
+  /**
+   * The secret, sent in `X-Lemonfiber-Token`. It is not shown again.
+   */
+  secret: string;
+}
+/**
+ * The payload.
+ */
 export interface MusicReport {
   choice: MusicChoice;
   /**
@@ -5998,7 +6180,60 @@ export interface PairingMaterial {
 /**
  * The payload.
  */
+export interface PausingReport {
+  /**
+   * Which of the two was asked for.
+   */
+  asked: "pause" | "resume";
+  /**
+   * What a resume runs into where a spent cap had stopped the clients: they are let
+   * go as asked, and the cap stops them again the next time the line is checked.
+   */
+  caution?: string | null;
+  /**
+   * Every download client the stack runs, in the order the stack declares them.
+   */
+  clients: PausedClient[];
+  /**
+   * Whether this was a rehearsal: what each client is doing now, with nothing asked
+   * of any of them.
+   */
+  rehearsed: boolean;
+}
+/**
+ * What one download client said about being paused or resumed.
+ */
+export interface PausedClient {
+  /**
+   * The client, by the name the stack knows it under.
+   */
+  client: string;
+  /**
+   * What it read back after it was asked. Absent on a rehearsal, which asks nothing,
+   * and where the client could not be reached.
+   */
+  now?: Pulling | null;
+  /**
+   * Why it could not be reached, in its own words where it gave any.
+   */
+  unreached?: string | null;
+  /**
+   * Whether it was fetching before it was asked, where it said.
+   */
+  was?: Pulling | null;
+}
+/**
+ * The payload.
+ */
 export interface PluginInstalls {
+  /**
+   * What this run's reading names itself, so an answer to it can say which reading
+   * it answered; nothing on the reading of what is installed, which offers nothing.
+   *
+   * Named part by part, so an answer refused because something moved is told which
+   * part did.
+   */
+  agreement?: string | null;
   /**
    * What this run's install came to, or nothing where it only read.
    *
@@ -6430,6 +6665,20 @@ export interface Undo {
          * What to put back, or `None` where it held nothing.
          */
         value?: string | null;
+      }
+    | {
+        does: "revoke";
+        /**
+         * The key's name.
+         */
+        name: string;
+      }
+    | {
+        does: "reinstate";
+        /**
+         * The key's name.
+         */
+        name: string;
       };
   /**
    * The service or file to reverse it against.
@@ -6696,6 +6945,10 @@ export interface Finding1 {
  */
 export interface PluginInstalled {
   /**
+   * Every adapter of lemonfiber's its own services name, each said to be lemonfiber's.
+   */
+  adapters?: PluginServiceAdapter[];
+  /**
    * Every row it adds to a register lemonfiber already runs, as the install
    * settled them.
    *
@@ -6714,6 +6967,10 @@ export interface PluginInstalled {
   contributions?: Contribution[];
   declared?: PluginDeclaration;
   /**
+   * What it does for the operator, in its author's words. Absent alike.
+   */
+  description?: string | null;
+  /**
    * The source it was installed from, as the operator named it.
    *
    * Empty for a record written before this was kept. A rehearsal's account carries
@@ -6730,6 +6987,13 @@ export interface PluginInstalled {
    * the install would have run under.
    */
   installed_at?: string;
+  /**
+   * What the plugin calls itself, for a person to read.
+   *
+   * Absent on a record written before it was kept, and never filled in from the id:
+   * a name is the author's, and one made up here would be lemonfiber's.
+   */
+  name?: string | null;
   /**
    * The plugin's id: the name it is installed and journalled under.
    */
@@ -6750,6 +7014,14 @@ export interface PluginInstalled {
    * one that invents one.
    */
   provides?: string[];
+  /**
+   * Every recipe it declares: each call in order with the adapter it reaches through,
+   * and every value that could leave for somewhere else.
+   *
+   * Empty for a plugin that declares none and for a record written before these were
+   * kept, so a list is always there to read.
+   */
+  recipes?: PluginRecipe[];
   /**
    * The commit it was installed at, where it came from a git source.
    *
@@ -6775,6 +7047,32 @@ export interface PluginInstalled {
    * The plugin's own content version, as it stood when it was installed.
    */
   version: string;
+}
+/**
+ * One adapter of lemonfiber's that one of the plugin's own services names.
+ */
+export interface PluginServiceAdapter {
+  /**
+   * Which of lemonfiber's adapters it is.
+   */
+  kind:
+    | "servarr"
+    | "sabnzbd"
+    | "qbittorrent"
+    | "seerr"
+    | "bindery"
+    | "jellyfin"
+    | "bazarr"
+    | "audiobookshelf"
+    | "nzbhydra2";
+  /**
+   * Whose it is, which is lemonfiber's.
+   */
+  owner: "lemonfiber";
+  /**
+   * The service that names it.
+   */
+  service: string;
 }
 /**
  * A row in a register lemonfiber already runs.
@@ -7063,6 +7361,101 @@ export interface PluginSecret {
   why: string;
 }
 /**
+ * One recipe, as an operator agrees to what it does.
+ */
+export interface PluginRecipe {
+  /**
+   * The recipe's id within the plugin.
+   */
+  id: string;
+  /**
+   * Every value it could carry, and where to.
+   */
+  pairs: PluginPair[];
+  /**
+   * Every call, in the order the recipe makes them.
+   */
+  steps: PluginStep[];
+  /**
+   * What it accomplishes, in one line.
+   */
+  title: string;
+  /**
+   * Why it is worth running.
+   */
+  why: string;
+}
+/**
+ * One value a recipe could carry to one destination, as the operator agrees to it.
+ */
+export interface PluginPair {
+  /**
+   * What approving this pair is written as, on the command line and over the web.
+   */
+  approval: string;
+  /**
+   * Whose value it is, as the step that captures it says; empty where no step does.
+   */
+  origin: string;
+  /**
+   * Where it may be carried, by the name the manifest gives it.
+   */
+  to: string;
+  /**
+   * What the value is called within the recipe.
+   */
+  value: string;
+}
+/**
+ * One call a recipe makes, in the order it makes them.
+ */
+export interface PluginStep {
+  /**
+   * The adapter the destination is reached through, or nothing where it is a name
+   * outside the stack, which no adapter of lemonfiber's speaks to.
+   */
+  adapter?: PluginStepAdapter | null;
+  /**
+   * The step's id within its recipe.
+   */
+  id: string;
+  /**
+   * The HTTP method it calls with.
+   */
+  method: string;
+  /**
+   * The path it calls.
+   */
+  path: string;
+  /**
+   * Where it calls: a service of this stack's or the plugin's own, or a name outside
+   * both, as the manifest wrote it. Never a resolved address.
+   */
+  to: string;
+}
+/**
+ * The adapter a call reaches its destination through.
+ */
+export interface PluginStepAdapter {
+  /**
+   * Which of lemonfiber's adapters it is.
+   */
+  kind:
+    | "servarr"
+    | "sabnzbd"
+    | "qbittorrent"
+    | "seerr"
+    | "bindery"
+    | "jellyfin"
+    | "bazarr"
+    | "audiobookshelf"
+    | "nzbhydra2";
+  /**
+   * Whose it is, which is lemonfiber's.
+   */
+  owner: "lemonfiber";
+}
+/**
  * One service of an installed plugin, as it was placed.
  */
 export interface PluginPlaced {
@@ -7165,7 +7558,16 @@ export interface Api {
   /**
    * Selects the client implementation.
    */
-  kind: "servarr" | "sabnzbd" | "qbittorrent" | "seerr" | "bindery" | "jellyfin" | "bazarr" | "audiobookshelf";
+  kind:
+    | "servarr"
+    | "sabnzbd"
+    | "qbittorrent"
+    | "seerr"
+    | "bindery"
+    | "jellyfin"
+    | "bazarr"
+    | "audiobookshelf"
+    | "nzbhydra2";
   /**
    * The file holding the credential, where one applies.
    */
@@ -7185,6 +7587,10 @@ export interface Api {
  */
 export interface PluginInstalled1 {
   /**
+   * Every adapter of lemonfiber's its own services name, each said to be lemonfiber's.
+   */
+  adapters?: PluginServiceAdapter[];
+  /**
    * Every row it adds to a register lemonfiber already runs, as the install
    * settled them.
    *
@@ -7203,6 +7609,10 @@ export interface PluginInstalled1 {
   contributions?: Contribution[];
   declared?: PluginDeclaration;
   /**
+   * What it does for the operator, in its author's words. Absent alike.
+   */
+  description?: string | null;
+  /**
    * The source it was installed from, as the operator named it.
    *
    * Empty for a record written before this was kept. A rehearsal's account carries
@@ -7219,6 +7629,13 @@ export interface PluginInstalled1 {
    * the install would have run under.
    */
   installed_at?: string;
+  /**
+   * What the plugin calls itself, for a person to read.
+   *
+   * Absent on a record written before it was kept, and never filled in from the id:
+   * a name is the author's, and one made up here would be lemonfiber's.
+   */
+  name?: string | null;
   /**
    * The plugin's id: the name it is installed and journalled under.
    */
@@ -7239,6 +7656,14 @@ export interface PluginInstalled1 {
    * one that invents one.
    */
   provides?: string[];
+  /**
+   * Every recipe it declares: each call in order with the adapter it reaches through,
+   * and every value that could leave for somewhere else.
+   *
+   * Empty for a plugin that declares none and for a record written before these were
+   * kept, so a list is always there to read.
+   */
+  recipes?: PluginRecipe[];
   /**
    * The commit it was installed at, where it came from a git source.
    *
@@ -10603,6 +11028,9 @@ export type BesideEnvelope = Contract["beside"];
 /** The envelope carrying `bundle`. */
 export type BundleEnvelope = Contract["bundle"];
 
+/** The envelope carrying `capabilities`. */
+export type CapabilitiesEnvelope = Contract["capabilities"];
+
 /** The envelope carrying `catalogue`. */
 export type CatalogueEnvelope = Contract["catalogue"];
 
@@ -10660,6 +11088,9 @@ export type InvitationEnvelope = Contract["invitation"];
 /** The envelope carrying `job`. */
 export type JobEnvelope = Contract["job"];
 
+/** The envelope carrying `keys`. */
+export type KeysEnvelope = Contract["keys"];
+
 /** The envelope carrying `lifecycle`. */
 export type LifecycleEnvelope = Contract["lifecycle"];
 
@@ -10668,6 +11099,9 @@ export type LogEnvelope = Contract["log"];
 
 /** The envelope carrying `migration`. */
 export type MigrationEnvelope = Contract["migration"];
+
+/** The envelope carrying `minted-key`. */
+export type MintedKeyEnvelope = Contract["minted-key"];
 
 /** The envelope carrying `music`. */
 export type MusicEnvelope = Contract["music"];
@@ -10683,6 +11117,9 @@ export type OutboundEnvelope = Contract["outbound"];
 
 /** The envelope carrying `pairing`. */
 export type PairingEnvelope = Contract["pairing"];
+
+/** The envelope carrying `pausing`. */
+export type PausingEnvelope = Contract["pausing"];
 
 /** The envelope carrying `plugins`. */
 export type PluginsEnvelope = Contract["plugins"];
@@ -10781,7 +11218,7 @@ export type WizardEnvelope = Contract["wizard"];
 export type WordEnvelope = Contract["word"];
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "lifecycle" | "log" | "migration" | "music" | "news" | "news-items" | "outbound" | "pairing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "capabilities" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "keys" | "lifecycle" | "log" | "migration" | "minted-key" | "music" | "news" | "news-items" | "outbound" | "pairing" | "pausing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
 
 /** The envelope carrying each kind, so a payload is typed by what it is. */
 export interface ByKind {
@@ -10793,6 +11230,7 @@ export interface ByKind {
   "bandwidth": BandwidthEnvelope;
   "beside": BesideEnvelope;
   "bundle": BundleEnvelope;
+  "capabilities": CapabilitiesEnvelope;
   "catalogue": CatalogueEnvelope;
   "certificate": CertificateEnvelope;
   "clients": ClientsEnvelope;
@@ -10812,14 +11250,17 @@ export interface ByKind {
   "import": ImportEnvelope;
   "invitation": InvitationEnvelope;
   "job": JobEnvelope;
+  "keys": KeysEnvelope;
   "lifecycle": LifecycleEnvelope;
   "log": LogEnvelope;
   "migration": MigrationEnvelope;
+  "minted-key": MintedKeyEnvelope;
   "music": MusicEnvelope;
   "news": NewsEnvelope;
   "news-items": NewsItemsEnvelope;
   "outbound": OutboundEnvelope;
   "pairing": PairingEnvelope;
+  "pausing": PausingEnvelope;
   "plugins": PluginsEnvelope;
   "preview": PreviewEnvelope;
   "provenance": ProvenanceEnvelope;
@@ -10858,14 +11299,16 @@ export interface ByKind {
 export const CONTRACT_API_VERSION = 1;
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-4" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
   Record<RefusalCode, { readonly name: string; readonly status: number; readonly description: string }>
 > = {
   "ADMIT-10": { name: "NOT_A_PASSWORD", status: 400, description: "Raised when what was offered at the door is not a password." },
-  "ADMIT-4": { name: "NOT_ADMITTED", status: 403, description: "Raised when a request carried no token or session this run admits." },
+  "ADMIT-11": { name: "KEY_IN_THE_CLEAR", status: 403, description: "Raised when a key arrived from another machine over a connection its pin does not verify." },
+  "ADMIT-12": { name: "NOT_FOR_A_KEY", status: 403, description: "Raised when a key asked for something its scope does not reach." },
+  "ADMIT-4": { name: "NOT_ADMITTED", status: 403, description: "Raised when a request carried no token, session or key this run admits." },
   "ADMIT-5": { name: "ELSEWHERE", status: 403, description: "Raised when a request said it came from somewhere this server is not." },
   "ADMIT-6": { name: "NOT_YOURS", status: 403, description: "Raised when an account asked for something that is not its to ask for." },
   "ADMIT-7": { name: "UNCONFIRMED", status: 403, description: "Raised when the media server could not say whether an account is still one." },
@@ -10873,6 +11316,7 @@ export const REFUSAL_CODES: Readonly<
   "ADMIT-9": { name: "TOO_MANY_ATTEMPTS", status: 429, description: "Raised when the door has been given too many wrong passwords lately." },
   "ASK-1": { name: "NO_SUCH_ACTION", status: 404, description: "Raised where no action goes by the name that was asked for." },
   "ASK-10": { name: "WRONG_METHOD", status: 405, description: "Raised where an endpoint was asked with a method it does not answer." },
+  "ASK-11": { name: "NOT_A_KEY_REQUEST", status: 400, description: "Raised where the body of a mint is not a key's name, scope, purpose and the password." },
   "ASK-2": { name: "MISSING_ARGUMENT", status: 400, description: "Raised where an action was not given an argument it needs." },
   "ASK-3": { name: "UNRECOGNISED_ARGUMENT", status: 400, description: "Raised where an argument was given a value that names nothing." },
   "ASK-4": { name: "UNWANTED_ARGUMENT", status: 400, description: "Raised where an action was given an argument its command has nowhere to put." },
@@ -10883,7 +11327,35 @@ export const REFUSAL_CODES: Readonly<
   "ASK-9": { name: "NO_ENDPOINT", status: 404, description: "Raised where a path under the endpoints is one no endpoint answers." },
   "GONE-2": { name: "ANOTHER_READING", status: 400, description: "Raised when an agreement names a reading of this machine that is not the one standing now." },
   "MIGRATE-1": { name: "OFFER_MOVED", status: 400, description: "Raised when a replacement was agreed to for an offer that is not the one standing now." },
+  "PLUGIN-10": { name: "NOTHING_TO_REMOVE", status: 404, description: "Nothing by that name is installed on this machine." },
+  "PLUGIN-11": { name: "NOTHING_TO_UPDATE", status: 404, description: "Nothing by that id is installed, so there is no version to replace." },
+  "PLUGIN-12": { name: "STUCK", status: 500, description: "The version installed would not come off, so nothing else was touched." },
+  "PLUGIN-13": { name: "ANSWERED", status: 400, description: "Raised when a plugin's service would answer on a label another plugin's already does." },
+  "PLUGIN-14": { name: "TWO_SOURCES", status: 400, description: "Raised when a plugin is installed from a source other than the one its name is already installed from." },
+  "PLUGIN-15": { name: "SOURCE_OFF", status: 400, description: "Raised when a plugin is named from a git source and fetching from one is switched off." },
+  "PLUGIN-16": { name: "UNFETCHED", status: 500, description: "Raised when a git source could not be reached or would not hand over a revision." },
+  "PLUGIN-17": { name: "NO_REVISION", status: 404, description: "Raised when a git source holds no branch, tag or commit by the name given." },
+  "PLUGIN-18": { name: "CATALOGUE_OFF", status: 400, description: "Raised when a plugin is installed by name and asking the catalogue is switched off." },
+  "PLUGIN-19": { name: "CATALOGUE_UNREACHABLE", status: 500, description: "Raised when the catalogue's index or its signature could not be fetched." },
+  "PLUGIN-2": { name: "UNREADABLE", status: 404, description: "The source names no plugin this build can read." },
+  "PLUGIN-20": { name: "SIGNATURE_UNVERIFIED", status: 500, description: "Raised when the catalogue's index has no signature, one that does not verify, or none this build carries a key to check." },
+  "PLUGIN-21": { name: "CATALOGUE_UNREADABLE", status: 500, description: "Raised when the catalogue's index verified and is not one this build reads." },
+  "PLUGIN-22": { name: "NOT_CATALOGUED", status: 404, description: "Raised when the catalogue holds no plugin by the name given." },
+  "PLUGIN-23": { name: "NOT_AS_REVIEWED", status: 500, description: "Raised when what the catalogue's origin served is not what the catalogue reviewed." },
+  "PLUGIN-24": { name: "SPELLED_ALIKE", status: 400, description: "Raised when a plugin's service would be named, where lemonfiber keeps what a service holds, as another installed plugin's service already is." },
+  "PLUGIN-25": { name: "PLUGIN_OFFER_MOVED", status: 400, description: "Raised when an install, an update or a removal answers an offer that was read against a plugin, a stack or a record that has since moved." },
+  "PLUGIN-26": { name: "UNAPPROVED", status: 400, description: "Raised when a value a recipe would carry to a destination was not approved as itself, or an approval names a pair the recipe does not carry." },
+  "PLUGIN-27": { name: "ANOTHER_PLUGIN", status: 400, description: "Raised when the source an update names holds a different plugin from the one it was asked to update." },
+  "PLUGIN-28": { name: "OCCUPIED", status: 400, description: "Raised when a plugin's service would take a name, a port or a label something already on this machine holds: a service of the stack or of the operator's overlay, another plugin's port, or a site in the proxy's live configuration." },
+  "PLUGIN-29": { name: "CATALOGUE_REPLACED", status: 500, description: "Raised when the catalogue's index verifies and is older than the newest one this machine has verified." },
+  "PLUGIN-3": { name: "REFUSED", status: 400, description: "The manifest is read and this build refuses what it declares." },
+  "PLUGIN-30": { name: "NEWEST_UNKEPT", status: 500, description: "Raised when the record of the newest catalogue index this machine verified cannot be read or written." },
   "PLUGIN-4": { name: "UNRECORDED", status: 500, description: "The record of what is installed cannot be read." },
+  "PLUGIN-5": { name: "ALREADY", status: 400, description: "The plugin is installed already." },
+  "PLUGIN-6": { name: "NOWHERE", status: 500, description: "There is no stack on this machine to put a plugin's container in." },
+  "PLUGIN-7": { name: "UNWRITABLE", status: 500, description: "A directory or a document the install decided on would not land." },
+  "PLUGIN-8": { name: "UNRECORDABLE", status: 500, description: "The wiring went down and the record of what is installed did not." },
+  "PLUGIN-9": { name: "UNPROVED", status: 500, description: "The plugin's own service would not start, so nothing about it could be proved." },
   "READ-1": { name: "UNWANTED", status: 400, description: "Raised where a read was given a parameter its answer has nowhere to put." },
   "READ-10": { name: "TOO_MANY_AT_ONCE", status: 400, description: "Raised where more holdings were asked for than one read answers with." },
   "READ-11": { name: "NO_SUCH_GROUP", status: 400, description: "Raised where a diagnosis was narrowed to a group or check that is not one." },
