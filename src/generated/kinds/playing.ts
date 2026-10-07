@@ -40,6 +40,7 @@ export interface PlayingEnvelope {
   api_version: number;
   data: PlayingReport;
   host?: string | null;
+  job?: string | null;
   kind: "playing";
 }
 
