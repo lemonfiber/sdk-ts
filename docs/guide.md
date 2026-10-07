@@ -221,10 +221,12 @@ refused as a `version` problem that names both numbers. See
 
 ## Where the types come from
 
-Everything under `src/generated/` is generated from
-`contract/web-api.contract.json`, which lemonfiber builds from the Rust types
-that produce its answers. Nothing there is edited by hand. To take a newer
-contract:
+Everything under `src/generated/` is generated from the contract vendored under
+`contract/`, which lemonfiber builds from the Rust types that produce its
+answers. The copy is in the layout the revision it came from publishes: the
+directory `contract/web-api/`, or the single file
+`contract/web-api.contract.json`. Nothing there is edited by hand. To take a
+newer contract:
 
 ```console
 npm run contract:sync -- <tag-or-full-commit>   # vendor the contract at that revision of lemonfiber

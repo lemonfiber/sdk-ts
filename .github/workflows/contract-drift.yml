@@ -51,25 +51,32 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
       - name: Compare the vendored contract with the one the server describes
         env:
           LEMONFIBER: https://github.com/lemonfiber/lemonfiber.git
         run: |
           set -euo pipefail
 
-          # The revision is resolved first and the artefact fetched at it, so the
+          # The revision is resolved first and the contract fetched at it, so the
           # comparison and the command printed to fix it name the same commit.
           # Fetching `main` twice would let it move in between, and the remedy
           # would then be for a contract nobody compared.
           head=$(git ls-remote "$LEMONFIBER" refs/heads/main | cut -f1)
 
-          # `-L` follows redirects, and a redirect may point anywhere. These refuse
-          # any hop that is not HTTPS, so what is fetched cannot be downgraded.
-          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json \
-            "https://raw.githubusercontent.com/lemonfiber/lemonfiber/${head}/contract/web-api.contract.json"
+          # The sync script takes the contract at that revision into a scratch
+          # tree, in whichever layout the server publishes there, and the compare
+          # script names each file or kind that differs. Both read only Node's own
+          # modules, so nothing is installed.
+          node scripts/contract-sync.mjs "$head" --served
+          status=0
+          node scripts/contract-compare.mjs . .contract-served >"${RUNNER_TEMP}/differences" || status=$?
+          if [ "$status" -gt 1 ]; then exit "$status"; fi
 
-          HEAD_REVISION="$head" python3 - <<'PY'
-          import json
+          HEAD_REVISION="$head" STATUS="$status" DIFFERENCES="${RUNNER_TEMP}/differences" python3 - <<'PY'
           import os
           import pathlib
           import sys
@@ -93,36 +100,25 @@ jobs:
 
 
           head = os.environ["HEAD_REVISION"]
-          vendored = json.loads(pathlib.Path("contract/web-api.contract.json").read_text())
-          served = json.loads(pathlib.Path("served.json").read_text())
           stamp = pathlib.Path("contract/VERSION").read_text().strip()
+          differences = pathlib.Path(os.environ["DIFFERENCES"]).read_text().splitlines()
 
-          ours = set(vendored.get("kinds", {}))
-          theirs = set(served.get("kinds", {}))
-
-          if vendored == served:
+          if os.environ["STATUS"] == "0":
               say("## The vendored contract is current")
               say()
               say(f"It matches the one lemonfiber `{head}` describes, vendored at `{stamp}`.")
               leave(0)
 
-          missing = sorted(theirs - ours)
-          extra = sorted(ours - theirs)
-
           say("## The vendored contract is behind")
           say()
           say("**This check gates.** It fails every pull request against `main` until")
-          say("the artefact in `contract/` is the one lemonfiber serves. You did not")
-          say("break this and you do not need to understand the kinds below to fix it.")
+          say("the copy in `contract/` is the one lemonfiber serves. You did not")
+          say("break this and you do not need to understand what differs below to fix it.")
           say()
-          say(f"- vendored at `{stamp}`: api_version {vendored.get('api_version')}, {len(ours)} kinds")
-          say(f"- served at lemonfiber `{head}`: api_version {served.get('api_version')}, {len(theirs)} kinds")
-          if missing:
-              say(f"- described by the server and not here: {', '.join(missing)}")
-          if extra:
-              say(f"- described here and not by the server: {', '.join(extra)}")
-          if not missing and not extra:
-              say("- the same kinds, described differently — a shape changed inside one of them.")
+          say(f"Vendored at `{stamp}`, compared with lemonfiber `{head}`:")
+          say()
+          for line in differences:
+              say(f"- {line}")
           say()
           say("### Run this")
           say()

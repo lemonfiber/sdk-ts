@@ -2,7 +2,7 @@
  * Artefacts written as the core writes them, generated into a tree of their own.
  */
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { expect } from "vitest";
 import { ArtefactRefused, OUT, generate, run } from "./index.mjs";
@@ -38,11 +38,58 @@ export function artefact(kinds, { refusals, keyCallable, reads, version = 1 } = 
   };
 }
 
-/** A fresh tree to generate into, holding a vendored artefact and the revision it came from. */
-export async function tree(whole) {
+/** A schema with every `#/$defs/<Name>` reference spelled as `spell` spells the name. */
+const respelled = (node, spell) =>
+  JSON.parse(JSON.stringify(node), (key, value) =>
+    key === "$ref" && typeof value === "string" && value.startsWith("#/$defs/") ? spell(value.slice("#/$defs/".length)) : value,
+  );
+
+/**
+ * An artefact as the files of the directory layout, by path under `contract/web-api/`.
+ *
+ * Each kind's definitions become files under `defs/` in the kind's dialect, and
+ * every reference a path to one.
+ */
+export function directory(whole) {
+  const files = new Map();
+  const index = { api_version: whole.api_version, kinds: {} };
+  for (const [name, schema] of Object.entries(whole.kinds)) {
+    const { $defs, ...envelope } = schema;
+    index.kinds[name] = `kinds/${name}.json`;
+    files.set(index.kinds[name], respelled(envelope, (defined) => `../defs/${defined}.json`));
+    for (const [defined, definition] of Object.entries($defs ?? {})) {
+      const dialect = schema.$schema === undefined ? {} : { $schema: schema.$schema };
+      files.set(`defs/${defined}.json`, { ...dialect, ...respelled(definition, (other) => `${other}.json`) });
+    }
+  }
+  for (const [list, file] of [["key_callable", "key-callable.json"], ["reads", "reads.json"], ["refusals", "refusals.json"]]) {
+    if (!Object.hasOwn(whole, list)) continue;
+    index[list] = file;
+    files.set(file, whole[list]);
+  }
+  files.set("index.json", index);
+  return files;
+}
+
+/** Writes `files` under the tree's `contract/web-api/`, each as JSON. */
+export async function laidOut(root, files) {
+  await Promise.all(
+    [...files].map(async ([file, value]) => {
+      await mkdir(dirname(join(root, "contract", "web-api", file)), { recursive: true });
+      await writeFile(join(root, "contract", "web-api", file), JSON.stringify(value));
+    }),
+  );
+}
+
+/**
+ * A fresh tree to generate into, holding a vendored artefact and the revision it
+ * came from: as the single file, or as the directory when `layout` says so.
+ */
+export async function tree(whole, { layout = "single" } = {}) {
   const root = await mkdtemp(join(tmpdir(), "sdk-ts-contract-"));
   await mkdir(join(root, "contract"));
-  await writeFile(join(root, "contract", "web-api.contract.json"), JSON.stringify(whole));
+  if (layout === "directory") await laidOut(root, directory(whole));
+  else await writeFile(join(root, "contract", "web-api.contract.json"), JSON.stringify(whole));
   await writeFile(join(root, "contract", "VERSION"), "v1.0.0\n");
   return root;
 }

@@ -19,9 +19,8 @@
 name: contract-bump
 
 on:
-  # How the server asks. `contract-moved` there dispatches this whenever
-  # `contract/web-api.contract.json` changes, so the cadence is the change
-  # rather than the calendar.
+  # How the server asks. `contract-moved` there dispatches this whenever the
+  # contract changes, so the cadence is the change rather than the calendar.
   workflow_dispatch:
   # The floor, for a dispatch that never arrived.
   schedule:
@@ -62,6 +61,10 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
       - name: Is the vendored artefact behind at all
         id: behind
         env:
@@ -78,41 +81,35 @@ jobs:
           # revision stamp. That is the noise this workflow exists to remove,
           # arriving from the other direction.
           #
-          # So this compares what `contract-drift` compares: the parsed
-          # artefact. When the bytes match, there is nothing to take, and the
-          # stamp staying where it is remains true — it says where the bytes
-          # came from, and they came from there.
+          # So this compares what `contract-drift` compares, with the same two
+          # scripts: the server's copy taken into a scratch tree, then each file
+          # parsed and compared. When they match, there is nothing to take, and
+          # the stamp staying where it is remains true — it says where the copy
+          # came from, and it came from there.
           pin="$(tr -d '[:space:]' < contract/VERSION)"
           head="$(gh api "repos/${SERVER}/commits/main" --jq .sha)"
           echo "pin=${pin}" >> "$GITHUB_OUTPUT"
           echo "head=${head}" >> "$GITHUB_OUTPUT"
 
-          # `-L` follows redirects, and a redirect may point anywhere. These
-          # refuse any hop that is not HTTPS, so what is fetched cannot be
-          # downgraded.
-          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json \
-            "https://raw.githubusercontent.com/${SERVER}/${head}/contract/web-api.contract.json"
+          node scripts/contract-sync.mjs "$head" --served
+          status=0
+          node scripts/contract-compare.mjs . .contract-served || status=$?
+          case "$status" in
+            0)
+              echo "moved=no" >> "$GITHUB_OUTPUT"
+              echo "The vendored artefact matches the one ${head} serves; nothing to take."
+              echo "## The vendored contract is what the server describes" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
+              ;;
+            1)
+              echo "moved=yes" >> "$GITHUB_OUTPUT"
+              echo "The artefact has changed since ${pin}; the server's main is ${head}."
+              ;;
+            *)
+              exit "$status"
+              ;;
+          esac
 
-          if VENDORED=contract/web-api.contract.json SERVED=served.json python3 -c '
-          import json, os, sys
-          vendored = json.load(open(os.environ["VENDORED"]))
-          served = json.load(open(os.environ["SERVED"]))
-          sys.exit(0 if vendored == served else 1)
-          '; then
-            echo "moved=no" >> "$GITHUB_OUTPUT"
-            echo "The vendored artefact matches the one ${head} serves; nothing to take."
-            echo "## The vendored contract is what the server describes" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
-          else
-            echo "moved=yes" >> "$GITHUB_OUTPUT"
-            echo "The artefact has changed since ${pin}; the server's main is ${head}."
-          fi
-
-          rm -f served.json
-
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        if: steps.behind.outputs.moved == 'yes'
-        with:
-          node-version-file: .nvmrc
+          rm -rf .contract-served
 
       - name: Take the contract and regenerate against it
         id: build
@@ -145,24 +142,17 @@ jobs:
           set -euo pipefail
 
           # What the sync and the generator actually wrote, rather than a list
-          # kept here. A generator that starts emitting a second file would
-          # otherwise have that file silently left behind, and the pull request
-          # would carry half a catch-up that still fails `contract:check`.
-          changed="$(git diff --name-only)"
+          # kept here: every file added, changed or removed, the new ones
+          # included. A generator that starts emitting a second file, or a
+          # contract that gains or loses a definition's file, would otherwise be
+          # left half taken, and the pull request would carry a catch-up that
+          # still fails `contract:check`. Staged so that git lists the files it
+          # does not track yet, and without rename detection so that a move is
+          # a removal and an addition, which is what the commit is built from.
+          git add --all
+          changed="$(git diff --cached --name-status --no-renames)"
           if [ -z "$changed" ]; then
             echo "::error::the pin moved and nothing changed on disk, so there is nothing to commit"
-            exit 1
-          fi
-          # `createCommitOnBranch` writes additions; a deletion needs a field
-          # this does not send, so a sync that removes a file has to be seen by
-          # a person rather than half-committed.
-          #
-          # Read into a variable and tested for emptiness rather than piped to
-          # `grep -q`, which exits at the first name and leaves `git diff` to
-          # die of SIGPIPE; under `pipefail` that reads as no deletion at all.
-          deleted="$(git diff --name-only --diff-filter=D)"
-          if [ -n "$deleted" ]; then
-            echo "::error::the sync deleted a file, which this cannot commit. Do it by hand."
             exit 1
           fi
           printf '%s\n' "$changed"
@@ -214,10 +204,14 @@ jobs:
           import sys
 
           repo, branch, base, head, pin, note = sys.argv[1:7]
-          changed = subprocess.run(
-              ["git", "diff", "--name-only"],
+          # NUL-separated, status then path, so no path is split or quoted.
+          listed = subprocess.run(
+              ["git", "diff", "--cached", "--name-status", "--no-renames", "-z"],
               capture_output=True, text=True, check=True,
-          ).stdout.split()
+          ).stdout.split("\0")
+          staged = list(zip(listed[0:-1:2], listed[1::2]))
+          deleted = [name for status, name in staged if status == "D"]
+          written = [name for status, name in staged if status != "D"]
 
           print(json.dumps({
               "query": (
@@ -251,8 +245,9 @@ jobs:
                                       open(name, "rb").read()
                                   ).decode(),
                               }
-                              for name in changed
-                          ]
+                              for name in written
+                          ],
+                          "deletions": [{"path": name} for name in deleted],
                       },
                   }
               },

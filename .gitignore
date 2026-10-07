@@ -4,5 +4,8 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 
+# The server's copy of the contract, taken by `contract:sync -- <rev> --served`.
+.contract-served/
+
 # Temporary trees the generator test builds and removes.
 .contract-test-*/

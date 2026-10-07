@@ -1,16 +1,11 @@
 /**
- * The vendored artefact, read and held to everything the generator relies on.
+ * The contract artefact, held to everything the generator relies on.
  */
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { refuse } from "./refused.mjs";
 import { pascal } from "./spelling.mjs";
 
 /** The wire version this package implements. */
 export const SPOKEN = 1;
-
-/** What the generated files say they came from when `contract/VERSION` is missing. */
-const UNKNOWN = "unknown";
 
 /** Keywords that describe a schema without constraining what it matches. */
 export const ANNOTATIONS = new Set(["description", "title", "default", "examples", "$comment"]);
@@ -266,17 +261,4 @@ export function readsOf(artefact, kinds) {
     refuse("The vendored contract lists a read this generator cannot write:\n  " + malformed.join("\n  "));
   }
   return listed;
-}
-
-/** The vendored artefact under `root`, and the revision it was taken from. */
-export async function readArtefact(root) {
-  const stamp = (await readFile(join(root, "contract", "VERSION"), "utf8").catch(() => UNKNOWN)).trim();
-  let artefact;
-  try {
-    artefact = JSON.parse(await readFile(join(root, "contract", "web-api.contract.json"), "utf8"));
-  } catch (error_) {
-    return refuse(`contract/web-api.contract.json could not be read: ${String(error_)}`);
-  }
-  if (!isRecord(artefact)) refuse("contract/web-api.contract.json is not an object.");
-  return { artefact, stamp };
 }

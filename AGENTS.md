@@ -21,8 +21,9 @@ other. Where this client disagrees with the contract, this client is wrong.
 ## The rules you cannot break
 
 - **`src/generated/` is not edited by hand.** It is produced from
-  `contract/web-api.contract.json`, the artefact `lemonfiber` builds from the
-  types that actually serialise the reply (`ARCH-R56`, `ARCH-R58`).
+  the contract vendored under `contract/` (the directory `contract/web-api/`, or
+  the single file `contract/web-api.contract.json`), the artefact `lemonfiber`
+  builds from the types that actually serialise the reply (`ARCH-R56`, `ARCH-R58`).
   `npm run contract:check` regenerates and fails on any diff.
 - **No runtime dependencies** without a recorded reason. A client library's
   dependency tree becomes every consumer's.

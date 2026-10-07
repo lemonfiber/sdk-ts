@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CODE, artefact, imported, kind, refusal, removed, sources, tree, written } from "./fixtures.mjs";
 import { OUT, generate, run } from "./index.mjs";
+import { readArtefact } from "./vendored.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -45,8 +46,7 @@ const PULL = { pull: kind({ type: "string" }) };
 
 describe("the vendored artefact", () => {
   it("generates exactly what is committed", async () => {
-    const whole = JSON.parse(await readFile(join(ROOT, "contract", "web-api.contract.json"), "utf8"));
-    const stamp = (await readFile(join(ROOT, "contract", "VERSION"), "utf8")).trim();
+    const { artefact: whole, stamp } = await readArtefact(ROOT);
     for (const [file, source] of generate(whole, stamp)) {
       expect(await readFile(join(ROOT, file), "utf8")).toBe(source);
     }
