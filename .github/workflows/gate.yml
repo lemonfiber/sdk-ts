@@ -22,7 +22,40 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Every commit, so the base is here to compare against.
+          fetch-depth: 0
           persist-credentials: false
+
+      # Whether the change reaches anything but formatting. Of what `npm run
+      # ci` checks, only Prettier reads the files listed here: the guards walk
+      # `src` and `scripts`, and the package check packs the readme, the
+      # changelog and the licence without judging what they say. A change to
+      # those alone is checked for formatting and nothing else. Any other file
+      # runs the whole gate, and so does a file deleted or renamed, or a base
+      # commit that cannot be read.
+      - name: What changed
+        id: scope
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE}" ] || ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "No usable base commit, so the gate runs."
+            exit 0
+          fi
+          changed="$(git diff --no-renames --name-status "${BASE}" HEAD)"
+          code=false
+          while IFS=$'\t' read -r status path; do
+            case "${status}:${path}" in
+            : | [AM]:README.md | [AM]:CHANGELOG.md | [AM]:AGENTS.md | [AM]:CLAUDE.md | [AM]:LICENSE) ;;
+            *) code=true ;;
+            esac
+          done <<< "${changed}"
+          echo "code=${code}" >> "$GITHUB_OUTPUT"
+          if [ "${code}" = false ]; then
+            echo "Only files Prettier alone reads changed; the rest of the gate is skipped."
+          fi
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -32,5 +65,12 @@ jobs:
       - name: Install exactly what the lockfile says
         run: npm ci --ignore-scripts
 
+      - name: The changed files are formatted
+        if: steps.scope.outputs.code != 'true'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: git diff --name-only --diff-filter=AM -z "${BASE}" HEAD | xargs -0 -r ./node_modules/.bin/prettier --check --ignore-unknown
+
       - name: Run the gate
+        if: steps.scope.outputs.code == 'true'
         run: npm run ci
