@@ -199,6 +199,75 @@ export function keyCallableOf(artefact) {
   return listed;
 }
 
+/** A read's path: segments under `/api`, a `{name}` segment standing for one the caller fills. */
+const READ_PATH = /^\/api(?:\/(?:[a-z][a-z0-9-]*|\{[a-z]+\}))+$/;
+
+/** A query parameter's name, as a command's flag is spelled. */
+const PARAMETER = /^[a-z][a-z0-9_]*$/;
+
+/** The name a read goes by: its path under `/api`, without the segments a caller fills. */
+export const readNameOf = (path) =>
+  path
+    .slice("/api/".length)
+    .split("/")
+    .filter((segment) => !segment.startsWith("{"))
+    .join("/");
+
+/** Why one read cannot be written, one reason at a time. */
+function* wrongWithRead(entry, at, kinds) {
+  if (!isRecord(entry)) {
+    yield `read ${String(at)}: not an object`;
+    return;
+  }
+  const where = typeof entry.path === "string" ? entry.path : `read ${String(at)}`;
+  if (typeof entry.path !== "string" || !READ_PATH.test(entry.path)) yield `${where}: path ${JSON.stringify(entry.path)} is not one under /api`;
+  if (typeof entry.file !== "boolean") yield `${where}: file ${JSON.stringify(entry.file)} is not true or false`;
+  if (!Array.isArray(entry.kinds) || entry.kinds.some((kind) => typeof kind !== "string" || !Object.hasOwn(kinds, kind))) {
+    yield `${where}: kinds ${JSON.stringify(entry.kinds)} are not kinds the contract describes`;
+  } else if ((entry.kinds.length === 0) !== (entry.file === true)) {
+    yield `${where}: a read answers with a file or with kinds, and this one says ${JSON.stringify(entry.kinds)} with file ${String(entry.file)}`;
+  }
+  if (!Array.isArray(entry.parameters)) {
+    yield `${where}: parameters ${JSON.stringify(entry.parameters)} are not a list`;
+    return;
+  }
+  const named = new Set();
+  for (const parameter of entry.parameters) {
+    if (!isRecord(parameter) || typeof parameter.name !== "string" || !PARAMETER.test(parameter.name) || typeof parameter.repeatable !== "boolean") {
+      yield `${where}: parameter ${JSON.stringify(parameter)} is not a name and whether it repeats`;
+    } else if (named.has(parameter.name)) {
+      yield `${where}: parameter ${parameter.name} is listed twice`;
+    } else {
+      named.add(parameter.name);
+    }
+  }
+}
+
+/**
+ * The reads the web API serves, as the contract lists them, in its order, or none.
+ *
+ * An artefact older than the list has no `reads`, and reads as listing none
+ * rather than as an error, so a consumer compiles against every artefact.
+ */
+export function readsOf(artefact, kinds) {
+  const listed = Object.hasOwn(artefact, "reads") ? artefact.reads : [];
+  if (!Array.isArray(listed)) {
+    refuse(`The vendored contract's reads are ${JSON.stringify(listed)}, and they are a list.`);
+  }
+  const malformed = listed.flatMap((entry, at) => [...wrongWithRead(entry, at, kinds)]);
+  const named = new Map();
+  for (const entry of listed) {
+    if (!isRecord(entry) || typeof entry.path !== "string" || !READ_PATH.test(entry.path)) continue;
+    const name = readNameOf(entry.path);
+    if (named.has(name)) malformed.push(`${entry.path}: goes by ${name}, as ${named.get(name)} does`);
+    else named.set(name, entry.path);
+  }
+  if (malformed.length > 0) {
+    refuse("The vendored contract lists a read this generator cannot write:\n  " + malformed.join("\n  "));
+  }
+  return listed;
+}
+
 /** The vendored artefact under `root`, and the revision it was taken from. */
 export async function readArtefact(root) {
   const stamp = (await readFile(join(root, "contract", "VERSION"), "utf8").catch(() => UNKNOWN)).trim();

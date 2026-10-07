@@ -231,7 +231,7 @@ describe("the text path beside it", () => {
     const seen: Seen[] = [];
     const read: Read = [];
     const envelope = JSON.stringify({ api_version: API_VERSION, kind: "word", data: "hello" });
-    const got = await open(handing({ text: envelope }, seen, read)).read("word");
+    const got = await open(handing({ text: envelope }, seen, read)).read("explain");
 
     expect(got).toEqual({
       ok: true,

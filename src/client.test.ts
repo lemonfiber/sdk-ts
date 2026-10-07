@@ -4,7 +4,7 @@ import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./credential.js";
 import type { RefusalCode } from "./generated/index.js";
-import { refused, tooMany, unreachable } from "./problem.js";
+import { refused, tooMany, unreachable, unrecognised } from "./problem.js";
 
 // The vendored contract may list no refusal codes, so these tests read against a
 // list of their own, in the shape the generator writes one.
@@ -134,7 +134,7 @@ describe("read", () => {
   // The token is a header, never a URL.
   it("sends the token in its header and nowhere else", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("status", { since: "yesterday" });
+    await open(answering({}, seen)).read("held", { member: "ada" });
 
     expect(seen[0]?.headers[TOKEN_HEADER]).toBe("a-run-token");
     expect(seen[0]?.url).not.toContain("a-run-token");
@@ -142,11 +142,11 @@ describe("read", () => {
 
   it("turns arguments into query parameters", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("logs", { tail: 50, follow: true, service: "sonarr" });
+    await open(answering({}, seen)).read("held", { most: 50, defaults: true, member: "ada" });
 
-    expect(seen[0]?.url).toContain("tail=50");
-    expect(seen[0]?.url).toContain("follow=true");
-    expect(seen[0]?.url).toContain("service=sonarr");
+    expect(seen[0]?.url).toContain("most=50");
+    expect(seen[0]?.url).toContain("defaults=true");
+    expect(seen[0]?.url).toContain("member=ada");
   });
 
   // A command's flag given more than once is the same parameter repeated, which is
@@ -183,17 +183,17 @@ describe("read", () => {
 
   it("writes numbers and booleans in a list as it writes them alone", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("logs", { tail: [5, 10], follow: [true] });
+    await open(answering({}, seen)).read("forms", { form: [5, true] });
 
-    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/logs?tail=5&tail=10&follow=true");
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=5&form=true");
   });
 
   it("leaves out an argument that was not given", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("logs", { tail: undefined, service: "sonarr" });
+    await open(answering({}, seen)).read("held", { most: undefined, member: "ada" });
 
-    expect(seen[0]?.url).not.toContain("tail");
-    expect(seen[0]?.url).toContain("service=sonarr");
+    expect(seen[0]?.url).not.toContain("most");
+    expect(seen[0]?.url).toContain("member=ada");
   });
 
   it("asks for nothing extra when there is nothing to ask", async () => {
@@ -203,13 +203,24 @@ describe("read", () => {
   });
 
   it("reads the envelope out of the reply", async () => {
-    const got = await open(answering({}, [])).read("word");
+    const got = await open(answering({}, [])).read("explain");
     expect(got).toMatchObject({ ok: true, value: { kind: "word", data: "hello" } });
+  });
+
+  it("asks for a read at the path the contract lists for it", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("front-door");
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/front-door");
+  });
+
+  it("refuses an answer of a kind the contract does not list for the read", async () => {
+    const got = await open(answering({}, [])).read("status");
+    expect(got).toEqual({ ok: false, problem: unrecognised("word") });
   });
 
   it("refuses a reply this package cannot speak for", async () => {
     const wrong = JSON.stringify({ api_version: API_VERSION + 1, kind: "word", data: "x" });
-    const got = await open(answering({ text: wrong }, [])).read("word");
+    const got = await open(answering({ text: wrong }, [])).read("explain");
     expect(got).toMatchObject({ ok: false, problem: { kind: "version" } });
   });
 
@@ -252,7 +263,7 @@ describe("read", () => {
   it("hands the caller the sentence a read was refused with", async () => {
     const said = "That is not a group of checks lemonfiber knows.";
     const got = await open(answering({ ok: false, status: 400, text: said }, [])).read(
-      "doctor",
+      "checks",
       {
         only: "nope",
       },

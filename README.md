@@ -69,6 +69,13 @@ if (status.ok && isKind(status.value, "status")) {
 await opened.client.act("restart", { forms: ["tv"], services: ["sonarr"] });
 ```
 
+`read` takes a read by the name the contract lists it under — `status`, `front-door`,
+`requests` — with the parameters that read takes, typed by the contract's list, and answers
+with the envelope of a kind the contract lists for it. `READS` is that list, generated with
+the rest of the contract; an answer of a kind it does not list for the read is `unrecognised`.
+The logs, answered with a line per envelope rather than one document, are not among the names
+`read` takes.
+
 Every reply is an `Envelope`: the union of every kind's envelope the contract describes, told
 apart by `kind`. `isKind` narrows one to its kind, and so does comparing `kind` yourself. A reply
 whose kind this package does not know is `unrecognised` rather than passed on untyped. Every

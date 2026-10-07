@@ -366,3 +366,58 @@ describe("generating the actions a key may call", () => {
     );
   });
 });
+
+describe("generating the reads", () => {
+  const read = (path, kinds, parameters = [], file = false) => ({ path, parameters, kinds, file });
+  const repeating = (name) => ({ name, repeatable: true });
+  const once = (name) => ({ name, repeatable: false });
+
+  it("writes empty tables from a contract that lists no reads", () => {
+    const source = sources(artefact(PULL)).get("reads.ts");
+    expect(source).toContain("export const READS = {} as const;");
+    expect(source).toContain("export const FILES = {} as const;");
+  });
+
+  it("writes each read under the name it goes by, with what it takes and answers with", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const reads = [
+      read("/api/pull", ["pull"], [repeating("form"), once("most")]),
+      read("/api/front-door", ["pull"]),
+      read("/api/bundle/{name}", [], [], true),
+    ];
+    const { root, generated } = await imported(artefact(PULL, { reads }));
+    roots.push(root);
+    expect(Object.keys(generated.READS)).toEqual(["pull", "front-door"]);
+    expect(generated.READS.pull).toEqual({ path: "/api/pull", parameters: [repeating("form"), once("most")], kinds: ["pull"] });
+    expect(generated.FILES).toEqual({ bundle: { path: "/api/bundle/{name}" } });
+    const source = await written(root, "reads.ts");
+    expect(source).toContain('"pull": { form?: Scalar | readonly Scalar[] | undefined; most?: Scalar | undefined };');
+    expect(source).toContain('"front-door": Record<string, never>;');
+  });
+
+  it.each([
+    ["an object", {}],
+    ["a string", "/api/pull"],
+  ])("refuses reads that are %s", (_what, reads) => {
+    expect(refusal(artefact(PULL, { reads }))).toContain("they are a list");
+  });
+
+  it.each([
+    ["a read that is not an object", ["/api/pull"], "read 0: not an object"],
+    ["a path outside /api", [read("/pull", ["pull"])], "/pull: path"],
+    ["no path", [{ parameters: [], kinds: ["pull"], file: false }], "read 0: path"],
+    ["a kind the contract does not describe", [read("/api/pull", ["push"])], "/api/pull: kinds"],
+    ["kinds that are not a list", [read("/api/pull", "pull")], "/api/pull: kinds"],
+    ["a file with kinds", [read("/api/pull", ["pull"], [], true)], "answers with a file or with kinds"],
+    ["no file and no kinds", [read("/api/pull", [])], "answers with a file or with kinds"],
+    ["a file that is not true or false", [read("/api/pull", ["pull"], [], "no")], "/api/pull: file"],
+    ["parameters that are not a list", [read("/api/pull", ["pull"], {})], "parameters {} are not a list"],
+    ["a parameter with no name", [read("/api/pull", ["pull"], [{ repeatable: true }])], "is not a name and whether it repeats"],
+    ["a parameter that does not say whether it repeats", [read("/api/pull", ["pull"], [{ name: "form" }])], "is not a name and whether it repeats"],
+    ["a parameter listed twice", [read("/api/pull", ["pull"], [once("form"), repeating("form")])], "parameter form is listed twice"],
+    ["two reads going by one name", [read("/api/pull", ["pull"]), read("/api/pull/{name}", ["pull"])], "goes by pull, as /api/pull does"],
+  ])("refuses %s, naming the read", (_what, reads, named) => {
+    expect(refusal(artefact(PULL, { reads }))).toContain(named);
+  });
+});
+

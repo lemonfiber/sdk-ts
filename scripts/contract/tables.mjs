@@ -2,8 +2,8 @@
  * The modules written from the artefact's lists rather than its schemas: the
  * kinds and the refusal codes.
  */
-import { SPOKEN, byCodePoint } from "./artefact.mjs";
-import { pascal } from "./spelling.mjs";
+import { SPOKEN, byCodePoint, readNameOf } from "./artefact.mjs";
+import { pascal, property } from "./spelling.mjs";
 
 /** Where each kind's envelope, and the shapes only it carries, are written. */
 export const KINDS_MODULE = ["kinds"];
@@ -40,6 +40,53 @@ export function envelopeModule(kinds) {
       "",
       "/** An envelope of any kind the server may send, told apart by its `kind`. */",
       "export type Envelope = ByKind[Kind];",
+    ],
+  };
+}
+
+/** The module of the reads the web API serves, by the name each goes by. */
+export function readsModule(listed) {
+  const documents = listed.filter((read) => !read.file);
+  const files = listed.filter((read) => read.file);
+  const entry = ({ path, parameters, kinds }) => {
+    const taken = parameters.map(({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`);
+    return `  ${JSON.stringify(readNameOf(path))}: { path: ${JSON.stringify(path)}, parameters: [${taken.join(", ")}], kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
+  };
+  const query = ({ path, parameters }) => {
+    const fields = parameters.map(
+      ({ name, repeatable }) => `${property(name)}?: ${repeatable ? "Scalar | readonly Scalar[]" : "Scalar"} | undefined`,
+    );
+    const shape = fields.length === 0 ? "Record<string, never>" : "{ " + fields.join("; ") + " }";
+    return `  ${JSON.stringify(readNameOf(path))}: ${shape};`;
+  };
+  return {
+    path: ["reads"],
+    summary: "Every read the web API serves, by the name it goes by, and what each takes and answers with.",
+    imports: new Map([["envelope", new Set(["ByKind"])]]),
+    body: [
+      "/** One value a query parameter carries. */",
+      "export type Scalar = string | number | boolean;",
+      "",
+      "/** Every read answered with a document, by name: its path, the parameters it takes, and the kinds it answers with. */",
+      ...(documents.length === 0
+        ? ["export const READS = {} as const;"]
+        : ["export const READS = {", ...documents.map((read) => entry(read)), "} as const;"]),
+      "",
+      "/** The name of a read answered with a document. */",
+      "export type ReadName = keyof typeof READS;",
+      "",
+      "/** What each read takes: a repeatable parameter as one value or a list, any other as one value, and nothing sent for undefined. */",
+      "export interface ReadQuery {",
+      ...documents.map((read) => query(read)),
+      "}",
+      "",
+      "/** The envelope a read answers with, of whichever kind the contract lists for it. */",
+      "export type ReadAnswer<N extends ReadName> = ByKind[(typeof READS)[N][\"kinds\"][number]];",
+      "",
+      "/** Every read answered with a file, by name, and its path. */",
+      ...(files.length === 0
+        ? ["export const FILES = {} as const;"]
+        : ["export const FILES = {", ...files.map(({ path }) => `  ${JSON.stringify(readNameOf(path))}: { path: ${JSON.stringify(path)} },`), "} as const;"]),
     ],
   };
 }

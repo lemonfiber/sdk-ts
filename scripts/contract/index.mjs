@@ -10,12 +10,12 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { LINE_CAP, linesIn } from "../line-cap.mjs";
-import { byCodePoint, checked, keyCallableOf, kindsOf, readArtefact, refusalsOf, usersOf } from "./artefact.mjs";
+import { byCodePoint, checked, keyCallableOf, kindsOf, readArtefact, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
 import { Layout } from "./layout.mjs";
 import { OUT, fileOf, index, sourceOf } from "./modules.mjs";
 import { ArtefactRefused, refuse } from "./refused.mjs";
 import { pascal } from "./spelling.mjs";
-import { KINDS_MODULE, SHARED_MODULE, envelopeModule, keyCallableModule, refusalsModule } from "./tables.mjs";
+import { KINDS_MODULE, SHARED_MODULE, envelopeModule, keyCallableModule, readsModule, refusalsModule } from "./tables.mjs";
 import { Writer } from "./writer.mjs";
 
 export { ArtefactRefused } from "./refused.mjs";
@@ -30,8 +30,9 @@ contract is generated from; everything downstream follows from that.
 
 Each kind's envelope and the types only it carries are one module under
 \`kinds/\`, the types several kinds carry are one module per set of kinds under
-\`shared/\`, and \`envelope.ts\`, \`refusals.ts\` and \`key-callable.ts\` hold the
-kinds, the refusal codes and the actions an integration key may call. No module holds more lines than the guards allow a source file; one that
+\`shared/\`, and \`envelope.ts\`, \`reads.ts\`, \`refusals.ts\` and \`key-callable.ts\`
+hold the kinds, the reads, the refusal codes and the actions an integration key may
+call. No module holds more lines than the guards allow a source file; one that
 would is written as parts beside it. \`index.ts\` hands on every name.
 `;
 export { OUT } from "./modules.mjs";
@@ -46,6 +47,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const kinds = kindsOf(artefact);
   const refusals = refusalsOf(artefact);
   const keyCallable = keyCallableOf(artefact);
+  const reads = readsOf(artefact, kinds);
   const writer = new Writer(usersOf(kinds));
   const names = Object.keys(kinds).toSorted(byCodePoint);
   for (const kind of names) writer.owned.set(`${pascal(kind)}Envelope`, `the envelope carrying \`${kind}\``);
@@ -59,10 +61,11 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const modules = layout.modules();
   const groups = [...layout.groups.values()].map((group) => group.path);
   const under = (top) => groups.filter((path) => path[0] === top[0]).toSorted((a, b) => byCodePoint(a.join("/"), b.join("/")));
-  const members = [["envelope"], ["key-callable"], KINDS_MODULE, ["refusals"]];
+  const members = [["envelope"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
   modules.push(
     envelopeModule(names),
     keyCallableModule(keyCallable),
+    readsModule(reads),
     refusalsModule(refusals),
     index(KINDS_MODULE, "Every kind's envelope, and the shapes only that kind carries.", under(KINDS_MODULE)),
   );

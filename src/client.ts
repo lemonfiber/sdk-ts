@@ -16,14 +16,16 @@ import {
   type Call,
 } from "./deadline.js";
 import { parse, type Envelope, type Reading } from "./envelope.js";
-import type { Bundle } from "./generated/index.js";
-import { unreachable, type Problem } from "./problem.js";
+import {
+  READS,
+  type Bundle,
+  type ReadAnswer,
+  type ReadName,
+  type ReadQuery,
+  type Scalar,
+} from "./generated/index.js";
+import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
-
-/**
- * One value a query parameter can carry.
- */
-type Scalar = string | number | boolean;
 
 /**
  * What a query parameter may carry. A value that is `undefined` is not sent.
@@ -34,6 +36,17 @@ type Scalar = string | number | boolean;
  * flag given no times is a flag not given.
  */
 export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
+
+/**
+ * The read answered with a line of its own for each envelope rather than with
+ * one document. `read` takes every other read the contract lists.
+ */
+type LineByLine = "logs";
+
+/**
+ * The name of a read `read` answers: one answered with one document.
+ */
+export type DocumentRead = Exclude<ReadName, LineByLine>;
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
@@ -159,14 +172,29 @@ export class Client {
   }
 
   /**
-   * Asks for what a command would print under `--json`.
+   * Asks for what a command would print under `--json`, by the read's name.
+   *
+   * The name, the parameters it takes and the kinds it answers with are the
+   * contract's own list. An answer of a kind the contract does not list for the
+   * read is `unrecognised` rather than handed on as the read's.
    */
-  async read(
-    endpoint: string,
-    query: Query = {},
+  async read<N extends DocumentRead>(
+    name: N,
+    query?: ReadQuery[N],
     asking: Asking = {},
-  ): Promise<Reading<Envelope>> {
-    return this.#ask("GET", `/api/${endpoint}${search(query)}`, asking, undefined, true);
+  ): Promise<Reading<ReadAnswer<N>>> {
+    const read = READS[name];
+    const answered = await this.#ask(
+      "GET",
+      `${read.path}${search(query ?? {})}`,
+      asking,
+      undefined,
+      true,
+    );
+    if (!answered.ok) return answered;
+    const envelope = answered.value;
+    if (!isAnswerTo(name, envelope)) return { ok: false, problem: unrecognised(envelope.kind) };
+    return { ok: true, value: envelope };
   }
 
   /**
@@ -315,6 +343,17 @@ function blobOf(answer: Answer): Promise<Blob | undefined> {
  */
 function lastSegment(path: string): string {
   return path.slice(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
+}
+
+/**
+ * Whether an envelope is of a kind the contract lists the read as answering with.
+ */
+function isAnswerTo<N extends DocumentRead>(
+  name: N,
+  envelope: Envelope,
+): envelope is ReadAnswer<N> {
+  const kinds: readonly string[] = READS[name].kinds;
+  return kinds.includes(envelope.kind);
 }
 
 /**

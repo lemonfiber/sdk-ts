@@ -108,7 +108,7 @@ describe("a call's deadline", () => {
   });
 
   it("waits for an answer that comes within the wait", async () => {
-    const got = await open(answering({}), 1000).read("word");
+    const got = await open(answering({}), 1000).read("explain", { word: "hello" });
     expect(got).toMatchObject({ ok: true, value: { kind: "word", data: "hello" } });
   });
 
