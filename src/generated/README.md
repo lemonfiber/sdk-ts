@@ -1,6 +1,6 @@
 # Generated
 
-Written by `npm run contract:generate` from `contract/web-api.contract.json`.
+Written by `npm run contract:generate` from the contract vendored under `contract/`.
 
 Never edit anything here by hand. A change belongs in the Rust types the
 contract is generated from; everything downstream follows from that.

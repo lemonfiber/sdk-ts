@@ -2,20 +2,21 @@
  * Writes `src/generated/` from the vendored contract artefact.
  *
  * Offline and deterministic: the same artefact in gives the same files out, so CI
- * regenerates and fails on any difference. Generation reads
- * `contract/web-api.contract.json` and `contract/VERSION` and nothing else, and
+ * regenerates and fails on any difference. Generation reads the copy under
+ * `contract/`, in either layout, and `contract/VERSION`, and nothing else, and
  * writes nothing when it refuses the artefact. No module holds more lines than
  * `LINE_CAP`: a module that would is written as a module of parts.
  */
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { LINE_CAP, linesIn } from "../line-cap.mjs";
-import { byCodePoint, checked, keyCallableOf, kindsOf, readArtefact, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
+import { byCodePoint, checked, keyCallableOf, kindsOf, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
 import { Layout } from "./layout.mjs";
 import { OUT, fileOf, index, sourceOf } from "./modules.mjs";
 import { ArtefactRefused, refuse } from "./refused.mjs";
 import { pascal } from "./spelling.mjs";
 import { KINDS_MODULE, SHARED_MODULE, envelopeModule, keyCallableModule, readsModule, refusalsModule } from "./tables.mjs";
+import { readArtefact } from "./vendored.mjs";
 import { Writer } from "./writer.mjs";
 
 export { ArtefactRefused } from "./refused.mjs";
@@ -23,7 +24,7 @@ export { ArtefactRefused } from "./refused.mjs";
 /** What the generated tree says of itself to whoever opens it. */
 const README = `# Generated
 
-Written by \`npm run contract:generate\` from \`contract/web-api.contract.json\`.
+Written by \`npm run contract:generate\` from the contract vendored under \`contract/\`.
 
 Never edit anything here by hand. A change belongs in the Rust types the
 contract is generated from; everything downstream follows from that.
