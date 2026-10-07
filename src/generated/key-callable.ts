@@ -17,7 +17,7 @@ export interface KeyCallable {
 
 /** What the contract says of each action a key may call, in the order it lists them. */
 export const KEY_CALLABLE: Readonly<Record<KeyCallableAction, KeyCallable>> = {
-  "restart": { disturbs: true, rehearsal: true, idempotent: false },
+  "restart": { disturbs: true, rehearsal: true, idempotent: true },
   "diagnose": { disturbs: true, rehearsal: false, idempotent: false },
   "update": { disturbs: true, rehearsal: true, idempotent: false },
   "downloads-pause": { disturbs: false, rehearsal: true, idempotent: true },
