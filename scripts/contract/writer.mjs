@@ -171,9 +171,6 @@ export class Writer {
     if (!DEFINITION.test(name)) {
       refuse(`\`${name}\`, defined by \`${this.kind}\`, is not a name a TypeScript type can carry.`);
     }
-    if (!Object.hasOwn(this.definitions, name)) {
-      refuse(`\`${this.kind}\` refers to \`${name}\`, which it does not define.`);
-    }
     const schema = this.definitions[name];
     const canonical = JSON.stringify(sortedKeys(schema));
     const held = this.#shared.get(name);
@@ -254,6 +251,9 @@ export class Writer {
     if (node.$ref !== undefined) {
       const matched = REFERENCE.exec(String(node.$ref));
       if (matched === null) refuse(`${origin} refers to ${node.$ref}, outside the definitions beside it.`);
+      if (!Object.hasOwn(this.definitions, matched[1])) {
+        refuse(`${origin} refers to ${node.$ref}, which \`${this.kind}\` does not define.`);
+      }
       return this.definition(matched[1]);
     }
     if ("const" in node) return literal(node.const);
