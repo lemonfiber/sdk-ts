@@ -56,7 +56,8 @@ export function readsModule(listed) {
     const fields = parameters.map(
       ({ name, repeatable }) => `${property(name)}?: ${repeatable ? "Scalar | readonly Scalar[]" : "Scalar"} | undefined`,
     );
-    return `  ${JSON.stringify(readNameOf(path))}: ${fields.length === 0 ? "Record<string, never>" : `{ ${fields.join("; ")} }`};`;
+    const shape = fields.length === 0 ? "Record<string, never>" : "{ " + fields.join("; ") + " }";
+    return `  ${JSON.stringify(readNameOf(path))}: ${shape};`;
   };
   return {
     path: ["reads"],
