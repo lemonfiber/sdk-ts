@@ -24,27 +24,27 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/spec-check.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   hygiene:
-    uses: lemonfiber/spec/.github/workflows/hygiene.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   # Every pin this repository holds on a shared workflow, against what the spec's
   # default branch holds now. It fails naming the commits a pin has not taken; a
   # run that could not ask which they are says so rather than reporting clean.
   workflow-pins:
-    uses: lemonfiber/spec/.github/workflows/workflow-pins.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/workflow-pins.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   security:
-    uses: lemonfiber/spec/.github/workflows/security.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/security.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   dco:
-    uses: lemonfiber/spec/.github/workflows/dco.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/dco.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   attribution:
-    uses: lemonfiber/spec/.github/workflows/attribution.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/attribution.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   commitlint:
-    uses: lemonfiber/spec/.github/workflows/commitlint.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/commitlint.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
   labeler:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/labeler.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/labeler.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
 
   # OPS-R39, OPS-R40, OPS-R42: label a PR that cites a goal the staged version
   # locks, put it in that version's milestone, comment which goals it moves, and
@@ -64,4 +64,4 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@92ec12769c3fdebc6063a839e9ea7c8bc23e6d3d # v1.0.31
+    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
