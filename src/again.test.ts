@@ -75,6 +75,7 @@ describe("a read", () => {
             method: "GET",
             headers: {},
             redirect: "error",
+            signal: new AbortController().signal,
           });
     };
     const got = await settled(client(silentOnce).read("status"));

@@ -83,6 +83,24 @@ An action's name and its arguments are the command line's own. A name this
 surface does not offer is refused rather than invented, and a field no action
 takes is refused rather than ignored.
 
+Every call waits at most `timeoutMs`, ten seconds unless `Client.at` is given another, and
+that wait is the whole call: a read asked again after a gateway could not reach lemonfiber
+shares it, and a wait that runs out during the pause before an attempt ends the call there. A
+call may give its own wait, and a signal of its own to stop it with:
+
+```ts
+const stopping = new AbortController();
+const status = await opened.client.read(
+  "status",
+  {},
+  { timeoutMs: 3000, signal: stopping.signal },
+);
+```
+
+A call that runs out of time, or that its caller stops, comes back `unreachable` saying which.
+The signal reaches `sending` as `init.signal`, which `fetch` honours; a call is let go of at its
+deadline even by a `sending` that does not.
+
 A support bundle is a file, not a document, so it arrives as a `Blob` with the
 type lemonfiber served it as. Ask by the name it was written under, or by the
 payload the `support` action answered with once it wrote one:

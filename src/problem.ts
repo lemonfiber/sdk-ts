@@ -55,6 +55,24 @@ export const unreachable = (): Problem =>
   problem("unreachable", "lemonfiber is not answering. It may have been stopped.");
 
 /**
+ * The call used all the time it was given, every attempt included, and no
+ * answer came. Nothing is known of what lemonfiber made of it.
+ */
+export const outOfTime = (waitedMs: number): Problem => {
+  const seconds = Math.max(1, Math.round(waitedMs / 1000));
+  return problem(
+    "unreachable",
+    `lemonfiber did not answer within ${String(seconds)} seconds. It may be busy, asleep or stopped.`,
+  );
+};
+
+/**
+ * The caller stopped the call before an answer came.
+ */
+export const stopped = (): Problem =>
+  problem("unreachable", "The request was stopped before lemonfiber answered.");
+
+/**
  * The key this page is using is not the one this run is expecting.
  *
  * This kind, and this message, and nothing else. A run mints a key once, so the
