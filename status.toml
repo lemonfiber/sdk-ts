@@ -1,0 +1,9 @@
+# What this repository has built against the specification, one row per
+# requirement (OPS-R74). Change a row in the pull request that changes whether
+# its requirement is met. The format and the checks are in the specification's
+# scripts/status_check.py; the release gate reads this file.
+
+requirement = [
+  { id = "ARCH-R55", state = "done", evidence = ["src/address.ts", "src/address.test.ts", "sdk-php:src/Exception/ApiVersionMismatch.php"] },
+  { id = "ARCH-R129", state = "done", evidence = ["scripts/contract-generate.mjs"] },
+]
