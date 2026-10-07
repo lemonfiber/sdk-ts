@@ -317,7 +317,7 @@ describe("generating the refusal codes", () => {
 });
 
 describe("generating the actions a key may call", () => {
-  const callable = (action, disturbs, rehearsal) => ({ action, disturbs, rehearsal });
+  const callable = (action, disturbs, rehearsal, idempotent = false) => ({ action, disturbs, rehearsal, idempotent });
 
   it("writes an empty list from a contract that lists none", () => {
     const source = sources(artefact(PULL)).get("key-callable.ts");
@@ -327,12 +327,12 @@ describe("generating the actions a key may call", () => {
 
   it("writes every action in the order the contract lists them, with what it says of each, and a guard knowing only those", async () => {
     vi.spyOn(console, "log").mockImplementation(() => {});
-    const keyCallable = [callable("restart", true, true), callable("diagnose", true, false), callable("downloads-pause", false, true)];
+    const keyCallable = [callable("restart", true, true), callable("diagnose", true, false), callable("downloads-pause", false, true, true)];
     const { root, generated } = await imported(artefact(PULL, { keyCallable }));
     roots.push(root);
     expect(Object.keys(generated.KEY_CALLABLE)).toEqual(["restart", "diagnose", "downloads-pause"]);
-    expect(generated.KEY_CALLABLE.diagnose).toEqual({ disturbs: true, rehearsal: false });
-    expect(generated.KEY_CALLABLE["downloads-pause"]).toEqual({ disturbs: false, rehearsal: true });
+    expect(generated.KEY_CALLABLE.diagnose).toEqual({ disturbs: true, rehearsal: false, idempotent: false });
+    expect(generated.KEY_CALLABLE["downloads-pause"]).toEqual({ disturbs: false, rehearsal: true, idempotent: true });
     expect(generated.isKeyCallable("restart")).toBe(true);
     expect(generated.isKeyCallable("uninstall")).toBe(false);
     expect(generated.isKeyCallable("toString")).toBe(false);
@@ -352,7 +352,9 @@ describe("generating the actions a key may call", () => {
   it.each([
     ["an entry that is not an object", ["restart"], "entry 0: not an object"],
     ["an action that is not a name", [callable("Restart", true, true)], "entry 0: action"],
-    ["no action", [{ disturbs: true, rehearsal: true }], "entry 0: action"],
+    ["no action", [{ disturbs: true, rehearsal: true, idempotent: false }], "entry 0: action"],
+    ["an idempotent that is not true or false", [{ action: "restart", disturbs: true, rehearsal: true, idempotent: "no" }], "entry 0: idempotent"],
+    ["no word on whether it is safe to repeat", [{ action: "restart", disturbs: true, rehearsal: true }], "entry 0: idempotent"],
     ["a disturbs that is not true or false", [callable("restart", "yes", true)], "entry 0: disturbs"],
     ["a rehearsal that is not true or false", [callable("restart", true, 1)], "entry 0: rehearsal"],
     ["one action listed twice", [callable("restart", true, true), callable("restart", true, false)], "restart: listed twice"],

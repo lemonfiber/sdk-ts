@@ -163,7 +163,7 @@ function* wrongWithAction(entry, at) {
   }
   if (typeof entry.action !== "string" || !/^[a-z][a-z0-9-]*$/.test(entry.action))
     yield `entry ${String(at)}: action ${JSON.stringify(entry.action)} is not an action's name`;
-  for (const flag of ["disturbs", "rehearsal"]) {
+  for (const flag of ["disturbs", "rehearsal", "idempotent"]) {
     if (typeof entry[flag] !== "boolean")
       yield `entry ${String(at)}: ${flag} ${JSON.stringify(entry[flag])} is not true or false`;
   }

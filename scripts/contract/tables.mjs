@@ -95,8 +95,8 @@ export function readsModule(listed) {
 export function keyCallableModule(listed) {
   const union = listed.length === 0 ? "never" : listed.map(({ action }) => JSON.stringify(action)).join(" | ");
   const entries = listed.map(
-    ({ action, disturbs, rehearsal }) =>
-      `  ${JSON.stringify(action)}: { disturbs: ${String(disturbs)}, rehearsal: ${String(rehearsal)} },`,
+    ({ action, disturbs, rehearsal, idempotent }) =>
+      `  ${JSON.stringify(action)}: { disturbs: ${String(disturbs)}, rehearsal: ${String(rehearsal)}, idempotent: ${String(idempotent)} },`,
   );
   return {
     path: ["key-callable"],
@@ -112,6 +112,8 @@ export function keyCallableModule(listed) {
       "  readonly disturbs: boolean;",
       "  /** Whether it takes `dry_run`, so it can be rehearsed before the real call is offered. */",
       "  readonly rehearsal: boolean;",
+      "  /** Whether calling it again with the same arguments leaves the stack as calling it once did. */",
+      "  readonly idempotent: boolean;",
       "}",
       "",
       "/** What the contract says of each action a key may call, in the order it lists them. */",
