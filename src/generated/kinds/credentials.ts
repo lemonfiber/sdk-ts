@@ -90,6 +90,7 @@ export interface CredentialsEnvelope {
   api_version: number;
   data: Inventory;
   host?: string | null;
+  job?: string | null;
   kind: "credentials";
 }
 

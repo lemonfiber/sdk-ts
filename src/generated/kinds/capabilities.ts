@@ -16,6 +16,7 @@ export interface CapabilitiesEnvelope {
   api_version: number;
   data: Capabilities;
   host?: string | null;
+  job?: string | null;
   kind: "capabilities";
 }
 

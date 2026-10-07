@@ -37,5 +37,6 @@ export interface NewsEnvelope {
   api_version: number;
   data: Newest;
   host?: string | null;
+  job?: string | null;
   kind: "news";
 }

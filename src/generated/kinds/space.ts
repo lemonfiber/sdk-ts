@@ -176,6 +176,7 @@ export interface SpaceEnvelope {
   api_version: number;
   data: Reckoning;
   host?: string | null;
+  job?: string | null;
   kind: "space";
 }
 

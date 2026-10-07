@@ -44,5 +44,6 @@ export interface StopSeedingEnvelope {
   api_version: number;
   data: Letting;
   host?: string | null;
+  job?: string | null;
   kind: "stop-seeding";
 }

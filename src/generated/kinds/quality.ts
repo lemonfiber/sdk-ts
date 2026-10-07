@@ -34,6 +34,7 @@ export interface QualityEnvelope {
   api_version: number;
   data: QualityReport;
   host?: string | null;
+  job?: string | null;
   kind: "quality";
 }
 

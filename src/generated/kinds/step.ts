@@ -9,5 +9,6 @@ export interface StepEnvelope {
   api_version: number;
   data: Line;
   host?: string | null;
+  job?: string | null;
   kind: "step";
 }

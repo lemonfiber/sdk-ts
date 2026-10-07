@@ -10,6 +10,7 @@ export interface BesideEnvelope {
   api_version: number;
   data: BesideReport;
   host?: string | null;
+  job?: string | null;
   kind: "beside";
 }
 

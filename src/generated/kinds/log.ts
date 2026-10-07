@@ -7,6 +7,7 @@ export interface LogEnvelope {
   api_version: number;
   data: LogLine;
   host?: string | null;
+  job?: string | null;
   kind: "log";
 }
 

@@ -7,5 +7,6 @@ export interface PullEnvelope {
   api_version: number;
   data: string;
   host?: string | null;
+  job?: string | null;
   kind: "pull";
 }

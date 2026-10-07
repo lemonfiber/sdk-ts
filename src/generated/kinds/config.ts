@@ -42,6 +42,7 @@ export interface ConfigEnvelope {
   api_version: number;
   data: ConfigReport;
   host?: string | null;
+  job?: string | null;
   kind: "config";
 }
 

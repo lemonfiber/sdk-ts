@@ -20,6 +20,7 @@ export interface StuckEnvelope {
   api_version: number;
   data: StuckReport;
   host?: string | null;
+  job?: string | null;
   kind: "stuck";
 }
 

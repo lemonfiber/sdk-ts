@@ -49,6 +49,7 @@ export interface RepairEnvelope {
   api_version: number;
   data: RepairReport;
   host?: string | null;
+  job?: string | null;
   kind: "repair";
 }
 

@@ -27,6 +27,7 @@ export interface NewsItemsEnvelope {
   api_version: number;
   data: News;
   host?: string | null;
+  job?: string | null;
   kind: "news-items";
 }
 

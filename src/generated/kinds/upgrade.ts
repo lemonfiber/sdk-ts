@@ -9,6 +9,7 @@ export interface UpgradeEnvelope {
   api_version: number;
   data: UpgradeReport;
   host?: string | null;
+  job?: string | null;
   kind: "upgrade";
 }
 

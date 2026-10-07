@@ -46,6 +46,7 @@ export interface WalkthroughEnvelope {
   api_version: number;
   data: WalkthroughReport;
   host?: string | null;
+  job?: string | null;
   kind: "walkthrough";
 }
 

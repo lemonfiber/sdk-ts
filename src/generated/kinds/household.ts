@@ -9,5 +9,6 @@ export interface HouseholdEnvelope {
   api_version: number;
   data: HouseholdReport;
   host?: string | null;
+  job?: string | null;
   kind: "household";
 }

@@ -7,6 +7,7 @@ export interface ProvenanceEnvelope {
   api_version: number;
   data: ProvenanceReport;
   host?: string | null;
+  job?: string | null;
   kind: "provenance";
 }
 

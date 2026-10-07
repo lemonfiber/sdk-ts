@@ -30,6 +30,7 @@ export interface WizardEnvelope {
   api_version: number;
   data: WizardReport;
   host?: string | null;
+  job?: string | null;
   kind: "wizard";
 }
 

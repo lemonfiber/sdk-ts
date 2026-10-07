@@ -57,6 +57,7 @@ export interface StoredEnvelope {
   api_version: number;
   data: Stored;
   host?: string | null;
+  job?: string | null;
   kind: "stored";
 }
 

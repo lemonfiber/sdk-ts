@@ -34,6 +34,7 @@ export interface MigrationEnvelope {
   api_version: number;
   data: MigrationReport;
   host?: string | null;
+  job?: string | null;
   kind: "migration";
 }
 

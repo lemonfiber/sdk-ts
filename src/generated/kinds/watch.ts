@@ -54,5 +54,6 @@ export interface WatchEnvelope {
   api_version: number;
   data: SupervisionReport;
   host?: string | null;
+  job?: string | null;
   kind: "watch";
 }

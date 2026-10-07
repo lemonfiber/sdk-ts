@@ -41,6 +41,7 @@ export * from "./kinds/news-items.js";
 export * from "./kinds/outbound.js";
 export * from "./kinds/pairing.js";
 export * from "./kinds/pausing.js";
+export * from "./kinds/playing.js";
 export * from "./kinds/plugins.js";
 export * from "./kinds/preview.js";
 export * from "./kinds/provenance.js";

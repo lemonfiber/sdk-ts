@@ -108,6 +108,7 @@ export interface UpdateEnvelope {
   api_version: number;
   data: StackUpdateReport;
   host?: string | null;
+  job?: string | null;
   kind: "update";
 }
 

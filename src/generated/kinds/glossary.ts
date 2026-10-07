@@ -9,6 +9,7 @@ export interface GlossaryEnvelope {
   api_version: number;
   data: Vocabulary;
   host?: string | null;
+  job?: string | null;
   kind: "glossary";
 }
 

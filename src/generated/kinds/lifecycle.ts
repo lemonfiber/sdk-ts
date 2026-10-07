@@ -13,6 +13,7 @@ export interface LifecycleEnvelope {
   api_version: number;
   data: LifecycleReport;
   host?: string | null;
+  job?: string | null;
   kind: "lifecycle";
 }
 

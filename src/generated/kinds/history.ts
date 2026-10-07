@@ -57,6 +57,7 @@ export interface HistoryEnvelope {
   api_version: number;
   data: HistoryReport;
   host?: string | null;
+  job?: string | null;
   kind: "history";
 }
 

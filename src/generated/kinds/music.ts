@@ -10,6 +10,7 @@ export interface MusicEnvelope {
   api_version: number;
   data: MusicReport;
   host?: string | null;
+  job?: string | null;
   kind: "music";
 }
 

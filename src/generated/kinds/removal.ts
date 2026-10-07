@@ -49,6 +49,7 @@ export interface RemovalEnvelope {
   api_version: number;
   data: HouseholdRemoval;
   host?: string | null;
+  job?: string | null;
   kind: "removal";
 }
 

@@ -72,6 +72,7 @@ export interface TraceEnvelope {
   api_version: number;
   data: TraceReport;
   host?: string | null;
+  job?: string | null;
   kind: "trace";
 }
 

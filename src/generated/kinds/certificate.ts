@@ -7,6 +7,7 @@ export interface CertificateEnvelope {
   api_version: number;
   data: CertificateReport;
   host?: string | null;
+  job?: string | null;
   kind: "certificate";
 }
 

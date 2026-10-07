@@ -55,6 +55,7 @@ export interface StatusEnvelope {
   api_version: number;
   data: StatusReport;
   host?: string | null;
+  job?: string | null;
   kind: "status";
 }
 

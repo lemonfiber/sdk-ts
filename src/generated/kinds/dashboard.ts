@@ -92,6 +92,7 @@ export interface DashboardEnvelope {
   api_version: number;
   data: Snapshot;
   host?: string | null;
+  job?: string | null;
   kind: "dashboard";
 }
 

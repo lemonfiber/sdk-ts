@@ -15,6 +15,7 @@ export interface SeedEnvelope {
   api_version: number;
   data: SeedReport;
   host?: string | null;
+  job?: string | null;
   kind: "seed";
 }
 

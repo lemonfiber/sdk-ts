@@ -9,6 +9,7 @@ export interface DoctorEnvelope {
   api_version: number;
   data: DoctorReport;
   host?: string | null;
+  job?: string | null;
   kind: "doctor";
 }
 

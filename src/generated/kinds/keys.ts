@@ -24,6 +24,7 @@ export interface KeysEnvelope {
   api_version: number;
   data: KeyListing;
   host?: string | null;
+  job?: string | null;
   kind: "keys";
 }
 

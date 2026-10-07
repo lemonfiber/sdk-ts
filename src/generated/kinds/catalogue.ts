@@ -9,6 +9,7 @@ export interface CatalogueEnvelope {
   api_version: number;
   data: CatalogueReport;
   host?: string | null;
+  job?: string | null;
   kind: "catalogue";
 }
 

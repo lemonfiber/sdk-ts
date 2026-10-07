@@ -97,6 +97,7 @@ export interface RestoreEnvelope {
   api_version: number;
   data: Restoration;
   host?: string | null;
+  job?: string | null;
   kind: "restore";
 }
 

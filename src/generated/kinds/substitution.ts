@@ -39,6 +39,7 @@ export interface SubstitutionEnvelope {
   api_version: number;
   data: SubstitutionReport;
   host?: string | null;
+  job?: string | null;
   kind: "substitution";
 }
 

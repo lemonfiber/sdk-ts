@@ -85,5 +85,6 @@ export interface PluginsEnvelope {
   api_version: number;
   data: PluginInstalls;
   host?: string | null;
+  job?: string | null;
   kind: "plugins";
 }

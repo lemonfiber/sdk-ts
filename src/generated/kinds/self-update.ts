@@ -16,6 +16,7 @@ export interface SelfUpdateEnvelope {
   api_version: number;
   data: UpdateReport;
   host?: string | null;
+  job?: string | null;
   kind: "self-update";
 }
 

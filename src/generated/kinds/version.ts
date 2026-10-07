@@ -9,6 +9,7 @@ export interface VersionEnvelope {
   api_version: number;
   data: VersionReport;
   host?: string | null;
+  job?: string | null;
   kind: "version";
 }
 

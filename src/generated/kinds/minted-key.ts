@@ -41,6 +41,7 @@ export interface MintedKeyEnvelope {
   api_version: number;
   data: MintedKey;
   host?: string | null;
+  job?: string | null;
   kind: "minted-key";
 }
 

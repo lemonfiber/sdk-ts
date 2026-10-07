@@ -21,6 +21,7 @@ export interface AlertsEnvelope {
   api_version: number;
   data: AlertReport;
   host?: string | null;
+  job?: string | null;
   kind: "alerts";
 }
 

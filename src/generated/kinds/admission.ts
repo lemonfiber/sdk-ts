@@ -7,6 +7,7 @@ export interface AdmissionEnvelope {
   api_version: number;
   data: Admitted;
   host?: string | null;
+  job?: string | null;
   kind: "admission";
 }
 

@@ -24,6 +24,7 @@ export interface HandoffEnvelope {
   api_version: number;
   data: HandoffReport;
   host?: string | null;
+  job?: string | null;
   kind: "handoff";
 }
 

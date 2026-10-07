@@ -21,6 +21,7 @@ export interface SetupEnvelope {
   api_version: number;
   data: SetupReport;
   host?: string | null;
+  job?: string | null;
   kind: "setup";
 }
 

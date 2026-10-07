@@ -17,6 +17,7 @@ export interface ClientsEnvelope {
   api_version: number;
   data: Guidance;
   host?: string | null;
+  job?: string | null;
   kind: "clients";
 }
 
