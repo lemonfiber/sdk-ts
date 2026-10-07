@@ -30,6 +30,7 @@ export interface FormsEnvelope {
   api_version: number;
   data: FormsReport;
   host?: string | null;
+  job?: string | null;
   kind: "forms";
 }
 

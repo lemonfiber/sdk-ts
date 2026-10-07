@@ -45,6 +45,7 @@ export interface BundleEnvelope {
   api_version: number;
   data: Bundle;
   host?: string | null;
+  job?: string | null;
   kind: "bundle";
 }
 

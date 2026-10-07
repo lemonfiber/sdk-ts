@@ -27,6 +27,7 @@ export interface PausingEnvelope {
   api_version: number;
   data: PausingReport;
   host?: string | null;
+  job?: string | null;
   kind: "pausing";
 }
 

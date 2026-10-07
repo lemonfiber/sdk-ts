@@ -9,5 +9,6 @@ export interface PreviewEnvelope {
   api_version: number;
   data: Plan;
   host?: string | null;
+  job?: string | null;
   kind: "preview";
 }

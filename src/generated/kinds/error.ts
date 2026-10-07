@@ -9,5 +9,6 @@ export interface ErrorEnvelope {
   api_version: number;
   data: Problem;
   host?: string | null;
+  job?: string | null;
   kind: "error";
 }

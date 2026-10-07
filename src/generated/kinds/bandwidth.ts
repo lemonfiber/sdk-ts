@@ -39,6 +39,7 @@ export interface BandwidthEnvelope {
   api_version: number;
   data: Sharing;
   host?: string | null;
+  job?: string | null;
   kind: "bandwidth";
 }
 

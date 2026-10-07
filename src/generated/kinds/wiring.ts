@@ -53,6 +53,7 @@ export interface WiringEnvelope {
   api_version: number;
   data: WiringReport;
   host?: string | null;
+  job?: string | null;
   kind: "wiring";
 }
 

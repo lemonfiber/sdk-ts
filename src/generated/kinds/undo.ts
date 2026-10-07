@@ -9,5 +9,6 @@ export interface UndoEnvelope {
   api_version: number;
   data: UndoReversal;
   host?: string | null;
+  job?: string | null;
   kind: "undo";
 }

@@ -9,6 +9,7 @@ export interface ResetEnvelope {
   api_version: number;
   data: ResetReport;
   host?: string | null;
+  job?: string | null;
   kind: "reset";
 }
 

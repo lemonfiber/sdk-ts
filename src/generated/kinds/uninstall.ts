@@ -105,6 +105,7 @@ export interface UninstallEnvelope {
   api_version: number;
   data: Uninstall;
   host?: string | null;
+  job?: string | null;
   kind: "uninstall";
 }
 

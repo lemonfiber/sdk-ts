@@ -9,5 +9,6 @@ export interface FrontDoorEnvelope {
   api_version: number;
   data: FrontDoorReport;
   host?: string | null;
+  job?: string | null;
   kind: "front-door";
 }

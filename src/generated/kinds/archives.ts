@@ -7,6 +7,7 @@ export interface ArchivesEnvelope {
   api_version: number;
   data: Listing;
   host?: string | null;
+  job?: string | null;
   kind: "archives";
 }
 

@@ -33,6 +33,7 @@ export interface HeldEnvelope {
   api_version: number;
   data: HeldReport;
   host?: string | null;
+  job?: string | null;
   kind: "held";
 }
 

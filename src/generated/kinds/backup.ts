@@ -9,6 +9,7 @@ export interface BackupEnvelope {
   api_version: number;
   data: BackupReport;
   host?: string | null;
+  job?: string | null;
   kind: "backup";
 }
 

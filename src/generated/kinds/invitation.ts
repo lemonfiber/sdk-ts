@@ -146,6 +146,7 @@ export interface InvitationEnvelope {
   api_version: number;
   data: Invitation;
   host?: string | null;
+  job?: string | null;
   kind: "invitation";
 }
 

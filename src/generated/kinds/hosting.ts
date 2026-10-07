@@ -50,6 +50,7 @@ export interface HostingEnvelope {
   api_version: number;
   data: HostingReport;
   host?: string | null;
+  job?: string | null;
   kind: "hosting";
 }
 

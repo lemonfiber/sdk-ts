@@ -7,6 +7,7 @@ export interface JobEnvelope {
   api_version: number;
   data: Started;
   host?: string | null;
+  job?: string | null;
   kind: "job";
 }
 

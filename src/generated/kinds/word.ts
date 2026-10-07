@@ -9,5 +9,6 @@ export interface WordEnvelope {
   api_version: number;
   data: Term;
   host?: string | null;
+  job?: string | null;
   kind: "word";
 }

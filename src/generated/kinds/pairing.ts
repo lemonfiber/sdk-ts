@@ -30,6 +30,7 @@ export interface PairingEnvelope {
   api_version: number;
   data: Pairing;
   host?: string | null;
+  job?: string | null;
   kind: "pairing";
 }
 

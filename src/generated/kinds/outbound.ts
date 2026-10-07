@@ -72,6 +72,7 @@ export interface OutboundEnvelope {
   api_version: number;
   data: Leaving;
   host?: string | null;
+  job?: string | null;
   kind: "outbound";
 }
 

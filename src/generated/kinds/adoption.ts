@@ -45,5 +45,6 @@ export interface AdoptionEnvelope {
   api_version: number;
   data: AdoptReport;
   host?: string | null;
+  job?: string | null;
   kind: "adoption";
 }

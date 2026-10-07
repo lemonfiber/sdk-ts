@@ -10,6 +10,7 @@ export interface ImportEnvelope {
   api_version: number;
   data: ImportReport;
   host?: string | null;
+  job?: string | null;
   kind: "import";
 }
 
