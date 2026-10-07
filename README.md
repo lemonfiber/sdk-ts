@@ -21,7 +21,7 @@
 ---
 
 > **Status: unreleased.** The typed calls, the event stream and the generated
-> types are all in and exported; the package is not on npm yet. Full account in
+> types are all in and exported; the package is not on npm yet. The full account is in
 > the spec:
 > [`30-repos/sdk-ts.md`](https://github.com/lemonfiber/spec/blob/main/30-repos/sdk-ts.md).
 
