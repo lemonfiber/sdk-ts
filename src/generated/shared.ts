@@ -19,6 +19,7 @@ export * from "./shared/doctor__error__plugins.js";
 export * from "./shared/doctor__error__plugins__repair.js";
 export * from "./shared/doctor__plugins.js";
 export * from "./shared/glossary__word.js";
+export * from "./shared/held__playing.js";
 export * from "./shared/import__migration__seed__status__stuck.js";
 export * from "./shared/keys__minted-key.js";
 export * from "./shared/lifecycle__migration.js";

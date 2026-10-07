@@ -17,6 +17,7 @@ export const READS = {
   "storage": { path: "/api/storage", parameters: [], kinds: ["doctor"] },
   "requests": { path: "/api/requests", parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }], kinds: ["household"] },
   "held": { path: "/api/held", parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }, { name: "most", repeatable: false }], kinds: ["held"] },
+  "playing": { path: "/api/playing", parameters: [{ name: "member", repeatable: false }], kinds: ["playing"] },
   "hosting": { path: "/api/hosting", parameters: [], kinds: ["hosting"] },
   "front-door": { path: "/api/front-door", parameters: [], kinds: ["front-door"] },
   "news": { path: "/api/news", parameters: [], kinds: ["news-items"] },
@@ -57,6 +58,7 @@ export interface ReadQuery {
   "storage": Record<string, never>;
   "requests": { member?: Scalar | undefined; defaults?: Scalar | undefined };
   "held": { member?: Scalar | undefined; defaults?: Scalar | undefined; most?: Scalar | undefined };
+  "playing": { member?: Scalar | undefined };
   "hosting": Record<string, never>;
   "front-door": Record<string, never>;
   "news": Record<string, never>;
