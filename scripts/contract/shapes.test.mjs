@@ -160,8 +160,6 @@ describe("refusing what cannot be read one way", () => {
     [{ type: "object" }, "is an object that says nothing of its fields"],
     [{ type: "tuple" }, 'is of type "tuple"'],
     [{ const: [1] }, "a constant of [1] has no TypeScript literal"],
-    [{ $ref: "other.json#/x" }, "refers to other.json#/x, outside the definitions beside it"],
-    [{ $ref: "#/$defs/Missing" }, "`a` refers to `Missing`, which it does not define"],
   ])("refuses %j rather than guess", (schema, said) => {
     expect(refusal(artefact({ a: kind(schema, {}) }))).toContain(said);
   });
@@ -232,6 +230,21 @@ describe("refusing what cannot be read one way", () => {
     expect(await run(root)).toBe(1);
     expect(existsSync(join(root, OUT))).toBe(false);
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("api_version 2, and this package implements 1"));
+  });
+
+  it.each([
+    ["the envelope of `a` property `data` refers to other.json#/x, outside the definitions beside it.", kind({ $ref: "other.json#/x" })],
+    ["the envelope of `a` property `data` refers to #/$defs/Missing, which `a` does not define.", kind({ $ref: "#/$defs/Missing" })],
+    [
+      "`Problem`, defined by `a` property `code` refers to #/$defs/Code, which `a` does not define.",
+      kind({ $ref: "#/$defs/Problem" }, { Problem: PROBLEM }),
+    ],
+  ])("refuses a reference it cannot resolve, naming it and where it sits, and writes nothing: %s", async (said, schema) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const root = await held(artefact({ a: schema }));
+    expect(await run(root)).toBe(1);
+    expect(existsSync(join(root, OUT))).toBe(false);
+    expect(console.error).toHaveBeenCalledWith(`contract:generate: refused, and nothing was written. ${said}`);
   });
 
   it("refuses an artefact it cannot read", async () => {
