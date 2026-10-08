@@ -10,12 +10,21 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { LINE_CAP, linesIn } from "../line-cap.mjs";
-import { byCodePoint, checked, keyCallableOf, kindsOf, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
+import { bodiesOf, byCodePoint, checked, keyCallableOf, kindsOf, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
 import { Layout } from "./layout.mjs";
 import { OUT, fileOf, index, sourceOf } from "./modules.mjs";
 import { ArtefactRefused, refuse } from "./refused.mjs";
 import { pascal } from "./spelling.mjs";
-import { KINDS_MODULE, SHARED_MODULE, envelopeModule, keyCallableModule, readsModule, refusalsModule } from "./tables.mjs";
+import {
+  BODIES_MODULE,
+  KINDS_MODULE,
+  SHARED_MODULE,
+  bodyRoutesModule,
+  envelopeModule,
+  keyCallableModule,
+  readsModule,
+  refusalsModule,
+} from "./tables.mjs";
 import { readArtefact } from "./vendored.mjs";
 import { Writer } from "./writer.mjs";
 
@@ -30,10 +39,11 @@ Never edit anything here by hand. A change belongs in the Rust types the
 contract is generated from; everything downstream follows from that.
 
 Each kind's envelope and the types only it carries are one module under
-\`kinds/\`, the types several kinds carry are one module per set of kinds under
-\`shared/\`, and \`envelope.ts\`, \`reads.ts\`, \`refusals.ts\` and \`key-callable.ts\`
-hold the kinds, the reads, the refusal codes and the actions an integration key may
-call. No module holds more lines than the guards allow a source file; one that
+\`kinds/\`, each route's body and the types only it carries one module under
+\`bodies/\`, the types several kinds or bodies carry are one module per set of
+them under \`shared/\`, and \`envelope.ts\`, \`reads.ts\`, \`body-routes.ts\`,
+\`refusals.ts\` and \`key-callable.ts\` hold the kinds, the reads, the routes that
+take a body, the refusal codes and the actions an integration key may call. No module holds more lines than the guards allow a source file; one that
 would is written as parts beside it. \`index.ts\` hands on every name.
 `;
 export { OUT } from "./modules.mjs";
@@ -49,7 +59,8 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const refusals = refusalsOf(artefact);
   const keyCallable = keyCallableOf(artefact);
   const reads = readsOf(artefact, kinds);
-  const writer = new Writer(usersOf(kinds));
+  const bodies = bodiesOf(artefact);
+  const writer = new Writer(usersOf(kinds, bodies));
   const names = Object.keys(kinds).toSorted(byCodePoint);
   for (const kind of names) writer.owned.set(`${pascal(kind)}Envelope`, `the envelope carrying \`${kind}\``);
   for (const kind of names) {
@@ -58,12 +69,14 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
     for (const name of Object.keys(writer.definitions).toSorted(byCodePoint)) writer.definition(name);
     writer.envelope(kinds[kind]);
   }
+  for (const route of Object.keys(bodies).toSorted(byCodePoint)) writer.body(route, bodies[route]);
   const layout = new Layout(writer.shapes, cap);
   const modules = layout.modules();
   const groups = [...layout.groups.values()].map((group) => group.path);
   const under = (top) => groups.filter((path) => path[0] === top[0]).toSorted((a, b) => byCodePoint(a.join("/"), b.join("/")));
-  const members = [["envelope"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
+  const members = [["body-routes"], ["envelope"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
   modules.push(
+    bodyRoutesModule(bodies, (name) => layout.whereIs(name)),
     envelopeModule(names),
     keyCallableModule(keyCallable),
     readsModule(reads),
@@ -71,8 +84,12 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
     index(KINDS_MODULE, "Every kind's envelope, and the shapes only that kind carries.", under(KINDS_MODULE)),
   );
   if (under(SHARED_MODULE).length > 0) {
-    modules.push(index(SHARED_MODULE, "Every shape more than one kind carries.", under(SHARED_MODULE)));
+    modules.push(index(SHARED_MODULE, "Every shape more than one kind or body carries.", under(SHARED_MODULE)));
     members.push(SHARED_MODULE);
+  }
+  if (under(BODIES_MODULE).length > 0) {
+    modules.push(index(BODIES_MODULE, "Every route's body, and the shapes only that body carries.", under(BODIES_MODULE)));
+    members.push(BODIES_MODULE);
   }
   modules.push(
     index(

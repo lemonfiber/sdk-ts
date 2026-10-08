@@ -2,7 +2,7 @@
  * The modules written from the artefact's lists rather than its schemas: the
  * kinds and the refusal codes.
  */
-import { SPOKEN, byCodePoint, readNameOf } from "./artefact.mjs";
+import { SPOKEN, bodyName, byCodePoint, readNameOf } from "./artefact.mjs";
 import { pascal, property } from "./spelling.mjs";
 
 /** Where each kind's envelope, and the shapes only it carries, are written. */
@@ -10,6 +10,9 @@ export const KINDS_MODULE = ["kinds"];
 
 /** Where the shapes more than one kind carries are written. */
 export const SHARED_MODULE = ["shared"];
+
+/** Where each route's body, and the shapes only it carries, are written. */
+export const BODIES_MODULE = ["bodies"];
 
 /** The module naming every kind, and the envelope each one carries. */
 export function envelopeModule(kinds) {
@@ -152,6 +155,40 @@ export function refusalsModule(listed) {
       "/** Whether a code is one the contract lists as a refusal's. */",
       "export const isRefusalCode = (value: string): value is RefusalCode =>",
       "  Object.hasOwn(REFUSAL_CODES, value);",
+    ],
+  };
+}
+
+/**
+ * The module of the routes that take a body, and the type of the body each
+ * takes, imported from where `whereIs` says the type is written.
+ */
+export function bodyRoutesModule(bodies, whereIs) {
+  const routes = Object.keys(bodies).toSorted(byCodePoint);
+  const union = routes.length === 0 ? "never" : routes.map((route) => JSON.stringify(route)).join(" | ");
+  const imports = new Map();
+  for (const route of routes) {
+    const from = whereIs(bodyName(route))[0];
+    if (!imports.has(from)) imports.set(from, new Set());
+    imports.get(from).add(bodyName(route));
+  }
+  return {
+    path: ["body-routes"],
+    summary: "Every route that takes a body, and the type of the body each takes.",
+    imports,
+    body: [
+      "/** Every route that takes a body. */",
+      `export type BodyRoute = ${union};`,
+      "",
+      "/** Every route that takes a body, in path order. */",
+      "export const BODY_ROUTES: readonly BodyRoute[] = [",
+      ...routes.map((route) => `  ${JSON.stringify(route)},`),
+      "];",
+      "",
+      "/** The body each route takes, so what is sent is typed by where it goes. */",
+      ...(routes.length === 0
+        ? ["export type BodyOf = Record<BodyRoute, never>;"]
+        : ["export interface BodyOf {", ...routes.map((route) => `  ${JSON.stringify(route)}: ${bodyName(route)};`), "}"]),
     ],
   };
 }

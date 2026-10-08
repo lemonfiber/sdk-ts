@@ -20,11 +20,14 @@ import {
   READS,
   type Bundle,
   type ByKind,
+  type Choice,
   type KeyPurpose,
+  type Kind,
   type ReadAnswer,
   type ReadName,
   type ReadQuery,
   type Scalar,
+  type SetupAnswerBody,
 } from "./generated/index.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
@@ -136,6 +139,17 @@ export type Opened = { ok: true; client: Client } | { ok: false; problem: Proble
  * Where integration keys are listed, minted and revoked.
  */
 const KEYS = "/api/keys";
+
+/**
+ * Where the first-run setup is walked, one request a step.
+ */
+const SETUP = "/api/setup";
+
+/**
+ * Where setup stands after a step: the question it is on, the answers so far,
+ * and what it found.
+ */
+export type Walked = Reading<ByKind["wizard"]>;
 
 /**
  * What one integration key is minted with.
@@ -272,6 +286,61 @@ export class Client {
       await this.#ask("DELETE", `${KEYS}/${encodeURIComponent(name)}`, asking),
       "keys",
     );
+  }
+
+  /**
+   * Where setup stands and what it is still asking for. Asking changes nothing.
+   *
+   * The answers so far live in the progress file setup keeps on the machine, so
+   * a walk begun anywhere is the one this reads.
+   */
+  async setup(asking: Asking = {}): Promise<Walked> {
+    return answeredAs(await this.#ask("GET", SETUP, asking, undefined, true), "wizard");
+  }
+
+  /**
+   * Answers the question setup is on. A credential in the answer is tested
+   * against its service as it is given, and what the service said is on the
+   * reply; the value itself never is.
+   */
+  async setupAnswer(answer: SetupAnswerBody, asking: Asking = {}): Promise<Walked> {
+    return this.#walk("answer", asking, JSON.stringify(answer));
+  }
+
+  /**
+   * On past a step that only informs.
+   */
+  async setupNext(asking: Asking = {}): Promise<Walked> {
+    return this.#walk("next", asking);
+  }
+
+  /**
+   * Back to the question before.
+   */
+  async setupBack(asking: Asking = {}): Promise<Walked> {
+    return this.#walk("back", asking);
+  }
+
+  /**
+   * Writes the reviewed answers, answered once the writing is done.
+   */
+  async setupApply(asking: Asking = {}): Promise<Walked> {
+    return this.#walk("apply", asking);
+  }
+
+  /**
+   * Takes one way out of an apply that stopped part-way, chosen after the
+   * reply naming what that apply had already written.
+   */
+  async setupRecover(choice: Choice, asking: Asking = {}): Promise<Walked> {
+    return this.#walk("recover", asking, JSON.stringify({ choice }));
+  }
+
+  /**
+   * One step of setup, asked once: none of them is safe to send twice.
+   */
+  async #walk(step: string, asking: Asking, body?: string): Promise<Walked> {
+    return answeredAs(await this.#ask("POST", `${SETUP}/${step}`, asking, body), "wizard");
   }
 
   /**
@@ -415,10 +484,7 @@ function lastSegment(path: string): string {
  * An answer narrowed to the one kind its route answers with, or `unrecognised`
  * where it came back as another.
  */
-function answeredAs<K extends "keys" | "minted-key">(
-  answered: Reading<Envelope>,
-  kind: K,
-): Reading<ByKind[K]> {
+function answeredAs<K extends Kind>(answered: Reading<Envelope>, kind: K): Reading<ByKind[K]> {
   if (!answered.ok) return answered;
   return isKind(answered.value, kind)
     ? { ok: true, value: answered.value }

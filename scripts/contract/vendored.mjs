@@ -3,11 +3,12 @@
  * into the one document the generator reads.
  *
  * The single file `web-api.contract.json` is that document. The directory
- * `web-api/` holds an index naming every other file, one file per kind, and one
- * per definition under `defs/`, each `$ref` a path resolved against the file it
- * appears in. Read, each kind carries the definitions it reaches as its own
- * `$defs`, every reference spelled `#/$defs/<Name>`, which is the single file's
- * shape, so both layouts of one contract generate the same files.
+ * `web-api/` holds an index naming every other file, one file per kind, one per
+ * request body, and one per definition under `defs/`, each `$ref` a path
+ * resolved against the file it appears in. Read, each kind and each body
+ * carries the definitions it reaches as its own `$defs`, every reference
+ * spelled `#/$defs/<Name>`, which is the single file's shape, so both layouts
+ * of one contract generate the same files.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
@@ -32,6 +33,9 @@ export const DIRECTORY = "web-api";
 
 /** The document in the directory that names every other. */
 export const INDEX = "index.json";
+
+/** Where the index names the file of each body a route takes, by the route. */
+export const BODIES = "bodies";
 
 /** The lists the index names a file for, each under the key the single document carries it by. */
 export const LISTS = ["key_callable", "reads", "refusals"];
@@ -175,8 +179,11 @@ class Directory {
     return this.#definitions.get(name);
   }
 
-  /** A kind's envelope, carrying every definition it reaches as its own `$defs`. */
-  kind(kind, file) {
+  /**
+   * A kind's envelope or a route's body, carrying every definition it reaches as
+   * its own `$defs`.
+   */
+  schema(named, file) {
     const schema = this.read(file);
     if (!isRecord(schema)) return schema;
     if (Object.hasOwn(schema, "$defs")) {
@@ -191,7 +198,7 @@ class Directory {
       if (definition.dialect !== undefined && definition.dialect !== schema.$schema) {
         const where = shown(`defs/${name}.json`);
         const reaching = schema.$schema === undefined ? "names none" : `is written in ${JSON.stringify(schema.$schema)}`;
-        refuse(`${where} is written in ${JSON.stringify(definition.dialect)}, and \`${kind}\`, which reaches it, ${reaching}.`);
+        refuse(`${where} is written in ${JSON.stringify(definition.dialect)}, and \`${named}\`, which reaches it, ${reaching}.`);
       }
       reached.set(name, definition.schema);
       pending.push(...definition.referred);
@@ -212,11 +219,19 @@ function readDirectory(root) {
   if (isRecord(index.kinds)) {
     const kinds = [];
     for (const kind of Object.keys(index.kinds).toSorted(byCodePoint)) {
-      kinds.push([kind, directory.kind(kind, index.kinds[kind])]);
+      kinds.push([kind, directory.schema(kind, index.kinds[kind])]);
     }
     artefact.kinds = Object.fromEntries(kinds);
   } else {
     artefact.kinds = index.kinds;
+  }
+  if (isRecord(index[BODIES])) {
+    const bodies = Object.keys(index[BODIES])
+      .toSorted(byCodePoint)
+      .map((route) => [route, directory.schema(route, index[BODIES][route])]);
+    artefact[BODIES] = Object.fromEntries(bodies);
+  } else if (Object.hasOwn(index, BODIES)) {
+    artefact[BODIES] = index[BODIES];
   }
   for (const list of LISTS) {
     if (Object.hasOwn(index, list)) artefact[list] = directory.read(index[list]);

@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { isRecord } from "./artefact.mjs";
 import { refuse } from "./refused.mjs";
-import { CONTRACT, DIRECTORY, INDEX, LISTS, SINGLE, STAMP, shown, staysPut } from "./vendored.mjs";
+import { BODIES, CONTRACT, DIRECTORY, INDEX, LISTS, SINGLE, STAMP, shown, staysPut } from "./vendored.mjs";
 
 /** The size of a tar block, which every header and every file's padding is a whole number of. */
 const BLOCK = 512;
@@ -130,7 +130,11 @@ function takenDirectory(directory, revision) {
   if (!isRecord(index) || typeof index.api_version !== "number" || !isRecord(index.kinds)) {
     refuse(`what ${revision} holds at ${shown(INDEX)} is not a contract index.`);
   }
-  const named = [...Object.values(index.kinds), ...LISTS.filter((list) => Object.hasOwn(index, list)).map((list) => index[list])];
+  const named = [
+    ...Object.values(index.kinds),
+    ...(isRecord(index[BODIES]) ? Object.values(index[BODIES]) : []),
+    ...LISTS.filter((list) => Object.hasOwn(index, list)).map((list) => index[list]),
+  ];
   const missing = named.filter((file) => !staysPut(file) || !directory.has(file));
   if (missing.length > 0) {
     refuse(`${shown(INDEX)} at ${revision} names files it does not hold: ${missing.map((file) => JSON.stringify(file)).join(", ")}.`);

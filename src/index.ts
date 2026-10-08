@@ -10,6 +10,7 @@ export {
   type Query,
   type Sending,
   type Talking,
+  type Walked,
   type Written,
 } from "./client.js";
 export {
@@ -21,6 +22,7 @@ export {
   type Reading,
 } from "./envelope.js";
 export {
+  BODY_ROUTES,
   CONTRACT_API_VERSION,
   isKeyCallable,
   isRefusalCode,
@@ -30,7 +32,12 @@ export {
   KINDS,
   READS,
   FILES,
+  type BodyOf,
+  type BodyRoute,
   type ByKind,
+  type Choice,
+  type SetupAnswerBody,
+  type SetupRecoverBody,
   type ReadAnswer,
   type ReadName,
   type ReadQuery,

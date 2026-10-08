@@ -1,8 +1,8 @@
 /**
  * Turns the artefact's schemas into TypeScript declarations, each held by the
- * kinds that carry it.
+ * kinds and the routes' bodies that carry it.
  */
-import { ANNOTATIONS, byCodePoint, isRecord } from "./artefact.mjs";
+import { ANNOTATIONS, bodyName, byCodePoint, isRecord, rootOf } from "./artefact.mjs";
 import { refuse } from "./refused.mjs";
 import { comment, literal, pascal, property } from "./spelling.mjs";
 
@@ -32,6 +32,7 @@ const UNDERSTOOD = new Set([
   "type",
   "properties",
   "items",
+  "prefixItems",
   "oneOf",
   "anyOf",
   "const",
@@ -78,6 +79,9 @@ const OWNED = new Map([
   ["ReadQuery", "what each read takes"],
   ["ReadAnswer", "the envelope a read answers with"],
   ["FILES", "every read answered with a file"],
+  ["BodyRoute", "the union of every route that takes a body"],
+  ["BODY_ROUTES", "every route that takes a body"],
+  ["BodyOf", "the body each route takes"],
 ]);
 
 /** A string literal inside an annotation, which names a value rather than a type. */
@@ -272,6 +276,7 @@ export class Writer {
   #oneType(one, node, name, origin) {
     if (PRIMITIVES.has(one)) return PRIMITIVES.get(one);
     if (one === "array") {
+      if (node.prefixItems !== undefined) return this.#tuple(node, name, origin);
       if (node.items === undefined) refuse(`${origin} is an array that says nothing of its items.`);
       const where = `${origin} items`;
       return asItems(this.#annotation(this.#node(node.items, where), `${name}Item`, where));
@@ -291,10 +296,29 @@ export class Writer {
     return refuse(`${origin} is of type ${JSON.stringify(one)}, which this generator does not read.`);
   }
 
+  /**
+   * The tuple a `prefixItems` array describes, one type a place.
+   *
+   * Only a tuple of exactly as many items as it describes is read: one that
+   * may be shorter or longer has no TypeScript type that says what it holds.
+   */
+  #tuple(node, name, origin) {
+    const places = Array.isArray(node.prefixItems) ? node.prefixItems : [];
+    if (places.length === 0 || node.items !== undefined || node.minItems !== places.length || node.maxItems !== places.length) {
+      refuse(`${origin} is an array of places whose length is not fixed at the places it describes.`);
+    }
+    const types = places.map((place, at) => {
+      const where = `${origin} place ${String(at + 1)}`;
+      return this.#annotation(this.#node(place, where), `${name}Place${String(at + 1)}`, where);
+    });
+    return `[${types.join(", ")}]`;
+  }
+
   /** The union a `oneOf` or `anyOf` describes, each object variant named for its tag. */
   #union(variants, name, origin) {
     const nodes = variants.map((variant, at) => this.#node(variant, `${origin}/${String(at)}`));
     const tag = tagOf(nodes);
+    const sole = soleKeysOf(nodes);
     const constants = [];
     const members = [];
     for (const [at, variant] of nodes.entries()) {
@@ -303,9 +327,19 @@ export class Writer {
         constants.push(literal(variant.const));
         continue;
       }
-      members.push(this.#annotation(variant, name + label(variant, tag, at), `${origin}/${String(at)}`));
+      members.push(this.#annotation(variant, name + label(variant, tag, sole, at), `${origin}/${String(at)}`));
     }
     return [...new Set([...constants, ...members])].join(" | ");
+  }
+
+  /**
+   * Writes the body a route takes, with every definition it carries, as a
+   * definition of the route's own.
+   */
+  body(route, body) {
+    this.kind = route;
+    this.definitions = { ...body.$defs, [bodyName(route)]: rootOf(body) };
+    for (const name of Object.keys(this.definitions).toSorted(byCodePoint)) this.definition(name);
   }
 
   /** Writes the envelope carrying the kind being written, its `kind` narrowed to that kind. */
@@ -370,10 +404,38 @@ function tagOf(variants) {
   return common === undefined || common.size === 0 ? undefined : [...common].toSorted(byCodePoint)[0];
 }
 
-/** What a variant is called after its union: its tag's value, or its place. */
-function label(variant, tag, at) {
+/** The one property an object variant holds and requires, where it holds exactly one. */
+function soleKeyOf(variant) {
+  if (!isObject(variant)) return undefined;
+  const keys = Object.keys(variant.properties);
+  return keys.length === 1 && (variant.required ?? []).includes(keys[0]) ? keys[0] : undefined;
+}
+
+/**
+ * The properties that tell the variants of a union apart on their own: each
+ * held, and required, by exactly one variant holding nothing else.
+ *
+ * A union whose variants are each one named field, as an answer tagged by the
+ * question it belongs to is, names each variant for its field.
+ */
+function soleKeysOf(variants) {
+  const counted = new Map();
+  for (const variant of variants) {
+    const key = soleKeyOf(variant);
+    if (key !== undefined) counted.set(key, (counted.get(key) ?? 0) + 1);
+  }
+  return new Set([...counted].filter(([, count]) => count === 1).map(([key]) => key));
+}
+
+/** What a variant is called after its union: its tag's value, its one field, or its place. */
+function label(variant, tag, sole, at) {
   if (tag !== undefined && isObject(variant)) {
     const named = pascal(String(variant.properties[tag].const));
+    if (/^[A-Za-z_]\w*$/.test(named)) return named;
+  }
+  const key = soleKeyOf(variant);
+  if (key !== undefined && sole.has(key)) {
+    const named = pascal(key);
     if (/^[A-Za-z_]\w*$/.test(named)) return named;
   }
   return `Variant${String(at + 1)}`;

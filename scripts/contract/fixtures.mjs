@@ -27,11 +27,12 @@ export function kind(data, definitions) {
   return schema;
 }
 
-/** A whole artefact describing these kinds, and the refusals, key-callable actions and reads where given. */
-export function artefact(kinds, { refusals, keyCallable, reads, version = 1 } = {}) {
+/** A whole artefact describing these kinds, and the bodies, refusals, key-callable actions and reads where given. */
+export function artefact(kinds, { bodies, refusals, keyCallable, reads, version = 1 } = {}) {
   return {
     api_version: version,
     kinds,
+    ...(bodies !== undefined && { bodies }),
     ...(refusals !== undefined && { refusals }),
     ...(keyCallable !== undefined && { key_callable: keyCallable }),
     ...(reads !== undefined && { reads }),
@@ -47,19 +48,29 @@ const respelled = (node, spell) =>
 /**
  * An artefact as the files of the directory layout, by path under `contract/web-api/`.
  *
- * Each kind's definitions become files under `defs/` in the kind's dialect, and
- * every reference a path to one.
+ * Each kind's and each body's definitions become files under `defs/` in its
+ * dialect, and every reference a path to one.
  */
 export function directory(whole) {
   const files = new Map();
   const index = { api_version: whole.api_version, kinds: {} };
-  for (const [name, schema] of Object.entries(whole.kinds)) {
-    const { $defs, ...envelope } = schema;
-    index.kinds[name] = `kinds/${name}.json`;
-    files.set(index.kinds[name], respelled(envelope, (defined) => `../defs/${defined}.json`));
+  const laid = (file, schema) => {
+    const { $defs, ...own } = schema;
+    files.set(file, respelled(own, (defined) => `../defs/${defined}.json`));
     for (const [defined, definition] of Object.entries($defs ?? {})) {
       const dialect = schema.$schema === undefined ? {} : { $schema: schema.$schema };
       files.set(`defs/${defined}.json`, { ...dialect, ...respelled(definition, (other) => `${other}.json`) });
+    }
+  };
+  for (const [name, schema] of Object.entries(whole.kinds)) {
+    index.kinds[name] = `kinds/${name}.json`;
+    laid(index.kinds[name], schema);
+  }
+  if (whole.bodies !== undefined) {
+    index.bodies = {};
+    for (const [route, schema] of Object.entries(whole.bodies)) {
+      index.bodies[route] = `bodies/${route.slice("/api/".length).replaceAll("/", "-")}.json`;
+      laid(index.bodies[route], schema);
     }
   }
   for (const [list, file] of [["key_callable", "key-callable.json"], ["reads", "reads.json"], ["refusals", "refusals.json"]]) {
