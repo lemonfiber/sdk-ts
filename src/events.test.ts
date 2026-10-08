@@ -154,6 +154,37 @@ describe("follow", () => {
     expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 412 } });
   });
 
+  // A walk's steps name the job its accepting reply gave, so a surface can tie
+  // each to the walk it started; an event naming no job carries none.
+  it("hands over the job an event was said for, and none where it names none", async () => {
+    const line = { step: "searching", said: "Asking the indexers.", detail: "" };
+    const named = (job: string | null): string =>
+      `event: step\ndata: ${JSON.stringify({ api_version: API_VERSION, kind: "step", data: line, job })}\n\n`;
+    const got = await take(
+      follow({
+        ...base,
+        fetching: serving([[named("5c63"), named(null), named("")]], { headers: [] }),
+        reconnectsAllowed: 0,
+      }),
+      3,
+    );
+
+    expect(got[0]).toEqual({ at: "live", kind: "step", data: line, job: "5c63" });
+    expect(got[1]).toEqual({ at: "live", kind: "step", data: line });
+    expect(got[2]).toEqual({ at: "live", kind: "step", data: line });
+  });
+
+  it("keeps the job on what it held when it hands it over again after a break", async () => {
+    const line = { step: "importing", said: "Moving it in.", detail: "" };
+    const event = `event: step\ndata: ${JSON.stringify({ api_version: API_VERSION, kind: "step", data: line, job: "5c63" })}\n\n`;
+    const got = await take(
+      follow({ ...base, fetching: serving([[event]], { headers: [] }), reconnectsAllowed: 0 }),
+      3,
+    );
+
+    expect(got[2]).toMatchObject({ at: "stale", kind: "step", data: line, job: "5c63" });
+  });
+
   // The token is a header, never a query parameter.
   it("sends the token in its header", async () => {
     const seen: Seen = { headers: [] };
