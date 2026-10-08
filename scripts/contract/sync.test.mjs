@@ -151,9 +151,13 @@ describe("taking the contract", () => {
     );
     const missing = directoryOf(WHOLE);
     missing.delete("web-api/reads.json");
-    missing.set("web-api/index.json", { ...missing.get("web-api/index.json"), kinds: { a: "kinds/a.json", b: "../b.json" } });
+    missing.set("web-api/index.json", {
+      ...missing.get("web-api/index.json"),
+      kinds: { a: "kinds/a.json", b: "../b.json" },
+      bodies: { "/api/setup/answer": "bodies/setup-answer.json" },
+    });
     expect(refusal(revisionOf(missing))).toBe(
-      `contract/web-api/index.json at ${REVISION} names files it does not hold: "../b.json", "reads.json".`,
+      `contract/web-api/index.json at ${REVISION} names files it does not hold: "../b.json", "bodies/setup-answer.json", "reads.json".`,
     );
   });
 

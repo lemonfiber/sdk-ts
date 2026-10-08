@@ -13,6 +13,28 @@ export const ANNOTATIONS = new Set(["description", "title", "default", "examples
 /** A kind, as the core spells one: `front-door`. */
 const KIND = /^[a-z][a-z0-9_-]*$/;
 
+/** A route a body is sent to, as the core spells one: `/api/setup/answer`. */
+const ROUTE = /^\/api(?:\/[a-z][a-z0-9-]*)+$/;
+
+/** What every route a body is sent to begins with, which its module name leaves out. */
+const API = "/api/";
+
+/** Whether a carrier of a shape is a route's body rather than a kind, which never begins with a slash. */
+export const isRoute = (carrier) => carrier.startsWith("/");
+
+/** A route as a module is named: `/api/setup/answer` is `setup-answer`. */
+export const stemOf = (route) => route.slice(API.length).replaceAll("/", "-");
+
+/**
+ * The type a route's body is written as: `/api/setup/answer` takes a
+ * `SetupAnswerBody`.
+ *
+ * Named for the route rather than by the title the core gives it, because a
+ * title is the name of the type the server reads the body into, and two of
+ * those in different places can share a name a definition already has.
+ */
+export const bodyName = (route) => `${pascal(stemOf(route))}Body`;
+
 /** A problem code, as the core spells one: `ADMIT-4`. */
 const CODE = /^[A-Z][A-Z0-9]*-\d+$/;
 
@@ -53,7 +75,7 @@ export function checked(artefact) {
         "Sync a matching release, or implement the newer version first.",
     );
   }
-  const ambiguous = [...besideAReference(kindsOf(artefact), "")];
+  const ambiguous = [...besideAReference(kindsOf(artefact), ""), ...besideAReference(bodiesOf(artefact), "")];
   if (ambiguous.length > 0) {
     refuse(
       "The vendored contract puts a constraint beside a reference, and generating " +
@@ -86,14 +108,52 @@ export function kindsOf(artefact) {
   return kinds;
 }
 
-/** Each definition's name, to every kind whose definitions carry it. */
-export function usersOf(kinds) {
-  const users = new Map();
-  for (const [kind, schema] of Object.entries(kinds)) {
-    for (const name of Object.keys(schema.$defs ?? {})) {
-      if (!users.has(name)) users.set(name, new Set());
-      users.get(name).add(kind);
+/**
+ * The body each route takes, by the route, or none.
+ *
+ * An artefact older than the bodies has none, and reads as describing no body
+ * rather than as an error, so a consumer compiles against every artefact. Two
+ * routes whose bodies would be written under one name, and a body whose name
+ * one of its own definitions has, are refused.
+ */
+export function bodiesOf(artefact) {
+  const bodies = Object.hasOwn(artefact, "bodies") ? artefact.bodies : {};
+  if (!isRecord(bodies)) {
+    refuse(`The vendored contract's bodies are ${JSON.stringify(bodies)}, and they are an object keyed by route.`);
+  }
+  const named = new Map();
+  for (const route of Object.keys(bodies).toSorted(byCodePoint)) {
+    if (!ROUTE.test(route)) refuse(`The body route ${JSON.stringify(route)} is not a path under ${API}.`);
+    const body = bodies[route];
+    if (!isRecord(body)) refuse(`The body of \`${route}\` is ${JSON.stringify(body)}, which is not a schema.`);
+    const name = bodyName(route);
+    if (Object.hasOwn(body.$defs ?? {}, name)) {
+      refuse(`The body of \`${route}\` is written as \`${name}\`, which also names one of its definitions.`);
     }
+    if (named.has(name)) refuse(`The bodies of \`${named.get(name)}\` and \`${route}\` would both be written as \`${name}\`.`);
+    named.set(name, route);
+  }
+  return bodies;
+}
+
+/** A body's own schema, without what describes the document rather than the value. */
+export function rootOf(body) {
+  return Object.fromEntries(Object.entries(body).filter(([key]) => !["$defs", "$schema", "title"].includes(key)));
+}
+
+/** Each definition's name, to every kind and every route whose definitions carry it; a body's own name is its route's. */
+export function usersOf(kinds, bodies = {}) {
+  const users = new Map();
+  const use = (name, carrier) => {
+    if (!users.has(name)) users.set(name, new Set());
+    users.get(name).add(carrier);
+  };
+  for (const [kind, schema] of Object.entries(kinds)) {
+    for (const name of Object.keys(schema.$defs ?? {})) use(name, kind);
+  }
+  for (const [route, body] of Object.entries(bodies)) {
+    use(bodyName(route), route);
+    for (const name of Object.keys(body.$defs ?? {})) use(name, route);
   }
   return users;
 }

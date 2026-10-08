@@ -1,6 +1,6 @@
 /**
- * Where each shape is written: one module per set of kinds carrying it, in parts
- * where one would outgrow the cap.
+ * Where each shape is written: one module per set of kinds and bodies carrying
+ * it, in parts where one would outgrow the cap.
  *
  * A shape every carrier of which also carries what it names imports only from
  * modules carried by more kinds than its own, so the modules import one way. A
@@ -8,11 +8,11 @@
  * run of shapes that name one another, and each importing only from parts
  * before it.
  */
-import { byCodePoint } from "./artefact.mjs";
+import { byCodePoint, isRoute, stemOf } from "./artefact.mjs";
 import { index, lengthOf } from "./modules.mjs";
 import { refuse } from "./refused.mjs";
 import { moduleName } from "./spelling.mjs";
-import { KINDS_MODULE, SHARED_MODULE } from "./tables.mjs";
+import { BODIES_MODULE, KINDS_MODULE, SHARED_MODULE } from "./tables.mjs";
 import { refersTo } from "./writer.mjs";
 
 /** Words as a list in prose, each in backticks: `a`, `b` and `c`. */
@@ -27,10 +27,18 @@ function carried(carriers) {
   return `${ticked(carriers)} ${carriers.size === 2 ? "both" : "all"} carry`;
 }
 
-/** The module the shapes some kinds carry are written in. */
+/** A carrier as a word of a module's name: a kind as itself, a route's body as `body-` and its route. */
+const wordOf = (carrier) => (isRoute(carrier) ? `body-${stemOf(carrier)}` : moduleName(carrier));
+
+/**
+ * The module the shapes some kinds or bodies carry are written in: one kind's
+ * under `kinds/`, one body's under `bodies/`, and any more under `shared/`.
+ */
 function pathOf(carriers) {
-  const kinds = [...carriers].toSorted(byCodePoint).map((kind) => moduleName(kind));
-  return kinds.length === 1 ? [...KINDS_MODULE, kinds[0]] : [...SHARED_MODULE, kinds.join("__")];
+  const sorted = [...carriers].toSorted(byCodePoint);
+  if (sorted.length === 1 && isRoute(sorted[0])) return [...BODIES_MODULE, stemOf(sorted[0])];
+  const words = sorted.map((carrier) => wordOf(carrier));
+  return words.length === 1 ? [...KINDS_MODULE, words[0]] : [...SHARED_MODULE, words.join("__")];
 }
 
 /**
@@ -45,6 +53,10 @@ function grouped(shapes) {
     const shape = shapes.get(name);
     const key = pathOf(shape.carriers).join("/");
     if (!groups.has(key)) groups.set(key, { path: key.split("/"), carriers: shape.carriers, members: new Map() });
+    const held = groups.get(key).carriers;
+    if (held.size !== shape.carriers.size || [...held].some((carrier) => !shape.carriers.has(carrier))) {
+      refuse(`${ticked(held)} and ${ticked(shape.carriers)} would both be written in \`${key}\`.`);
+    }
     groups.get(key).members.set(name, shape);
   }
   return groups;
@@ -138,9 +150,16 @@ export class Layout {
 
   /** What the module of a group holds. */
   static holds(group) {
-    return group.carriers.size === 1
-      ? `The ${ticked(group.carriers)} envelope, and the shapes ${carried(group.carriers)}`
-      : `The shapes ${carried(group.carriers)}`;
+    if (group.carriers.size !== 1) return `The shapes ${carried(group.carriers)}`;
+    const [carrier] = group.carriers;
+    return isRoute(carrier)
+      ? `The body ${ticked(group.carriers)} takes, and the shapes only it carries`
+      : `The ${ticked(group.carriers)} envelope, and the shapes ${carried(group.carriers)}`;
+  }
+
+  /** The module a shape is written in, before any is split into parts. */
+  whereIs(name) {
+    return this.#where.get(name);
   }
 
   /** Every module the shapes are written in, splitting each that would outgrow the cap. */

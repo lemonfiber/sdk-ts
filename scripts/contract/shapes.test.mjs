@@ -85,7 +85,7 @@ describe("writing a shape", () => {
     expect(source).toContain('  scope: "service";');
   });
 
-  it("names untagged variants for their place, and a tag naming nothing for its place too", () => {
+  it("names an untagged variant for the one field it holds, or for its place, and a tag naming nothing for its place too", () => {
     const either = {
       oneOf: [
         { type: "string", const: "nothing" },
@@ -103,7 +103,7 @@ describe("writing a shape", () => {
     const source = sources(
       artefact({ word: kind({ $ref: "#/$defs/Either" }, { Either: either, Tagged: tagged, Code: CODE }) }),
     ).get("kinds/word.ts");
-    expect(source).toContain('export type Either = "nothing" | EitherVariant2 | EitherVariant3 | Code;');
+    expect(source).toContain('export type Either = "nothing" | EitherA | EitherVariant3 | Code;');
     expect(source).toContain("export type Tagged = TaggedVariant1 | TaggedTwo;");
   });
 

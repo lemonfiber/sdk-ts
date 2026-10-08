@@ -144,6 +144,27 @@ await client.revoke("home"); // answered with the keys as they now stand
 The password is sent in the mint's body and kept by nothing here, and the
 secret is in that one reply and no other.
 
+## Walking setup
+
+First-run setup is walked one request a step, each answered with where setup
+then stands, as a `wizard` envelope. The answers so far live in the progress
+file setup keeps on the machine, so a walk begun in a terminal is the one these
+read, and reloading loses nothing.
+
+```ts
+let walked = await client.setup(); // where it stands; changes nothing
+walked = await client.setupAnswer({ protocols: { torrent: true, usenet: false } });
+walked = await client.setupNext(); // past a step that only informs
+walked = await client.setupBack(); // back to the question before
+walked = await client.setupApply(); // write the reviewed answers
+walked = await client.setupRecover("roll-back"); // out of an apply that stopped part-way
+```
+
+An answer is a `SetupAnswerBody`: one field, named for the question it answers.
+A credential in it is tested against its service as it is given, and the reply
+says what the service said and never repeats the value. Only `setup()` is asked
+again after a passing failure; every step is sent once.
+
 ## Live updates
 
 `GET /api/events` is a stream of envelopes. `follow` reads it:
@@ -245,7 +266,9 @@ refused as a `version` problem that names both numbers. See
 
 Everything under `src/generated/` is generated from the contract vendored under
 `contract/`, which lemonfiber builds from the Rust types that produce its
-answers. The copy is in the layout the revision it came from publishes: the
+answers and read its requests. Each route's body is written as a type named
+for the route (`/api/setup/answer` takes a `SetupAnswerBody`), and `BodyOf`
+maps each route to its body. The copy is in the layout the revision it came from publishes: the
 directory `contract/web-api/`, or the single file
 `contract/web-api.contract.json`. Nothing there is edited by hand. To take a
 newer contract:
