@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-12" | "ASK-13" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-34" | "PLUGIN-35" | "PLUGIN-36" | "PLUGIN-37" | "PLUGIN-38" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SERVE-8" | "SPACE-6" | "STACK-1" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -21,6 +21,8 @@ export const REFUSAL_CODES: Readonly<
   "ASK-1": { name: "NO_SUCH_ACTION", status: 404, description: "Raised where no action goes by the name that was asked for." },
   "ASK-10": { name: "WRONG_METHOD", status: 405, description: "Raised where an endpoint was asked with a method it does not answer." },
   "ASK-11": { name: "NOT_A_KEY_REQUEST", status: 400, description: "Raised where the body of a mint is not a key's name, scope, purpose and the password." },
+  "ASK-12": { name: "NOT_AN_IDEMPOTENCY_KEY", status: 400, description: "Raised where an action's `Idempotency-Key` is not one to 255 visible characters, or is given more than once." },
+  "ASK-13": { name: "IDEMPOTENCY_KEY_REUSED", status: 400, description: "Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another." },
   "ASK-2": { name: "MISSING_ARGUMENT", status: 400, description: "Raised where an action was not given an argument it needs." },
   "ASK-3": { name: "UNRECOGNISED_ARGUMENT", status: 400, description: "Raised where an argument was given a value that names nothing." },
   "ASK-4": { name: "UNWANTED_ARGUMENT", status: 400, description: "Raised where an action was given an argument its command has nowhere to put." },
@@ -57,6 +59,11 @@ export const REFUSAL_CODES: Readonly<
   "PLUGIN-31": { name: "SCHEME_REFUSED", status: 400, description: "Raised when a git source is named over a transport other than https, before anything is asked of it." },
   "PLUGIN-32": { name: "ADDRESS_REFUSED", status: 400, description: "Raised when a git source's host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified." },
   "PLUGIN-33": { name: "HEADER_NAMED", status: 400, description: "Raised when a recipe substitutes a value into a header's name, which is a fixed identifier of the protocol and written out; the manifest's every other fault is listed beside it." },
+  "PLUGIN-34": { name: "INPUT_UNMATCHED", status: 400, description: "Raised when a recipe of the act asks the operator for a value that was not given, or a value was given that no recipe of the act asks for." },
+  "PLUGIN-35": { name: "CALL_REFUSED", status: 500, description: "Raised when a recipe's call was not sent because its host stands for an address not out on the internet; the install or update was put back." },
+  "PLUGIN-36": { name: "STEP_FAILED", status: 500, description: "Raised when a recipe's step failed any other way — nothing answered, the answer was not the one it expects, a capture found nothing, or the answer was larger than a recipe reads; the install or update was put back." },
+  "PLUGIN-37": { name: "PATH_NOT_PLAIN", status: 400, description: "Raised when a recipe's call path is not a plain absolute path; the manifest's every other fault is listed beside it." },
+  "PLUGIN-38": { name: "VALUE_WITHHELD", status: 400, description: "Raised when a recipe's call was not sent because a value it carries may not go where it was going: not where its pairs say, not back to the service a credential belongs to, or outside without its approval; the install or update was put back." },
   "PLUGIN-4": { name: "UNRECORDED", status: 500, description: "The record of what is installed cannot be read." },
   "PLUGIN-5": { name: "ALREADY", status: 400, description: "The plugin is installed already." },
   "PLUGIN-6": { name: "NOWHERE", status: 500, description: "There is no stack on this machine to put a plugin's container in." },
@@ -83,6 +90,7 @@ export const REFUSAL_CODES: Readonly<
   "RESTORE-11": { name: "MOVED_ON", status: 400, description: "Raised when consent was given for a listing that no longer stands." },
   "SERVE-6": { name: "UNRENDERABLE", status: 500, description: "Raised when an answer could not be rendered." },
   "SERVE-7": { name: "NO_JOB_NAME", status: 500, description: "Raised when this machine will not supply the randomness a job is named with." },
+  "SERVE-8": { name: "UNANSWERED", status: 500, description: "Raised when an action's work ended before it had an answer to give." },
   "SPACE-6": { name: "ANOTHER_OFFER", status: 400, description: "Raised when an agreement names an offer that is not the one standing now." },
   "STACK-1": { name: "STACK_UNREADABLE", status: 500, description: "Raised when a stack directory holds no readable manifest." },
   "STACK-2": { name: "STACK_UNUSABLE", status: 500, description: "Raised when a manifest is readable and this build cannot use it." },

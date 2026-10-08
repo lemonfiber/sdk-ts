@@ -2,9 +2,9 @@
 // The shapes `doctor` and `plugins` both carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { ProblemSeverity } from "./alert__dashboard__doctor__error__plugins.js";
 import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugins__wiring__wizard.js";
-import type { ProblemSeverity } from "./dashboard__doctor__error__plugins.js";
-import type { Code, Problem, ProblemState } from "./doctor__error__plugins.js";
+import type { Code, Problem, ProblemState, ProblemStep } from "./doctor__error__plugins.js";
 import type { Remedy } from "./doctor__error__plugins__repair.js";
 
 /**
@@ -42,6 +42,14 @@ export interface DoctorVerdictFail {
   severity: ProblemSeverity;
   /** Where it stands with respect to being fixed. */
   state: ProblemState;
+  /**
+   * Every step a run declares, with what each came to, where the problem ended a run
+   * of steps part-way; absent from every other problem.
+   *
+   * Data beside the detail rather than in it, so a client reads what changed
+   * somewhere going back cannot reach without parsing a sentence written for a person.
+   */
+  steps?: ProblemStep[];
   /** What happened, in one plain sentence. */
   summary: string;
 }
@@ -86,6 +94,14 @@ export interface DoctorVerdictWarn {
   severity: ProblemSeverity;
   /** Where it stands with respect to being fixed. */
   state: ProblemState;
+  /**
+   * Every step a run declares, with what each came to, where the problem ended a run
+   * of steps part-way; absent from every other problem.
+   *
+   * Data beside the detail rather than in it, so a client reads what changed
+   * somewhere going back cannot reach without parsing a sentence written for a person.
+   */
+  steps?: ProblemStep[];
   /** What happened, in one plain sentence. */
   summary: string;
 }
