@@ -5,6 +5,7 @@ export {
   Client,
   type DocumentRead,
   type Handed,
+  type Minting,
   type Opened,
   type Query,
   type Sending,

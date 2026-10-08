@@ -30,5 +30,7 @@ requirement = [
   { id = "ARCH-R129", state = "partial", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a definition taking a name this generator writes"] },
   { id = "ARCH-R138", state = "partial", evidence = ["src/problem.ts", "src/client.test.ts::reports the refusal lemonfiber actually sends as one"] },
   { id = "ARCH-R139", state = "partial", evidence = ["scripts/contract/refused.mjs", "scripts/contract/shapes.test.mjs::writes every code the contract lists, with what it says of each"] },
+  { id = "C10-R1", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are minted with the password in the body, and the secret comes back once"] },
+  { id = "C10-R6", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are listed from the keys route, with the token as a header", "src/keys.test.ts::are revoked by name, sent as one path segment"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a reference it cannot resolve"] },
 ]
