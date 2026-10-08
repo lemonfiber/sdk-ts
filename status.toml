@@ -33,5 +33,6 @@ requirement = [
   { id = "C10-R1", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are minted with the password in the body, and the secret comes back once"] },
   { id = "C10-R6", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are listed from the keys route, with the token as a header", "src/keys.test.ts::are revoked by name, sent as one path segment"] },
   { id = "ARCH-R133", state = "partial", evidence = ["scripts/contract/writer.mjs", "scripts/contract/bodies.test.mjs::writes a body under its route's name, in a module of its own", "src/setup.test.ts::sends an answer as the body, tagged by the question it answers"] },
+  { id = "D3-R14", state = "partial", evidence = ["src/events.ts", "src/events.test.ts::hands over the job an event was said for, and none where it names none"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a reference it cannot resolve"] },
 ]

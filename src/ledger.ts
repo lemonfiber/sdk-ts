@@ -13,6 +13,7 @@ export type Held =
 
 interface Entry {
   data: unknown;
+  job: string | null | undefined;
   recordedAtMs: number;
   live: boolean;
 }
@@ -28,10 +29,10 @@ export class Ledger {
   #lastArrivalMs: number | undefined;
 
   /**
-   * Records a value arriving now.
+   * Records a value arriving now, with the job it was said for where it names one.
    */
-  record(kind: string, data: unknown, atMs: number): void {
-    this.#entries.set(kind, { data, recordedAtMs: atMs, live: true });
+  record(kind: string, data: unknown, atMs: number, job?: string | null): void {
+    this.#entries.set(kind, { data, job, recordedAtMs: atMs, live: true });
     this.spoke(atMs);
   }
 
@@ -89,10 +90,13 @@ export class Ledger {
   /**
    * Everything held, all of it stale. Read after `cool`.
    */
-  cooled(nowMs: number): { kind: string; data: unknown; quietForMs: number }[] {
+  cooled(
+    nowMs: number,
+  ): { kind: string; data: unknown; job: string | null | undefined; quietForMs: number }[] {
     return [...this.#entries].map(([kind, entry]) => ({
       kind,
       data: entry.data,
+      job: entry.job,
       quietForMs: nowMs - entry.recordedAtMs,
     }));
   }

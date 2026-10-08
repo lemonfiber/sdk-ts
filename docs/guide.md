@@ -189,6 +189,11 @@ for await (const arrival of follow({ url, token: printedByLemonfiber, fetching: 
 | `unreadable` | One event could not be read, or was in an `api_version` this package does not speak. The stream goes on                     |
 | `lost`       | The stream has ended: refused, unreachable, closed by the server, or silent for longer than allowed. The problem says which |
 
+A `live` or `stale` arrival carries `job` where its envelope names the job it
+was said for. A walkthrough's `step` events name the job its accepting reply
+gave, so each step can be tied to the walk that asked for it. An event naming
+no job carries no `job` field.
+
 The server sends a heartbeat every 15 seconds (`HEARTBEAT_MS`). Silence for 30
 seconds (`SILENCE_ALLOWED_MS`) counts as a broken connection. A broken
 connection is reopened up to five times in a row (`RECONNECTS_ALLOWED`) before

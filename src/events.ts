@@ -47,14 +47,24 @@ export type Arrival =
 /**
  * A kind and the payload the contract gives it, told apart by the kind, so
  * narrowing an arrival by its `kind` types its `data`.
+ *
+ * `job` is the job the event was said for, where its envelope names one: a
+ * walk's steps carry the name its accepting reply gave, so a surface ties each
+ * step to the walk it started. It is absent wherever the envelope names none.
  */
-export type Heard = { [K in Kind]: { kind: K; data: ByKind[K]["data"] } }[Kind];
+export type Heard = { [K in Kind]: { kind: K; data: ByKind[K]["data"]; job?: string } }[Kind];
+
+/**
+ * The job an envelope was said for, where it names one.
+ */
+const jobOf = (job: string | null | undefined): { job?: string } =>
+  typeof job === "string" && job !== "" ? { job } : {};
 
 /**
  * What an envelope said, as an arrival carries it.
  */
 const heardIn = (envelope: Envelope): Heard =>
-  ({ kind: envelope.kind, data: envelope.data }) as Heard;
+  ({ kind: envelope.kind, data: envelope.data, ...jobOf(envelope.job) }) as Heard;
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
@@ -177,7 +187,7 @@ export async function* follow(options: Following): AsyncGenerator<Arrival> {
     for (const held of ledger.cooled(now())) {
       yield {
         at: "stale",
-        ...({ kind: held.kind, data: held.data } as Heard),
+        ...({ kind: held.kind, data: held.data, ...jobOf(held.job) } as Heard),
         quietForMs: held.quietForMs,
       };
     }
@@ -254,7 +264,7 @@ function received(text: string, opening: Opening): Arrival {
 
   if (!read.ok) return { at: "unreadable", problem: read.problem };
 
-  opening.ledger.record(read.value.kind, read.value.data, opening.now());
+  opening.ledger.record(read.value.kind, read.value.data, opening.now(), read.value.job);
   return { at: "live", ...heardIn(read.value) };
 }
 
