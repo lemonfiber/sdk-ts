@@ -4,6 +4,7 @@
 
 export * from "./kinds/admission.js";
 export * from "./kinds/adoption.js";
+export * from "./kinds/alert.js";
 export * from "./kinds/alerts.js";
 export * from "./kinds/archives.js";
 export * from "./kinds/backup.js";

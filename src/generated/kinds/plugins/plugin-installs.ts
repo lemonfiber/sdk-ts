@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginRemoval, PluginSource, PluginSubstituted, PluginUpdate } from "./plugin-recipe.js";
+import type { PluginInstall, PluginInstalled, PluginRemoval, PluginSource, PluginSubstituted, PluginUpdate } from "./plugin-step.js";
 
 /**
  * What is installed, and what installing one came to.

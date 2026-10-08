@@ -213,6 +213,11 @@ export interface MemberAsking {
 /** One thing a household member asked for, and where it stands in their words. */
 export interface MemberRequest {
   /**
+   * When the title arrived on the media server, as the request service timestamps it.
+   * Absent, not null, until it is there.
+   */
+  arrived?: string | null;
+  /**
    * About how much room it will want, at the quality in force.
    *
    * A guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the
@@ -245,6 +250,12 @@ export interface MemberRequest {
    */
   refused?: Refused | null;
   /**
+   * The identifier the media server holds the title under, which is the one the held
+   * read names it by, so a request that has arrived can be found on the shelf. Absent,
+   * not null, until it is there.
+   */
+  shelf_id?: string | null;
+  /**
    * Where the request stands, or absent where the request service reports a status
    * this build does not know rather than guessing it into the nearest word.
    */
@@ -264,6 +275,12 @@ export interface MemberRequest {
    * thing.
    */
   waiting_days?: number | null;
+  /**
+   * The year that title came out, where the service filing it knows one. Absent, not
+   * null, until the request has been handed to that service, for the reason the title
+   * is.
+   */
+  year?: number | null;
 }
 
 /**

@@ -3,5 +3,5 @@
 // Regenerate with `npm run contract:generate`.
 
 export * from "./plugins/api-kind.js";
-export * from "./plugins/plugin-recipe.js";
+export * from "./plugins/plugin-step.js";
 export * from "./plugins/plugin-installs.js";
