@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   gate:
-    uses: lemonfiber/spec/.github/workflows/sonar-gate.yml@eaedb9b9ddd3c3208f4fbe898718d19e45e04d74 # v1.0.49
+    uses: lemonfiber/spec/.github/workflows/sonar-gate.yml@9e4af595a441995073b44629dcac592813f646bf # v1.0.60
     with:
       allowed-open: 0
     secrets:
