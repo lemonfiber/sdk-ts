@@ -15,10 +15,12 @@ import {
   type Asking,
   type Call,
 } from "./deadline.js";
-import { parse, type Envelope, type Reading } from "./envelope.js";
+import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import {
   READS,
   type Bundle,
+  type ByKind,
+  type KeyPurpose,
   type ReadAnswer,
   type ReadName,
   type ReadQuery,
@@ -131,6 +133,36 @@ export interface Talking {
 export type Opened = { ok: true; client: Client } | { ok: false; problem: Problem };
 
 /**
+ * Where integration keys are listed, minted and revoked.
+ */
+const KEYS = "/api/keys";
+
+/**
+ * What one integration key is minted with.
+ *
+ * The password is the minter's own, given again for this one request. It is sent
+ * in the body and kept by nothing here.
+ */
+export interface Minting {
+  /**
+   * What to call it. No other key may hold the name.
+   */
+  name: string;
+  /**
+   * What it admits: `read`, `act`, or `member:` and the account it acts as.
+   */
+  scope: "read" | "act" | `member:${string}`;
+  /**
+   * What it is for, as whoever mints it declares.
+   */
+  purpose: KeyPurpose;
+  /**
+   * The minter's password, given again.
+   */
+  password: string;
+}
+
+/**
  * Talks to one running lemonfiber.
  *
  * Every reply that is a document is read through the envelope, so a version
@@ -206,6 +238,40 @@ export class Client {
     asking: Asking = {},
   ): Promise<Reading<Envelope>> {
     return this.#ask("POST", `/api/actions/${name}`, asking, JSON.stringify(body));
+  }
+
+  /**
+   * The integration keys this credential may see, without their secrets.
+   *
+   * An operator lists every key, and a household member only the keys scoped to
+   * them. A key is refused here whatever its scope.
+   */
+  async keys(asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
+    return answeredAs(await this.#ask("GET", KEYS, asking, undefined, true), "keys");
+  }
+
+  /**
+   * Mints one integration key, its secret in this reply and in no other.
+   *
+   * The reply carries the secret beside the stack's certificate pin and the
+   * address it is served at encrypted, where it is; nothing here keeps any of it.
+   */
+  async mint(minting: Minting, asking: Asking = {}): Promise<Reading<ByKind["minted-key"]>> {
+    return answeredAs(
+      await this.#ask("POST", KEYS, asking, JSON.stringify(minting)),
+      "minted-key",
+    );
+  }
+
+  /**
+   * Revokes one integration key by its name, answered with the keys as they now
+   * stand. The name is sent as one path segment.
+   */
+  async revoke(name: string, asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
+    return answeredAs(
+      await this.#ask("DELETE", `${KEYS}/${encodeURIComponent(name)}`, asking),
+      "keys",
+    );
   }
 
   /**
@@ -343,6 +409,20 @@ function blobOf(answer: Answer): Promise<Blob | undefined> {
  */
 function lastSegment(path: string): string {
   return path.slice(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
+}
+
+/**
+ * An answer narrowed to the one kind its route answers with, or `unrecognised`
+ * where it came back as another.
+ */
+function answeredAs<K extends "keys" | "minted-key">(
+  answered: Reading<Envelope>,
+  kind: K,
+): Reading<ByKind[K]> {
+  if (!answered.ok) return answered;
+  return isKind(answered.value, kind)
+    ? { ok: true, value: answered.value }
+    : { ok: false, problem: unrecognised(answered.value.kind) };
 }
 
 /**

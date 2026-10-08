@@ -122,6 +122,28 @@ if (made.ok && isKind(made.value, "bundle")) {
 `take(endpoint)` reads any other endpoint that answers with a file. A refusal on
 either carries the whole body it arrived with as `said`, beside the `problem`.
 
+## Integration keys
+
+A program that runs beside the stack for months holds a key rather than the
+per-run token. Keys are listed, minted and revoked through routes of their own.
+The operator keeps every key, and a household member only their own; a key is
+refused at all three, whatever its scope.
+
+```ts
+const listing = await client.keys(); // every key, without its secret
+const made = await client.mint({
+  name: "home",
+  scope: "read",
+  purpose: "home-assistant",
+  password,
+});
+if (made.ok) showOnce(made.value.data.secret, made.value.data.pin);
+await client.revoke("home"); // answered with the keys as they now stand
+```
+
+The password is sent in the mint's body and kept by nothing here, and the
+secret is in that one reply and no other.
+
 ## Live updates
 
 `GET /api/events` is a stream of envelopes. `follow` reads it:
