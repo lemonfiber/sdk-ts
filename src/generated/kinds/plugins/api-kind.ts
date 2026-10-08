@@ -341,16 +341,26 @@ export interface PluginOverriding {
 export interface PluginPair {
   /**
    * What approving this pair is written as, on the command line and over the web,
-   * where it carries the value to a host outside the stack. Absent where it reaches
-   * a service in this stack, which takes nothing off the machine and asks for no
-   * approval.
+   * where it carries the value to a host outside the stack or carries a release.
+   * Absent on any other pair to a service in this stack, which takes nothing off the
+   * machine or away from the service it came from, and asks for no approval.
    */
   approval?: string;
+  /**
+   * The service in this stack the released value was read from, where the pair
+   * releases it. Absent on every other pair.
+   */
+  from?: string;
   /**
    * Whose value it is, as its input or the step that captures it says; empty where
    * neither does.
    */
   origin: string;
+  /**
+   * Why the value is carried away from the service it was read from, in the manifest's
+   * own sentence, where the pair releases it. Absent on every other pair.
+   */
+  release?: string;
   /** Where it may be carried, by the name the manifest gives it. */
   to: string;
   /** What the value is called within the recipe. */
@@ -514,26 +524,6 @@ export interface PluginSecret {
   of: string;
   /** What holding it is for. */
   why: string;
-}
-
-/** One call a recipe makes, in the order it makes them. */
-export interface PluginStep {
-  /**
-   * The adapter the destination is reached through, or nothing where it is a name
-   * outside the stack, which no adapter of lemonfiber's speaks to.
-   */
-  adapter?: PluginStepAdapter | null;
-  /** The step's id within its recipe. */
-  id: string;
-  /** The HTTP method it calls with. */
-  method: string;
-  /** The path it calls. */
-  path: string;
-  /**
-   * Where it calls: a service of this stack's or the plugin's own, or a name outside
-   * both, as the manifest wrote it. Never a resolved address.
-   */
-  to: string;
 }
 
 /** The adapter a call reaches its destination through. */
