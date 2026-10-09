@@ -398,16 +398,19 @@ describe("generating the reads", () => {
     const reads = [
       read("/api/pull", ["pull"], [repeating("form"), once("most")]),
       read("/api/front-door", ["pull"]),
+      read("/api/pull/{name}/{form}", ["pull"], [once("most")]),
       read("/api/bundle/{name}", [], [], true),
     ];
     const { root, generated } = await imported(artefact(PULL, { reads }));
     roots.push(root);
-    expect(Object.keys(generated.READS)).toEqual(["pull", "front-door"]);
-    expect(generated.READS.pull).toEqual({ path: "/api/pull", parameters: [repeating("form"), once("most")], kinds: ["pull"] });
+    expect(Object.keys(generated.READS)).toEqual(["pull", "front-door", "pull/{name}/{form}"]);
+    expect(generated.READS.pull).toEqual({ path: "/api/pull", segments: [], parameters: [repeating("form"), once("most")], kinds: ["pull"] });
+    expect(generated.READS["pull/{name}/{form}"]).toEqual({ path: "/api/pull/{name}/{form}", segments: ["name", "form"], parameters: [once("most")], kinds: ["pull"] });
     expect(generated.FILES).toEqual({ bundle: { path: "/api/bundle/{name}" } });
     const source = await written(root, "reads.ts");
     expect(source).toContain('"pull": { form?: Scalar | readonly Scalar[] | undefined; most?: Scalar | undefined };');
     expect(source).toContain('"front-door": Record<string, never>;');
+    expect(source).toContain('"pull/{name}/{form}": { name: Scalar; form: Scalar; most?: Scalar | undefined };');
   });
 
   it.each([
@@ -430,7 +433,10 @@ describe("generating the reads", () => {
     ["a parameter with no name", [read("/api/pull", ["pull"], [{ repeatable: true }])], "is not a name and whether it repeats"],
     ["a parameter that does not say whether it repeats", [read("/api/pull", ["pull"], [{ name: "form" }])], "is not a name and whether it repeats"],
     ["a parameter listed twice", [read("/api/pull", ["pull"], [once("form"), repeating("form")])], "parameter form is listed twice"],
-    ["two reads going by one name", [read("/api/pull", ["pull"]), read("/api/pull/{name}", ["pull"])], "goes by pull, as /api/pull does"],
+    ["a segment named twice", [read("/api/pull/{name}/{name}", ["pull"])], "a segment of its path is named twice"],
+    ["a parameter that is also a segment", [read("/api/pull/{form}", ["pull"], [once("form")])], "parameter form is also a segment of its path"],
+    ["two reads going by one name", [read("/api/pull", ["pull"]), read("/api/pull", ["pull"])], "goes by pull, as /api/pull does"],
+    ["a file going by a read's name", [read("/api/bundle", ["pull"]), read("/api/bundle/{name}", [], [], true)], "goes by bundle, as /api/bundle does"],
   ])("refuses %s, naming the read", (_what, reads, named) => {
     expect(refusal(artefact(PULL, { reads }))).toContain(named);
   });

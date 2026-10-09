@@ -26,21 +26,11 @@ import {
   type ReadAnswer,
   type ReadName,
   type ReadQuery,
-  type Scalar,
   type SetupAnswerBody,
 } from "./generated/index.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
+import { filledIn, search } from "./query.js";
 import { refusalIn } from "./refusal.js";
-
-/**
- * What a query parameter may carry. A value that is `undefined` is not sent.
- *
- * A list is the same parameter given once for each of its values, in order
- * (`form=a&form=b`), which is how a command's flag given more than once is
- * written as a read. An empty list sends nothing, the same as `undefined`: a
- * flag given no times is a flag not given.
- */
-export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
 
 /**
  * The read answered with a line of its own for each envelope rather than with
@@ -52,6 +42,17 @@ type LineByLine = "logs";
  * The name of a read `read` answers: one answered with one document.
  */
 export type DocumentRead = Exclude<ReadName, LineByLine>;
+
+/**
+ * What `read` takes after the read's name: its query, then how to ask.
+ *
+ * A read whose path has a segment the caller fills, such as `held/{id}`, needs
+ * its query, since the segment is in it. Any other read may go without one.
+ */
+export type ReadArguments<N extends DocumentRead> =
+  Record<string, never> extends ReadQuery[N]
+    ? [query?: ReadQuery[N], asking?: Asking]
+    : [query: ReadQuery[N], asking?: Asking];
 
 /**
  * The slice of `fetch` this needs, so a test can supply its own.
@@ -226,13 +227,14 @@ export class Client {
    */
   async read<N extends DocumentRead>(
     name: N,
-    query?: ReadQuery[N],
-    asking: Asking = {},
+    ...[query, asking = {}]: ReadArguments<N>
   ): Promise<Reading<ReadAnswer<N>>> {
     const read = READS[name];
+    const filled = filledIn(read.path, read.segments, query ?? {});
+    if (!filled.ok) return filled;
     const answered = await this.#ask(
       "GET",
-      `${read.path}${search(query ?? {})}`,
+      `${filled.value.path}${search(filled.value.rest)}`,
       asking,
       undefined,
       true,
@@ -500,29 +502,4 @@ function isAnswerTo<N extends DocumentRead>(
 ): envelope is ReadAnswer<N> {
   const kinds: readonly string[] = READS[name].kinds;
   return kinds.includes(envelope.kind);
-}
-
-/**
- * A parameter's values, whether it was given one or a list of them.
- */
-function listed(value: Scalar | readonly Scalar[]): readonly Scalar[] {
-  return typeof value === "object" ? value : [value];
-}
-
-/**
- * A query string, or nothing when there is nothing to ask for.
- *
- * The token is never among these: a credential in a URL reaches logs, history
- * and referrers.
- */
-function search(query: Query): string {
-  const parts = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(query)) {
-    if (value === undefined) continue;
-    for (const one of listed(value)) parts.append(key, String(one));
-  }
-
-  const text = parts.toString();
-  return text === "" ? "" : `?${text}`;
 }

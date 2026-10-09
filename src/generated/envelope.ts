@@ -2,13 +2,13 @@
 // Every kind the server may send, and the envelope each one carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BundleEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ClientsEnvelope, ConfigEnvelope, CredentialsEnvelope, DashboardEnvelope, DoctorEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InvitationEnvelope, JobEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, OutboundEnvelope, PairingEnvelope, PausingEnvelope, PlayingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, QualityEnvelope, RemovalEnvelope, RepairEnvelope, ReplacementEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, SetupEnvelope, SpaceEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TraceEnvelope, UndoEnvelope, UninstallEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WatchEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
+import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BundleEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ClientsEnvelope, ConfigEnvelope, CredentialsEnvelope, DashboardEnvelope, DoctorEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, GrantEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InvitationEnvelope, JobEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, OutboundEnvelope, PairingEnvelope, PartWayEnvelope, PausingEnvelope, PlayingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, QualityEnvelope, RemovalEnvelope, RepairEnvelope, ReplacementEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, SetupEnvelope, SpaceEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TitleEnvelope, TraceEnvelope, UndoEnvelope, UninstallEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WatchEnvelope, WatchedEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
 
 /** The wire version these types were generated for. */
 export const CONTRACT_API_VERSION = 1;
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "capabilities" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "keys" | "lifecycle" | "log" | "migration" | "minted-key" | "music" | "news" | "news-items" | "outbound" | "pairing" | "pausing" | "playing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "backup" | "bandwidth" | "beside" | "bundle" | "capabilities" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "grant" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "keys" | "lifecycle" | "log" | "migration" | "minted-key" | "music" | "news" | "news-items" | "outbound" | "pairing" | "part-way" | "pausing" | "playing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "title" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "watched" | "wiring" | "wizard" | "word";
 
 /** Every kind the server may send, in name order. */
 export const KINDS: readonly Kind[] = [
@@ -33,6 +33,7 @@ export const KINDS: readonly Kind[] = [
   "forms",
   "front-door",
   "glossary",
+  "grant",
   "handoff",
   "held",
   "history",
@@ -51,6 +52,7 @@ export const KINDS: readonly Kind[] = [
   "news-items",
   "outbound",
   "pairing",
+  "part-way",
   "pausing",
   "playing",
   "plugins",
@@ -74,6 +76,7 @@ export const KINDS: readonly Kind[] = [
   "stored",
   "stuck",
   "substitution",
+  "title",
   "trace",
   "undo",
   "uninstall",
@@ -82,6 +85,7 @@ export const KINDS: readonly Kind[] = [
   "version",
   "walkthrough",
   "watch",
+  "watched",
   "wiring",
   "wizard",
   "word",
@@ -113,6 +117,7 @@ export interface ByKind {
   "forms": FormsEnvelope;
   "front-door": FrontDoorEnvelope;
   "glossary": GlossaryEnvelope;
+  "grant": GrantEnvelope;
   "handoff": HandoffEnvelope;
   "held": HeldEnvelope;
   "history": HistoryEnvelope;
@@ -131,6 +136,7 @@ export interface ByKind {
   "news-items": NewsItemsEnvelope;
   "outbound": OutboundEnvelope;
   "pairing": PairingEnvelope;
+  "part-way": PartWayEnvelope;
   "pausing": PausingEnvelope;
   "playing": PlayingEnvelope;
   "plugins": PluginsEnvelope;
@@ -154,6 +160,7 @@ export interface ByKind {
   "stored": StoredEnvelope;
   "stuck": StuckEnvelope;
   "substitution": SubstitutionEnvelope;
+  "title": TitleEnvelope;
   "trace": TraceEnvelope;
   "undo": UndoEnvelope;
   "uninstall": UninstallEnvelope;
@@ -162,6 +169,7 @@ export interface ByKind {
   "version": VersionEnvelope;
   "walkthrough": WalkthroughEnvelope;
   "watch": WatchEnvelope;
+  "watched": WatchedEnvelope;
   "wiring": WiringEnvelope;
   "wizard": WizardEnvelope;
   "word": WordEnvelope;

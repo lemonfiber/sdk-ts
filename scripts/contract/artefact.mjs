@@ -260,13 +260,29 @@ const READ_PATH = /^\/api(?:\/(?:[a-z][a-z0-9-]*|\{[a-z]+\}))+$/;
 /** A query parameter's name, as a command's flag is spelled. */
 const PARAMETER = /^[a-z][a-z0-9_]*$/;
 
-/** The name a read goes by: its path under `/api`, without the segments a caller fills. */
+/** The name a file read goes by: its path under `/api`, without the segments a caller fills. */
 export const readNameOf = (path) =>
   path
     .slice("/api/".length)
     .split("/")
     .filter((segment) => !segment.startsWith("{"))
     .join("/");
+
+/**
+ * The name a document read goes by: its path under `/api`, each segment a caller
+ * fills kept as `{name}`, so `/api/held` and `/api/held/{id}` are two reads.
+ */
+export const documentNameOf = (path) => path.slice("/api/".length);
+
+/** The segments a caller fills in a read's path, in the order they stand. */
+export const segmentsOf = (path) =>
+  path
+    .split("/")
+    .filter((segment) => segment.startsWith("{"))
+    .map((segment) => segment.slice(1, -1));
+
+/** The name a read goes by, as a document or as a file. */
+const nameOfRead = (entry) => (entry.file === true ? readNameOf(entry.path) : documentNameOf(entry.path));
 
 /** Why one read cannot be written, one reason at a time. */
 function* wrongWithRead(entry, at, kinds) {
@@ -287,9 +303,14 @@ function* wrongWithRead(entry, at, kinds) {
     return;
   }
   const named = new Set();
+  const segments = typeof entry.path === "string" ? segmentsOf(entry.path) : [];
+  const filled = new Set(segments);
+  if (filled.size !== segments.length) yield `${where}: a segment of its path is named twice`;
   for (const parameter of entry.parameters) {
     if (!isRecord(parameter) || typeof parameter.name !== "string" || !PARAMETER.test(parameter.name) || typeof parameter.repeatable !== "boolean") {
       yield `${where}: parameter ${JSON.stringify(parameter)} is not a name and whether it repeats`;
+    } else if (filled.has(parameter.name)) {
+      yield `${where}: parameter ${parameter.name} is also a segment of its path`;
     } else if (named.has(parameter.name)) {
       yield `${where}: parameter ${parameter.name} is listed twice`;
     } else {
@@ -313,7 +334,7 @@ export function readsOf(artefact, kinds) {
   const named = new Map();
   for (const entry of listed) {
     if (!isRecord(entry) || typeof entry.path !== "string" || !READ_PATH.test(entry.path)) continue;
-    const name = readNameOf(entry.path);
+    const name = nameOfRead(entry);
     if (named.has(name)) malformed.push(`${entry.path}: goes by ${name}, as ${named.get(name)} does`);
     else named.set(name, entry.path);
   }

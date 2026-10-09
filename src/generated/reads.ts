@@ -7,48 +7,50 @@ import type { ByKind } from "./envelope.js";
 /** One value a query parameter carries. */
 export type Scalar = string | number | boolean;
 
-/** Every read answered with a document, by name: its path, the parameters it takes, and the kinds it answers with. */
+/** Every read answered with a document, by name: its path, the segments of it a caller fills, the parameters it takes, and the kinds it answers with. */
 export const READS = {
-  "version": { path: "/api/version", parameters: [], kinds: ["version"] },
-  "forms": { path: "/api/forms", parameters: [{ name: "form", repeatable: true }], kinds: ["forms", "preview"] },
-  "status": { path: "/api/status", parameters: [], kinds: ["status"] },
-  "services": { path: "/api/services", parameters: [{ name: "form", repeatable: true }], kinds: ["status"] },
-  "checks": { path: "/api/checks", parameters: [{ name: "only", repeatable: false }], kinds: ["doctor"] },
-  "storage": { path: "/api/storage", parameters: [], kinds: ["doctor"] },
-  "requests": { path: "/api/requests", parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }], kinds: ["household"] },
-  "held": { path: "/api/held", parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }, { name: "most", repeatable: false }], kinds: ["held"] },
-  "playing": { path: "/api/playing", parameters: [{ name: "member", repeatable: false }], kinds: ["playing"] },
-  "hosting": { path: "/api/hosting", parameters: [], kinds: ["hosting"] },
-  "front-door": { path: "/api/front-door", parameters: [], kinds: ["front-door"] },
-  "news": { path: "/api/news", parameters: [], kinds: ["news-items"] },
-  "trace": { path: "/api/trace", parameters: [{ name: "term", repeatable: false }, { name: "season", repeatable: false }], kinds: ["trace"] },
-  "stuck": { path: "/api/stuck", parameters: [], kinds: ["stuck"] },
-  "config": { path: "/api/config", parameters: [{ name: "key", repeatable: false }], kinds: ["config"] },
-  "quality": { path: "/api/quality", parameters: [], kinds: ["quality"] },
-  "explain": { path: "/api/explain", parameters: [{ name: "word", repeatable: false }], kinds: ["glossary", "word"] },
-  "backups": { path: "/api/backups", parameters: [], kinds: ["archives"] },
-  "outbound": { path: "/api/outbound", parameters: [], kinds: ["outbound"] },
-  "provenance": { path: "/api/provenance", parameters: [], kinds: ["provenance"] },
-  "catalogue": { path: "/api/catalogue", parameters: [], kinds: ["catalogue"] },
-  "stored": { path: "/api/stored", parameters: [], kinds: ["stored"] },
-  "uninstall": { path: "/api/uninstall", parameters: [{ name: "tier", repeatable: false }], kinds: ["uninstall"] },
-  "space": { path: "/api/space", parameters: [], kinds: ["space"] },
-  "bandwidth": { path: "/api/bandwidth", parameters: [], kinds: ["bandwidth"] },
-  "clients": { path: "/api/clients", parameters: [], kinds: ["clients"] },
-  "alerts": { path: "/api/alerts", parameters: [], kinds: ["alerts"] },
-  "credentials": { path: "/api/credentials", parameters: [], kinds: ["credentials"] },
-  "migration": { path: "/api/migration", parameters: [], kinds: ["migration"] },
-  "history": { path: "/api/history", parameters: [], kinds: ["history"] },
-  "update": { path: "/api/update", parameters: [{ name: "what", repeatable: false }, { name: "to", repeatable: false }], kinds: ["self-update", "update"] },
-  "plugins": { path: "/api/plugins", parameters: [], kinds: ["plugins"] },
-  "wiring": { path: "/api/wiring", parameters: [], kinds: ["wiring"] },
-  "logs": { path: "/api/logs", parameters: [{ name: "form", repeatable: true }, { name: "service", repeatable: true }, { name: "tail", repeatable: false }, { name: "follow", repeatable: false }], kinds: ["job", "log"] },
+  "version": { path: "/api/version", segments: [], parameters: [], kinds: ["version"] },
+  "forms": { path: "/api/forms", segments: [], parameters: [{ name: "form", repeatable: true }], kinds: ["forms", "preview"] },
+  "status": { path: "/api/status", segments: [], parameters: [], kinds: ["status"] },
+  "services": { path: "/api/services", segments: [], parameters: [{ name: "form", repeatable: true }], kinds: ["status"] },
+  "checks": { path: "/api/checks", segments: [], parameters: [{ name: "only", repeatable: false }], kinds: ["doctor"] },
+  "storage": { path: "/api/storage", segments: [], parameters: [], kinds: ["doctor"] },
+  "requests": { path: "/api/requests", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }], kinds: ["household"] },
+  "held": { path: "/api/held", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }, { name: "most", repeatable: false }], kinds: ["held"] },
+  "held/{id}": { path: "/api/held/{id}", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }], kinds: ["title"] },
+  "watching": { path: "/api/watching", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "most", repeatable: false }], kinds: ["part-way"] },
+  "playing": { path: "/api/playing", segments: [], parameters: [{ name: "member", repeatable: false }], kinds: ["playing"] },
+  "hosting": { path: "/api/hosting", segments: [], parameters: [], kinds: ["hosting"] },
+  "front-door": { path: "/api/front-door", segments: [], parameters: [], kinds: ["front-door"] },
+  "news": { path: "/api/news", segments: [], parameters: [], kinds: ["news-items"] },
+  "trace": { path: "/api/trace", segments: [], parameters: [{ name: "term", repeatable: false }, { name: "season", repeatable: false }], kinds: ["trace"] },
+  "stuck": { path: "/api/stuck", segments: [], parameters: [], kinds: ["stuck"] },
+  "config": { path: "/api/config", segments: [], parameters: [{ name: "key", repeatable: false }], kinds: ["config"] },
+  "quality": { path: "/api/quality", segments: [], parameters: [], kinds: ["quality"] },
+  "explain": { path: "/api/explain", segments: [], parameters: [{ name: "word", repeatable: false }], kinds: ["glossary", "word"] },
+  "backups": { path: "/api/backups", segments: [], parameters: [], kinds: ["archives"] },
+  "outbound": { path: "/api/outbound", segments: [], parameters: [], kinds: ["outbound"] },
+  "provenance": { path: "/api/provenance", segments: [], parameters: [], kinds: ["provenance"] },
+  "catalogue": { path: "/api/catalogue", segments: [], parameters: [], kinds: ["catalogue"] },
+  "stored": { path: "/api/stored", segments: [], parameters: [], kinds: ["stored"] },
+  "uninstall": { path: "/api/uninstall", segments: [], parameters: [{ name: "tier", repeatable: false }], kinds: ["uninstall"] },
+  "space": { path: "/api/space", segments: [], parameters: [], kinds: ["space"] },
+  "bandwidth": { path: "/api/bandwidth", segments: [], parameters: [], kinds: ["bandwidth"] },
+  "clients": { path: "/api/clients", segments: [], parameters: [], kinds: ["clients"] },
+  "alerts": { path: "/api/alerts", segments: [], parameters: [], kinds: ["alerts"] },
+  "credentials": { path: "/api/credentials", segments: [], parameters: [], kinds: ["credentials"] },
+  "migration": { path: "/api/migration", segments: [], parameters: [], kinds: ["migration"] },
+  "history": { path: "/api/history", segments: [], parameters: [], kinds: ["history"] },
+  "update": { path: "/api/update", segments: [], parameters: [{ name: "what", repeatable: false }, { name: "to", repeatable: false }], kinds: ["self-update", "update"] },
+  "plugins": { path: "/api/plugins", segments: [], parameters: [], kinds: ["plugins"] },
+  "wiring": { path: "/api/wiring", segments: [], parameters: [], kinds: ["wiring"] },
+  "logs": { path: "/api/logs", segments: [], parameters: [{ name: "form", repeatable: true }, { name: "service", repeatable: true }, { name: "tail", repeatable: false }, { name: "follow", repeatable: false }], kinds: ["job", "log"] },
 } as const;
 
 /** The name of a read answered with a document. */
 export type ReadName = keyof typeof READS;
 
-/** What each read takes: a repeatable parameter as one value or a list, any other as one value, and nothing sent for undefined. */
+/** What each read takes: each segment of its path a caller fills, always; a repeatable parameter as one value or a list, any other as one value, and nothing sent for undefined. */
 export interface ReadQuery {
   "version": Record<string, never>;
   "forms": { form?: Scalar | readonly Scalar[] | undefined };
@@ -58,6 +60,8 @@ export interface ReadQuery {
   "storage": Record<string, never>;
   "requests": { member?: Scalar | undefined; defaults?: Scalar | undefined };
   "held": { member?: Scalar | undefined; defaults?: Scalar | undefined; most?: Scalar | undefined };
+  "held/{id}": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
+  "watching": { member?: Scalar | undefined; most?: Scalar | undefined };
   "playing": { member?: Scalar | undefined };
   "hosting": Record<string, never>;
   "front-door": Record<string, never>;

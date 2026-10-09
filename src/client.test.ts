@@ -3,7 +3,7 @@ import { Client, type Sending } from "./client.js";
 import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./credential.js";
-import type { RefusalCode } from "./generated/index.js";
+import type { ReadQuery, RefusalCode } from "./generated/index.js";
 import { refused, tooMany, unreachable, unrecognised } from "./problem.js";
 
 // The vendored contract may list no refusal codes, so these tests read against a
@@ -211,6 +211,50 @@ describe("read", () => {
     const seen: Seen[] = [];
     await open(answering({}, seen)).read("front-door");
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/front-door");
+  });
+
+  it("writes a segment the caller fills into the path, and the rest as parameters", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("held/{id}", { id: "tt0111161", member: "ada" });
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/tt0111161?member=ada");
+  });
+
+  // An identifier with a slash in it is still one title, not a path beside it.
+  it("escapes a segment so it stays one segment", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("held/{id}", { id: "a/b?c#d" });
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/a%2Fb%3Fc%23d");
+  });
+
+  it("writes a number as a segment as it writes it alone", async () => {
+    const seen: Seen[] = [];
+    await open(answering({}, seen)).read("held/{id}", { id: 42 });
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/42");
+  });
+
+  // `.` and `..` are resolved by the URL rather than sent, so they would ask
+  // for another path; nothing would ask for the list instead of one title.
+  it.each([
+    ["not given", {}],
+    ["given as nothing", { id: undefined }],
+    ["given as a list", { id: ["a", "b"] }],
+    ["empty", { id: "" }],
+    ["the path's own folder", { id: "." }],
+    ["the folder above it", { id: ".." }],
+  ])("asks nothing for a segment %s, and says which", async (_what, query) => {
+    const seen: Seen[] = [];
+    const got = await open(answering({}, seen)).read(
+      "held/{id}",
+      query as ReadQuery["held/{id}"],
+    );
+    expect(got).toEqual({
+      ok: false,
+      problem: {
+        kind: "misasked",
+        message: "This read needs one `id` it can send, and was not given one.",
+      },
+    });
+    expect(seen).toEqual([]);
   });
 
   it("refuses an answer of a kind the contract does not list for the read", async () => {
