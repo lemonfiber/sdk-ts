@@ -2,7 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginRemoval, PluginSource, PluginSubstituted, PluginUpdate } from "./plugin-step.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginRestored, PluginSource, PluginSubstituted } from "./plugin-step.js";
+import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
  * What is installed, and what installing one came to.
@@ -35,6 +36,15 @@ export interface PluginInstalls {
    * would report an install that did not happen.
    */
   installed: PluginInstalled[];
+  /**
+   * Every answer an installed plugin's adapter gave outside its contract, kept until a
+   * proof it passes clears it: the plugin fills none of those capabilities meanwhile.
+   *
+   * Filled on the reading of what is installed, as `substituted` is.
+   */
+  nonconforming?: PluginNonconforming[];
+  /** What proving a plugin again came to, or nothing where nothing was proved. */
+  proof?: PluginReproof | null;
   /**
    * Whether this was a rehearsal: what would have happened, with none of it done.
    *
@@ -78,6 +88,57 @@ export interface PluginInstalls {
    * every other run's report would otherwise be as large as the one run that updates.
    */
   update?: PluginUpdate | null;
+}
+
+/**
+ * What updating a plugin came to, or would come to, as one account.
+ *
+ * **One account, because it is one operation.** An update is the version installed
+ * going back and another coming on, and a report that gave those as a removal and an
+ * install side by side would invite reading them as two things that might each have
+ * happened. What an operator has to be able to read off this is which version the
+ * machine is on, and there are exactly two answers: the new one, where
+ * `install.recorded` is true, or the one it replaced, which `restored` says the state
+ * of.
+ */
+export interface PluginUpdate {
+  /** The version the record named before this run. */
+  from: string;
+  /**
+   * The new version's own account: what it writes, what it has to prove, what it
+   * proved and what the stack's checks made of it — the same one an install gives,
+   * because it is the same work. `recorded` is whether the update holds.
+   */
+  install: PluginInstall;
+  /**
+   * Every service of the installed version that stops, named before any of them
+   * does.
+   */
+  interrupts: string[];
+  /** The plugin this is about. */
+  plugin: string;
+  /**
+   * Where the update did not hold, what putting the version it replaced back came
+   * to. Absent on a rehearsal and on an update that held.
+   */
+  restored?: PluginRestored | null;
+  /**
+   * What stopped the new version before its proofs could be asked, where something
+   * did: a write that would not land, a container that would not start, or a record
+   * that could not be written. A proof or a check that did not hold is in `install`.
+   */
+  stopped?: string | null;
+  /** The version this run installs, or would. */
+  to: string;
+  /**
+   * What putting the installed version's changes back came to, or would come to.
+   *
+   * Where the plugin's own configuration directory holds what its service wrote, it
+   * is named here as still standing, which on an update is the point: the new
+   * version is started against the same directory, and an update that took it would
+   * be a reinstall that lost everything the old one knew.
+   */
+  went_back: UndoReversal;
 }
 
 /** The envelope carrying `plugins`. */

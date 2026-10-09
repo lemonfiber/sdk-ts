@@ -391,23 +391,20 @@ export interface PluginPlaced {
   description?: string;
   /** The digest that fixes what runs. */
   digest: string;
+  /** The service of the same plugin it stands in front of, as an adapter. */
+  fronts?: string | null;
   /** The registry path, carrying no pin of its own. */
   image: string;
   /** The port it answers on inside the stack's network, where it declared one. */
   listens?: number | null;
   /**
    * The media it files, in the stack manifest's vocabulary, which decides what it
-   * comes to in each service that asks for what it provides.
-   *
-   * Defaulted for a record written before this was kept, which reads as filing
-   * nothing named.
+   * comes to in each service that asks for what it provides; none in an older record.
    */
   media_types?: string[];
   /**
-   * What it is called, for a reader, which is what its dashboard entry is listed as.
-   *
-   * Defaulted for a record written before this was kept, which lists it by its id
-   * rather than leaving it off the panel.
+   * What it is called, for a reader, which is what its dashboard entry is listed as;
+   * a record written before this was kept lists it by its id.
    */
   name?: string;
   /**
@@ -435,10 +432,7 @@ export interface PluginPlaced {
   reached?: PluginReached | null;
   /** The service's id, which is the name its container is written under. */
   service: string;
-  /**
-   * Each capability contract it answers as an adapter, as `capability@major`; none in
-   * a record written before this was kept.
-   */
+  /** Each capability contract it answers as an adapter, as `capability@major`. */
   speaks?: string[];
   /** The readable name that digest went by when it was installed. */
   tag: string;
