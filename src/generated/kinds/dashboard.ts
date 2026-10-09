@@ -89,6 +89,17 @@ export interface DashboardReadingUnknown {
   reading: "unknown";
 }
 
+/** One download client, and whether it is paused. */
+export interface Downloader {
+  /** The client, by the name the stack knows it under. */
+  client: string;
+  /** Whether it is paused, as the client reads it back. */
+  state: DownloaderState;
+}
+
+/** Whether a download client is fetching, as it reads it back. */
+export type DownloaderState = "paused" | "fetching" | "unknown";
+
 export interface Duration {
   nanos: number;
   secs: number;
@@ -127,6 +138,33 @@ export interface HealthSummary {
    * grading. Absent where nothing is wrong.
    */
   worst?: string | null;
+}
+
+/**
+ * A panel's content, or the reason its source could not fill it.
+ *
+ * The difference between "this panel is up to date" and "this panel's source is
+ * unreachable" is the whole of degrading honestly: an unavailable panel says so,
+ * in its own words, rather than showing stale data as current or blank data as
+ * zero — and the panels beside it stay live.
+ */
+export type PanelArray_of_Downloader = PanelArray_of_DownloaderReady | PanelArray_of_DownloaderUnavailable;
+
+/** The source answered; here is the panel. */
+export interface PanelArray_of_DownloaderReady {
+  data: Downloader[];
+  panel: "ready";
+}
+
+/** The source could not be reached, for this stated reason. */
+export interface PanelArray_of_DownloaderUnavailable {
+  data: PanelArray_of_DownloaderUnavailableData;
+  panel: "unavailable";
+}
+
+export interface PanelArray_of_DownloaderUnavailableData {
+  /** Why the panel could not be filled, in the operator's terms. */
+  reason: string;
 }
 
 /**
@@ -351,6 +389,8 @@ export interface Snapshot {
    * panels beside it, so the screen and `front-door` cannot name different doors.
    */
   door: PanelFrontDoorReport;
+  /** Every download client the stack runs, and whether each is paused. */
+  downloaders: PanelArray_of_Downloader;
   /**
    * The one-line health summary — the same computation every other surface
    * uses, so no two of them can grade the same stack differently.
@@ -403,6 +443,12 @@ export type Stall = "redownload-loop" | "repeated-import-failure" | "completed-n
 
 /** The storage picture: what is free, when it runs out, and whether imports link. */
 export interface Storage {
+  /**
+   * Bytes free on the volume the services keep their configuration and databases
+   * on, which fills apart from the data volume where the two are different disks
+   * and stops every service when it does. A [`Reading`] for the same reason.
+   */
+  config_free: DashboardReading;
   /**
    * The time until the disk fills at the current rate of the queue draining
    * onto it, or `None` where it is not projected to fill.

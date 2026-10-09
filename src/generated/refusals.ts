@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-12" | "ASK-13" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-34" | "PLUGIN-35" | "PLUGIN-36" | "PLUGIN-37" | "PLUGIN-38" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SERVE-8" | "SPACE-6" | "STACK-1" | "STACK-10" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6" | "WIRE-7";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-12" | "ASK-13" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "LIFE-10" | "MIGRATE-1" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-34" | "PLUGIN-35" | "PLUGIN-36" | "PLUGIN-37" | "PLUGIN-38" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "RATE-6" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SERVE-8" | "SPACE-6" | "STACK-1" | "STACK-10" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "UPDATE-5" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6" | "WIRE-7";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -32,6 +32,7 @@ export const REFUSAL_CODES: Readonly<
   "ASK-8": { name: "NOT_AN_ANSWER", status: 400, description: "Raised where the body of a setup step is not an answer it can read." },
   "ASK-9": { name: "NO_ENDPOINT", status: 404, description: "Raised where a path under the endpoints is one no endpoint answers." },
   "GONE-2": { name: "ANOTHER_READING", status: 400, description: "Raised when an agreement names a reading of this machine that is not the one standing now." },
+  "LIFE-10": { name: "RESTART_MOVED", status: 400, description: "Raised where a restart names an offer that is not the one a fresh look at the stack builds." },
   "MIGRATE-1": { name: "OFFER_MOVED", status: 400, description: "Raised when a replacement was agreed to for an offer that is not the one standing now." },
   "PLUGIN-10": { name: "NOTHING_TO_REMOVE", status: 404, description: "Nothing by that name is installed on this machine." },
   "PLUGIN-11": { name: "NOTHING_TO_UPDATE", status: 404, description: "Nothing by that id is installed, so there is no version to replace." },
@@ -70,6 +71,7 @@ export const REFUSAL_CODES: Readonly<
   "PLUGIN-7": { name: "UNWRITABLE", status: 500, description: "A directory or a document the install decided on would not land." },
   "PLUGIN-8": { name: "UNRECORDABLE", status: 500, description: "The wiring went down and the record of what is installed did not." },
   "PLUGIN-9": { name: "UNPROVED", status: 500, description: "The plugin's own service would not start, so nothing about it could be proved." },
+  "RATE-6": { name: "PAUSING_MOVED", status: 400, description: "Raised where pausing or resuming the download clients names an offer that is not the one a fresh look at them builds." },
   "READ-1": { name: "UNWANTED", status: 400, description: "Raised where a read was given a parameter its answer has nowhere to put." },
   "READ-10": { name: "TOO_MANY_AT_ONCE", status: 400, description: "Raised where more holdings were asked for than one read answers with." },
   "READ-11": { name: "NO_SUCH_GROUP", status: 400, description: "Raised where a diagnosis was narrowed to a group or check that is not one." },
@@ -102,6 +104,7 @@ export const REFUSAL_CODES: Readonly<
   "STACK-7": { name: "STACK_MALFORMED", status: 500, description: "Raised when a manifest is not TOML at all." },
   "STACK-8": { name: "STACK_UNRECOGNISED", status: 500, description: "Raised when a manifest declares names this build does not know." },
   "STACK-9": { name: "STACK_NEEDS_NEWER", status: 500, description: "Raised when a stack names a newer lemonfiber than the one running." },
+  "UPDATE-5": { name: "UPDATE_MOVED", status: 400, description: "Raised where an update names an offer that is not the one a fresh look at the releases builds." },
   "WIRE-1": { name: "NO_SUCH_FILLER", status: 404, description: "A capability was named that no service in this stack provides." },
   "WIRE-2": { name: "CANNOT_FILL", status: 400, description: "The service named cannot do the thing it was asked to fill." },
   "WIRE-3": { name: "NOTHING_ASKS", status: 400, description: "Nothing in this stack asks for the capability, so a choice would change nothing." },

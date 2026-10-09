@@ -54,6 +54,12 @@ export interface StackUpdateReport {
    */
   in_flight: string[];
   /**
+   * The offer this answers: every step, from the release each service stands on to
+   * the one it would move to, named so that an update carrying it back takes those
+   * steps or is refused.
+   */
+  offer: string;
+  /**
    * Whether this was a rehearsal: what would have happened, with none of it done.
    *
    * Said in a field of its own so that a rehearsal is never told from the real run by

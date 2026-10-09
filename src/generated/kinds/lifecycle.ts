@@ -46,6 +46,12 @@ export interface LifecycleReport {
    */
   held?: string | null;
   /**
+   * The offer a restart answers: the services it would restart, named so that a
+   * restart carrying it back is carried out against those services or refused.
+   * Absent for every other action.
+   */
+  offer?: string | null;
+  /**
    * What the named forms came to: the profiles, the services they hold, and
    * what the configuration left out.
    *
