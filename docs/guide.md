@@ -128,6 +128,22 @@ if (made.ok && isKind(made.value, "bundle")) {
 `take(endpoint)` reads any other endpoint that answers with a file. A refusal on
 either carries the whole body it arrived with as `said`, beside the `problem`.
 
+A title's poster and backdrop are pictures, read as the member by the id the
+shelf lists the title under. Each arrives as a `Picture`: the image as a `Blob`
+and its `mediaType`.
+
+```ts
+const poster = await client.poster(id, { member: "ada" }); // or client.backdrop
+if (poster.ok) draw(URL.createObjectURL(poster.value.bytes));
+```
+
+A picture is one of `PICTURE_TYPES` (JPEG, PNG, WebP, GIF and AVIF, never SVG)
+and at most `PICTURE_MOST` bytes, 2 MiB. Anything else is a `malformed` problem.
+The client reads no further than one byte past the limit, and none of a reply
+that states a longer length.
+A title outside the member's limits is `missing` with `PLAY-2` in `said`, and a
+title with no picture of that kind is `missing` with `PLAY-9`.
+
 ## Integration keys
 
 A program that runs beside the stack for months holds a key rather than the

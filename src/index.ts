@@ -5,13 +5,12 @@ export { type Query } from "./query.js";
 export {
   Client,
   type DocumentRead,
-  type Handed,
   type Minting,
   type Opened,
+  type PictureQuery,
   type Sending,
   type Talking,
   type Walked,
-  type Written,
 } from "./client.js";
 export {
   API_VERSION,
@@ -33,6 +32,7 @@ export {
   READS,
   FILES,
   type BodyOf,
+  type FileQuery,
   type BodyRoute,
   type ByKind,
   type Choice,
@@ -56,7 +56,15 @@ export {
   type Following,
   type Heard,
 } from "./events.js";
+export { type Handed, type Written } from "./handed.js";
 export { Ledger, type Held } from "./ledger.js";
+export {
+  PICTURE_MOST,
+  PICTURE_TYPES,
+  type Picture,
+  type Pictured,
+  type PictureType,
+} from "./picture.js";
 export {
   busy,
   misconfigured,

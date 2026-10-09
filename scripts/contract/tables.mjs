@@ -51,19 +51,21 @@ export function envelopeModule(kinds) {
 export function readsModule(listed) {
   const documents = listed.filter((read) => !read.file);
   const files = listed.filter((read) => read.file);
-  const entry = ({ path, parameters, kinds }) => {
-    const taken = parameters.map(({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`);
-    const filled = segmentsOf(path).map((name) => JSON.stringify(name));
-    return `  ${JSON.stringify(documentNameOf(path))}: { path: ${JSON.stringify(path)}, segments: [${filled.join(", ")}], parameters: [${taken.join(", ")}], kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
-  };
-  const query = ({ path, parameters }) => {
+  const taking = (parameters) => `[${parameters.map(({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`).join(", ")}]`;
+  const filling = (path) => `[${segmentsOf(path).map((name) => JSON.stringify(name)).join(", ")}]`;
+  const entry = ({ path, parameters, kinds }) =>
+    `  ${JSON.stringify(documentNameOf(path))}: { path: ${JSON.stringify(path)}, segments: ${filling(path)}, parameters: ${taking(parameters)}, kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
+  const fileEntry = ({ path, parameters }) =>
+    `  ${JSON.stringify(readNameOf(path))}: { path: ${JSON.stringify(path)}, segments: ${filling(path)}, parameters: ${taking(parameters)} },`;
+  const shapeOf = ({ path, parameters }) => {
     const fields = [
       ...segmentsOf(path).map((name) => `${property(name)}: Scalar`),
       ...parameters.map(({ name, repeatable }) => `${property(name)}?: ${repeatable ? "Scalar | readonly Scalar[]" : "Scalar"} | undefined`),
     ];
-    const shape = fields.length === 0 ? "Record<string, never>" : "{ " + fields.join("; ") + " }";
-    return `  ${JSON.stringify(documentNameOf(path))}: ${shape};`;
+    return fields.length === 0 ? "Record<string, never>" : "{ " + fields.join("; ") + " }";
   };
+  const query = (read) => `  ${JSON.stringify(documentNameOf(read.path))}: ${shapeOf(read)};`;
+  const fileQuery = (read) => `  ${JSON.stringify(readNameOf(read.path))}: ${shapeOf(read)};`;
   return {
     path: ["reads"],
     summary: "Every read the web API serves, by the name it goes by, and what each takes and answers with.",
@@ -88,10 +90,15 @@ export function readsModule(listed) {
       "/** The envelope a read answers with, of whichever kind the contract lists for it. */",
       "export type ReadAnswer<N extends ReadName> = ByKind[(typeof READS)[N][\"kinds\"][number]];",
       "",
-      "/** Every read answered with a file, by name, and its path. */",
+      "/** Every read answered with a file, by name: its path, the segments of it a caller fills, and the parameters it takes. */",
       ...(files.length === 0
         ? ["export const FILES = {} as const;"]
-        : ["export const FILES = {", ...files.map(({ path }) => `  ${JSON.stringify(readNameOf(path))}: { path: ${JSON.stringify(path)} },`), "} as const;"]),
+        : ["export const FILES = {", ...files.map((read) => fileEntry(read)), "} as const;"]),
+      "",
+      "/** What each read answered with a file takes, as `ReadQuery` says of a read answered with a document. */",
+      "export interface FileQuery {",
+      ...files.map((read) => fileQuery(read)),
+      "}",
     ],
   };
 }

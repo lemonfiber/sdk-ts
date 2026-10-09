@@ -400,17 +400,23 @@ describe("generating the reads", () => {
       read("/api/front-door", ["pull"]),
       read("/api/pull/{name}/{form}", ["pull"], [once("most")]),
       read("/api/bundle/{name}", [], [], true),
+      read("/api/held/{id}/poster", [], [once("member")], true),
     ];
     const { root, generated } = await imported(artefact(PULL, { reads }));
     roots.push(root);
     expect(Object.keys(generated.READS)).toEqual(["pull", "front-door", "pull/{name}/{form}"]);
     expect(generated.READS.pull).toEqual({ path: "/api/pull", segments: [], parameters: [repeating("form"), once("most")], kinds: ["pull"] });
     expect(generated.READS["pull/{name}/{form}"]).toEqual({ path: "/api/pull/{name}/{form}", segments: ["name", "form"], parameters: [once("most")], kinds: ["pull"] });
-    expect(generated.FILES).toEqual({ bundle: { path: "/api/bundle/{name}" } });
+    expect(generated.FILES).toEqual({
+      bundle: { path: "/api/bundle/{name}", segments: ["name"], parameters: [] },
+      "held/poster": { path: "/api/held/{id}/poster", segments: ["id"], parameters: [once("member")] },
+    });
     const source = await written(root, "reads.ts");
     expect(source).toContain('"pull": { form?: Scalar | readonly Scalar[] | undefined; most?: Scalar | undefined };');
     expect(source).toContain('"front-door": Record<string, never>;');
     expect(source).toContain('"pull/{name}/{form}": { name: Scalar; form: Scalar; most?: Scalar | undefined };');
+    expect(source).toContain('"held/poster": { id: Scalar; member?: Scalar | undefined };');
+    expect(source).toContain('"bundle": { name: Scalar };');
   });
 
   it.each([
