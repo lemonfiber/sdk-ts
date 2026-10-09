@@ -51,7 +51,8 @@ export function envelopeModule(kinds) {
 export function readsModule(listed) {
   const documents = listed.filter((read) => !read.file);
   const files = listed.filter((read) => read.file);
-  const taking = (parameters) => `[${parameters.map(({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`).join(", ")}]`;
+  const parameter = ({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`;
+  const taking = (parameters) => "[" + parameters.map(parameter).join(", ") + "]";
   const filling = (path) => `[${segmentsOf(path).map((name) => JSON.stringify(name)).join(", ")}]`;
   const entry = ({ path, parameters, kinds }) =>
     `  ${JSON.stringify(documentNameOf(path))}: { path: ${JSON.stringify(path)}, segments: ${filling(path)}, parameters: ${taking(parameters)}, kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;

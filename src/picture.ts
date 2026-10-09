@@ -118,7 +118,8 @@ The handed-over file as a picture, or `malformed` where it is not a raster
 image of at most `PICTURE_MOST` bytes.
 */
 export function pictureOf(file: Blob): Pictured {
-  const type = file.type.replace(/;.*$/s, "").trim().toLowerCase();
+  const end = file.type.indexOf(";");
+  const type = (end === -1 ? file.type : file.type.slice(0, end)).trim().toLowerCase();
   if (!isAPictureType(type)) return notAPicture;
   if (file.size > PICTURE_MOST) return tooLarge;
   return { ok: true, value: { bytes: file, mediaType: type } };
