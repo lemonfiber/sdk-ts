@@ -1,8 +1,8 @@
 /**
- * The live stream, and the three things about it that are easy to get wrong.
- *
- * Spec: 20-architecture/contracts/web-api.md
- */
+The live stream, and the three things about it that are easy to get wrong.
+
+Spec: 20-architecture/contracts/web-api.md
+*/
 import { askedAgain } from "./again.js";
 import { address } from "./address.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
@@ -14,30 +14,30 @@ import { refusalIn } from "./refusal.js";
 import { SseParser } from "./sse.js";
 
 /**
- * How often the server speaks when it has nothing to say.
- */
+How often the server speaks when it has nothing to say.
+*/
 export const HEARTBEAT_MS = 15_000;
 
 /**
- * Silence beyond this means the stream is broken, not quiet.
- *
- * Twice the beat, which leaves one missed beat short of a broken stream. What is
- * measured is the moment anything last arrived, a beat included; a beat carries
- * no value and exists for no other purpose than to be counted here.
- */
+Silence beyond this means the stream is broken, not quiet.
+
+Twice the beat, which leaves one missed beat short of a broken stream. What is
+measured is the moment anything last arrived, a beat included; a beat carries
+no value and exists for no other purpose than to be counted here.
+*/
 export const SILENCE_ALLOWED_MS = HEARTBEAT_MS * 2;
 
 /**
- * How many times a broken stream is reopened before following gives up.
- */
+How many times a broken stream is reopened before following gives up.
+*/
 export const RECONNECTS_ALLOWED = 5;
 
 /**
- * What a follower is handed.
- *
- * `lost` is the stream gone: refused, unreachable, broken or closed. An event
- * that could not be read is `unreadable`, and reading goes on after it.
- */
+What a follower is handed.
+
+`lost` is the stream gone: refused, unreachable, broken or closed. An event
+that could not be read is `unreadable`, and reading goes on after it.
+*/
 export type Arrival =
   | ({ at: "live" } & Heard)
   | ({ at: "stale"; quietForMs: number } & Heard)
@@ -45,32 +45,32 @@ export type Arrival =
   | { at: "lost"; problem: Problem };
 
 /**
- * A kind and the payload the contract gives it, told apart by the kind, so
- * narrowing an arrival by its `kind` types its `data`.
- *
- * `job` is the job the event was said for, where its envelope names one: a
- * walk's steps carry the name its accepting reply gave, so a surface ties each
- * step to the walk it started. It is absent wherever the envelope names none.
- */
+A kind and the payload the contract gives it, told apart by the kind, so
+narrowing an arrival by its `kind` types its `data`.
+
+`job` is the job the event was said for, where its envelope names one: a
+walk's steps carry the name its accepting reply gave, so a surface ties each
+step to the walk it started. It is absent wherever the envelope names none.
+*/
 export type Heard = { [K in Kind]: { kind: K; data: ByKind[K]["data"]; job?: string } }[Kind];
 
 /**
- * The job an envelope was said for, where it names one.
- */
+The job an envelope was said for, where it names one.
+*/
 const jobOf = (job: string | null | undefined): { job?: string } =>
   typeof job === "string" && job !== "" ? { job } : {};
 
 /**
- * What an envelope said, as an arrival carries it.
- */
+What an envelope said, as an arrival carries it.
+*/
 const heardIn = (envelope: Envelope): Heard =>
   ({ kind: envelope.kind, data: envelope.data, ...jobOf(envelope.job) }) as Heard;
 
 /**
- * The slice of `fetch` this needs, so a test can supply its own.
- *
- * `redirect` is always `"error"`, for the reason `Sending`'s is.
- */
+The slice of `fetch` this needs, so a test can supply its own.
+
+`redirect` is always `"error"`, for the reason `Sending`'s is.
+*/
 export type Fetching = (
   url: string,
   init: { headers: Record<string, string>; signal: AbortSignal; redirect: "error" },
@@ -78,39 +78,39 @@ export type Fetching = (
 
 export interface Following {
   /**
-   * The stream's own address on the machine lemonfiber runs on, read as
-   * `Client.at` reads one, and refused as it refuses one.
-   */
+  The stream's own address on the machine lemonfiber runs on, read as
+  `Client.at` reads one, and refused as it refuses one.
+  */
   url: string;
   token: string;
   fetching: Fetching;
   /**
-   * Injected so silence can be tested without waiting for it.
-   */
+  Injected so silence can be tested without waiting for it.
+  */
   now?: () => number;
   silenceAllowedMs?: number;
   reconnectsAllowed?: number;
   signal?: AbortSignal;
   /**
-   * Where what the stream said is held, so a caller can ask what is held, and
-   * how current it is, while following. A fresh one where none is given.
-   */
+  Where what the stream said is held, so a caller can ask what is held, and
+  how current it is, while following. A fresh one where none is given.
+  */
   ledger?: Ledger;
 }
 
 /**
- * An opened stream's body, or why there is none.
- */
+An opened stream's body, or why there is none.
+*/
 type Opened = { ok: true; body: ReadableStream<Uint8Array> } | { ok: false; problem: Problem };
 
 /**
- * What one read of an opening produced.
- */
+What one read of an opening produced.
+*/
 type Step = { heard: "words"; chunk: Uint8Array } | { heard: "end" } | { heard: "silence" };
 
 /**
- * What one opening of the stream needs in order to be read.
- */
+What one opening of the stream needs in order to be read.
+*/
 interface Opening {
   body: ReadableStream<Uint8Array>;
   ledger: Ledger;
@@ -118,25 +118,25 @@ interface Opening {
   silenceAllowedMs: number;
   onId: (id: string) => void;
   /**
-   * The caller's way of saying it has stopped listening, where it gave one.
-   */
+  The caller's way of saying it has stopped listening, where it gave one.
+  */
   signal: AbortSignal | undefined;
   /**
-   * Set when the stream fell silent longer than it is allowed to, which is the
-   * difference between a stream that ended and one that died.
-   */
+  Set when the stream fell silent longer than it is allowed to, which is the
+  difference between a stream that ended and one that died.
+  */
   broke: boolean;
 }
 
 /**
- * Follows the stream, yielding what arrives and what has gone stale.
- *
- * On a break every held value cools: a value gathered before a gap is not
- * current, whatever the transport reports about the gap.
- *
- * An address that is not on this machine, or carries more than an address, is
- * lost before anything is sent: the token goes nowhere it was not given for.
- */
+Follows the stream, yielding what arrives and what has gone stale.
+
+On a break every held value cools: a value gathered before a gap is not
+current, whatever the transport reports about the gap.
+
+An address that is not on this machine, or carries more than an address, is
+lost before anything is sent: the token goes nowhere it was not given for.
+*/
 export async function* follow(options: Following): AsyncGenerator<Arrival> {
   const where = address(options.url);
   if (!where.ok) {
@@ -200,14 +200,14 @@ export async function* follow(options: Following): AsyncGenerator<Arrival> {
 }
 
 /**
- * Reads one opening to its end, collecting what arrives and whether it broke.
- *
- * A caller that has stopped listening is one of the ways this ends, and the read
- * already waiting when it says so is what its word has to reach: letting go of
- * the body settles that read, which is what brings the loop back to end. The
- * body is let go of however the reading ends, since a reader still holding one
- * goes on draining a connection nobody is reading from.
- */
+Reads one opening to its end, collecting what arrives and whether it broke.
+
+A caller that has stopped listening is one of the ways this ends, and the read
+already waiting when it says so is what its word has to reach: letting go of
+the body settles that read, which is what brings the loop back to end. The
+body is let go of however the reading ends, since a reader still holding one
+goes on draining a connection nobody is reading from.
+*/
 async function* readOpening(opening: Opening): AsyncGenerator<Arrival> {
   const reader = opening.body.getReader();
   const parser = new SseParser();
@@ -242,12 +242,12 @@ async function* readOpening(opening: Opening): AsyncGenerator<Arrival> {
 }
 
 /**
- * Lets go of the body, whatever state it is in.
- *
- * A body whose stream already failed says so again when it is let go of, and a
- * stream that has already ended the reading leaves nothing further to do about
- * it.
- */
+Lets go of the body, whatever state it is in.
+
+A body whose stream already failed says so again when it is let go of, and a
+stream that has already ended the reading leaves nothing further to do about
+it.
+*/
 async function letGo(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<void> {
   try {
     await reader.cancel();
@@ -257,8 +257,8 @@ async function letGo(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<v
 }
 
 /**
- * One event's text, read and recorded.
- */
+One event's text, read and recorded.
+*/
 function received(text: string, opening: Opening): Arrival {
   const read = parse(text);
 
@@ -269,14 +269,14 @@ function received(text: string, opening: Opening): Arrival {
 }
 
 /**
- * The next chunk, or what its absence means.
- *
- * The wait is the whole of the silence detection. A stream that has gone quiet
- * says nothing at all, so nothing arrives to prompt a reading of the clock, and a
- * connection that died without closing would be waited on for as long as the
- * process lived. The deadline ends the wait instead, and it starts again from
- * whatever last arrived.
- */
+The next chunk, or what its absence means.
+
+The wait is the whole of the silence detection. A stream that has gone quiet
+says nothing at all, so nothing arrives to prompt a reading of the clock, and a
+connection that died without closing would be waited on for as long as the
+process lived. The deadline ends the wait instead, and it starts again from
+whatever last arrived.
+*/
 async function nextChunk(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   silenceAllowedMs: number,
@@ -290,8 +290,8 @@ async function nextChunk(
 }
 
 /**
- * One read, ended by the stream rather than by the clock.
- */
+One read, ended by the stream rather than by the clock.
+*/
 async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Step> {
   try {
     const step = await reader.read();
@@ -302,8 +302,8 @@ async function reading(reader: ReadableStreamDefaultReader<Uint8Array>): Promise
 }
 
 /**
- * A wait that ends in silence, dropped where a read got there first.
- */
+A wait that ends in silence, dropped where a read got there first.
+*/
 function silence(ms: number, until: AbortSignal): Promise<Step> {
   return new Promise((tell) => {
     const bell = setTimeout(() => {
@@ -320,16 +320,16 @@ function silence(ms: number, until: AbortSignal): Promise<Step> {
 }
 
 /**
- * Opens the stream, resuming from `lastEventId` where there is one.
- *
- * A stream nothing answered is `unreachable`. A refusal is read as every other
- * refusal is, from its status and its body, so a key the run does not admit is
- * `refused` and a stream the server does not serve is `missing`.
- *
- * The caller's own way of stopping is what the request is given, so a stop said
- * before this reaches the network is a request that is never made. A caller that
- * gave none is given one nothing ever raises.
- */
+Opens the stream, resuming from `lastEventId` where there is one.
+
+A stream nothing answered is `unreachable`. A refusal is read as every other
+refusal is, from its status and its body, so a key the run does not admit is
+`refused` and a stream the server does not serve is `missing`.
+
+The caller's own way of stopping is what the request is given, so a stop said
+before this reaches the network is a request that is never made. A caller that
+gave none is given one nothing ever raises.
+*/
 async function open(
   options: Following,
   url: string,
@@ -365,8 +365,8 @@ async function open(
 }
 
 /**
- * A refusal's body as text, or nothing where there is none or it could not be read.
- */
+A refusal's body as text, or nothing where there is none or it could not be read.
+*/
 async function textOf(body: ReadableStream<Uint8Array> | null): Promise<string> {
   if (body === null) return "";
   try {

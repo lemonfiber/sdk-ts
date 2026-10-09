@@ -1,23 +1,23 @@
 /**
- * The token a caller hands over, checked before anything carries it.
- *
- * Spec: 20-architecture/contracts/web-api.md
- */
+The token a caller hands over, checked before anything carries it.
+
+Spec: 20-architecture/contracts/web-api.md
+*/
 import { misconfigured, type Problem } from "./problem.js";
 
 /**
- * The header every credential travels in. Never a query parameter.
- */
+The header every credential travels in. Never a query parameter.
+*/
 export const TOKEN_HEADER = "X-Lemonfiber-Token";
 
 /**
- * What a token is written in: visible ASCII, nothing a header could be split on.
- */
+What a token is written in: visible ASCII, nothing a header could be split on.
+*/
 const VISIBLE = /^[\u{21}-\u{7E}]+$/u;
 
 /**
- * Why a token cannot be sent, or nothing where it can.
- */
+Why a token cannot be sent, or nothing where it can.
+*/
 export function tokenProblem(token: string): Problem | undefined {
   if (token.trim() === "") {
     return misconfigured(

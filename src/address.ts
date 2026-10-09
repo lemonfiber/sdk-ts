@@ -1,17 +1,17 @@
 /**
- * Where lemonfiber is, and the refusal to talk anywhere else.
- *
- * Spec: 20-architecture/contracts/web-api.md
- */
+Where lemonfiber is, and the refusal to talk anywhere else.
+
+Spec: 20-architecture/contracts/web-api.md
+*/
 import { misconfigured, type Problem } from "./problem.js";
 
 /**
- * Whether a host is loopback without asking a resolver.
- *
- * A browser cannot resolve names, so a named host is judged by whether it is a
- * loopback name rather than by what it resolves to. The server's own `Host` and
- * `Origin` check is what catches a name pointed elsewhere.
- */
+Whether a host is loopback without asking a resolver.
+
+A browser cannot resolve names, so a named host is judged by whether it is a
+loopback name rather than by what it resolves to. The server's own `Host` and
+`Origin` check is what catches a name pointed elsewhere.
+*/
 function isLoopbackHost(host: string): boolean {
   const bare = host.startsWith("[") && host.endsWith("]") ? host.slice(1, -1) : host;
 
@@ -26,11 +26,11 @@ function isLoopbackHost(host: string): boolean {
 export type Address = { ok: true; base: string } | { ok: false; problem: Problem };
 
 /**
- * Reads a base address, refusing anything not on this machine.
- *
- * Credentials in the address are refused outright: this client sends its token
- * in a header, and an address carrying one has come from somewhere unexpected.
- */
+Reads a base address, refusing anything not on this machine.
+
+Credentials in the address are refused outright: this client sends its token
+in a header, and an address carrying one has come from somewhere unexpected.
+*/
 export function address(given: string): Address {
   let url: URL;
 

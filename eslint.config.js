@@ -59,4 +59,8 @@ export default tseslint.config(
   },
 
   { files: ["*.config.ts", "scripts/**"], ...tseslint.configs.disableTypeChecked },
+  {
+    files: ["*.config.ts"],
+    rules: { "unicorn/no-top-level-side-effects": "off" },
+  },
 );

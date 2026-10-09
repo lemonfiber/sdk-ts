@@ -6,8 +6,8 @@ import type { Bundle } from "./generated/index.js";
 import { refused, unreachable } from "./problem.js";
 
 /**
- * The first bytes of a gzip stream, then bytes no text decoding survives intact.
- */
+The first bytes of a gzip stream, then bytes no text decoding survives intact.
+*/
 const ARCHIVE = new Uint8Array([31, 139, 8, 0, 255, 254, 0, 128, 195, 40]);
 
 const NAME = "lemonfiber-support-2026-09-28T10-00-00Z.tar.gz";
@@ -19,14 +19,14 @@ interface Seen {
 }
 
 /**
- * What each reading of a reply's body was asked for, in order.
- */
+What each reading of a reply's body was asked for, in order.
+*/
 type Read = ("text" | "blob")[];
 
 /**
- * A `fetch` that records what it was asked and what of the reply was read, and
- * answers with `ARCHIVE` to a reading as bytes and `reply.text` to one as text.
- */
+A `fetch` that records what it was asked and what of the reply was read, and
+answers with `ARCHIVE` to a reading as bytes and `reply.text` to one as text.
+*/
 function handing(
   reply: { ok?: boolean; status?: number; text?: string },
   seen: Seen[] = [],
@@ -56,8 +56,8 @@ const open = (sending: Sending) => {
 };
 
 /**
- * An `error` envelope carrying `summary`, as lemonfiber answers a read it refused.
- */
+An `error` envelope carrying `summary`, as lemonfiber answers a read it refused.
+*/
 const wentWrong = (summary: string): string =>
   JSON.stringify({
     api_version: API_VERSION,
@@ -73,8 +73,8 @@ const wentWrong = (summary: string): string =>
   });
 
 /**
- * The payload of a bundle the `support` action wrote, at `path`.
- */
+The payload of a bundle the `support` action wrote, at `path`.
+*/
 const written = (path: string): Bundle & { path: string } => ({
   bytes: ARCHIVE.length,
   contents: {

@@ -1,8 +1,8 @@
 /**
- * Asking lemonfiber for something, and telling it to do something.
- *
- * Spec: 20-architecture/contracts/web-api.md
- */
+Asking lemonfiber for something, and telling it to do something.
+
+Spec: 20-architecture/contracts/web-api.md
+*/
 import { address } from "./address.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
@@ -33,32 +33,32 @@ import { filledIn, search } from "./query.js";
 import { refusalIn } from "./refusal.js";
 
 /**
- * The read answered with a line of its own for each envelope rather than with
- * one document. `read` takes every other read the contract lists.
- */
+The read answered with a line of its own for each envelope rather than with
+one document. `read` takes every other read the contract lists.
+*/
 type LineByLine = "logs";
 
 /**
- * The name of a read `read` answers: one answered with one document.
- */
+The name of a read `read` answers: one answered with one document.
+*/
 export type DocumentRead = Exclude<ReadName, LineByLine>;
 
 /**
- * The slice of `fetch` this needs, so a test can supply its own.
- *
- * `blob` is read for a file lemonfiber hands over and for nothing else, so a
- * reply without it answers every request but those. `fetch`'s reply has it.
- *
- * `redirect` is always `"error"`: an answer pointing somewhere else is not
- * followed, so the token goes to the address it was given for and nowhere
- * else. `fetch` honours it as given; a `sending` of any other kind has to as
- * well.
- *
- * `signal` is raised when the call runs out of time or its caller stops it, and
- * `fetch` gives up on the request and on reading its body when it is. A
- * `sending` of any other kind has to as well, or a call waits on it past its
- * deadline.
- */
+The slice of `fetch` this needs, so a test can supply its own.
+
+`blob` is read for a file lemonfiber hands over and for nothing else, so a
+reply without it answers every request but those. `fetch`'s reply has it.
+
+`redirect` is always `"error"`: an answer pointing somewhere else is not
+followed, so the token goes to the address it was given for and nowhere
+else. `fetch` honours it as given; a `sending` of any other kind has to as
+well.
+
+`signal` is raised when the call runs out of time or its caller stops it, and
+`fetch` gives up on the request and on reading its body when it is. A
+`sending` of any other kind has to as well, or a call waits on it past its
+deadline.
+*/
 export type Sending = (
   url: string,
   init: {
@@ -77,102 +77,102 @@ export type Sending = (
 }>;
 
 /**
- * One reply, as `sending` handed it back.
- */
+One reply, as `sending` handed it back.
+*/
 type Answer = Awaited<ReturnType<Sending>>;
 
 /**
- * A file lemonfiber handed over, or why it did not.
- *
- * The file is kept as it arrived, bytes and type both, so a browser can offer it
- * as a download without decoding it first.
- *
- * A refusal carries the body it arrived with, whole, as `said`. `problem` is the
- * reading `refusalIn` gives every other request; `said` is what that reading
- * leaves out — every field of an error envelope beyond its summary, and the
- * sentence a turned-away request was answered with, which `refused` never
- * carries. It is absent where nothing arrived to carry.
- */
+A file lemonfiber handed over, or why it did not.
+
+The file is kept as it arrived, bytes and type both, so a browser can offer it
+as a download without decoding it first.
+
+A refusal carries the body it arrived with, whole, as `said`. `problem` is the
+reading `refusalIn` gives every other request; `said` is what that reading
+leaves out — every field of an error envelope beyond its summary, and the
+sentence a turned-away request was answered with, which `refused` never
+carries. It is absent where nothing arrived to carry.
+*/
 export type Handed = { ok: true; value: Blob } | { ok: false; problem: Problem; said?: string };
 
 /**
- * Where a support bundle was written, as the `support` action's `bundle` payload
- * says. The payload itself is one, once its `path` is known to be there.
- *
- * Only a written one: a payload without a `path` described a bundle and wrote
- * none, so there is no file to ask for.
- */
+Where a support bundle was written, as the `support` action's `bundle` payload
+says. The payload itself is one, once its `path` is known to be there.
+
+Only a written one: a payload without a `path` described a bundle and wrote
+none, so there is no file to ask for.
+*/
 export interface Written {
   path: NonNullable<Bundle["path"]>;
 }
 
 export interface Talking {
   /**
-   * Where lemonfiber is listening, as it printed the address.
-   */
+  Where lemonfiber is listening, as it printed the address.
+  */
   url: string;
   /**
-   * The token lemonfiber printed when it started serving.
-   */
+  The token lemonfiber printed when it started serving.
+  */
   token: string;
   sending: Sending;
   /**
-   * The longest any one call waits for its answer, every attempt at it
-   * included. `DEFAULT_TIMEOUT_MS` where none is given; a call may give its own.
-   */
+  The longest any one call waits for its answer, every attempt at it
+  included. `DEFAULT_TIMEOUT_MS` where none is given; a call may give its own.
+  */
   timeoutMs?: number;
 }
 
 export type Opened = { ok: true; client: Client } | { ok: false; problem: Problem };
 
 /**
- * Where integration keys are listed, minted and revoked.
- */
+Where integration keys are listed, minted and revoked.
+*/
 const KEYS = "/api/keys";
 
 /**
- * Where the first-run setup is walked, one request a step.
- */
+Where the first-run setup is walked, one request a step.
+*/
 const SETUP = "/api/setup";
 
 /**
- * Where setup stands after a step: the question it is on, the answers so far,
- * and what it found.
- */
+Where setup stands after a step: the question it is on, the answers so far,
+and what it found.
+*/
 export type Walked = Reading<ByKind["wizard"]>;
 
 /**
- * What one integration key is minted with.
- *
- * The password is the minter's own, given again for this one request. It is sent
- * in the body and kept by nothing here.
- */
+What one integration key is minted with.
+
+The password is the minter's own, given again for this one request. It is sent
+in the body and kept by nothing here.
+*/
 export interface Minting {
   /**
-   * What to call it. No other key may hold the name.
-   */
+  What to call it. No other key may hold the name.
+  */
   name: string;
   /**
-   * What it admits: `read`, `act`, or `member:` and the account it acts as.
-   */
+  What it admits: `read`, `act`, or `member:` and the account it acts as.
+  */
   scope: "read" | "act" | `member:${string}`;
   /**
-   * What it is for, as whoever mints it declares.
-   */
+  What it is for, as whoever mints it declares.
+  */
   purpose: KeyPurpose;
   /**
-   * The minter's password, given again.
-   */
+  The minter's password, given again.
+  */
   password: string;
 }
 
 /**
- * Talks to one running lemonfiber.
- *
- * Every reply that is a document is read through the envelope, so a version
- * this package cannot speak is refused rather than half-understood. A file is
- * handed over as the bytes that arrived.
- */
+Talks to one running lemonfiber.
+
+Every reply that is a document is read through the envelope, so a version
+this package cannot speak is refused rather than half-understood. A file is
+handed over as the bytes that arrived.
+*/
 export class Client {
   readonly #base: string;
   readonly #token: string;
@@ -187,10 +187,10 @@ export class Client {
   }
 
   /**
-   * Opens a client, refusing an address that is not on this machine, a token no
-   * header can carry and a wait that is not a length of time, each as a
-   * `configuration` problem.
-   */
+  Opens a client, refusing an address that is not on this machine, a token no
+  header can carry and a wait that is not a length of time, each as a
+  `configuration` problem.
+  */
   static at(options: Talking): Opened {
     const where = address(options.url);
     if (!where.ok) return { ok: false, problem: where.problem };
@@ -208,17 +208,17 @@ export class Client {
   }
 
   /**
-   * Asks for what a command would print under `--json`, by the read's name.
-   *
-   * The name, the parameters it takes and the kinds it answers with are the
-   * contract's own list. An answer of a kind the contract does not list for the
-   * read is `unrecognised` rather than handed on as the read's.
-   *
-   * A read whose path has a segment the caller fills, such as `held/{id}`, takes
-   * it in the query, and its query type needs it. Asked without it, the read is
-   * `misasked` and nothing is sent: the query stays optional in the signature so
-   * a caller generic over the read name can still pass one along.
-   */
+  Asks for what a command would print under `--json`, by the read's name.
+  
+  The name, the parameters it takes and the kinds it answers with are the
+  contract's own list. An answer of a kind the contract does not list for the
+  read is `unrecognised` rather than handed on as the read's.
+  
+  A read whose path has a segment the caller fills, such as `held/{id}`, takes
+  it in the query, and its query type needs it. Asked without it, the read is
+  `misasked` and nothing is sent: the query stays optional in the signature so
+  a caller generic over the read name can still pass one along.
+  */
   async read<N extends DocumentRead>(
     name: N,
     query?: ReadQuery[N],
@@ -241,8 +241,8 @@ export class Client {
   }
 
   /**
-   * Tells lemonfiber to do something the command line could also do.
-   */
+  Tells lemonfiber to do something the command line could also do.
+  */
   async act(
     name: string,
     body: Record<string, unknown> = {},
@@ -252,21 +252,21 @@ export class Client {
   }
 
   /**
-   * The integration keys this credential may see, without their secrets.
-   *
-   * An operator lists every key, and a household member only the keys scoped to
-   * them. A key is refused here whatever its scope.
-   */
+  The integration keys this credential may see, without their secrets.
+  
+  An operator lists every key, and a household member only the keys scoped to
+  them. A key is refused here whatever its scope.
+  */
   async keys(asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
     return answeredAs(await this.#ask("GET", KEYS, asking, undefined, true), "keys");
   }
 
   /**
-   * Mints one integration key, its secret in this reply and in no other.
-   *
-   * The reply carries the secret beside the stack's certificate pin and the
-   * address it is served at encrypted, where it is; nothing here keeps any of it.
-   */
+  Mints one integration key, its secret in this reply and in no other.
+  
+  The reply carries the secret beside the stack's certificate pin and the
+  address it is served at encrypted, where it is; nothing here keeps any of it.
+  */
   async mint(minting: Minting, asking: Asking = {}): Promise<Reading<ByKind["minted-key"]>> {
     return answeredAs(
       await this.#ask("POST", KEYS, asking, JSON.stringify(minting)),
@@ -275,9 +275,9 @@ export class Client {
   }
 
   /**
-   * Revokes one integration key by its name, answered with the keys as they now
-   * stand. The name is sent as one path segment.
-   */
+  Revokes one integration key by its name, answered with the keys as they now
+  stand. The name is sent as one path segment.
+  */
   async revoke(name: string, asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
     return answeredAs(
       await this.#ask("DELETE", `${KEYS}/${encodeURIComponent(name)}`, asking),
@@ -286,67 +286,67 @@ export class Client {
   }
 
   /**
-   * Where setup stands and what it is still asking for. Asking changes nothing.
-   *
-   * The answers so far live in the progress file setup keeps on the machine, so
-   * a walk begun anywhere is the one this reads.
-   */
+  Where setup stands and what it is still asking for. Asking changes nothing.
+  
+  The answers so far live in the progress file setup keeps on the machine, so
+  a walk begun anywhere is the one this reads.
+  */
   async setup(asking: Asking = {}): Promise<Walked> {
     return answeredAs(await this.#ask("GET", SETUP, asking, undefined, true), "wizard");
   }
 
   /**
-   * Answers the question setup is on. A credential in the answer is tested
-   * against its service as it is given, and what the service said is on the
-   * reply; the value itself never is.
-   */
+  Answers the question setup is on. A credential in the answer is tested
+  against its service as it is given, and what the service said is on the
+  reply; the value itself never is.
+  */
   async setupAnswer(answer: SetupAnswerBody, asking: Asking = {}): Promise<Walked> {
     return this.#walk("answer", asking, JSON.stringify(answer));
   }
 
   /**
-   * On past a step that only informs.
-   */
+  On past a step that only informs.
+  */
   async setupNext(asking: Asking = {}): Promise<Walked> {
     return this.#walk("next", asking);
   }
 
   /**
-   * Back to the question before.
-   */
+  Back to the question before.
+  */
   async setupBack(asking: Asking = {}): Promise<Walked> {
     return this.#walk("back", asking);
   }
 
   /**
-   * Writes the reviewed answers, answered once the writing is done.
-   */
+  Writes the reviewed answers, answered once the writing is done.
+  */
   async setupApply(asking: Asking = {}): Promise<Walked> {
     return this.#walk("apply", asking);
   }
 
   /**
-   * Takes one way out of an apply that stopped part-way, chosen after the
-   * reply naming what that apply had already written.
-   */
+  Takes one way out of an apply that stopped part-way, chosen after the
+  reply naming what that apply had already written.
+  */
   async setupRecover(choice: Choice, asking: Asking = {}): Promise<Walked> {
     return this.#walk("recover", asking, JSON.stringify({ choice }));
   }
 
   /**
-   * One step of setup, asked once: none of them is safe to send twice.
-   */
+  One step of setup, asked once: none of them is safe to send twice.
+  */
   async #walk(step: string, asking: Asking, body?: string): Promise<Walked> {
     return answeredAs(await this.#ask("POST", `${SETUP}/${step}`, asking, body), "wizard");
   }
 
   /**
-   * Asks for what lemonfiber hands over as a file rather than as a document.
-   *
-   * The reply is not read through the envelope, since there is none; it is kept
-   * as the bytes that arrived. A refusal is read as every other one is, and keeps
-   * its body besides.
-   */
+  Asks for what lemonfiber hands over as a file rather than as a document.
+  
+  The reply is not read through the envelope, since there is none; it is kept
+  as the bytes that arrived. A refusal is read as every other one is, and keeps
+  its body besides.
+  */
   async take(endpoint: string, asking: Asking = {}): Promise<Handed> {
     const call = this.#call(asking);
     if (!call.ok) return call;
@@ -370,22 +370,22 @@ export class Client {
   }
 
   /**
-   * One support bundle lemonfiber kept, handed over whole.
-   *
-   * Asked for by the name it was written under, or by the `bundle` payload the
-   * `support` action answered with, whose `path` ends in that name. The name is
-   * sent as one path segment, so a name carrying a separator reaches lemonfiber as
-   * written and is refused there by name.
-   */
+  One support bundle lemonfiber kept, handed over whole.
+  
+  Asked for by the name it was written under, or by the `bundle` payload the
+  `support` action answered with, whose `path` ends in that name. The name is
+  sent as one path segment, so a name carrying a separator reaches lemonfiber as
+  written and is refused there by name.
+  */
   async bundle(written: string | Written, asking: Asking = {}): Promise<Handed> {
     const name = typeof written === "string" ? written : lastSegment(written.path);
     return this.take(`bundle/${encodeURIComponent(name)}`, asking);
   }
 
   /**
-   * One call's deadline: the caller's wait where it gave one, the client's
-   * otherwise, ended early by the caller's own signal.
-   */
+  One call's deadline: the caller's wait where it gave one, the client's
+  otherwise, ended early by the caller's own signal.
+  */
   #call(asking: Asking): Reading<Call> {
     const timeoutMs = asking.timeoutMs ?? this.#timeoutMs;
     if (!isAWait(timeoutMs)) return { ok: false, problem: notAWait(timeoutMs) };
@@ -393,11 +393,11 @@ export class Client {
   }
 
   /**
-   * One request read through the envelope. A read is asked again before a
-   * passing failure is reported; anything else is asked once. Every attempt
-   * shares the call's one deadline, and a call that runs out of it, or that its
-   * caller stops, says which.
-   */
+  One request read through the envelope. A read is asked again before a
+  passing failure is reported; anything else is asked once. Every attempt
+  shares the call's one deadline, and a call that runs out of it, or that its
+  caller stops, says which.
+  */
   async #ask(
     method: string,
     path: string,
@@ -425,8 +425,8 @@ export class Client {
   }
 
   /**
-   * The reply to one request, or nothing where none arrived before `signal`.
-   */
+  The reply to one request, or nothing where none arrived before `signal`.
+  */
   async #send(
     method: string,
     path: string,
@@ -456,31 +456,31 @@ export class Client {
 }
 
 /**
- * The problem a reply that was not a success is, its `Retry-After` included.
- */
+The problem a reply that was not a success is, its `Retry-After` included.
+*/
 function refusalOf(answer: Answer, said: string): Problem {
   return refusalIn(answer.status, said, answer.headers?.get("Retry-After"));
 }
 
 /**
- * A reply's body as the bytes that arrived, or nothing where it cannot be read
- * as bytes.
- */
+A reply's body as the bytes that arrived, or nothing where it cannot be read
+as bytes.
+*/
 function blobOf(answer: Answer): Promise<Blob | undefined> {
   return answer.blob === undefined ? Promise.resolve(undefined) : answer.blob();
 }
 
 /**
- * The file a path names: whatever follows its last separator, of either kind.
- */
+The file a path names: whatever follows its last separator, of either kind.
+*/
 function lastSegment(path: string): string {
   return path.slice(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
 }
 
 /**
- * An answer narrowed to the one kind its route answers with, or `unrecognised`
- * where it came back as another.
- */
+An answer narrowed to the one kind its route answers with, or `unrecognised`
+where it came back as another.
+*/
 function answeredAs<K extends Kind>(answered: Reading<Envelope>, kind: K): Reading<ByKind[K]> {
   if (!answered.ok) return answered;
   return isKind(answered.value, kind)
@@ -489,8 +489,8 @@ function answeredAs<K extends Kind>(answered: Reading<Envelope>, kind: K): Readi
 }
 
 /**
- * Whether an envelope is of a kind the contract lists the read as answering with.
- */
+Whether an envelope is of a kind the contract lists the read as answering with.
+*/
 function isAnswerTo<N extends DocumentRead>(
   name: N,
   envelope: Envelope,
