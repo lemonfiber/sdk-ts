@@ -61,9 +61,15 @@ await client.act("restart", { forms: ["tv"], services: ["sonarr"] });
   such as `status`, `front-door` or `requests`. The query takes the parameters
   that read takes, and the answer is typed as the kind the contract lists for it.
   An answer of any other kind is an `unrecognised` problem. `READS` is the
-  generated list of reads, with each one's path, parameters and kinds. The logs
-  answer with one envelope per line, so they are not among the names `read`
-  takes.
+  generated list of reads, with each one's path, segments, parameters and kinds.
+  The logs answer with one envelope per line, so they are not among the names
+  `read` takes.
+- A read whose path has a segment the caller fills keeps it in its name, such as
+  `held/{id}`, and takes it in the query:
+  `read("held/{id}", { id: "tt0111161", member: "ada" })` asks
+  `/api/held/tt0111161?member=ada`. The segment is written escaped, so it stays
+  one segment. One not given, given as a list, empty, `.` or `..` is a
+  `misasked` problem, and nothing is sent.
 - `act(name, body?)` sends `POST /api/actions/<name>`. The action names and their
   arguments are the command line's own. lemonfiber refuses a name it does not
   offer and a field the action does not take.

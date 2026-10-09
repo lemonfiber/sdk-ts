@@ -2,7 +2,7 @@
  * The modules written from the artefact's lists rather than its schemas: the
  * kinds and the refusal codes.
  */
-import { SPOKEN, bodyName, byCodePoint, readNameOf } from "./artefact.mjs";
+import { SPOKEN, bodyName, byCodePoint, documentNameOf, readNameOf, segmentsOf } from "./artefact.mjs";
 import { pascal, property } from "./spelling.mjs";
 
 /** Where each kind's envelope, and the shapes only it carries, are written. */
@@ -53,14 +53,16 @@ export function readsModule(listed) {
   const files = listed.filter((read) => read.file);
   const entry = ({ path, parameters, kinds }) => {
     const taken = parameters.map(({ name, repeatable }) => `{ name: ${JSON.stringify(name)}, repeatable: ${String(repeatable)} }`);
-    return `  ${JSON.stringify(readNameOf(path))}: { path: ${JSON.stringify(path)}, parameters: [${taken.join(", ")}], kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
+    const filled = segmentsOf(path).map((name) => JSON.stringify(name));
+    return `  ${JSON.stringify(documentNameOf(path))}: { path: ${JSON.stringify(path)}, segments: [${filled.join(", ")}], parameters: [${taken.join(", ")}], kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
   };
   const query = ({ path, parameters }) => {
-    const fields = parameters.map(
-      ({ name, repeatable }) => `${property(name)}?: ${repeatable ? "Scalar | readonly Scalar[]" : "Scalar"} | undefined`,
-    );
+    const fields = [
+      ...segmentsOf(path).map((name) => `${property(name)}: Scalar`),
+      ...parameters.map(({ name, repeatable }) => `${property(name)}?: ${repeatable ? "Scalar | readonly Scalar[]" : "Scalar"} | undefined`),
+    ];
     const shape = fields.length === 0 ? "Record<string, never>" : "{ " + fields.join("; ") + " }";
-    return `  ${JSON.stringify(readNameOf(path))}: ${shape};`;
+    return `  ${JSON.stringify(documentNameOf(path))}: ${shape};`;
   };
   return {
     path: ["reads"],
@@ -70,7 +72,7 @@ export function readsModule(listed) {
       "/** One value a query parameter carries. */",
       "export type Scalar = string | number | boolean;",
       "",
-      "/** Every read answered with a document, by name: its path, the parameters it takes, and the kinds it answers with. */",
+      "/** Every read answered with a document, by name: its path, the segments of it a caller fills, the parameters it takes, and the kinds it answers with. */",
       ...(documents.length === 0
         ? ["export const READS = {} as const;"]
         : ["export const READS = {", ...documents.map((read) => entry(read)), "} as const;"]),
@@ -78,7 +80,7 @@ export function readsModule(listed) {
       "/** The name of a read answered with a document. */",
       "export type ReadName = keyof typeof READS;",
       "",
-      "/** What each read takes: a repeatable parameter as one value or a list, any other as one value, and nothing sent for undefined. */",
+      "/** What each read takes: each segment of its path a caller fills, always; a repeatable parameter as one value or a list, any other as one value, and nothing sent for undefined. */",
       "export interface ReadQuery {",
       ...documents.map((read) => query(read)),
       "}",

@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `held` and `playing` both carry.
+// The shapes `held`, `part-way`, `playing` and `title` all carry.
 // Regenerate with `npm run contract:generate`.
 
 /**
@@ -16,4 +16,4 @@
  * reader comes to trust the wrong one. The contract flattens every type name into one
  * namespace, so a clash there is a clash for anything reading it by name.
  */
-export type Medium = "film" | "series" | "other";
+export type Medium = "film" | "series" | "episode" | "other";

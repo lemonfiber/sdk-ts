@@ -2,7 +2,8 @@
 // The `held` envelope, and the shapes only `held` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Medium } from "../shared/held__playing.js";
+import type { Medium } from "../shared/held__part-way__playing__title.js";
+import type { Pinned } from "../shared/held__part-way__title.js";
 
 /**
  * One thing the household holds, as a member is shown it.
@@ -12,6 +13,10 @@ import type { Medium } from "../shared/held__playing.js";
  * transcode, and a surface handed those would have to decide not to draw them.
  */
 export interface Held {
+  /** Where its backdrop is served, where it has one. */
+  backdrop?: string | null;
+  /** The certificate the door presents, which a client pins, beside any location. */
+  door?: Pinned | null;
   /**
    * The identifier the server tells it apart by, which is what asking to play one
    * of them names.
@@ -19,8 +24,14 @@ export interface Held {
   id: string;
   /** Which of the kinds this product deals in it is. */
   medium: Medium;
+  /** Where its poster is served, where it has one. */
+  poster?: string | null;
+  /** Where it streams from, where it plays. */
+  stream_from?: string | null;
   /** What it is called, in the words the server holds it under. */
   title: string;
+  /** Why no location is stated, where none is. */
+  unlocated?: string | null;
   /**
    * The year it came out, where the server knows one. Absent rather than guessed:
    * two films share a title far more often than they share a title and a year.

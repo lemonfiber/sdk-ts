@@ -26,21 +26,11 @@ import {
   type ReadAnswer,
   type ReadName,
   type ReadQuery,
-  type Scalar,
   type SetupAnswerBody,
 } from "./generated/index.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
+import { filledIn, search } from "./query.js";
 import { refusalIn } from "./refusal.js";
-
-/**
- * What a query parameter may carry. A value that is `undefined` is not sent.
- *
- * A list is the same parameter given once for each of its values, in order
- * (`form=a&form=b`), which is how a command's flag given more than once is
- * written as a read. An empty list sends nothing, the same as `undefined`: a
- * flag given no times is a flag not given.
- */
-export type Query = Record<string, Scalar | readonly Scalar[] | undefined>;
 
 /**
  * The read answered with a line of its own for each envelope rather than with
@@ -223,6 +213,11 @@ export class Client {
    * The name, the parameters it takes and the kinds it answers with are the
    * contract's own list. An answer of a kind the contract does not list for the
    * read is `unrecognised` rather than handed on as the read's.
+   *
+   * A read whose path has a segment the caller fills, such as `held/{id}`, takes
+   * it in the query, and its query type needs it. Asked without it, the read is
+   * `misasked` and nothing is sent: the query stays optional in the signature so
+   * a caller generic over the read name can still pass one along.
    */
   async read<N extends DocumentRead>(
     name: N,
@@ -230,9 +225,11 @@ export class Client {
     asking: Asking = {},
   ): Promise<Reading<ReadAnswer<N>>> {
     const read = READS[name];
+    const filled = filledIn(read.path, read.segments, query ?? {});
+    if (!filled.ok) return filled;
     const answered = await this.#ask(
       "GET",
-      `${read.path}${search(query ?? {})}`,
+      `${filled.value.path}${search(filled.value.rest)}`,
       asking,
       undefined,
       true,
@@ -500,29 +497,4 @@ function isAnswerTo<N extends DocumentRead>(
 ): envelope is ReadAnswer<N> {
   const kinds: readonly string[] = READS[name].kinds;
   return kinds.includes(envelope.kind);
-}
-
-/**
- * A parameter's values, whether it was given one or a list of them.
- */
-function listed(value: Scalar | readonly Scalar[]): readonly Scalar[] {
-  return typeof value === "object" ? value : [value];
-}
-
-/**
- * A query string, or nothing when there is nothing to ask for.
- *
- * The token is never among these: a credential in a URL reaches logs, history
- * and referrers.
- */
-function search(query: Query): string {
-  const parts = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(query)) {
-    if (value === undefined) continue;
-    for (const one of listed(value)) parts.append(key, String(one));
-  }
-
-  const text = parts.toString();
-  return text === "" ? "" : `?${text}`;
 }
