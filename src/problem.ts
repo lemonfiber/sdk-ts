@@ -1,8 +1,8 @@
 /**
- * What went wrong, in words an operator can act on.
- *
- * Spec: 10-functional/features/g-ux/g4-error-model.md
- */
+What went wrong, in words an operator can act on.
+
+Spec: 10-functional/features/g-ux/g4-error-model.md
+*/
 import type { RefusalCode } from "./generated/index.js";
 
 export type ProblemKind =
@@ -23,41 +23,41 @@ export type ProblemKind =
 export interface Problem {
   kind: ProblemKind;
   /**
-   * Plain language. No status codes, no stack traces, no jargon.
-   */
+  Plain language. No status codes, no stack traces, no jargon.
+  */
   message: string;
   /**
-   * Why lemonfiber refused, where it said so with a code the contract lists.
-   *
-   * A code the contract does not list is not carried: it reads as none, and the
-   * refusal is read by its status alone.
-   */
+  Why lemonfiber refused, where it said so with a code the contract lists.
+  
+  A code the contract does not list is not carried: it reads as none, and the
+  refusal is read by its status alone.
+  */
   code?: RefusalCode;
   /**
-   * How many seconds are left before lemonfiber listens again, on a `too-many`
-   * refusal whose answer said.
-   */
+  How many seconds are left before lemonfiber listens again, on a `too-many`
+  refusal whose answer said.
+  */
   retryAfterSeconds?: number;
 }
 
 export const problem = (kind: ProblemKind, message: string): Problem => ({ kind, message });
 
 /**
- * What the caller handed over cannot be used: an address that is not one, or
- * not on this machine, or a token that is empty or not one a header can carry.
- *
- * Nothing was sent. The remedy is in the caller's own configuration, which is
- * what tells this from `refused`: that one is the key lemonfiber turned away.
- */
+What the caller handed over cannot be used: an address that is not one, or
+not on this machine, or a token that is empty or not one a header can carry.
+
+Nothing was sent. The remedy is in the caller's own configuration, which is
+what tells this from `refused`: that one is the key lemonfiber turned away.
+*/
 export const misconfigured = (message: string): Problem => problem("configuration", message);
 
 export const unreachable = (): Problem =>
   problem("unreachable", "lemonfiber is not answering. It may have been stopped.");
 
 /**
- * The call used all the time it was given, every attempt included, and no
- * answer came. Nothing is known of what lemonfiber made of it.
- */
+The call used all the time it was given, every attempt included, and no
+answer came. Nothing is known of what lemonfiber made of it.
+*/
 export const outOfTime = (waitedMs: number): Problem => {
   const seconds = Math.max(1, Math.round(waitedMs / 1000));
   return problem(
@@ -67,23 +67,23 @@ export const outOfTime = (waitedMs: number): Problem => {
 };
 
 /**
- * The caller stopped the call before an answer came.
- */
+The caller stopped the call before an answer came.
+*/
 export const stopped = (): Problem =>
   problem("unreachable", "The request was stopped before lemonfiber answered.");
 
 /**
- * The key this page is using is not the one this run is expecting.
- *
- * This kind, and this message, and nothing else. A run mints a key once, so the
- * remedy is always the same one and a caller reading this kind may act on it
- * without reading anything further.
- *
- * It takes no sentence. What lemonfiber says when it turns a request away for the
- * key names a symptom of it, and a sentence carried here would make this kind mean
- * whatever the sentence happened to say — which is what it used to mean, and what
- * left a stopped container engine asking an operator for a new key.
- */
+The key this page is using is not the one this run is expecting.
+
+This kind, and this message, and nothing else. A run mints a key once, so the
+remedy is always the same one and a caller reading this kind may act on it
+without reading anything further.
+
+It takes no sentence. What lemonfiber says when it turns a request away for the
+key names a symptom of it, and a sentence carried here would make this kind mean
+whatever the sentence happened to say — which is what it used to mean, and what
+left a stopped container engine asking an operator for a new key.
+*/
 export const refused = (): Problem =>
   problem(
     "refused",
@@ -91,77 +91,77 @@ export const refused = (): Problem =>
   );
 
 /**
- * lemonfiber turned the request away for a reason that is not the key.
- *
- * Who is asking, or where from, is what it objects to: a page served from an
- * address other than the one lemonfiber is listening on, an account asking for
- * what is not its own, a password that was not the one, or a media server that
- * could not say whether the account is still anybody. Each has its own remedy and
- * none of them is a new key, so this is never `refused`.
- *
- * The code says which it is, and a caller decides from the code rather than from
- * the sentence. The sentence is lemonfiber's own, written for a person to read.
- */
+lemonfiber turned the request away for a reason that is not the key.
+
+Who is asking, or where from, is what it objects to: a page served from an
+address other than the one lemonfiber is listening on, an account asking for
+what is not its own, a password that was not the one, or a media server that
+could not say whether the account is still anybody. Each has its own remedy and
+none of them is a new key, so this is never `refused`.
+
+The code says which it is, and a caller decides from the code rather than from
+the sentence. The sentence is lemonfiber's own, written for a person to read.
+*/
 export const declined = (said: string, code: RefusalCode): Problem => ({
   ...problem("declined", said),
   code,
 });
 
 /**
- * lemonfiber has nothing by the name the request gave.
- *
- * Separate from every other refusal, and separately actionable: a word this
- * product does not explain and a container engine that is not running are both a
- * read that came back with no answer, and only one of them is worth asking a
- * different question about. Asking this one again, unchanged, will never succeed.
- *
- * The sentence is lemonfiber's own. It names what was asked for and, where the set
- * is short enough to be the answer, what there is instead — which no wording held
- * here could. Nothing is defaulted, since this is built from words that arrived
- * and from nothing else.
- */
+lemonfiber has nothing by the name the request gave.
+
+Separate from every other refusal, and separately actionable: a word this
+product does not explain and a container engine that is not running are both a
+read that came back with no answer, and only one of them is worth asking a
+different question about. Asking this one again, unchanged, will never succeed.
+
+The sentence is lemonfiber's own. It names what was asked for and, where the set
+is short enough to be the answer, what there is instead — which no wording held
+here could. Nothing is defaulted, since this is built from words that arrived
+and from nothing else.
+*/
 export const missing = (said: string): Problem => problem("missing", said);
 
 /**
- * lemonfiber could not answer the request as it was asked.
- *
- * A parameter it needs and was not given, or a value outside a vocabulary the
- * surface itself defines. What the request named may well exist; the request
- * cannot be carried out in the shape it arrived in, and the sentence says which
- * part of it cannot.
- */
+lemonfiber could not answer the request as it was asked.
+
+A parameter it needs and was not given, or a value outside a vocabulary the
+surface itself defines. What the request named may well exist; the request
+cannot be carried out in the shape it arrived in, and the sentence says which
+part of it cannot.
+*/
 export const misasked = (said: string): Problem => problem("misasked", said);
 
 /**
- * lemonfiber ran the request and could not answer it.
- *
- * Nothing about the request is wrong. What it named is there and the way it asked
- * was understood; the machinery behind the answer is what did not work — a
- * container engine that is not running, a file that could not be read, a service
- * that would not reply. The same request may well succeed once that is put right,
- * which is what tells this from `refused`: one is the key, and this is everything
- * the key would have reached.
- *
- * The sentence is lemonfiber's own, naming what failed. Nothing is defaulted,
- * since this is built from words that arrived and from nothing else.
- */
+lemonfiber ran the request and could not answer it.
+
+Nothing about the request is wrong. What it named is there and the way it asked
+was understood; the machinery behind the answer is what did not work — a
+container engine that is not running, a file that could not be read, a service
+that would not reply. The same request may well succeed once that is put right,
+which is what tells this from `refused`: one is the key, and this is everything
+the key would have reached.
+
+The sentence is lemonfiber's own, naming what failed. Nothing is defaulted,
+since this is built from words that arrived and from nothing else.
+*/
 export const failed = (said: string): Problem => problem("failed", said);
 
 /**
- * Other work held the stack, so lemonfiber did not start this.
- *
- * Nothing about the request is wrong and nothing failed: the same request may be
- * sent again once the work holding the stack is done. The sentence is
- * lemonfiber's own.
- */
+Other work held the stack, so lemonfiber did not start this.
+
+Nothing about the request is wrong and nothing failed: the same request may be
+sent again once the work holding the stack is done. The sentence is
+lemonfiber's own.
+*/
 export const busy = (said: string): Problem => problem("busy", said);
 
 /**
- * Too many wrong attempts lately, so lemonfiber is not listening to more for now.
- *
- * Waiting is what clears it, and another attempt is what extends it. Where the
- * answer said how long, it is carried as `retryAfterSeconds`.
- */
+Too many wrong attempts lately, so lemonfiber is not listening to more for now.
+
+Waiting is what clears it, and another attempt is what extends it. Where the
+answer said how long, it is carried as `retryAfterSeconds`.
+*/
 export const tooMany = (said: string, retryAfterSeconds?: number): Problem => ({
   ...problem("too-many", said),
   ...(retryAfterSeconds !== undefined && { retryAfterSeconds }),
@@ -171,9 +171,9 @@ export const malformed = (): Problem =>
   problem("malformed", "That reply did not come from lemonfiber.");
 
 /**
- * lemonfiber answered with a kind this package does not know, so the payload has
- * no shape here to be read by. The running copy is likely newer than this page.
- */
+lemonfiber answered with a kind this package does not know, so the payload has
+no shape here to be read by. The running copy is likely newer than this page.
+*/
 export const unrecognised = (kind: string): Problem =>
   problem(
     "unrecognised",
@@ -187,8 +187,8 @@ export const wrongVersion = (mine: number, theirs: number): Problem =>
   );
 
 /**
- * The server closed the stream. Nothing went quiet, so no silence is named.
- */
+The server closed the stream. Nothing went quiet, so no silence is named.
+*/
 export const streamEnded = (): Problem =>
   problem(
     "stream",

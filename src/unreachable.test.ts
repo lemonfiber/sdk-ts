@@ -4,16 +4,16 @@ import { follow } from "./events.js";
 import { unreachable } from "./problem.js";
 
 /**
- * An address on this machine that nothing listens on.
- *
- * Port 1 is TCPMUX, which neither a developer machine nor a CI runner serves, so a
- * connection to it is refused at once rather than waited on.
- */
+An address on this machine that nothing listens on.
+
+Port 1 is TCPMUX, which neither a developer machine nor a CI runner serves, so a
+connection to it is refused at once rather than waited on.
+*/
 const NOTHING_LISTENS = "http://127.0.0.1:1";
 
 /**
- * A client asking that address through the platform's own `fetch`.
- */
+A client asking that address through the platform's own `fetch`.
+*/
 function askingNothing(): Client {
   const opened = Client.at({ url: NOTHING_LISTENS, token: "a-run-token", sending: fetch });
   if (!opened.ok) throw new Error(opened.problem.message);

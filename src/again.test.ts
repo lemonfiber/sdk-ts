@@ -4,8 +4,8 @@ import { API_VERSION } from "./envelope.js";
 import { follow, type Fetching } from "./events.js";
 
 /**
- * A `fetch` that answers with each status in turn, counting how often it was asked.
- */
+A `fetch` that answers with each status in turn, counting how often it was asked.
+*/
 function answeringInTurn(statuses: number[], asked: { count: number }): Sending {
   return () => {
     const status = statuses[asked.count] ?? 200;
@@ -28,8 +28,8 @@ const client = (sending: Sending) => {
 };
 
 /**
- * Waits out every pause the retries take, then hands back what was asked.
- */
+Waits out every pause the retries take, then hands back what was asked.
+*/
 async function settled<T>(asking: Promise<T>): Promise<T> {
   await vi.runAllTimersAsync();
   return asking;

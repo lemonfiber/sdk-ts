@@ -14,12 +14,12 @@ interface Seen {
 /**
 A `fetch` that records what it was asked and answers with one envelope.
 */
-function answering(kind: string, data: unknown, seen: Seen[], status = 200): Sending {
+function answering(kind: string, data: unknown, seen: Seen[]): Sending {
   return (url, init) => {
     seen.push({ url, method: init.method, body: init.body, token: init.headers[TOKEN_HEADER] });
     return Promise.resolve({
-      ok: status < 400,
-      status,
+      ok: true,
+      status: 200,
       text: () => Promise.resolve(JSON.stringify({ api_version: API_VERSION, kind, data })),
     });
   };

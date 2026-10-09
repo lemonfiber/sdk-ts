@@ -5,26 +5,26 @@ import { API_VERSION } from "./envelope.js";
 import { outOfTime, stopped } from "./problem.js";
 
 /**
- * A reply lemonfiber would give to a read of a word.
- */
+A reply lemonfiber would give to a read of a word.
+*/
 const AN_ENVELOPE = JSON.stringify({ api_version: API_VERSION, kind: "word", data: "hello" });
 
 /**
- * A promise nothing ever settles.
- */
+A promise nothing ever settles.
+*/
 const never = <T>(): Promise<T> =>
   new Promise<T>(() => {
     // Neither resolved nor rejected, as a peer that never answers leaves it.
   });
 
 /**
- * A `sending` that never answers and ignores the signal it is given.
- */
+A `sending` that never answers and ignores the signal it is given.
+*/
 const deaf: Sending = () => never();
 
 /**
- * A `sending` that answers at once, keeping the signal each request carried.
- */
+A `sending` that answers at once, keeping the signal each request carried.
+*/
 function answering(
   reply: { status?: number; text?: () => Promise<string>; blob?: () => Promise<Blob> },
   signals: AbortSignal[] = [],

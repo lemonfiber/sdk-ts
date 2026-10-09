@@ -50,9 +50,9 @@ vi.mock("./generated/index.js", async (importOriginal) => {
 });
 
 /**
- * An `error` envelope carrying `data`, as lemonfiber answers a command that ran
- * and failed.
- */
+An `error` envelope carrying `data`, as lemonfiber answers a command that ran
+and failed.
+*/
 const wentWrong = (data: Record<string, unknown>): string =>
   JSON.stringify({ api_version: API_VERSION, kind: "error", data });
 
@@ -64,8 +64,8 @@ interface Seen {
 }
 
 /**
- * A `fetch` that records what it was asked and answers with `reply`.
- */
+A `fetch` that records what it was asked and answers with `reply`.
+*/
 function answering(
   reply: { ok?: boolean; status?: number; text?: string },
   seen: Seen[],
@@ -84,8 +84,8 @@ function answering(
   };
 }
 
-const open = (sending: Sending, url = "http://127.0.0.1:7777", token = "a-run-token") => {
-  const got = Client.at({ url, token, sending });
+const open = (sending: Sending) => {
+  const got = Client.at({ url: "http://127.0.0.1:7777", token: "a-run-token", sending });
   if (!got.ok) throw new Error(got.problem.message);
   return got.client;
 };
@@ -436,8 +436,8 @@ describe("a refusal the caller can read", () => {
 // so a caller holding all three had to word a message true of every one of them.
 describe("a refusal the caller can tell apart", () => {
   /**
-   * The refusal a read carries, in the envelope machine-readable output gives it.
-   */
+  The refusal a read carries, in the envelope machine-readable output gives it.
+  */
   const said = "`kubernetes` is not one of the words this product explains";
   const entry = wentWrong({
     code: "WORD-1",
@@ -585,8 +585,8 @@ describe("refusalIn", () => {
 // share 403, and only one of them is the key.
 describe("a refusal that names why", () => {
   /**
-   * The `error` envelope lemonfiber refuses with, naming `code`.
-   */
+  The `error` envelope lemonfiber refuses with, naming `code`.
+  */
   const refusing = (code: unknown, summary?: string): string =>
     wentWrong({
       code,

@@ -1,6 +1,6 @@
 /**
- * A parser for the `text/event-stream` wire format.
- */
+A parser for the `text/event-stream` wire format.
+*/
 
 export interface SseEvent {
   id: string | undefined;
@@ -17,8 +17,8 @@ interface Pending {
 const blank = (): Pending => ({ id: undefined, event: "message", data: [] });
 
 /**
- * Splits a field line into its name and value, per the event-stream grammar.
- */
+Splits a field line into its name and value, per the event-stream grammar.
+*/
 function field(line: string): { name: string; value: string } {
   const colon = line.indexOf(":");
   if (colon === -1) return { name: line, value: "" };
@@ -28,18 +28,18 @@ function field(line: string): { name: string; value: string } {
 }
 
 /**
- * Accumulates chunks and emits events as they complete.
- *
- * A chunk may split a line, and a line may split a UTF-8 sequence, so text is
- * held until a newline arrives and an event is held until a blank line does.
- */
+Accumulates chunks and emits events as they complete.
+
+A chunk may split a line, and a line may split a UTF-8 sequence, so text is
+held until a newline arrives and an event is held until a blank line does.
+*/
 export class SseParser {
   #buffer = "";
   #pending: Pending = blank();
 
   /**
-   * The events completed by this chunk, in order.
-   */
+  The events completed by this chunk, in order.
+  */
   push(chunk: string): SseEvent[] {
     this.#buffer += chunk;
     const done: SseEvent[] = [];
@@ -58,8 +58,8 @@ export class SseParser {
   }
 
   /**
-   * Returns an event when `line` ends one.
-   */
+  Returns an event when `line` ends one.
+  */
   #line(line: string): SseEvent | undefined {
     if (line === "") return this.#complete();
     if (line.startsWith(":")) return undefined;
@@ -85,8 +85,8 @@ export class SseParser {
   }
 
   /**
-   * A blank line ends an event, unless nothing has been gathered.
-   */
+  A blank line ends an event, unless nothing has been gathered.
+  */
   #complete(): SseEvent | undefined {
     const pending = this.#pending;
     this.#pending = blank();

@@ -19,8 +19,8 @@ import {
 } from "./problem.js";
 
 /**
- * A stream that hands over `chunks` and then ends.
- */
+A stream that hands over `chunks` and then ends.
+*/
 function streaming(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   let at = 0;
@@ -35,16 +35,16 @@ function streaming(chunks: string[]): ReadableStream<Uint8Array> {
 }
 
 /**
- * What a body records about having been let go of.
- */
+What a body records about having been let go of.
+*/
 interface Letting {
   go: boolean;
 }
 
 /**
- * A stream that hands over `chunks` and then stays open, which is what a server
- * gathering on a tick does between snapshots.
- */
+A stream that hands over `chunks` and then stays open, which is what a server
+gathering on a tick does between snapshots.
+*/
 function holding(chunks: string[], letting?: Letting): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   let at = 0;
@@ -70,8 +70,8 @@ function holding(chunks: string[], letting?: Letting): ReadableStream<Uint8Array
 }
 
 /**
- * A wait long enough for everything already queued to have run.
- */
+A wait long enough for everything already queued to have run.
+*/
 const settled = (): Promise<void> =>
   new Promise((resume) => {
     setTimeout(resume, 0);
@@ -89,8 +89,8 @@ interface Seen {
 }
 
 /**
- * A `fetch` that serves each opening from `openings` in turn.
- */
+A `fetch` that serves each opening from `openings` in turn.
+*/
 function serving(openings: (string[] | null)[], seen: Seen): Fetching {
   let at = 0;
   return (_url, init) => {
@@ -105,8 +105,8 @@ function serving(openings: (string[] | null)[], seen: Seen): Fetching {
 }
 
 /**
- * The first `count` arrivals, or fewer if the stream ends.
- */
+The first `count` arrivals, or fewer if the stream ends.
+*/
 async function take(stream: AsyncGenerator<Arrival>, count: number): Promise<Arrival[]> {
   const got: Arrival[] = [];
   for await (const arrival of stream) {

@@ -1,8 +1,8 @@
 /**
- * The wire shape every reply carries.
- *
- * Spec: 20-architecture/contracts/web-api.md
- */
+The wire shape every reply carries.
+
+Spec: 20-architecture/contracts/web-api.md
+*/
 import {
   CONTRACT_API_VERSION,
   isKnownKind,
@@ -15,17 +15,17 @@ import { malformed, unrecognised, wrongVersion, type Problem } from "./problem.j
 export type { Envelope } from "./generated/index.js";
 
 /**
- * The wire version this package speaks, taken from the contract it generated
- * against rather than repeated here.
- */
+The wire version this package speaks, taken from the contract it generated
+against rather than repeated here.
+*/
 export const API_VERSION = CONTRACT_API_VERSION;
 
 export type Reading<T> = { ok: true; value: T } | { ok: false; problem: Problem };
 
 /**
- * The fields every envelope carries, before its kind is known to be one this
- * package reads.
- */
+The fields every envelope carries, before its kind is known to be one this
+package reads.
+*/
 interface Shaped {
   api_version: number;
   kind: string;
@@ -43,12 +43,12 @@ function isShaped(value: unknown): value is Shaped {
 }
 
 /**
- * Reads an envelope, refusing any wire version this package cannot speak for
- * and any kind it does not know.
- *
- * The kind names the payload; the payload itself is not checked against the
- * shape the contract gives it.
- */
+Reads an envelope, refusing any wire version this package cannot speak for
+and any kind it does not know.
+
+The kind names the payload; the payload itself is not checked against the
+shape the contract gives it.
+*/
 export function readEnvelope(value: unknown): Reading<Envelope> {
   if (!isShaped(value)) return { ok: false, problem: malformed() };
   if (value.api_version !== API_VERSION) {
@@ -59,15 +59,15 @@ export function readEnvelope(value: unknown): Reading<Envelope> {
 }
 
 /**
- * Narrows an envelope to the generated shape for one kind.
- */
+Narrows an envelope to the generated shape for one kind.
+*/
 export function isKind<K extends Kind>(envelope: Envelope, kind: K): envelope is ByKind[K] {
   return envelope.kind === kind;
 }
 
 /**
- * Parses JSON text into an envelope.
- */
+Parses JSON text into an envelope.
+*/
 export function parse(text: string): Reading<Envelope> {
   let value: unknown;
   try {

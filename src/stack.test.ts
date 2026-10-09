@@ -8,13 +8,13 @@ import { follow, type Arrival, type Fetching } from "./events.js";
 import { misconfigured, unreachable } from "./problem.js";
 
 /**
- * The token the stack printed, and nowhere else is meant to see.
- */
+The token the stack printed, and nowhere else is meant to see.
+*/
 const TOKEN = "the-stacks-own-token";
 
 /**
- * Everything a test opened, so each one is closed however the test ends.
- */
+Everything a test opened, so each one is closed however the test ends.
+*/
 const opened: (HttpServer | TcpServer)[] = [];
 
 afterEach(async () => {
@@ -31,8 +31,8 @@ afterEach(async () => {
 });
 
 /**
- * Where a server is listening, once it is.
- */
+Where a server is listening, once it is.
+*/
 async function portOf(server: HttpServer | TcpServer, host: string): Promise<number> {
   opened.push(server);
   await new Promise<void>((done) => {
@@ -44,11 +44,11 @@ async function portOf(server: HttpServer | TcpServer, host: string): Promise<num
 }
 
 /**
- * Somewhere that is not the stack, counting every connection made to it.
- *
- * A connection is counted before anything is read from it, so a request that
- * reached it by any scheme at all is one it has counted.
- */
+Somewhere that is not the stack, counting every connection made to it.
+
+A connection is counted before anything is read from it, so a request that
+reached it by any scheme at all is one it has counted.
+*/
 interface Elsewhere {
   url: string;
   connections: () => number;
@@ -70,8 +70,8 @@ async function elsewhere(scheme: "http" | "https", host: string): Promise<Elsewh
 }
 
 /**
- * A stack, and the token each request it was sent carried.
- */
+A stack, and the token each request it was sent carried.
+*/
 interface Pointing {
   base: string;
   tokens: (string | undefined)[];
@@ -91,8 +91,8 @@ async function stackPointingAt(location: string): Promise<Pointing> {
 }
 
 /**
- * A stack answering the stream with one status and then ending it.
- */
+A stack answering the stream with one status and then ending it.
+*/
 async function stackStreaming(): Promise<Pointing> {
   const tokens: (string | undefined)[] = [];
   const server = createHttpServer((request, response) => {
@@ -109,8 +109,8 @@ async function stackStreaming(): Promise<Pointing> {
 }
 
 /**
- * The platform's own `fetch`, which is what a browser and Node both hand in.
- */
+The platform's own `fetch`, which is what a browser and Node both hand in.
+*/
 const fetching: Fetching = (url, init) => fetch(url, init);
 
 const firstOf = async (stream: AsyncGenerator<Arrival>): Promise<Arrival | undefined> => {
