@@ -96,4 +96,6 @@ export type ReadAnswer<N extends ReadName> = ByKind[(typeof READS)[N]["kinds"][n
 /** Every read answered with a file, by name, and its path. */
 export const FILES = {
   "bundle": { path: "/api/bundle/{name}" },
+  "held/poster": { path: "/api/held/{id}/poster" },
+  "held/backdrop": { path: "/api/held/{id}/backdrop" },
 } as const;
