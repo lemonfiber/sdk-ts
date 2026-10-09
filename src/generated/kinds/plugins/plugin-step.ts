@@ -188,6 +188,20 @@ export interface PluginInstalled {
   version: string;
 }
 
+/** One answer a plugin's adapter gave outside a contract it speaks. */
+export interface PluginNonconforming {
+  /** When it answered so, as RFC 3339. */
+  at: string;
+  /** The capability it was asked as. */
+  capability: string;
+  /** The operation it was asked. */
+  operation: string;
+  /** The plugin whose adapter answered. */
+  plugin: string;
+  /** What was outside the contract. */
+  why: string;
+}
+
 /** One proof that has to hold before a plugin is reported installed. */
 export interface PluginProving {
   /** What it asks, as the method and the path it is asked at. */
@@ -282,6 +296,23 @@ export interface PluginRemoval {
    * description of the same work.
    */
   went_back: UndoReversal;
+}
+
+/** What asking an installed plugin's adapters again came to. */
+export interface PluginReproof {
+  /** Whether its adapters were asked, rather than only said to be. */
+  asked: boolean;
+  /**
+   * Whether every answer kept against the plugin was cleared, which a proof that did
+   * not hold never does.
+   */
+  cleared: boolean;
+  /** Every answer kept against the plugin when it was proved, which a pass clears. */
+  kept: PluginNonconforming[];
+  /** The plugin proved. */
+  plugin: string;
+  /** Each proof asked, or that would be asked, with what it came to. */
+  proofs: PluginProving[];
 }
 
 /** Where an update did not hold: what putting the version it replaced back came to. */
@@ -419,57 +450,6 @@ export interface PluginUnfilled {
    * not say that.
    */
   filled_by: string;
-}
-
-/**
- * What updating a plugin came to, or would come to, as one account.
- *
- * **One account, because it is one operation.** An update is the version installed
- * going back and another coming on, and a report that gave those as a removal and an
- * install side by side would invite reading them as two things that might each have
- * happened. What an operator has to be able to read off this is which version the
- * machine is on, and there are exactly two answers: the new one, where
- * `install.recorded` is true, or the one it replaced, which `restored` says the state
- * of.
- */
-export interface PluginUpdate {
-  /** The version the record named before this run. */
-  from: string;
-  /**
-   * The new version's own account: what it writes, what it has to prove, what it
-   * proved and what the stack's checks made of it — the same one an install gives,
-   * because it is the same work. `recorded` is whether the update holds.
-   */
-  install: PluginInstall;
-  /**
-   * Every service of the installed version that stops, named before any of them
-   * does.
-   */
-  interrupts: string[];
-  /** The plugin this is about. */
-  plugin: string;
-  /**
-   * Where the update did not hold, what putting the version it replaced back came
-   * to. Absent on a rehearsal and on an update that held.
-   */
-  restored?: PluginRestored | null;
-  /**
-   * What stopped the new version before its proofs could be asked, where something
-   * did: a write that would not land, a container that would not start, or a record
-   * that could not be written. A proof or a check that did not hold is in `install`.
-   */
-  stopped?: string | null;
-  /** The version this run installs, or would. */
-  to: string;
-  /**
-   * What putting the installed version's changes back came to, or would come to.
-   *
-   * Where the plugin's own configuration directory holds what its service wrote, it
-   * is named here as still standing, which on an update is the point: the new
-   * version is started against the same directory, and an update that took it would
-   * be a reinstall that lost everything the old one knew.
-   */
-  went_back: UndoReversal;
 }
 
 /** What one assertion came to, whatever answered it. */
