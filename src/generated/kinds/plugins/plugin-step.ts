@@ -132,6 +132,8 @@ export interface PluginInstalled {
    * the install would have run under.
    */
   installed_at?: string;
+  /** The SHA-256 of the manifest it was installed from, in lower-case hexadecimal. */
+  manifest?: string;
   /**
    * What the plugin calls itself, for a person to read.
    *
@@ -178,10 +180,7 @@ export interface PluginInstalled {
   services: PluginPlaced[];
   /**
    * What signed it: the key the catalogue index it was resolved through verified
-   * against, named with its fingerprint.
-   *
-   * Empty for a plugin installed from a source the operator named, which nothing
-   * signed, and for a record written before this was kept.
+   * against, named with its fingerprint; empty where nothing signed it.
    */
   signed?: string;
   /** The plugin's own content version, as it stood when it was installed. */
