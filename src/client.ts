@@ -17,10 +17,11 @@ import {
 } from "./deadline.js";
 import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import {
+  FILES,
   READS,
-  type Bundle,
   type ByKind,
   type Choice,
+  type FileQuery,
   type KeyPurpose,
   type Kind,
   type ReadAnswer,
@@ -28,6 +29,8 @@ import {
   type ReadQuery,
   type SetupAnswerBody,
 } from "./generated/index.js";
+import { lastSegment, type Handed, type Written } from "./handed.js";
+import { PICTURE_TYPES, pictureFrom, type Pictured } from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { filledIn, search } from "./query.js";
 import { refusalIn } from "./refusal.js";
@@ -42,6 +45,16 @@ type LineByLine = "logs";
 The name of a read `read` answers: one answered with one document.
 */
 export type DocumentRead = Exclude<ReadName, LineByLine>;
+
+/**
+The reads answered with one of a title's pictures.
+*/
+type PictureRead = "held/poster" | "held/backdrop";
+
+/**
+What a picture read takes beside the title's id.
+*/
+export type PictureQuery = Omit<FileQuery[PictureRead], "id">;
 
 /**
 The slice of `fetch` this needs, so a test can supply its own.
@@ -73,6 +86,7 @@ export type Sending = (
   status: number;
   text: () => Promise<string>;
   blob?: () => Promise<Blob>;
+  body?: ReadableStream<Uint8Array<ArrayBuffer>> | null;
   headers?: { get: (name: string) => string | null };
 }>;
 
@@ -80,31 +94,6 @@ export type Sending = (
 One reply, as `sending` handed it back.
 */
 type Answer = Awaited<ReturnType<Sending>>;
-
-/**
-A file lemonfiber handed over, or why it did not.
-
-The file is kept as it arrived, bytes and type both, so a browser can offer it
-as a download without decoding it first.
-
-A refusal carries the body it arrived with, whole, as `said`. `problem` is the
-reading `refusalIn` gives every other request; `said` is what that reading
-leaves out — every field of an error envelope beyond its summary, and the
-sentence a turned-away request was answered with, which `refused` never
-carries. It is absent where nothing arrived to carry.
-*/
-export type Handed = { ok: true; value: Blob } | { ok: false; problem: Problem; said?: string };
-
-/**
-Where a support bundle was written, as the `support` action's `bundle` payload
-says. The payload itself is one, once its `path` is known to be there.
-
-Only a written one: a payload without a `path` described a bundle and wrote
-none, so there is no file to ask for.
-*/
-export interface Written {
-  path: NonNullable<Bundle["path"]>;
-}
 
 export interface Talking {
   /**
@@ -348,11 +337,49 @@ export class Client {
   its body besides.
   */
   async take(endpoint: string, asking: Asking = {}): Promise<Handed> {
+    return this.#handOver(`/api/${endpoint}`, "*/*", asking, blobOf);
+  }
+
+  /**
+  A title's poster, by the id its shelf lists it under: one of `PICTURE_TYPES`,
+  of at most `PICTURE_MOST` bytes. `query` takes `member` and `defaults`, as the
+  title read does.
+  */
+  async poster(id: string, query: PictureQuery = {}, asking: Asking = {}): Promise<Pictured> {
+    return this.#picture("held/poster", id, query, asking);
+  }
+
+  /**
+  A title's backdrop, read and refused as `poster` reads its poster.
+  */
+  async backdrop(id: string, query: PictureQuery = {}, asking: Asking = {}): Promise<Pictured> {
+    return this.#picture("held/backdrop", id, query, asking);
+  }
+
+  async #picture(
+    name: PictureRead,
+    id: string,
+    query: PictureQuery,
+    asking: Asking,
+  ): Promise<Pictured> {
+    const file = FILES[name];
+    const filled = filledIn(file.path, file.segments, { ...query, id });
+    if (!filled.ok) return filled;
+    const path = `${filled.value.path}${search(filled.value.rest)}`;
+    return this.#handOver(path, PICTURE_TYPES.join(", "), asking, pictureFrom);
+  }
+
+  async #handOver<T>(
+    path: string,
+    accept: string,
+    asking: Asking,
+    keep: (answer: Answer) => Promise<Reading<T> | undefined>,
+  ): Promise<Reading<T> & { said?: string }> {
     const call = this.#call(asking);
     if (!call.ok) return call;
     const { signal, ended, release } = call.value;
     try {
-      const answer = await this.#send("GET", `/api/${endpoint}`, "*/*", signal);
+      const answer = await this.#send("GET", path, accept, signal);
       if (answer === undefined) return { ok: false, problem: ended() ?? unreachable() };
 
       if (!answer.ok) {
@@ -361,9 +388,8 @@ export class Client {
         return { ok: false, problem: refusalOf(answer, said), said };
       }
 
-      const kept = await within(blobOf(answer), signal);
-      if (kept === undefined) return { ok: false, problem: ended() ?? unreachable() };
-      return { ok: true, value: kept };
+      const kept = await within(keep(answer), signal);
+      return kept ?? { ok: false, problem: ended() ?? unreachable() };
     } finally {
       release();
     }
@@ -466,15 +492,9 @@ function refusalOf(answer: Answer, said: string): Problem {
 A reply's body as the bytes that arrived, or nothing where it cannot be read
 as bytes.
 */
-function blobOf(answer: Answer): Promise<Blob | undefined> {
-  return answer.blob === undefined ? Promise.resolve(undefined) : answer.blob();
-}
-
-/**
-The file a path names: whatever follows its last separator, of either kind.
-*/
-function lastSegment(path: string): string {
-  return path.slice(Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")) + 1);
+async function blobOf(answer: Answer): Promise<Reading<Blob> | undefined> {
+  const kept = await answer.blob?.();
+  return kept && { ok: true, value: kept };
 }
 
 /**

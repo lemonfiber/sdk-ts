@@ -93,9 +93,16 @@ export interface ReadQuery {
 /** The envelope a read answers with, of whichever kind the contract lists for it. */
 export type ReadAnswer<N extends ReadName> = ByKind[(typeof READS)[N]["kinds"][number]];
 
-/** Every read answered with a file, by name, and its path. */
+/** Every read answered with a file, by name: its path, the segments of it a caller fills, and the parameters it takes. */
 export const FILES = {
-  "bundle": { path: "/api/bundle/{name}" },
-  "held/poster": { path: "/api/held/{id}/poster" },
-  "held/backdrop": { path: "/api/held/{id}/backdrop" },
+  "bundle": { path: "/api/bundle/{name}", segments: ["name"], parameters: [] },
+  "held/poster": { path: "/api/held/{id}/poster", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }] },
+  "held/backdrop": { path: "/api/held/{id}/backdrop", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }] },
 } as const;
+
+/** What each read answered with a file takes, as `ReadQuery` says of a read answered with a document. */
+export interface FileQuery {
+  "bundle": { name: Scalar };
+  "held/poster": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
+  "held/backdrop": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
+}
