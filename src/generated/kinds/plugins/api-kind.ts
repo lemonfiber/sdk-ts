@@ -435,6 +435,11 @@ export interface PluginPlaced {
   reached?: PluginReached | null;
   /** The service's id, which is the name its container is written under. */
   service: string;
+  /**
+   * Each capability contract it answers as an adapter, as `capability@major`; none in
+   * a record written before this was kept.
+   */
+  speaks?: string[];
   /** The readable name that digest went by when it was installed. */
   tag: string;
   /** Whether the library is mounted for it. */
@@ -442,7 +447,7 @@ export interface PluginPlaced {
 }
 
 /** What an install puts at one path. */
-export type PluginPuts = "directory" | "document" | "region";
+export type PluginPuts = "directory" | "document" | "key" | "region";
 
 /**
  * How an installed service is reached, where it is reached at all.
