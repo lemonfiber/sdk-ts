@@ -65,7 +65,7 @@ await client.act("restart", { forms: ["tv"], services: ["sonarr"] });
   The logs answer with one envelope per line, so they are not among the names
   `read` takes.
 - A read whose path has a segment the caller fills keeps it in its name, such as
-  `held/{id}`, and needs it in the query:
+  `held/{id}`, and takes it in the query:
   `read("held/{id}", { id: "tt0111161", member: "ada" })` asks
   `/api/held/tt0111161?member=ada`. The segment is written escaped, so it stays
   one segment. One not given, given as a list, empty, `.` or `..` is a

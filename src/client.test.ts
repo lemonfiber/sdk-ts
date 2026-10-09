@@ -235,6 +235,7 @@ describe("read", () => {
   // `.` and `..` are resolved by the URL rather than sent, so they would ask
   // for another path; nothing would ask for the list instead of one title.
   it.each([
+    ["with no query", undefined],
     ["not given", {}],
     ["given as nothing", { id: undefined }],
     ["given as a list", { id: ["a", "b"] }],

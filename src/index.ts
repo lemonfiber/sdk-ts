@@ -8,7 +8,6 @@ export {
   type Handed,
   type Minting,
   type Opened,
-  type ReadArguments,
   type Sending,
   type Talking,
   type Walked,

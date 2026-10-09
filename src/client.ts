@@ -44,17 +44,6 @@ type LineByLine = "logs";
 export type DocumentRead = Exclude<ReadName, LineByLine>;
 
 /**
- * What `read` takes after the read's name: its query, then how to ask.
- *
- * A read whose path has a segment the caller fills, such as `held/{id}`, needs
- * its query, since the segment is in it. Any other read may go without one.
- */
-export type ReadArguments<N extends DocumentRead> =
-  Record<string, never> extends ReadQuery[N]
-    ? [query?: ReadQuery[N], asking?: Asking]
-    : [query: ReadQuery[N], asking?: Asking];
-
-/**
  * The slice of `fetch` this needs, so a test can supply its own.
  *
  * `blob` is read for a file lemonfiber hands over and for nothing else, so a
@@ -224,10 +213,16 @@ export class Client {
    * The name, the parameters it takes and the kinds it answers with are the
    * contract's own list. An answer of a kind the contract does not list for the
    * read is `unrecognised` rather than handed on as the read's.
+   *
+   * A read whose path has a segment the caller fills, such as `held/{id}`, takes
+   * it in the query, and its query type needs it. Asked without it, the read is
+   * `misasked` and nothing is sent: the query stays optional in the signature so
+   * a caller generic over the read name can still pass one along.
    */
   async read<N extends DocumentRead>(
     name: N,
-    ...[query, asking = {}]: ReadArguments<N>
+    query?: ReadQuery[N],
+    asking: Asking = {},
   ): Promise<Reading<ReadAnswer<N>>> {
     const read = READS[name];
     const filled = filledIn(read.path, read.segments, query ?? {});
