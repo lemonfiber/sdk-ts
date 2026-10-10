@@ -6,7 +6,7 @@
  * How much of the stack a backup covers.
  *
  * Whole-stack is the common case, but restoring one service is often what is
- * actually wanted — one \*arr's configuration mangled while the rest is fine —
+ * actually wanted — one curator's configuration mangled while the rest is fine —
  * so the scope is recorded in the archive and honoured on the way back.
  */
 export type Scope = ScopeWholeStack | ScopeService | ScopeExisting;
