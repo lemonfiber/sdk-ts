@@ -7,9 +7,10 @@ import type { Unrated } from "../shared/dashboard__household__invitation.js";
 /**
  * One invitation, as it was just made.
  *
- * Carries what the operator has to pass on and nothing else — a name to sign in
- * with, one address, and how long it stands. The address is the media server's,
- * because setting a first password happens there.
+ * Carries what the operator has to pass on and nothing else: a name to sign in with,
+ * the address to sign in at, the link the app opens, the address that declines it, and
+ * how long it stands. The address is the media server's, where a first password is set
+ * in a browser; the link sets it through the core instead.
  */
 export interface Invitation {
   /**
@@ -51,6 +52,13 @@ export interface Invitation {
    */
   hours: number;
   /**
+   * The link the companion app opens this invitation at, `lemonfiber://join` with the
+   * address, certificate fingerprint and identifier pairing names, the name to sign in
+   * as, when it lapses in seconds since the Unix epoch, and a claim token where there is
+   * an account to claim. Absent on a rehearsal, and where `unjoinable` says why.
+   */
+  join?: string | null;
+  /**
    * Whether the request service knows about the household yet.
    *
    * Separate from `standing`, which is about the media-server account alone. The
@@ -80,6 +88,11 @@ export interface Invitation {
    * rehearsal these are the ones that *would* be switched off.
    */
   suspended: string[];
+  /**
+   * Why there is no join link, in words every surface can show. Absent where there is
+   * one, and on a rehearsal.
+   */
+  unjoinable?: string | null;
   /**
    * Invitations nobody claimed in time, removed on the way past.
    *
