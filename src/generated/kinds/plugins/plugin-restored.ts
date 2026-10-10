@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginRestored, PluginSource, PluginSubstituted } from "./plugin-step.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginSource, PluginSubstituted } from "./plugin-step.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
@@ -88,6 +88,22 @@ export interface PluginInstalls {
    * every other run's report would otherwise be as large as the one run that updates.
    */
   update?: PluginUpdate | null;
+}
+
+/** Where an update did not hold: what putting the version it replaced back came to. */
+export interface PluginRestored {
+  /** Whether everything its record says it placed is on the machine again. */
+  placed: boolean;
+  /**
+   * Whether its containers are running again.
+   *
+   * Apart from `placed`, because the two fail differently: a document that would not
+   * land is a disk, and a container that would not start is the engine — and an
+   * operator fixes them in different places.
+   */
+  running: boolean;
+  /** The version put back, which is the one the record still names. */
+  version: string;
 }
 
 /**
