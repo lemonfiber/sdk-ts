@@ -356,7 +356,7 @@ export interface PanelVpnUnavailableData {
   reason: string;
 }
 
-/** One `*arr`'s queue, and how much of it is stuck. */
+/** One curator's queue, and how much of it is stuck. */
 export interface Queue {
   /** How many items are queued. */
   depth: number;
@@ -418,7 +418,7 @@ export interface Snapshot {
   storage: PanelStorage;
   /**
    * What in the pipeline has stopped, worst first — assessed across the
-   * download clients and the \*arrs together, because the failure that matters
+   * download clients and the curators together, because the failure that matters
    * most is invisible inside either.
    */
   stuck: Stuck[];
