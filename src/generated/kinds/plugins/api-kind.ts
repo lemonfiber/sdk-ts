@@ -417,6 +417,8 @@ export interface PluginPlaced {
    * a record written before this was kept lists it by its id.
    */
   name?: string;
+  /** The API it answers the stack's other services in, where it names one. */
+  native?: string | null;
   /**
    * The stack's own networks it joins beside the default one, because a stack service
    * it stands in for is on them.
@@ -539,11 +541,3 @@ export interface PluginSecret {
 
 /** A privileged shape lemonfiber writes for a plugin's service. */
 export type PluginShape = "egress-guard";
-
-/** The adapter a call reaches its destination through. */
-export interface PluginStepAdapter {
-  /** Which of lemonfiber's adapters it is. */
-  kind: ApiKind;
-  /** Whose it is, which is lemonfiber's. */
-  owner: PluginAdapterOwner;
-}

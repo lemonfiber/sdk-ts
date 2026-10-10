@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginSource, PluginSubstituted } from "./plugin-step.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginSource, PluginSubstituted } from "./plugin-step-adapter.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
