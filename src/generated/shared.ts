@@ -34,6 +34,7 @@ export * from "./shared/music__quality.js";
 export * from "./shared/music__upgrade.js";
 export * from "./shared/news__news-items.js";
 export * from "./shared/plugins__undo.js";
+export * from "./shared/plugins__wiring.js";
 export * from "./shared/space__stop-seeding.js";
 export * from "./shared/step__walkthrough.js";
 export * from "./shared/stuck__trace.js";

@@ -5,6 +5,7 @@
 import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginShape, PluginStepAdapter } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
+import type { Wired } from "../../shared/plugins__wiring.js";
 
 /**
  * What an install came to, and what it took to get there.
@@ -28,6 +29,11 @@ export interface PluginInstall {
    * the document to tell them apart.
    */
   against?: PluginEvidence | null;
+  /**
+   * Every ask its services would make, each with what it would reach and how that
+   * would be settled.
+   */
+  asks: Wired[];
   /** Every change it makes to the machine, in the order it makes them. */
   changes: PluginChange[];
   /**
@@ -317,22 +323,6 @@ export interface PluginReproof {
   plugin: string;
   /** Each proof asked, or that would be asked, with what it came to. */
   proofs: PluginProving[];
-}
-
-/** Where an update did not hold: what putting the version it replaced back came to. */
-export interface PluginRestored {
-  /** Whether everything its record says it placed is on the machine again. */
-  placed: boolean;
-  /**
-   * Whether its containers are running again.
-   *
-   * Apart from `placed`, because the two fail differently: a document that would not
-   * land is a disk, and a container that would not start is the engine — and an
-   * operator fixes them in different places.
-   */
-  running: boolean;
-  /** The version put back, which is the one the record still names. */
-  version: string;
 }
 
 /** One adapter of lemonfiber's that one of the plugin's own services names. */

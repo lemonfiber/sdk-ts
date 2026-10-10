@@ -170,6 +170,14 @@ export type KeySource = "config-xml" | "config-ini" | "config-json" | "config-ya
  */
 export type PluginAdapterOwner = "lemonfiber";
 
+/** One capability a placed service asks for. */
+export interface PluginAsking {
+  /** The core capability asked for. */
+  capability: string;
+  /** Whether every service that fills it is reached rather than one. */
+  each?: boolean;
+}
+
 /**
  * One change installing a plugin makes to the machine.
  *
@@ -376,6 +384,8 @@ export interface PluginPlaced {
    * none: a service operated generically, as it was when installed.
    */
   api?: Api | null;
+  /** Every capability it asks for. */
+  asks?: PluginAsking[];
   /**
    * Where inside the container its one configuration directory is mounted.
    *
