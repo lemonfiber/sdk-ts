@@ -432,6 +432,8 @@ export interface PluginPlaced {
   reached?: PluginReached | null;
   /** The service's id, which is the name its container is written under. */
   service: string;
+  /** The privileged shape lemonfiber writes for it, where it took one. */
+  shape?: PluginShape | null;
   /** Each capability contract it answers as an adapter, as `capability@major`. */
   speaks?: string[];
   /** The readable name that digest went by when it was installed. */
@@ -524,6 +526,9 @@ export interface PluginSecret {
   /** What holding it is for. */
   why: string;
 }
+
+/** A privileged shape lemonfiber writes for a plugin's service. */
+export type PluginShape = "egress-guard";
 
 /** The adapter a call reaches its destination through. */
 export interface PluginStepAdapter {

@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginStepAdapter } from "./api-kind.js";
+import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginShape, PluginStepAdapter } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
@@ -72,6 +72,11 @@ export interface PluginInstall {
    * held.
    */
   reversed?: UndoReversal | null;
+  /**
+   * Every service taking a privileged shape, with what it is given, each approved
+   * apart from the offer.
+   */
+  taking: PluginTaking[];
   /**
    * What the stack's own checks made of the install, or nothing on a run that
    * asked them nothing.
@@ -435,6 +440,20 @@ export interface PluginSubstituted {
   plugin: string;
   /** The service chosen. */
   service: string;
+}
+
+/** One service taking a privileged shape, as the reading states it. */
+export interface PluginTaking {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The devices it is given. */
+  devices: string[];
+  /** The kernel capabilities it is given. */
+  grants: string[];
+  /** The service taking it. */
+  service: string;
+  /** The shape it takes. */
+  shape: PluginShape;
 }
 
 /** A capability that would have nothing filling it. */
