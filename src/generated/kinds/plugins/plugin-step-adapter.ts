@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginShape, PluginStepAdapter } from "./api-kind.js";
+import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginShape } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -391,6 +391,14 @@ export interface PluginStep {
    * both, as the manifest wrote it. Never a resolved address.
    */
   to: string;
+}
+
+/** The adapter a call reaches its destination through. */
+export interface PluginStepAdapter {
+  /** Which of lemonfiber's adapters it is. */
+  kind: ApiKind;
+  /** Whose it is, which is lemonfiber's. */
+  owner: PluginAdapterOwner;
 }
 
 /** What one step came to. */
