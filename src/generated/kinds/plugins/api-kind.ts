@@ -442,6 +442,8 @@ export interface PluginPlaced {
   provides?: string[];
   /** How it is reached, or nothing where it has no listener. */
   reached?: PluginReached | null;
+  /** The stack's own service it moves in place of, where it names one. */
+  replaces?: string | null;
   /** The service's id, which is the name its container is written under. */
   service: string;
   /** The privileged shape lemonfiber writes for it, where it took one. */
