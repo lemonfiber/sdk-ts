@@ -208,9 +208,9 @@ export interface MemberRequest {
    */
   state?: RequestState | null;
   /**
-   * What it is called, where the service filing it has been told about it and its
-   * library could be read. Absent for a request no service holds yet — one still
-   * awaiting approval has been handed to nobody, so there is no title to find.
+   * What it is called: from the library of the service filing it, where it has been
+   * told about it and that library could be read, and otherwise from the request
+   * service's own record of the title. Absent where neither names it.
    */
   title?: string | null;
   /**
@@ -223,9 +223,8 @@ export interface MemberRequest {
    */
   waiting_days?: number | null;
   /**
-   * The year that title came out, where the service filing it knows one. Absent, not
-   * null, until the request has been handed to that service, for the reason the title
-   * is.
+   * The year that title came out, where the service that named it knows one. Absent,
+   * not null, otherwise.
    */
   year?: number | null;
 }
