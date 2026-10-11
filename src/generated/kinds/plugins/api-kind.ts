@@ -541,5 +541,5 @@ export interface PluginSecret {
   why: string;
 }
 
-/** A privileged shape lemonfiber writes for a plugin's service. */
-export type PluginShape = "egress-guard";
+/** A privileged shape lemonfiber writes for a service. */
+export type PluginShape = "egress-guard" | "render";
