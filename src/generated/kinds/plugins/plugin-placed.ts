@@ -253,6 +253,8 @@ export interface PluginPlaced {
   api?: Api | null;
   /** Every capability it asks for. */
   asks?: PluginAsking[];
+  /** What it asks for there, where it says. */
+  asks_for?: string | null;
   /**
    * Where inside the container its one configuration directory is mounted.
    *
@@ -311,6 +313,8 @@ export interface PluginPlaced {
   provides?: string[];
   /** How it is reached, or nothing where it has no listener. */
   reached?: PluginReached | null;
+  /** Where it reaches outside the machine, where it says. */
+  reaches?: string | null;
   /** The stack's own service it moves in place of, where it names one. */
   replaces?: string | null;
   /** The service's id, which is the name its container is written under. */
