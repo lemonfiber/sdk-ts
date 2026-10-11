@@ -187,6 +187,20 @@ await client.revoke("home"); // answered with the keys as they now stand
 The password is sent in the mint's body and kept by nothing here, and the
 secret is in that one reply and no other.
 
+`mintClaim` mints a key as a claim instead. Its `key-claim` reply carries no
+secret but the key link a program collects the key with, once, within ten
+minutes, and when the claim lapses:
+
+```ts
+const claimed = await client.mintClaim({
+  name: "home",
+  scope: "read",
+  purpose: "home-assistant",
+  password,
+});
+if (claimed.ok) showAsCode(claimed.value.data.link, claimed.value.data.lapses);
+```
+
 ## Walking setup
 
 First-run setup is walked one request a step, each answered with where setup
