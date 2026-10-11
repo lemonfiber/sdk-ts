@@ -22,7 +22,7 @@ export const REFUSAL_CODES: Readonly<
   "ADMIT-9": { name: "TOO_MANY_ATTEMPTS", status: 429, description: "Raised when the door has been given too many wrong passwords lately." },
   "ASK-1": { name: "NO_SUCH_ACTION", status: 404, description: "Raised where no action goes by the name that was asked for." },
   "ASK-10": { name: "WRONG_METHOD", status: 405, description: "Raised where an endpoint was asked with a method it does not answer." },
-  "ASK-11": { name: "NOT_A_KEY_REQUEST", status: 400, description: "Raised where the body of a mint is not a key's name, scope, purpose and the password." },
+  "ASK-11": { name: "NOT_A_KEY_REQUEST", status: 400, description: "Raised where the body of a mint is not a key's name, scope, purpose and the password, or the body of a collection is not a claim alone." },
   "ASK-12": { name: "NOT_AN_IDEMPOTENCY_KEY", status: 400, description: "Raised where an action's `Idempotency-Key` is not one to 255 visible characters, or is given more than once." },
   "ASK-13": { name: "IDEMPOTENCY_KEY_REUSED", status: 400, description: "Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another." },
   "ASK-2": { name: "MISSING_ARGUMENT", status: 400, description: "Raised where an action was not given an argument it needs." },

@@ -2,7 +2,7 @@
 // The `minted-key` envelope, and the shapes only `minted-key` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { KeyPurpose } from "../shared/keys__minted-key.js";
+import type { KeyPurpose } from "../shared/key-claim__keys__minted-key.js";
 
 /**
  * A key minted, with everything a client on another machine needs to use it.

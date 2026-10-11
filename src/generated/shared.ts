@@ -26,7 +26,7 @@ export * from "./shared/glossary__word.js";
 export * from "./shared/held__part-way__playing__title.js";
 export * from "./shared/held__part-way__title.js";
 export * from "./shared/import__migration__seed__status__stuck.js";
-export * from "./shared/keys__minted-key.js";
+export * from "./shared/key-claim__keys__minted-key.js";
 export * from "./shared/lifecycle__migration.js";
 export * from "./shared/lifecycle__preview.js";
 export * from "./shared/lifecycle__preview__status.js";

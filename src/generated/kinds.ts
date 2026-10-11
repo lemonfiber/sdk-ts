@@ -34,6 +34,7 @@ export * from "./kinds/household.js";
 export * from "./kinds/import.js";
 export * from "./kinds/invitation.js";
 export * from "./kinds/job.js";
+export * from "./kinds/key-claim.js";
 export * from "./kinds/keys.js";
 export * from "./kinds/lifecycle.js";
 export * from "./kinds/log.js";
