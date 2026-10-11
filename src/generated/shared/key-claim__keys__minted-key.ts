@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `keys` and `minted-key` both carry.
+// The shapes `key-claim`, `keys` and `minted-key` all carry.
 // Regenerate with `npm run contract:generate`.
 
 /**

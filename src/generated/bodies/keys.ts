@@ -4,6 +4,11 @@
 
 /** What a mint is asked with. */
 export interface KeysBody {
+  /**
+   * Whether to mint it as a claim: the reply carries the link a program collects it
+   * with, once, within ten minutes, and no secret.
+   */
+  claim?: boolean;
   /** What to call it. */
   name: string;
   /** The operator's password, given again. */

@@ -2,13 +2,13 @@
 // Every kind the server may send, and the envelope each one carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, AskableEnvelope, AskedEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BundleEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ClientsEnvelope, ConfigEnvelope, CredentialsEnvelope, DashboardEnvelope, DoctorEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, GrantEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InvitationEnvelope, JobEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, OutboundEnvelope, PairingEnvelope, PartWayEnvelope, PausingEnvelope, PlayingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, QualityEnvelope, RemovalEnvelope, RepairEnvelope, ReplacementEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, SetupEnvelope, SpaceEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TitleEnvelope, TraceEnvelope, UndoEnvelope, UninstallEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WatchEnvelope, WatchedEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
+import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, AskableEnvelope, AskedEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BundleEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ClientsEnvelope, ConfigEnvelope, CredentialsEnvelope, DashboardEnvelope, DoctorEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, GrantEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InvitationEnvelope, JobEnvelope, KeyClaimEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, OutboundEnvelope, PairingEnvelope, PartWayEnvelope, PausingEnvelope, PlayingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, QualityEnvelope, RemovalEnvelope, RepairEnvelope, ReplacementEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, SetupEnvelope, SpaceEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TitleEnvelope, TraceEnvelope, UndoEnvelope, UninstallEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WatchEnvelope, WatchedEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
 
 /** The wire version these types were generated for. */
 export const CONTRACT_API_VERSION = 1;
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "askable" | "asked" | "backup" | "bandwidth" | "beside" | "bundle" | "capabilities" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "grant" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "keys" | "lifecycle" | "log" | "migration" | "minted-key" | "music" | "news" | "news-items" | "outbound" | "pairing" | "part-way" | "pausing" | "playing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "title" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "watched" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "askable" | "asked" | "backup" | "bandwidth" | "beside" | "bundle" | "capabilities" | "catalogue" | "certificate" | "clients" | "config" | "credentials" | "dashboard" | "doctor" | "error" | "forms" | "front-door" | "glossary" | "grant" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "invitation" | "job" | "key-claim" | "keys" | "lifecycle" | "log" | "migration" | "minted-key" | "music" | "news" | "news-items" | "outbound" | "pairing" | "part-way" | "pausing" | "playing" | "plugins" | "preview" | "provenance" | "pull" | "quality" | "removal" | "repair" | "replacement" | "reset" | "restore" | "seed" | "self-update" | "setup" | "space" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "title" | "trace" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "watch" | "watched" | "wiring" | "wizard" | "word";
 
 /** Every kind the server may send, in name order. */
 export const KINDS: readonly Kind[] = [
@@ -44,6 +44,7 @@ export const KINDS: readonly Kind[] = [
   "import",
   "invitation",
   "job",
+  "key-claim",
   "keys",
   "lifecycle",
   "log",
@@ -130,6 +131,7 @@ export interface ByKind {
   "import": ImportEnvelope;
   "invitation": InvitationEnvelope;
   "job": JobEnvelope;
+  "key-claim": KeyClaimEnvelope;
   "keys": KeysEnvelope;
   "lifecycle": LifecycleEnvelope;
   "log": LogEnvelope;
