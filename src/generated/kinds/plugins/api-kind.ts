@@ -345,117 +345,6 @@ export interface PluginOverriding {
   why: string;
 }
 
-/** One value a recipe could carry to one destination, as the operator agrees to it. */
-export interface PluginPair {
-  /**
-   * What approving this pair is written as, on the command line and over the web,
-   * where it carries the value to a host outside the stack or carries a release.
-   * Absent on any other pair to a service in this stack, which takes nothing off the
-   * machine or away from the service it came from, and asks for no approval.
-   */
-  approval?: string;
-  /**
-   * The service in this stack the released value was read from, where the pair
-   * releases it. Absent on every other pair.
-   */
-  from?: string;
-  /**
-   * Whose value it is, as its input or the step that captures it says; empty where
-   * neither does.
-   */
-  origin: string;
-  /**
-   * Why the value is carried away from the service it was read from, in the manifest's
-   * own sentence, where the pair releases it. Absent on every other pair.
-   */
-  release?: string;
-  /** Where it may be carried, by the name the manifest gives it. */
-  to: string;
-  /** What the value is called within the recipe. */
-  value: string;
-}
-
-/** One service of an installed plugin, as it was placed. */
-export interface PluginPlaced {
-  /**
-   * The adapter lemonfiber reaches it through, where the plugin named one.
-   *
-   * Defaulted for a record written before this was kept, which reads as naming
-   * none: a service operated generically, as it was when installed.
-   */
-  api?: Api | null;
-  /** Every capability it asks for. */
-  asks?: PluginAsking[];
-  /**
-   * Where inside the container its one configuration directory is mounted.
-   *
-   * Resolved rather than optional. The record answers where the directory is, and
-   * a run that re-derived the fallback would answer for a container it did not
-   * write the day that fallback moved.
-   */
-  config_path: string;
-  /**
-   * What the plugin says it does for the operator, which is what its dashboard entry
-   * says beside it.
-   */
-  description?: string;
-  /** The digest that fixes what runs. */
-  digest: string;
-  /** The service of the same plugin it stands in front of, as an adapter. */
-  fronts?: string | null;
-  /** The registry path, carrying no pin of its own. */
-  image: string;
-  /** The port it answers on inside the stack's network, where it declared one. */
-  listens?: number | null;
-  /**
-   * The media it files, in the stack manifest's vocabulary, which decides what it
-   * comes to in each service that asks for what it provides; none in an older record.
-   */
-  media_types?: string[];
-  /**
-   * What it is called, for a reader, which is what its dashboard entry is listed as;
-   * a record written before this was kept lists it by its id.
-   */
-  name?: string;
-  /** The API it answers the stack's other services in, where it names one. */
-  native?: string | null;
-  /**
-   * The stack's own networks it joins beside the default one, because a stack service
-   * it stands in for is on them.
-   *
-   * Settled at install from the stack it was installed beside and written down, so
-   * the container lemonfiber writes for it stays a function of this record alone.
-   * Defaulted for a record written before this was kept, which reads as joining none
-   * and staying on the default network.
-   */
-  networks?: string[];
-  /**
-   * Every core capability this one service fills, which is what makes it a candidate
-   * when the stack asks for one.
-   *
-   * Per service rather than read off the plugin's whole list, because a wiring
-   * reaches a service and not a plugin: of a plugin's two services, the one that
-   * fills a capability is the one an ask for it would reach. Defaulted for a record
-   * written before this was kept, which reads as filling nothing — a service nothing
-   * is wired to, rather than one wired to on a guess.
-   */
-  provides?: string[];
-  /** How it is reached, or nothing where it has no listener. */
-  reached?: PluginReached | null;
-  /** The stack's own service it moves in place of, where it names one. */
-  replaces?: string | null;
-  /** The service's id, which is the name its container is written under. */
-  service: string;
-  /** The privileged shape lemonfiber writes for it, where it took one. */
-  shape?: PluginShape | null;
-  /** Each capability contract it answers as an adapter, as `capability@major`. */
-  speaks?: string[];
-  /** The readable name that digest went by when it was installed. */
-  tag: string;
-  /** Whether the library is mounted for it. */
-  takes_data: boolean;
-}
-
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "region";
 
@@ -543,3 +432,88 @@ export interface PluginSecret {
 
 /** A privileged shape lemonfiber writes for a service. */
 export type PluginShape = "egress-guard" | "render";
+
+/** A value written exactly as declared. */
+export type ServiceConstant = string | number | boolean;
+
+/**
+ * The container fields an install record keeps for a service, beyond those every
+ * record already holds.
+ */
+export interface ServiceFields {
+  /** Whether its configuration directory is read-only. */
+  config_ro?: boolean;
+  /** Its environment. */
+  env?: { [key: string]: ServiceValue };
+  /** Its memory ceiling. */
+  mem_limit_mib?: number | null;
+  /** Its further mounts. */
+  mount?: ServiceMount[];
+  /** The network it runs inside. */
+  network?: ServiceNetwork | null;
+  /** How tightly it is held. */
+  posture?: ServicePosture;
+  /** Its further published ports. */
+  publish?: ServicePublish[];
+  /** Its scratch paths in memory. */
+  tmpfs?: string[];
+  /** Who it runs as, where declared. */
+  user_mode?: ServiceUserMode | null;
+}
+
+/** A further path mounted from the service's own mount tree. */
+export interface ServiceMount {
+  /** The relative path inside the mount tree. */
+  from: string;
+  /** Whether it is mounted read-only. */
+  ro?: boolean;
+  /** The absolute path inside the container. */
+  to: string;
+}
+
+/** The network a service runs inside instead of its own. */
+export interface ServiceNetwork {
+  /** The capability whose filler's network it runs inside. */
+  via: string;
+}
+
+/** How tightly the container is held. */
+export type ServicePosture = "standard" | "confined";
+
+/** A further port a service publishes on its tier. */
+export interface ServicePublish {
+  /** Where it answers inside the container, `port` where absent. */
+  listens?: number | null;
+  /** Where it is published on the host. */
+  port: number;
+}
+
+/** A secret the manifest declares. */
+export interface ServiceSecretOf {
+  /** The declared secret's name. */
+  secret: string;
+}
+
+/** An operator setting, with what is written while none is recorded. */
+export interface ServiceSetting {
+  /** What is written while the operator has recorded no value. */
+  default: ServiceConstant;
+  /** The setting's name. */
+  setting: string;
+}
+
+/** The address of a capability's filler. */
+export interface ServiceUrlOf {
+  /** The medium the filler asked for files. */
+  files?: string | null;
+  /** The upstream's own API, where the ask reaches the upstream an adapter fronts. */
+  native?: string | null;
+  /** The capability asked for. */
+  url_of: string;
+}
+
+/** Who the container runs as. */
+export type ServiceUserMode = "image" | "puid-env" | "uid";
+
+/** One environment variable's value. */
+export type ServiceValue = ServiceConstant | ServiceSetting | ServiceUrlOf | ServiceSecretOf;

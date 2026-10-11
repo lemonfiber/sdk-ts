@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { ApiKind, Contribution, PluginAdapterOwner, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginPair, PluginPlaced, PluginShape } from "./api-kind.js";
+import type { Api, ApiKind, Contribution, PluginAdapterOwner, PluginAsking, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginReached, PluginShape, ServiceFields } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -212,6 +212,119 @@ export interface PluginNonconforming {
   why: string;
 }
 
+/** One value a recipe could carry to one destination, as the operator agrees to it. */
+export interface PluginPair {
+  /**
+   * What approving this pair is written as, on the command line and over the web,
+   * where it carries the value to a host outside the stack or carries a release.
+   * Absent on any other pair to a service in this stack, which takes nothing off the
+   * machine or away from the service it came from, and asks for no approval.
+   */
+  approval?: string;
+  /**
+   * The service in this stack the released value was read from, where the pair
+   * releases it. Absent on every other pair.
+   */
+  from?: string;
+  /**
+   * Whose value it is, as its input or the step that captures it says; empty where
+   * neither does.
+   */
+  origin: string;
+  /**
+   * Why the value is carried away from the service it was read from, in the manifest's
+   * own sentence, where the pair releases it. Absent on every other pair.
+   */
+  release?: string;
+  /** Where it may be carried, by the name the manifest gives it. */
+  to: string;
+  /** What the value is called within the recipe. */
+  value: string;
+}
+
+/** One service of an installed plugin, as it was placed. */
+export interface PluginPlaced {
+  /**
+   * The adapter lemonfiber reaches it through, where the plugin named one.
+   *
+   * Defaulted for a record written before this was kept, which reads as naming
+   * none: a service operated generically, as it was when installed.
+   */
+  api?: Api | null;
+  /** Every capability it asks for. */
+  asks?: PluginAsking[];
+  /**
+   * Where inside the container its one configuration directory is mounted.
+   *
+   * Resolved rather than optional. The record answers where the directory is, and
+   * a run that re-derived the fallback would answer for a container it did not
+   * write the day that fallback moved.
+   */
+  config_path: string;
+  /**
+   * What the plugin says it does for the operator, which is what its dashboard entry
+   * says beside it.
+   */
+  description?: string;
+  /** The digest that fixes what runs. */
+  digest: string;
+  /** Its container fields beyond those above. */
+  fields?: ServiceFields;
+  /** The service of the same plugin it stands in front of, as an adapter. */
+  fronts?: string | null;
+  /** The registry path, carrying no pin of its own. */
+  image: string;
+  /** The port it answers on inside the stack's network, where it declared one. */
+  listens?: number | null;
+  /**
+   * The media it files, in the stack manifest's vocabulary, which decides what it
+   * comes to in each service that asks for what it provides; none in an older record.
+   */
+  media_types?: string[];
+  /**
+   * What it is called, for a reader, which is what its dashboard entry is listed as;
+   * a record written before this was kept lists it by its id.
+   */
+  name?: string;
+  /** The API it answers the stack's other services in, where it names one. */
+  native?: string | null;
+  /**
+   * The stack's own networks it joins beside the default one, because a stack service
+   * it stands in for is on them.
+   *
+   * Settled at install from the stack it was installed beside and written down, so
+   * the container lemonfiber writes for it stays a function of this record alone.
+   * Defaulted for a record written before this was kept, which reads as joining none
+   * and staying on the default network.
+   */
+  networks?: string[];
+  /**
+   * Every core capability this one service fills, which is what makes it a candidate
+   * when the stack asks for one.
+   *
+   * Per service rather than read off the plugin's whole list, because a wiring
+   * reaches a service and not a plugin: of a plugin's two services, the one that
+   * fills a capability is the one an ask for it would reach. Defaulted for a record
+   * written before this was kept, which reads as filling nothing — a service nothing
+   * is wired to, rather than one wired to on a guess.
+   */
+  provides?: string[];
+  /** How it is reached, or nothing where it has no listener. */
+  reached?: PluginReached | null;
+  /** The stack's own service it moves in place of, where it names one. */
+  replaces?: string | null;
+  /** The service's id, which is the name its container is written under. */
+  service: string;
+  /** The privileged shape lemonfiber writes for it, where it took one. */
+  shape?: PluginShape | null;
+  /** Each capability contract it answers as an adapter, as `capability@major`. */
+  speaks?: string[];
+  /** The readable name that digest went by when it was installed. */
+  tag: string;
+  /** Whether the library is mounted for it. */
+  takes_data: boolean;
+}
+
 /** One proof that has to hold before a plugin is reported installed. */
 export interface PluginProving {
   /** What it asks, as the method and the path it is asked at. */
@@ -268,63 +381,6 @@ export interface PluginRecipeRan {
   why?: string | null;
 }
 
-/** What taking a plugin off the machine came to, or would come to. */
-export interface PluginRemoval {
-  /**
-   * Every service that stops when it goes, named before any of them does.
-   *
-   * By service rather than by plugin, because a service is what an operator notices
-   * stopping: a plugin that brought two containers takes two things away, and the
-   * plugin's name alone would not say which of the addresses they use goes quiet.
-   * None of them comes back — a removal is not a restart — which is why this is
-   * stated before the run rather than discovered after it.
-   */
-  interrupts: string[];
-  /**
-   * Every capability that would have nothing filling it afterwards.
-   *
-   * Stated before it happens rather than reported after, which is the requirement
-   * and also the only useful order: an operator told afterwards that their requests
-   * no longer reach anything has been informed rather than asked.
-   */
-  leaves: PluginUnfilled[];
-  /** The plugin this is about. */
-  plugin: string;
-  /**
-   * Whether the record of what is installed was written without it.
-   *
-   * False on a rehearsal and on a run that got as far as putting the files back and
-   * no further, which are two different machines and are told apart by what the
-   * reversal says rather than by a second flag here.
-   */
-  removed: boolean;
-  /**
-   * What putting its changes back came to, or would come to.
-   *
-   * The rollback layer's own report rather than a shape of this verb's: a removal is
-   * a reversal with a name on it, and an account of its own would be a second
-   * description of the same work.
-   */
-  went_back: UndoReversal;
-}
-
-/** What asking an installed plugin's adapters again came to. */
-export interface PluginReproof {
-  /** Whether its adapters were asked, rather than only said to be. */
-  asked: boolean;
-  /**
-   * Whether every answer kept against the plugin was cleared, which a proof that did
-   * not hold never does.
-   */
-  cleared: boolean;
-  /** Every answer kept against the plugin when it was proved, which a pass clears. */
-  kept: PluginNonconforming[];
-  /** The plugin proved. */
-  plugin: string;
-  /** Each proof asked, or that would be asked, with what it came to. */
-  proofs: PluginProving[];
-}
-
 /** One adapter of lemonfiber's that one of the plugin's own services names. */
 export interface PluginServiceAdapter {
   /** Which of lemonfiber's adapters it is. */
@@ -333,44 +389,6 @@ export interface PluginServiceAdapter {
   owner: PluginAdapterOwner;
   /** The service that names it. */
   service: string;
-}
-
-/** Whether one installed plugin's source can still be fetched. */
-export interface PluginSource {
-  /** The source the record says it came from. */
-  from: string;
-  /** The plugin, by its id. */
-  plugin: string;
-  /** What asking it came to. */
-  standing: PluginSourceStanding;
-}
-
-/**
- * What asking a plugin's source came to.
- *
- * **Unreachable is not untrusted.** A plugin whose source has gone keeps running as it
- * was installed; what it loses is the way to a newer version, and that is said now
- * rather than found out at the next update.
- */
-export type PluginSourceStanding = PluginSourceStandingReachable | PluginSourceStandingUnreachable | PluginSourceStandingUnasked;
-
-/** It answered, so the plugin can be updated from it. */
-export interface PluginSourceStandingReachable {
-  standing: "reachable";
-}
-
-/** Nothing was asked, so nothing is known either way. */
-export interface PluginSourceStandingUnasked {
-  standing: "unasked";
-  /** Why nothing was asked. */
-  why: string;
-}
-
-/** It did not answer, or is no longer there, so the plugin cannot be updated from it. */
-export interface PluginSourceStandingUnreachable {
-  standing: "unreachable";
-  /** What asking it said. */
-  why: string;
 }
 
 /** One call a recipe makes, in the order it makes them. */
@@ -420,24 +438,6 @@ export interface PluginStepRan {
   tries: number;
   /** Why it came to what it did, where that wants saying. */
   why?: string | null;
-}
-
-/**
- * A capability the operator chose one of a plugin's services to fill.
- *
- * The only way anything a plugin brought comes to fill what the stack asks for in
- * place of the stack's own: a plugin cannot choose, and wiring by name is not
- * something a plugin can introduce. So what a plugin substituted is what the operator
- * substituted with it, and it is read off the recorded choices rather than off the
- * plugin.
- */
-export interface PluginSubstituted {
-  /** The capability it fills. */
-  capability: string;
-  /** The plugin whose service it is. */
-  plugin: string;
-  /** The service chosen. */
-  service: string;
 }
 
 /** One service taking a privileged shape, as the reading states it. */

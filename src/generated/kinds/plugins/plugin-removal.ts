@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginRemoval, PluginReproof, PluginSource, PluginSubstituted } from "./plugin-step-adapter.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginProving, PluginUnfilled } from "./plugin-placed.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
@@ -90,6 +90,63 @@ export interface PluginInstalls {
   update?: PluginUpdate | null;
 }
 
+/** What taking a plugin off the machine came to, or would come to. */
+export interface PluginRemoval {
+  /**
+   * Every service that stops when it goes, named before any of them does.
+   *
+   * By service rather than by plugin, because a service is what an operator notices
+   * stopping: a plugin that brought two containers takes two things away, and the
+   * plugin's name alone would not say which of the addresses they use goes quiet.
+   * None of them comes back — a removal is not a restart — which is why this is
+   * stated before the run rather than discovered after it.
+   */
+  interrupts: string[];
+  /**
+   * Every capability that would have nothing filling it afterwards.
+   *
+   * Stated before it happens rather than reported after, which is the requirement
+   * and also the only useful order: an operator told afterwards that their requests
+   * no longer reach anything has been informed rather than asked.
+   */
+  leaves: PluginUnfilled[];
+  /** The plugin this is about. */
+  plugin: string;
+  /**
+   * Whether the record of what is installed was written without it.
+   *
+   * False on a rehearsal and on a run that got as far as putting the files back and
+   * no further, which are two different machines and are told apart by what the
+   * reversal says rather than by a second flag here.
+   */
+  removed: boolean;
+  /**
+   * What putting its changes back came to, or would come to.
+   *
+   * The rollback layer's own report rather than a shape of this verb's: a removal is
+   * a reversal with a name on it, and an account of its own would be a second
+   * description of the same work.
+   */
+  went_back: UndoReversal;
+}
+
+/** What asking an installed plugin's adapters again came to. */
+export interface PluginReproof {
+  /** Whether its adapters were asked, rather than only said to be. */
+  asked: boolean;
+  /**
+   * Whether every answer kept against the plugin was cleared, which a proof that did
+   * not hold never does.
+   */
+  cleared: boolean;
+  /** Every answer kept against the plugin when it was proved, which a pass clears. */
+  kept: PluginNonconforming[];
+  /** The plugin proved. */
+  plugin: string;
+  /** Each proof asked, or that would be asked, with what it came to. */
+  proofs: PluginProving[];
+}
+
 /** Where an update did not hold: what putting the version it replaced back came to. */
 export interface PluginRestored {
   /** Whether everything its record says it placed is on the machine again. */
@@ -104,6 +161,62 @@ export interface PluginRestored {
   running: boolean;
   /** The version put back, which is the one the record still names. */
   version: string;
+}
+
+/** Whether one installed plugin's source can still be fetched. */
+export interface PluginSource {
+  /** The source the record says it came from. */
+  from: string;
+  /** The plugin, by its id. */
+  plugin: string;
+  /** What asking it came to. */
+  standing: PluginSourceStanding;
+}
+
+/**
+ * What asking a plugin's source came to.
+ *
+ * **Unreachable is not untrusted.** A plugin whose source has gone keeps running as it
+ * was installed; what it loses is the way to a newer version, and that is said now
+ * rather than found out at the next update.
+ */
+export type PluginSourceStanding = PluginSourceStandingReachable | PluginSourceStandingUnreachable | PluginSourceStandingUnasked;
+
+/** It answered, so the plugin can be updated from it. */
+export interface PluginSourceStandingReachable {
+  standing: "reachable";
+}
+
+/** Nothing was asked, so nothing is known either way. */
+export interface PluginSourceStandingUnasked {
+  standing: "unasked";
+  /** Why nothing was asked. */
+  why: string;
+}
+
+/** It did not answer, or is no longer there, so the plugin cannot be updated from it. */
+export interface PluginSourceStandingUnreachable {
+  standing: "unreachable";
+  /** What asking it said. */
+  why: string;
+}
+
+/**
+ * A capability the operator chose one of a plugin's services to fill.
+ *
+ * The only way anything a plugin brought comes to fill what the stack asks for in
+ * place of the stack's own: a plugin cannot choose, and wiring by name is not
+ * something a plugin can introduce. So what a plugin substituted is what the operator
+ * substituted with it, and it is read off the recorded choices rather than off the
+ * plugin.
+ */
+export interface PluginSubstituted {
+  /** The capability it fills. */
+  capability: string;
+  /** The plugin whose service it is. */
+  plugin: string;
+  /** The service chosen. */
+  service: string;
 }
 
 /**
