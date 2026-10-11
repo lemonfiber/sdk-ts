@@ -16,7 +16,7 @@
 #   pin-only pin-only / pin-only
 #   gate             gate
 #   sonar            gate / gate
-#   contract-drift   contract-drift
+#   contract-drift   contract-drift / drift
 #
 # Two of the contexts are called `gate` and `gate / gate` and they are different
 # checks: `gate` is this repository's own build gate in `gate.yml`.
@@ -50,6 +50,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/awaiting-maintainer.yml@459198c9dd48b883fdbf07678c3508e38b624724 # v1.0.73
+    uses: lemonfiber/spec/.github/workflows/awaiting-maintainer.yml@164464d71266bdc36d90272c58eb8bd02f1ba10d # v1.0.80
     secrets:
       DISCORD_MAINTAINERS_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
