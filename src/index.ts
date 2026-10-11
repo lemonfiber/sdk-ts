@@ -7,6 +7,7 @@ export {
   type DocumentRead,
   type Minting,
   type Opened,
+  type AskablePictureQuery,
   type PictureQuery,
   type Sending,
   type Talking,

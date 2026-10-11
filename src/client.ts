@@ -47,14 +47,24 @@ The name of a read `read` answers: one answered with one document.
 export type DocumentRead = Exclude<ReadName, LineByLine>;
 
 /**
-The reads answered with one of a title's pictures.
+The reads answered with one of the pictures of a title on a member's shelf.
 */
-type PictureRead = "held/poster" | "held/backdrop";
+type ShelfPicture = "held/poster" | "held/backdrop";
 
 /**
-What a picture read takes beside the title's id.
+The reads answered with one of a title's pictures.
 */
-export type PictureQuery = Omit<FileQuery[PictureRead], "id">;
+type PictureRead = ShelfPicture | "askable/poster";
+
+/**
+What a shelf's picture read takes beside the title's id.
+*/
+export type PictureQuery = Omit<FileQuery[ShelfPicture], "id">;
+
+/**
+What the read of a found title's poster takes beside the title's id.
+*/
+export type AskablePictureQuery = Omit<FileQuery["askable/poster"], "id">;
 
 /**
 The slice of `fetch` this needs, so a test can supply its own.
@@ -356,10 +366,23 @@ export class Client {
     return this.#picture("held/backdrop", id, query, asking);
   }
 
-  async #picture(
-    name: PictureRead,
+  /**
+  The poster of a title a member may ask for, by the id their search lists it
+  under, read and refused as `poster` reads a shelf's poster. `query` takes
+  `member` and `kind`.
+  */
+  async askablePoster(
     id: string,
-    query: PictureQuery,
+    query: AskablePictureQuery = {},
+    asking: Asking = {},
+  ): Promise<Pictured> {
+    return this.#picture("askable/poster", id, query, asking);
+  }
+
+  async #picture<R extends PictureRead>(
+    name: R,
+    id: string,
+    query: Omit<FileQuery[R], "id">,
     asking: Asking,
   ): Promise<Pictured> {
     const file = FILES[name];

@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 /** Every code a refusal may carry. */
-export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-13" | "ADMIT-14" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-12" | "ASK-13" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "LIFE-10" | "MIGRATE-1" | "PLAY-1" | "PLAY-2" | "PLAY-3" | "PLAY-4" | "PLAY-5" | "PLAY-6" | "PLAY-7" | "PLAY-8" | "PLAY-9" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-34" | "PLUGIN-35" | "PLUGIN-36" | "PLUGIN-37" | "PLUGIN-38" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "RATE-6" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SERVE-8" | "SPACE-6" | "STACK-1" | "STACK-10" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "UPDATE-5" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6" | "WIRE-7";
+export type RefusalCode = "ADMIT-10" | "ADMIT-11" | "ADMIT-12" | "ADMIT-13" | "ADMIT-14" | "ADMIT-4" | "ADMIT-5" | "ADMIT-6" | "ADMIT-7" | "ADMIT-8" | "ADMIT-9" | "ASK-1" | "ASK-10" | "ASK-11" | "ASK-12" | "ASK-13" | "ASK-2" | "ASK-3" | "ASK-4" | "ASK-5" | "ASK-6" | "ASK-7" | "ASK-8" | "ASK-9" | "GONE-2" | "LIFE-10" | "MIGRATE-1" | "PLAY-1" | "PLAY-2" | "PLAY-3" | "PLAY-4" | "PLAY-5" | "PLAY-6" | "PLAY-7" | "PLAY-8" | "PLAY-9" | "PLUGIN-10" | "PLUGIN-11" | "PLUGIN-12" | "PLUGIN-13" | "PLUGIN-14" | "PLUGIN-15" | "PLUGIN-16" | "PLUGIN-17" | "PLUGIN-18" | "PLUGIN-19" | "PLUGIN-2" | "PLUGIN-20" | "PLUGIN-21" | "PLUGIN-22" | "PLUGIN-23" | "PLUGIN-24" | "PLUGIN-25" | "PLUGIN-26" | "PLUGIN-27" | "PLUGIN-28" | "PLUGIN-29" | "PLUGIN-3" | "PLUGIN-30" | "PLUGIN-31" | "PLUGIN-32" | "PLUGIN-33" | "PLUGIN-34" | "PLUGIN-35" | "PLUGIN-36" | "PLUGIN-37" | "PLUGIN-38" | "PLUGIN-4" | "PLUGIN-5" | "PLUGIN-6" | "PLUGIN-7" | "PLUGIN-8" | "PLUGIN-9" | "RATE-6" | "READ-1" | "READ-10" | "READ-11" | "READ-12" | "READ-13" | "READ-14" | "READ-15" | "READ-16" | "READ-2" | "READ-3" | "READ-4" | "READ-5" | "READ-6" | "READ-7" | "READ-8" | "READ-9" | "REPAIR-1" | "RESTORE-11" | "SERVE-6" | "SERVE-7" | "SERVE-8" | "SPACE-6" | "STACK-1" | "STACK-10" | "STACK-2" | "STACK-3" | "STACK-4" | "STACK-5" | "STACK-6" | "STACK-7" | "STACK-8" | "STACK-9" | "UPDATE-5" | "WIRE-1" | "WIRE-2" | "WIRE-3" | "WIRE-4" | "WIRE-5" | "WIRE-6" | "WIRE-7" | "WISH-1" | "WISH-10" | "WISH-11" | "WISH-12" | "WISH-13" | "WISH-2" | "WISH-3" | "WISH-4" | "WISH-5" | "WISH-6" | "WISH-7" | "WISH-8" | "WISH-9";
 
 /** Each refusal code's name in the core's registry, the status it is answered with, and the registry's line about it. */
 export const REFUSAL_CODES: Readonly<
@@ -123,6 +123,19 @@ export const REFUSAL_CODES: Readonly<
   "WIRE-5": { name: "WIRING_MOVED", status: 400, description: "Raised when a choice answers an offer that was read against a wiring that has since moved." },
   "WIRE-6": { name: "UNREASONABLE", status: 400, description: "Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character." },
   "WIRE-7": { name: "ALREADY_FILLS", status: 400, description: "Raised where the service chosen already fills the capability, so there is nothing to change." },
+  "WISH-1": { name: "NOT_A_SEARCH", status: 400, description: "Said where the words searched for are too few or too many to search with." },
+  "WISH-10": { name: "NOT_ITS_SEASON", status: 400, description: "Said where a season named is not one the title has, or seasons were named for a film." },
+  "WISH-11": { name: "NOBODY_ASKING", status: 400, description: "Said where nobody is named for something only a member can do." },
+  "WISH-12": { name: "NOT_A_MEMBER", status: 404, description: "Said where the member named is not somebody in the household." },
+  "WISH-13": { name: "NO_PICTURE", status: 404, description: "Said where a title a member may ask for has no picture to show them." },
+  "WISH-2": { name: "NOT_A_PLACE", status: 400, description: "Said where the place a search was asked to go on from is not one a page answered." },
+  "WISH-3": { name: "NOT_ASKABLE", status: 404, description: "Said where no title this member may ask for goes by the id and kind named." },
+  "WISH-4": { name: "CANNOT_FETCH", status: 409, description: "Said where the house cannot fetch that kind of title, or anything, right now." },
+  "WISH-5": { name: "ALREADY_HERE", status: 409, description: "Said where the title asked for is already in the house." },
+  "WISH-6": { name: "NOTHING_LEFT", status: 409, description: "Said where the member has asked for all their allowance lets them, until it frees up." },
+  "WISH-7": { name: "NO_ROOM", status: 503, description: "Said where the house has no room for new things, which is the house's and nobody's limit." },
+  "WISH-8": { name: "NOT_WORKING", status: 503, description: "Said where what answers the household's asks did not answer, so nothing was asked." },
+  "WISH-9": { name: "NOT_SET_UP", status: 503, description: "Said where the house has nothing to search or ask with at all." },
 };
 
 /** Whether a code is one the contract lists as a refusal's. */
