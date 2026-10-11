@@ -7,6 +7,8 @@ export * from "./kinds/adoption.js";
 export * from "./kinds/alert.js";
 export * from "./kinds/alerts.js";
 export * from "./kinds/archives.js";
+export * from "./kinds/askable.js";
+export * from "./kinds/asked.js";
 export * from "./kinds/backup.js";
 export * from "./kinds/bandwidth.js";
 export * from "./kinds/beside.js";

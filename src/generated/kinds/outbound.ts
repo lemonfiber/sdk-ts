@@ -79,7 +79,7 @@ export interface OutboundEnvelope {
 /**
  * One of the requests lemonfiber makes on its own account.
  *
- * Nine, and the closed set is the claim. A tenth is a decision somebody makes by
+ * Ten, and the closed set is the claim. An eleventh is a decision somebody makes by
  * adding a variant here and answering four questions about it, rather than one
  * that happens by somebody building a request.
  *
@@ -103,5 +103,9 @@ export interface OutboundEnvelope {
  * The ninth goes to one place this build names, and only when an operator installs a
  * plugin by name: the catalogue's newest release, for its index and the signature over
  * it.
+ *
+ * The tenth is made for a member rather than for the operator: the poster of a title
+ * their search found, from the one catalogue address this build names, so their client
+ * draws it without ever being sent there.
  */
-export type OutboundReach = "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates" | "plugin-source" | "catalogue";
+export type OutboundReach = "registry" | "guides" | "echo" | "indexer" | "usenet" | "household" | "updates" | "plugin-source" | "catalogue" | "posters";
