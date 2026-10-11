@@ -16,7 +16,7 @@
 #   pin-only pin-only / pin-only
 #   gate             gate
 #   sonar            gate / gate
-#   contract-drift   contract-drift
+#   contract-drift   contract-drift / drift
 #
 # Two of the contexts are called `gate` and `gate / gate` and they are different
 # checks: `gate` is this repository's own build gate in `gate.yml`.
