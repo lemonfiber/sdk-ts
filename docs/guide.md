@@ -144,6 +144,27 @@ that states a longer length.
 A title outside the member's limits is `missing` with `PLAY-2` in `said`, and a
 title with no picture of that kind is `missing` with `PLAY-9`.
 
+A member searches for a title to ask for with the `askable` read, which takes
+`member`, `term` and `after`, and asks for one with the `ask` action.
+`askablePoster` reads a found title's poster by the id the search lists it
+under, taking `member` and `kind`, and arrives and is refused as a shelf's
+pictures are:
+
+```ts
+const found = await client.read("askable", { member: "ada", term: "dune" });
+if (found.ok && isKind(found.value, "askable")) {
+  const [title] = found.value.data.titles;
+  if (title) {
+    const poster = await client.askablePoster(title.id, { member: "ada", kind: title.kind });
+    if (poster.ok) draw(URL.createObjectURL(poster.value.bytes));
+    await client.act("ask", { name: "ada", id: title.id, kind: title.kind });
+  }
+}
+```
+
+A found title the member may not ask for is `missing` with `WISH-3`, and one
+with no poster is `missing` with `WISH-13`.
+
 ## Integration keys
 
 A program that runs beside the stack for months holds a key rather than the

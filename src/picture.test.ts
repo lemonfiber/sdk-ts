@@ -97,6 +97,36 @@ describe("poster and backdrop", () => {
   );
 });
 
+describe("askablePoster", () => {
+  it("reads a found title's poster where a search lists it, asking only for pictures", async () => {
+    const seen: Seen[] = [];
+    const got = await open(
+      showing(new Blob([PNG], { type: "image/jpeg" }), seen),
+    ).askablePoster("603", { member: "ana", kind: "movies" });
+
+    expect(got).toMatchObject({ ok: true, value: { mediaType: "image/jpeg" } });
+    expect(seen[0]?.url).toBe(
+      "http://127.0.0.1:7777/api/askable/603/poster?member=ana&kind=movies",
+    );
+    expect(seen[0]?.headers["Accept"]).toBe(
+      "image/jpeg, image/png, image/webp, image/gif, image/avif",
+    );
+  });
+
+  it.each(["WISH-3", "WISH-13"])(
+    "reports a found title with nothing to show as missing, keeping %s",
+    async (code) => {
+      const got = await open(showing(new Blob([]), [], absent(code))).askablePoster("603", {
+        member: "ana",
+        kind: "tv",
+      });
+
+      expect(got).toMatchObject({ ok: false, problem: { kind: "missing", code } });
+      expect(!got.ok && got.said).toContain(code);
+    },
+  );
+});
+
 describe("pictureOf", () => {
   it.each([
     ["IMAGE/JPEG", "image/jpeg"],

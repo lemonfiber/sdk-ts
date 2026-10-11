@@ -39,7 +39,8 @@ A title's picture, or why there is none to draw.
 
 A refusal carries the body it arrived with as `said`, as a handed-over file's
 does: a title outside the member's limits is `PLAY-2` there, and a title with
-no picture of that kind is `PLAY-9`.
+no picture of that kind is `PLAY-9`. A found title the member may not ask for
+is `WISH-3`, and one with no poster is `WISH-13`.
 */
 export type Pictured =
   { ok: true; value: Picture } | { ok: false; problem: Problem; said?: string };
