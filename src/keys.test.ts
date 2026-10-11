@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Client, type Minting, type Sending } from "./client.js";
+import { Client, type Sending } from "./client.js";
+import type { Minting } from "./keys.js";
 import { TOKEN_HEADER } from "./credential.js";
 import { API_VERSION } from "./envelope.js";
 import { unrecognised } from "./problem.js";
@@ -87,6 +88,31 @@ describe("the integration keys", () => {
     expect(seen[0]?.method).toBe("POST");
     expect(seen[0]?.body).toBe(JSON.stringify(minting));
     expect(got.ok && got.value.data.secret).toBe("lfk_once");
+  });
+
+  it("are minted as a claim with the claim in the body, and the link comes back with no secret", async () => {
+    const seen: Seen[] = [];
+    const claimed = {
+      name: "home",
+      scope: "read",
+      purpose: "home-assistant",
+      link: "lemonfiber://key?address=https%3A%2F%2F192.0.2.10%3A7777&claim=c1",
+      lapses: "2026-10-11T14:10:00Z",
+    };
+    const got = await open(answering("key-claim", claimed, seen)).mintClaim(minting);
+
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/keys");
+    expect(seen[0]?.method).toBe("POST");
+    expect(seen[0]?.body).toBe(JSON.stringify({ ...minting, claim: true }));
+    expect(got).toStrictEqual({
+      ok: true,
+      value: { api_version: API_VERSION, kind: "key-claim", data: claimed },
+    });
+  });
+
+  it("minted as a claim say a key's secret is not their answer", async () => {
+    const got = await open(answering("minted-key", minted, [])).mintClaim(minting);
+    expect(got).toStrictEqual({ ok: false, problem: unrecognised("minted-key") });
   });
 
   it("are revoked by name, sent as one path segment", async () => {

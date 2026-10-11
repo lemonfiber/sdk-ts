@@ -22,7 +22,6 @@ import {
   type ByKind,
   type Choice,
   type FileQuery,
-  type KeyPurpose,
   type Kind,
   type ReadAnswer,
   type ReadName,
@@ -30,6 +29,7 @@ import {
   type SetupAnswerBody,
 } from "./generated/index.js";
 import { lastSegment, type Handed, type Written } from "./handed.js";
+import { KEYS, type Minting } from "./keys.js";
 import { PICTURE_TYPES, pictureFrom, type Pictured } from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { filledIn, search } from "./query.js";
@@ -125,11 +125,6 @@ export interface Talking {
 export type Opened = { ok: true; client: Client } | { ok: false; problem: Problem };
 
 /**
-Where integration keys are listed, minted and revoked.
-*/
-const KEYS = "/api/keys";
-
-/**
 Where the first-run setup is walked, one request a step.
 */
 const SETUP = "/api/setup";
@@ -139,31 +134,6 @@ Where setup stands after a step: the question it is on, the answers so far,
 and what it found.
 */
 export type Walked = Reading<ByKind["wizard"]>;
-
-/**
-What one integration key is minted with.
-
-The password is the minter's own, given again for this one request. It is sent
-in the body and kept by nothing here.
-*/
-export interface Minting {
-  /**
-  What to call it. No other key may hold the name.
-  */
-  name: string;
-  /**
-  What it admits: `read`, `act`, or `member:` and the account it acts as.
-  */
-  scope: "read" | "act" | `member:${string}`;
-  /**
-  What it is for, as whoever mints it declares.
-  */
-  purpose: KeyPurpose;
-  /**
-  The minter's password, given again.
-  */
-  password: string;
-}
 
 /**
 Talks to one running lemonfiber.
@@ -270,6 +240,20 @@ export class Client {
     return answeredAs(
       await this.#ask("POST", KEYS, asking, JSON.stringify(minting)),
       "minted-key",
+    );
+  }
+
+  /**
+  Mints one integration key as a claim: answered with the key link a program
+  collects it with, once, within ten minutes, and no secret.
+  */
+  async mintClaim(
+    minting: Minting,
+    asking: Asking = {},
+  ): Promise<Reading<ByKind["key-claim"]>> {
+    return answeredAs(
+      await this.#ask("POST", KEYS, asking, JSON.stringify({ ...minting, claim: true })),
+      "key-claim",
     );
   }
 

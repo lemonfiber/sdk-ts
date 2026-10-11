@@ -2,10 +2,10 @@ export { address, type Address } from "./address.js";
 export { TOKEN_HEADER } from "./credential.js";
 export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
 export { type Query } from "./query.js";
+export { type Minting } from "./keys.js";
 export {
   Client,
   type DocumentRead,
-  type Minting,
   type Opened,
   type AskablePictureQuery,
   type PictureQuery,
