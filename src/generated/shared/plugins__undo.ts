@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionResettle | ActionRehold;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -34,6 +34,19 @@ export interface ActionReconfigure {
   resource: string;
   /** What to put back, or `None` where it held nothing. */
   value?: string | null;
+}
+
+/** Put a secret in the secret store back to the value it held. */
+export interface ActionRehold {
+  does: "rehold";
+  /** The fingerprint of the value to put back, or `None` to forget it. */
+  earlier?: string | null;
+  /** The environment file's setting it goes back to, where it was moved out of one. */
+  filed?: string | null;
+  /** The fingerprint of what lemonfiber kept, which has to still be there. */
+  kept?: string | null;
+  /** The secret's name. */
+  name: string;
 }
 
 /**
@@ -76,6 +89,17 @@ export interface ActionRepin {
   does: "repin";
   /** The version to put back. */
   previous: string;
+}
+
+/** Put a setting in the settings store back to what it held. */
+export interface ActionResettle {
+  does: "resettle";
+  /** The setting's name. */
+  name: string;
+  /** What lemonfiber recorded, which has to still be there. */
+  recorded?: string | null;
+  /** What to put back, or `None` to clear it. */
+  value?: string | null;
 }
 
 /** Restore a value, or remove it where there was none before (`None`). */
