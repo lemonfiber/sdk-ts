@@ -346,7 +346,7 @@ export interface PluginOverriding {
 }
 
 /** What an install puts at one path. */
-export type PluginPuts = "directory" | "document" | "key" | "region";
+export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets";
 
 /**
  * How an installed service is reached, where it is reached at all.
