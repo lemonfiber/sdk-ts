@@ -98,5 +98,6 @@ Bytes written as the stack reads them in a body: base64url, unpadded.
 */
 export function base64url(bytes: Uint8Array): string {
   const binary = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
-  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
+  const unpadded = Math.ceil((bytes.length * 4) / 3);
+  return btoa(binary).slice(0, unpadded).replaceAll("+", "-").replaceAll("/", "_");
 }

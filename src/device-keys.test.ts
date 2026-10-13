@@ -32,6 +32,15 @@ const open = (sending: Sending): Client => {
 
 const mint: Mint = { name: "den", scope: "act", purpose: "mcp" };
 
+describe("bytes sent in a body", () => {
+  it("are written in base64url with only the padding dropped", () => {
+    expect(base64url(new Uint8Array([1]))).toBe("AQ");
+    expect(base64url(new Uint8Array([251, 255]))).toBe("-_8");
+    expect(base64url(new Uint8Array([0, 0, 23]))).toBe("AAAX");
+    expect(base64url(new Uint8Array([]))).toBe("");
+  });
+});
+
 describe("the device keys", () => {
   it("are registered with the public half and the attestation in base64url, and the password", async () => {
     const seen: Seen[] = [];
