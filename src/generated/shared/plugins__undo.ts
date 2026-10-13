@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionResettle | ActionRehold;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -60,6 +60,18 @@ export interface ActionRehold {
 export interface ActionReinstate {
   does: "reinstate";
   /** The key's name. */
+  name: string;
+}
+
+/**
+ * Make a revoked device key good again.
+ *
+ * Worked out so the record of a revoke has a reversal to name, and never carried
+ * out, for the reason [`Action::Reinstate`] never is.
+ */
+export interface ActionReinstateDevice {
+  does: "reinstate-device";
+  /** The device key's name. */
   name: string;
 }
 
@@ -127,6 +139,13 @@ export interface ActionRestore {
 export interface ActionRevoke {
   does: "revoke";
   /** The key's name. */
+  name: string;
+}
+
+/** Revoke the device key a registration made. */
+export interface ActionRevokeDevice {
+  does: "revoke-device";
+  /** The device key's name. */
   name: string;
 }
 

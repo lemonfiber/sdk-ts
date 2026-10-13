@@ -19,6 +19,7 @@ export * from "./shared/dashboard__front-door.js";
 export * from "./shared/dashboard__household.js";
 export * from "./shared/dashboard__household__invitation.js";
 export * from "./shared/dashboard__lifecycle__status.js";
+export * from "./shared/device-key__device-keys.js";
 export * from "./shared/doctor__error__plugins.js";
 export * from "./shared/doctor__error__plugins__repair.js";
 export * from "./shared/doctor__plugins.js";

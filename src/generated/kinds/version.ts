@@ -23,6 +23,12 @@ export interface VersionEnvelope {
  * reaches both halves, and none of the three had to learn a new question.
  */
 export interface VersionReport {
+  /**
+   * When the snapshot of Google's attestation status list this build carries was
+   * taken, which an Android device key's chain is checked against; nothing where it
+   * does not read.
+   */
+  attestation_status?: string | null;
   /** The running binary's version. */
   binary: string;
   /** What this build's release changed, and every release there has been. */

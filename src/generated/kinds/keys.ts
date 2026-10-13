@@ -36,6 +36,8 @@ export interface ListedKey {
   minted: string;
   /** The name it was minted under. */
   name: string;
+  /** The device key whose signature proved its mint, absent where none did. */
+  proved_by?: string | null;
   /** What the minter said it is for. A declaration, not something the core verified. */
   purpose: KeyPurpose;
   /** When it was revoked, where it has been. */
