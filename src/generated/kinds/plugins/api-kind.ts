@@ -105,6 +105,8 @@ export interface Expect {
   body_starts_with?: string | null;
   /** A substring of the content type the answer was served as. */
   content_type?: string | null;
+  /** The exit status a run must end with. Not sufficient alone. */
+  exit?: number | null;
   /** Places the answer must carry, each with the exact value it must hold. */
   json?: { [key: string]: Expected } | null;
   /**
@@ -131,6 +133,8 @@ export interface Expect {
   json_types?: { [key: string]: ExpectedKind } | null;
   /** The status the answer must carry. */
   status?: number | null;
+  /** What a run's standard output must begin with. */
+  stdout_starts_with?: string | null;
 }
 
 /**
@@ -229,7 +233,7 @@ export interface PluginChangedCheck {
  * written: a declaration that an assertion fails on a recording names the one of these
  * that fails there.
  */
-export type PluginConstraint = "status" | "json" | "json_has_keys" | "json_types" | "json_at_least" | "json_array_min" | "json_is_absent" | "content_type" | "body_starts_with";
+export type PluginConstraint = "status" | "json" | "json_has_keys" | "json_types" | "json_at_least" | "json_array_min" | "json_is_absent" | "content_type" | "body_starts_with" | "exit" | "stdout_starts_with";
 
 /** What a plugin declared about itself, as its install read it. */
 export interface PluginDeclaration {

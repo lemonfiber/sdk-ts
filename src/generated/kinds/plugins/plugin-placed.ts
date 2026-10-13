@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Api, ApiKind, Contribution, PluginAdapterOwner, PluginAsking, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginReached, PluginShape, ServiceFields } from "./api-kind.js";
+import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginReached, PluginShape, ServiceFields } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -102,20 +102,9 @@ export interface PluginInstalled {
   /** Every adapter of lemonfiber's its own services name, each said to be lemonfiber's. */
   adapters?: PluginServiceAdapter[];
   /**
-   * Every row it adds to a register lemonfiber already runs, as the install
-   * settled them.
-   *
-   * Kept here rather than read back off the plugin's own files, for the reason
-   * everything else on this record is: the author's directory may be gone the
-   * moment an install is done, and a doctor run a month later is a question about
-   * this machine rather than about a document. This record is the one answer, so a
-   * row that runs is a row that was declared at install and has not changed under
-   * anybody since.
-   *
-   * Defaulted for a register written before this field existed, which reads as a
-   * plugin that contributes nothing — the same answer a plugin that contributes
-   * nothing gets, and the only one that can be given about a record that does not
-   * say.
+   * Every row it adds to a register lemonfiber already runs, as the install settled
+   * them, so the doctor reads them off this record rather than off the plugin's files.
+   * Defaulted for a register written before this field existed.
    */
   contributions?: Contribution[];
   /**
@@ -155,19 +144,9 @@ export interface PluginInstalled {
   /** The plugin's id: the name it is installed and journalled under. */
   plugin: string;
   /**
-   * Every core capability its services fill, as the install settled them.
-   *
-   * Core names only. A capability of the plugin's own is namespaced, nothing asks
-   * for it, and it is inert by design — so a removal that named one as about to go
-   * unfilled would be warning about something nothing was reaching for.
-   *
-   * Kept for the question a removal has to answer before it happens: what this
-   * machine would have nothing filling once the plugin is off it. Asking the
-   * manifest would be asking a file that may be gone.
-   *
-   * Defaulted for a register written before the field existed, which reads as a
-   * plugin that fills nothing — the answer that names no capability rather than the
-   * one that invents one.
+   * Every core capability its services fill, as the install settled them, core names
+   * only, which is what a removal reads to say what would go unfilled. Defaulted for a
+   * register written before the field existed, which reads as filling nothing.
    */
   provides?: string[];
   /**
@@ -187,6 +166,8 @@ export interface PluginInstalled {
    * this was kept.
    */
   revision?: string;
+  /** Every proof it declares that runs the image's own program. */
+  run_proofs?: PluginRunProof[];
   /** What was placed, one entry per service the plugin declares. */
   services: PluginPlaced[];
   /**
@@ -323,6 +304,8 @@ export interface PluginPlaced {
   shape?: PluginShape | null;
   /** Each capability contract it answers as an adapter, as `capability@major`. */
   speaks?: string[];
+  /** The digest of the starting files kept for its run proofs, where it has any. */
+  starting?: string | null;
   /** The readable name that digest went by when it was installed. */
   tag: string;
   /** Whether the library is mounted for it. */
@@ -383,6 +366,36 @@ export interface PluginRecipeRan {
   steps: PluginStepRan[];
   /** Why it did not, where it did not. */
   why?: string | null;
+}
+
+/** A run of the image's own program, as a proof declares it. */
+export interface PluginRun {
+  /**
+   * Each argument handed to the image's entrypoint, one string each: one to 64, each at
+   * most 4096 bytes and none holding a NUL.
+   */
+  args: string[];
+  /** How long the run may take, from 1 to 120 seconds. Default 30. */
+  timeout_s?: number | null;
+}
+
+/**
+ * One proof that runs the image's own program, kept so the doctor and a later proof can
+ * run it again without the plugin's source.
+ */
+export interface PluginRunProof {
+  /** What the run must come to. */
+  expect: Expect;
+  /** The proof's id. */
+  proof: string;
+  /** What the image's own program is handed. */
+  run: PluginRun;
+  /** The service whose image it runs. */
+  service: string;
+  /** What it establishes, in one line. */
+  title: string;
+  /** Why it is worth asserting. */
+  why: string;
 }
 
 /** One adapter of lemonfiber's that one of the plugin's own services names. */
@@ -456,20 +469,6 @@ export interface PluginTaking {
   service: string;
   /** The shape it takes. */
   shape: PluginShape;
-}
-
-/** A capability that would have nothing filling it. */
-export interface PluginUnfilled {
-  /** The core name nothing would fill. */
-  capability: string;
-  /**
-   * The plugin that is filling it now, which is the one going.
-   *
-   * Named rather than left to the reader, because the sentence an operator has to
-   * act on is *this is the only thing filling it* and a capability on its own does
-   * not say that.
-   */
-  filled_by: string;
 }
 
 /** What one assertion came to, whatever answered it. */
