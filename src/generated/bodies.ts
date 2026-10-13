@@ -2,6 +2,7 @@
 // Every route's body, and the shapes only that body carries.
 // Regenerate with `npm run contract:generate`.
 
+export * from "./bodies/device-keys.js";
 export * from "./bodies/keys.js";
 export * from "./bodies/keys-claim.js";
 export * from "./bodies/session.js";
