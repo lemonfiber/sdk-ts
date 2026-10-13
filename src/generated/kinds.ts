@@ -60,6 +60,7 @@ export * from "./kinds/reset.js";
 export * from "./kinds/restore.js";
 export * from "./kinds/seed.js";
 export * from "./kinds/self-update.js";
+export * from "./kinds/settings.js";
 export * from "./kinds/setup.js";
 export * from "./kinds/space.js";
 export * from "./kinds/start.js";

@@ -94,6 +94,8 @@ export interface ActionRepin {
 /** Put a setting in the settings store back to what it held. */
 export interface ActionResettle {
   does: "resettle";
+  /** The environment file's setting it goes back to, where it was moved out of one. */
+  filed?: string | null;
   /** The setting's name. */
   name: string;
   /** What lemonfiber recorded, which has to still be there. */
