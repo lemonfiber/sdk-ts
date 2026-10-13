@@ -35,4 +35,9 @@ requirement = [
   { id = "ARCH-R133", state = "partial", evidence = ["scripts/contract/writer.mjs", "scripts/contract/bodies.test.mjs::writes a body under its route's name, in a module of its own", "src/setup.test.ts::sends an answer as the body, tagged by the question it answers"] },
   { id = "D3-R14", state = "partial", evidence = ["src/events.ts", "src/events.test.ts::hands over the job an event was said for, and none where it names none"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a reference it cannot resolve"] },
+  { id = "ARCH-R258", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are registered with the public half and the attestation in base64url, and the password"] },
+  { id = "ARCH-R259", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
+  { id = "ARCH-R260", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
+  { id = "ARCH-R261", state = "partial", evidence = ["src/keys.ts", "src/device-keys.test.ts::prove a mint with a signature over the text the stack verifies, and no password"] },
+  { id = "ARCH-R293", state = "partial", evidence = ["src/generated/kinds/keys.ts"] },
 ]

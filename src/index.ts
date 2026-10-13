@@ -2,7 +2,16 @@ export { address, type Address } from "./address.js";
 export { TOKEN_HEADER } from "./credential.js";
 export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
 export { type Query } from "./query.js";
-export { type Minting } from "./keys.js";
+export {
+  base64url,
+  MINT_FORM,
+  signedText,
+  type DeviceProof,
+  type Mint,
+  type Minting,
+  type PasswordProof,
+} from "./keys.js";
+export { type Registering } from "./device-keys.js";
 export {
   Client,
   type DocumentRead,

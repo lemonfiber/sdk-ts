@@ -29,7 +29,15 @@ import {
   type SetupAnswerBody,
 } from "./generated/index.js";
 import { lastSegment, type Handed, type Written } from "./handed.js";
+import {
+  DEVICE_KEYS,
+  deviceKey,
+  deviceKeyChallenge,
+  registrationBody,
+  type Registering,
+} from "./device-keys.js";
 import { KEYS, type Minting } from "./keys.js";
+import type { Answer, Sending } from "./sending.js";
 import { PICTURE_TYPES, pictureFrom, type Pictured } from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { filledIn, search } from "./query.js";
@@ -66,44 +74,7 @@ What the read of a found title's poster takes beside the title's id.
 */
 export type AskablePictureQuery = Omit<FileQuery["askable/poster"], "id">;
 
-/**
-The slice of `fetch` this needs, so a test can supply its own.
-
-`blob` is read for a file lemonfiber hands over and for nothing else, so a
-reply without it answers every request but those. `fetch`'s reply has it.
-
-`redirect` is always `"error"`: an answer pointing somewhere else is not
-followed, so the token goes to the address it was given for and nowhere
-else. `fetch` honours it as given; a `sending` of any other kind has to as
-well.
-
-`signal` is raised when the call runs out of time or its caller stops it, and
-`fetch` gives up on the request and on reading its body when it is. A
-`sending` of any other kind has to as well, or a call waits on it past its
-deadline.
-*/
-export type Sending = (
-  url: string,
-  init: {
-    method: string;
-    headers: Record<string, string>;
-    body?: string;
-    redirect: "error";
-    signal: AbortSignal;
-  },
-) => Promise<{
-  ok: boolean;
-  status: number;
-  text: () => Promise<string>;
-  blob?: () => Promise<Blob>;
-  body?: ReadableStream<Uint8Array<ArrayBuffer>> | null;
-  headers?: { get: (name: string) => string | null };
-}>;
-
-/**
-One reply, as `sending` handed it back.
-*/
-type Answer = Awaited<ReturnType<Sending>>;
+export type { Sending } from "./sending.js";
 
 export interface Talking {
   /**
@@ -231,7 +202,9 @@ export class Client {
   }
 
   /**
-  Mints one integration key, its secret in this reply and in no other.
+  Mints one integration key, its secret in this reply and in no other, proved
+  by the password given again or by a device key's signature over the text
+  `signedText` spells.
   
   The reply carries the secret beside the stack's certificate pin and the
   address it is served at encrypted, where it is; nothing here keeps any of it.
@@ -266,6 +239,55 @@ export class Client {
       await this.#ask("DELETE", `${KEYS}/${encodeURIComponent(name)}`, asking),
       "keys",
     );
+  }
+
+  /**
+  Registers a phone's key pair as a device key, with the platform's attestation
+  and the operator's password, answered with the device key as registered.
+  */
+  async registerDeviceKey(
+    registering: Registering,
+    asking: Asking = {},
+  ): Promise<Reading<ByKind["device-key"]>> {
+    return answeredAs(
+      await this.#ask("POST", DEVICE_KEYS, asking, registrationBody(registering)),
+      "device-key",
+    );
+  }
+
+  /**
+  The operator's device keys, revoked ones included, without their public halves.
+  */
+  async deviceKeys(asking: Asking = {}): Promise<Reading<ByKind["device-keys"]>> {
+    return answeredAs(
+      await this.#ask("GET", DEVICE_KEYS, asking, undefined, true),
+      "device-keys",
+    );
+  }
+
+  /**
+  A challenge for one device key, good for one mint from this client's token
+  within a minute. Asking again spends the one asked before.
+  */
+  async deviceKeyChallenge(
+    name: string,
+    asking: Asking = {},
+  ): Promise<Reading<ByKind["device-challenge"]>> {
+    return answeredAs(
+      await this.#ask("POST", deviceKeyChallenge(name), asking),
+      "device-challenge",
+    );
+  }
+
+  /**
+  Revokes one device key by its name, spending every challenge standing for it,
+  answered with the device keys as they now stand. The keys it proved stay.
+  */
+  async revokeDeviceKey(
+    name: string,
+    asking: Asking = {},
+  ): Promise<Reading<ByKind["device-keys"]>> {
+    return answeredAs(await this.#ask("DELETE", deviceKey(name), asking), "device-keys");
   }
 
   /**

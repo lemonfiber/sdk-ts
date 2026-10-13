@@ -201,6 +201,29 @@ const claimed = await client.mintClaim({
 if (claimed.ok) showAsCode(claimed.value.data.link, claimed.value.data.lapses);
 ```
 
+### Device keys
+
+A phone holding a key pair in its hardware registers it once as a device key,
+with the platform's attestation and the password, and from then on proves a
+mint with a signature over a challenge the stack issued, in place of the
+password:
+
+```ts
+await client.registerDeviceKey({ name: "pixel", publicKey, attestation, password });
+const challenged = await client.deviceKeyChallenge("pixel");
+if (challenged.ok) {
+  const mint = { name: "den", scope: "read", purpose: "mcp" } as const;
+  const challenge = challenged.value.data.challenge;
+  const text = signedText(mint, challenge, false); // undefined where a part holds a line feed
+  const signature = base64url(await phoneSigns(text)); // ECDSA P-256 over SHA-256, in DER
+  await client.mint({ ...mint, device: "pixel", challenge, signature });
+}
+```
+
+A challenge is good for one mint from the same token within a minute.
+`deviceKeys` lists the device keys and `revokeDeviceKey` revokes one; the keys
+it proved stay, each naming it as `proved_by` in the keys listing.
+
 ## Walking setup
 
 First-run setup is walked one request a step, each answered with where setup
