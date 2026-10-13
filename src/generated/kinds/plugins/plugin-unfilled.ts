@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginProving, PluginUnfilled } from "./plugin-placed.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginProving } from "./plugin-placed.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
@@ -217,6 +217,20 @@ export interface PluginSubstituted {
   plugin: string;
   /** The service chosen. */
   service: string;
+}
+
+/** A capability that would have nothing filling it. */
+export interface PluginUnfilled {
+  /** The core name nothing would fill. */
+  capability: string;
+  /**
+   * The plugin that is filling it now, which is the one going.
+   *
+   * Named rather than left to the reader, because the sentence an operator has to
+   * act on is *this is the only thing filling it* and a capability on its own does
+   * not say that.
+   */
+  filled_by: string;
 }
 
 /**

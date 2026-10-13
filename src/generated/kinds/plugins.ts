@@ -4,4 +4,4 @@
 
 export * from "./plugins/api-kind.js";
 export * from "./plugins/plugin-placed.js";
-export * from "./plugins/plugin-removal.js";
+export * from "./plugins/plugin-unfilled.js";
