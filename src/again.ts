@@ -44,13 +44,13 @@ export async function askedAgain<A extends { status: number }>(
   ending?: AbortSignal,
 ): Promise<A | undefined> {
   const first = await ask();
-  if (!isPassing(first)) return first;
-
-  if (!(await waited(FIRST_WAIT_MS, ending))) return first;
+  if (!isPassing(first) || !(await didWaitOut(FIRST_WAIT_MS, ending))) {
+    return first;
+  }
   const second = await ask();
-  if (!isPassing(second)) return second;
-
-  if (!(await waited(FIRST_WAIT_MS * 2, ending))) return second;
+  if (!isPassing(second) || !(await didWaitOut(FIRST_WAIT_MS * 2, ending))) {
+    return second;
+  }
   return ask();
 }
 
@@ -58,7 +58,7 @@ export async function askedAgain<A extends { status: number }>(
 A pause of this many milliseconds, cut short where `ending` is raised.
 Whether it ran its full length.
 */
-function waited(milliseconds: number, ending?: AbortSignal): Promise<boolean> {
+function didWaitOut(milliseconds: number, ending?: AbortSignal): Promise<boolean> {
   return new Promise((resolve) => {
     if (ending?.aborted === true) {
       resolve(false);
