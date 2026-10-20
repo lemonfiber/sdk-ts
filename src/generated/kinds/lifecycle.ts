@@ -4,6 +4,7 @@
 
 import type { Service } from "../shared/dashboard__lifecycle__status.js";
 import type { ConflictReport } from "../shared/lifecycle__migration.js";
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
 import type { Plan } from "../shared/lifecycle__preview.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 import type { Condition } from "../shared/lifecycle__status.js";
@@ -97,6 +98,11 @@ export interface LifecycleReport {
    * on purpose.
    */
   switched?: Switched | null;
+  /**
+   * The operator's overlay and every service it changes, where there is one: merged
+   * over the project this run starts, and held to nothing lemonfiber vets.
+   */
+  unvetted?: Unvetted | null;
 }
 
 /**

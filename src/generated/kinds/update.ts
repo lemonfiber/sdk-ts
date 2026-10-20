@@ -2,6 +2,7 @@
 // The `update` envelope, and the shapes only `update` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 import type { Notes } from "../shared/update__version.js";
 
@@ -73,6 +74,11 @@ export interface StackUpdateReport {
   stack_edits: StackEdit[];
   /** The one word the run comes to. */
   state: UpdateState;
+  /**
+   * The operator's overlay and every service it changes, where there is one: merged
+   * over the project this run would start, and held to nothing lemonfiber vets.
+   */
+  unvetted?: Unvetted | null;
 }
 
 /** What one service's update came to. */
