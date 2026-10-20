@@ -8,12 +8,24 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
   does: "delete";
   /** The path to remove. */
+  path: string;
+}
+
+/**
+ * Leave the operator's overlay as it is.
+ *
+ * Worked out so the record of a change to it has a reversal to name, and never
+ * carried out: lemonfiber does not write the operator's own file.
+ */
+export interface ActionLeave {
+  does: "leave";
+  /** The overlay. */
   path: string;
 }
 

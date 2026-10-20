@@ -2,6 +2,8 @@
 // The `settings` envelope, and the shapes only `settings` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
+
 /** Whose a setting or a secret is. */
 export type Owner = OwnerCore | OwnerNamespace;
 
@@ -99,4 +101,9 @@ export interface SettingsReport {
   secrets: SecretRead[];
   /** Every setting, in name order. */
   settings: SettingRead[];
+  /**
+   * The operator's overlay and every service it changes, where there is one: merged
+   * over the project this run would start, and held to nothing lemonfiber vets.
+   */
+  unvetted?: Unvetted | null;
 }

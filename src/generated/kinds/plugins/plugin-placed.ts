@@ -175,22 +175,13 @@ export interface PluginInstalled {
    * against, named with its fingerprint; empty where nothing signed it.
    */
   signed?: string;
+  /**
+   * The digest of the plugin's tree it was installed from, `sha256:<hex>`; empty
+   * where the tree could not be read whole, or the record predates it.
+   */
+  tree?: string;
   /** The plugin's own content version, as it stood when it was installed. */
   version: string;
-}
-
-/** One answer a plugin's adapter gave outside a contract it speaks. */
-export interface PluginNonconforming {
-  /** When it answered so, as RFC 3339. */
-  at: string;
-  /** The capability it was asked as. */
-  capability: string;
-  /** The operation it was asked. */
-  operation: string;
-  /** The plugin whose adapter answered. */
-  plugin: string;
-  /** What was outside the contract. */
-  why: string;
 }
 
 /** One value a recipe could carry to one destination, as the operator agrees to it. */
