@@ -184,6 +184,20 @@ export interface PluginInstalled {
   version: string;
 }
 
+/** One answer a plugin's adapter gave outside a contract it speaks. */
+export interface PluginNonconforming {
+  /** When it answered so, as RFC 3339. */
+  at: string;
+  /** The capability it was asked as. */
+  capability: string;
+  /** The operation it was asked. */
+  operation: string;
+  /** The plugin whose adapter answered. */
+  plugin: string;
+  /** What was outside the contract. */
+  why: string;
+}
+
 /** One value a recipe could carry to one destination, as the operator agrees to it. */
 export interface PluginPair {
   /**
@@ -263,13 +277,8 @@ export interface PluginPlaced {
   /** The API it answers the stack's other services in, where it names one. */
   native?: string | null;
   /**
-   * The stack's own networks it joins beside the default one, because a stack service
-   * it stands in for is on them.
-   *
-   * Settled at install from the stack it was installed beside and written down, so
-   * the container lemonfiber writes for it stays a function of this record alone.
-   * Defaulted for a record written before this was kept, which reads as joining none
-   * and staying on the default network.
+   * Networks an older record named for it. Nothing reads them: each service's place on
+   * the networks is derived with the project, and a record written now holds none.
    */
   networks?: string[];
   /**
