@@ -8,6 +8,7 @@ import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js
 import type { Plan } from "../shared/lifecycle__preview.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 import type { Condition } from "../shared/lifecycle__status.js";
+import type { MoveOffered } from "../shared/lifecycle__update.js";
 
 /** The envelope carrying `lifecycle`. */
 export interface LifecycleEnvelope {
@@ -46,6 +47,11 @@ export interface LifecycleReport {
    * leave the reason somewhere a reader finds later.
    */
   held?: string | null;
+  /**
+   * Each part this release installs as a plugin that the stack still runs as its own
+   * service: a move in place on offer, named by every start and taken by none.
+   */
+  moves?: MoveOffered[];
   /**
    * The offer a restart answers: the services it would restart, named so that a
    * restart carrying it back is carried out against those services or refused.

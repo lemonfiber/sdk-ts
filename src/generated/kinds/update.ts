@@ -4,6 +4,7 @@
 
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
+import type { MoveOffered } from "../shared/lifecycle__update.js";
 import type { Notes } from "../shared/update__version.js";
 
 /** How one service's update ended. */
@@ -54,6 +55,11 @@ export interface StackUpdateReport {
    * tell whether the thing they have been waiting for is among them.
    */
   in_flight: string[];
+  /**
+   * Each part this release installs as a plugin that the stack still runs as its own
+   * service: a move in place on offer, which an update never takes.
+   */
+  moves?: MoveOffered[];
   /**
    * The offer this answers: every step, from the release each service stands on to
    * the one it would move to, named so that an update carrying it back takes those
