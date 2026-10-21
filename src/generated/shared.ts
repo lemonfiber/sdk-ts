@@ -34,6 +34,7 @@ export * from "./shared/lifecycle__preview.js";
 export * from "./shared/lifecycle__preview__status.js";
 export * from "./shared/lifecycle__quality__reset__update.js";
 export * from "./shared/lifecycle__status.js";
+export * from "./shared/lifecycle__update.js";
 export * from "./shared/music__quality.js";
 export * from "./shared/music__upgrade.js";
 export * from "./shared/news__news-items.js";
