@@ -8,13 +8,25 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
   does: "delete";
   /** The path to remove. */
   path: string;
+}
+
+/**
+ * Keep the copy of a volume where it is: the volume was never changed, so nothing
+ * is put back.
+ */
+export interface ActionKeepCopy {
+  does: "keep-copy";
+  /** Where the copy is. */
+  to: string;
+  /** The volume it was copied from. */
+  volume: string;
 }
 
 /**
@@ -27,6 +39,19 @@ export interface ActionLeave {
   does: "leave";
   /** The overlay. */
   path: string;
+}
+
+/**
+ * Move a service's state back to where it was.
+ *
+ * Only where nothing has taken its old place, and only from where it was moved to.
+ */
+export interface ActionMoveBack {
+  does: "move-back";
+  /** Where it goes back to. */
+  from: string;
+  /** Where it is now. */
+  to: string;
 }
 
 /**

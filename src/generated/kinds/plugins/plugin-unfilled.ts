@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginInstall, PluginInstalled, PluginProving } from "./plugin-placed.js";
+import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginProving } from "./plugin-placed.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__update.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
@@ -94,20 +94,6 @@ export interface PluginInstalls {
    * every other run's report would otherwise be as large as the one run that updates.
    */
   update?: PluginUpdate | null;
-}
-
-/** One answer a plugin's adapter gave outside a contract it speaks. */
-export interface PluginNonconforming {
-  /** When it answered so, as RFC 3339. */
-  at: string;
-  /** The capability it was asked as. */
-  capability: string;
-  /** The operation it was asked. */
-  operation: string;
-  /** The plugin whose adapter answered. */
-  plugin: string;
-  /** What was outside the contract. */
-  why: string;
 }
 
 /** What taking a plugin off the machine came to, or would come to. */

@@ -29,6 +29,6 @@ export interface BesideReport {
   rehearsed: boolean;
   /** Where the act stands. */
   stance: Stance;
-  /** Where the Compose file that says so was written. */
+  /** The settings file the moves were recorded in. */
   written?: string | null;
 }

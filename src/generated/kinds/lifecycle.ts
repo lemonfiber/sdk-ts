@@ -99,6 +99,12 @@ export interface LifecycleReport {
   /** The exit status, absent for a rehearsal or a signalled process. */
   status?: number | null;
   /**
+   * Every network the engine holds for the project that the project no longer
+   * declares, by the engine's name: disconnected and taken away before a start, or
+   * named and left by a rehearsal. Empty for every other action.
+   */
+  swept?: string[];
+  /**
    * What narrowing moved, where the command was a switch. Absent for every
    * other action, which is what tells a reader that nothing was left running
    * on purpose.
