@@ -2,7 +2,7 @@
 // The `update` envelope, and the shapes only `update` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 import type { MoveOffered } from "../shared/lifecycle__update.js";
 import type { Notes } from "../shared/update__version.js";

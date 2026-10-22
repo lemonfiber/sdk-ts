@@ -2,6 +2,7 @@
 // The `substitution` envelope, and the shapes only `substitution` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Unfilled } from "../shared/substitution__wiring.js";
 
 /** One service standing in for another, worked out before anything is written. */
@@ -71,4 +72,9 @@ export interface SubstitutionReport {
   rehearsed: boolean;
   /** The change itself, and what it would leave with nothing filling it. */
   substitution: Substitution;
+  /**
+   * The operator's overlay and every service it changes, where there is one: merged
+   * over the project this choice would write, and held to nothing lemonfiber vets.
+   */
+  unvetted?: Unvetted | null;
 }

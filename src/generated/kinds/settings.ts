@@ -2,7 +2,7 @@
 // The `settings` envelope, and the shapes only `settings` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__update.js";
+import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 
 /** Whose a setting or a secret is. */
 export type Owner = OwnerCore | OwnerNamespace;

@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `lifecycle`, `plugins`, `settings` and `update` all carry.
+// The shapes `lifecycle`, `plugins`, `settings`, `substitution` and `update` all carry.
 // Regenerate with `npm run contract:generate`.
 
 /** The operator's own overlay, named because nothing in it was held to the model. */
