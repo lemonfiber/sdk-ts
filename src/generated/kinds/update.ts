@@ -20,6 +20,18 @@ export type Ending = "updated" | "not-fetched" | "not-started" | "not-reached";
  */
 export type Jump = "major" | "minor" | "patch" | "untellable";
 
+/** A move in place this run took, or tried to take and could not. */
+export interface StackMoveTaken {
+  /** The plugin the bundle installs. */
+  plugin: string;
+  /** The stack's own service it took, or would have taken, the place of. */
+  service: string;
+  /** Whether the plugin now runs in the service's place. */
+  taken: boolean;
+  /** Why it was not taken, where it was not. */
+  why?: string | null;
+}
+
 /** What updating the stack would change, or what a run of it came to. */
 export interface StackUpdateReport {
   /** What became of each service the run reached, in the order it reached them. */
@@ -55,9 +67,11 @@ export interface StackUpdateReport {
    * tell whether the thing they have been waiting for is among them.
    */
   in_flight: string[];
+  /** Each move in place this run took, or tried to take and could not, with why. */
+  moved?: StackMoveTaken[];
   /**
    * Each part this release installs as a plugin that the stack still runs as its own
-   * service: a move in place on offer, which an update never takes.
+   * service after this run: a move in place on offer, which a confirmed update takes.
    */
   moves?: MoveOffered[];
   /**
