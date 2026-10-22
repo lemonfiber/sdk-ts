@@ -231,10 +231,9 @@ export interface PluginPair {
 /** One service of an installed plugin, as it was placed. */
 export interface PluginPlaced {
   /**
-   * The adapter lemonfiber reaches it through, where the plugin named one.
-   *
-   * Defaulted for a record written before this was kept, which reads as naming
-   * none: a service operated generically, as it was when installed.
+   * The adapter of lemonfiber's its manifest names, which only a part the bundle
+   * assembles is reached through. A record read from the register holds none, whatever
+   * an older one carried: an installed plugin is reached over the contracts it speaks.
    */
   api?: Api | null;
   /** Every capability it asks for. */
