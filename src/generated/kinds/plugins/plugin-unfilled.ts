@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginInstall, PluginInstalled, PluginNonconforming, PluginProving } from "./plugin-placed.js";
-import type { Unvetted } from "../../shared/lifecycle__plugins__settings__update.js";
+import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 
 /**
