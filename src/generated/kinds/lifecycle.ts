@@ -59,6 +59,11 @@ export interface LifecycleReport {
    */
   offer?: string | null;
   /**
+   * Why the pass service is left out of the project a start writes, where the stream
+   * guard is filled and it is. Absent for every other action.
+   */
+  passing?: string | null;
+  /**
    * What the named forms came to: the profiles, the services they hold, and
    * what the configuration left out.
    *
