@@ -184,20 +184,6 @@ export interface PluginInstalled {
   version: string;
 }
 
-/** One answer a plugin's adapter gave outside a contract it speaks. */
-export interface PluginNonconforming {
-  /** When it answered so, as RFC 3339. */
-  at: string;
-  /** The capability it was asked as. */
-  capability: string;
-  /** The operation it was asked. */
-  operation: string;
-  /** The plugin whose adapter answered. */
-  plugin: string;
-  /** What was outside the contract. */
-  why: string;
-}
-
 /** One value a recipe could carry to one destination, as the operator agrees to it. */
 export interface PluginPair {
   /**
@@ -249,8 +235,8 @@ export interface PluginPlaced {
    */
   config_path: string;
   /**
-   * What the plugin says it does for the operator, which is what its dashboard entry
-   * says beside it.
+   * The line its dashboard entry shows beside it: the one its wiring names, or what
+   * the plugin says it does for the operator.
    */
   description?: string;
   /** The digest that fixes what runs. */
@@ -259,6 +245,12 @@ export interface PluginPlaced {
   fields?: ServiceFields;
   /** The service of the same plugin it stands in front of, as an adapter. */
   fronts?: string | null;
+  /** The path it answers over HTTP to say it is up, where its health is asked that way. */
+  health?: string | null;
+  /** Whether its wiring hid it from the dashboard. */
+  hidden?: boolean;
+  /** The icon its dashboard entry shows, where its wiring names one. */
+  icon?: string | null;
   /** The registry path, carrying no pin of its own. */
   image: string;
   /** The port it answers on inside the stack's network, where it declared one. */
