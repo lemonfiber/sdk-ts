@@ -7,6 +7,16 @@ import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugi
 import type { Code, Problem, ProblemState, ProblemStep } from "./doctor__error__plugins.js";
 import type { Remedy } from "./doctor__error__plugins__repair.js";
 
+/** What checking a finding disturbs, and the narrowing a diagnosis runs it under. */
+export interface Disruptive {
+  /** The whole seconds the disturbance is bounded to, where the stack bounds it. */
+  bounded?: number | null;
+  /** What checking it disturbs, in the stack's words. */
+  disturbs: string;
+  /** The check or group a `diagnose` action takes as `only` to run it. */
+  only: string;
+}
+
 /**
  * The family a check belongs to, so a run can be narrowed to one of them.
  *
@@ -120,6 +130,11 @@ export interface Finding {
   caused_by?: string | null;
   /** A stable identifier for the thing checked, such as `vpn.egress-match`. */
   check: string;
+  /**
+   * What checking it disturbs, where the read left it unverified because checking it
+   * disturbs something, and how a diagnosis is asked to run it.
+   */
+  disruptive?: Disruptive | null;
   /**
    * When the stack first saw this check wrong since it last saw it right, in whole
    * seconds since the epoch.
