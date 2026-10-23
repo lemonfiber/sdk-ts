@@ -38,11 +38,23 @@ export interface QualityEnvelope {
   kind: "quality";
 }
 
+/** What a quality choice may be made from, each in the plain terms the command takes it in. */
+export interface QualityOffered {
+  /** Every format music may take, least to most demanding. */
+  formats: string[];
+  /** Every kind of media a choice may be made for apart from everything at once. */
+  media_types: string[];
+  /** Every resolution preset, least to most demanding. */
+  presets: string[];
+}
+
 /**
  * The operator's quality choice, what each preset means, and what the command
  * did with it.
  */
 export interface QualityReport {
+  /** What a choice changes, in the stack's words; present where this answers one. */
+  changes?: string | null;
   /** The global choice first, then each media type set apart from it. */
   choices: PresetChoice[];
   /**
@@ -59,6 +71,8 @@ export interface QualityReport {
    * forced into their shape.
    */
   music?: MusicChoice | null;
+  /** What a choice may be made from. */
+  offered: QualityOffered;
   /**
    * The hand-edited config a reapply replaced — or, rehearsed, would replace — with
    * the diff of what goes against what lands in its place.

@@ -42,6 +42,8 @@ export interface HouseholdRemoval {
   requests: number;
   /** How far it got. */
   revoked: Revoked;
+  /** What removing them does to their watch history, in the stack's words. */
+  "watch-history": string;
 }
 
 /** The envelope carrying `removal`. */

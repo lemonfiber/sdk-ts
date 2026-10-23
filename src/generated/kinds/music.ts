@@ -24,6 +24,8 @@ export interface MusicEnvelope {
  * still recorded first, so it is remembered even when the service cannot be reached.
  */
 export interface MusicReport {
+  /** What the choice changes, in the stack's words. */
+  changes: string;
   /** The format chosen, what it means, and what it costs. */
   choice: MusicChoice;
   /** Whether the choice was recorded, or only rehearsed. */
