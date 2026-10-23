@@ -15,7 +15,7 @@ import type { Condition } from "../shared/lifecycle__status.js";
  * a phrase carried here instead would be a phrase every later surface had to
  * parse back into the fact it came from.
  */
-export type Awaiting = "downloads";
+export type Awaiting = "downloads" | "images";
 
 /**
  * What acting on this stack would take away, one answer per way of acting.
@@ -33,6 +33,8 @@ export type Awaiting = "downloads";
  * a read a surface would skip, and then it would estimate.
  */
 export interface Disturbances {
+  /** Fetching a form's images. */
+  fetching: TakesAway;
   /** Restarting services. */
   restarting: TakesAway;
   /** Bringing services up, whether a whole form or named services inside one. */
