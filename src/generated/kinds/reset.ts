@@ -20,6 +20,8 @@ export interface ResetEnvelope {
 export interface ResetReport {
   /** Whether the reset was carried out, or only previewed pending confirmation. */
   confirmed: boolean;
+  /** The name of this reading, which the reset takes as its yes. */
+  offer: string;
   /**
    * Whether this was a rehearsal: what would have happened, with none of it done.
    *

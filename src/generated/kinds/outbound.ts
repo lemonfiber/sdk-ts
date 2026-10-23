@@ -38,12 +38,27 @@ export interface Elsewhere {
   service: string;
 }
 
-/** Everything that leaves this machine: lemonfiber's own requests, and the stack's. */
+/**
+ * Everything that leaves this machine: lemonfiber's own requests, those it makes on an
+ * installed plugin's behalf, and the stack's.
+ */
 export interface Leaving {
+  /** Every request lemonfiber makes on an installed plugin's behalf. */
+  on_behalf: OnBehalf[];
   /** Every request lemonfiber makes on its own account, in a fixed order. */
   ours: Outbound[];
   /** The requests made by services this stack runs, attributed to them. */
   theirs: Elsewhere[];
+}
+
+/** A request lemonfiber makes on an installed plugin's behalf, attributed to it. */
+export interface OnBehalf {
+  /** Where it goes, as the plugin declared it. */
+  destination: string;
+  /** The plugin that declared it, by its id. */
+  plugin: string;
+  /** Why it may be made. */
+  purpose: string;
 }
 
 /** One request lemonfiber makes, where it goes, and what refusing it costs. */
