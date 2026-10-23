@@ -2,8 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReached, PluginRequest, PluginShape, ServiceFields } from "./api-kind.js";
-import type { StepCame } from "../../shared/doctor__error__plugins.js";
+import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest } from "./api-kind.js";
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
@@ -92,36 +91,6 @@ export interface PluginInstalled {
   tree?: string;
   /** The plugin's own content version, as it stood when it was installed. */
   version: string;
-}
-
-/** One value a recipe could carry to one destination, as the operator agrees to it. */
-export interface PluginPair {
-  /**
-   * What approving this pair is written as, on the command line and over the web,
-   * where it carries the value to a host outside the stack or carries a release.
-   * Absent on any other pair to a service in this stack, which takes nothing off the
-   * machine or away from the service it came from, and asks for no approval.
-   */
-  approval?: string;
-  /**
-   * The service in this stack the released value was read from, where the pair
-   * releases it. Absent on every other pair.
-   */
-  from?: string;
-  /**
-   * Whose value it is, as its input or the step that captures it says; empty where
-   * neither does.
-   */
-  origin: string;
-  /**
-   * Why the value is carried away from the service it was read from, in the manifest's
-   * own sentence, where the pair releases it. Absent on every other pair.
-   */
-  release?: string;
-  /** Where it may be carried, by the name the manifest gives it. */
-  to: string;
-  /** What the value is called within the recipe. */
-  value: string;
 }
 
 /** One service of an installed plugin, as it was placed. */
@@ -243,30 +212,35 @@ export interface PluginProving {
   why: string;
 }
 
-/** One recipe, as an operator agrees to what it does. */
-export interface PluginRecipe {
-  /** The recipe's id within the plugin. */
-  id: string;
-  /** Every value it could carry, and where to. */
-  pairs: PluginPair[];
-  /** Every call, in the order the recipe makes them. */
-  steps: PluginStep[];
-  /** What it accomplishes, in one line. */
-  title: string;
-  /** Why it is worth running. */
-  why: string;
-}
+/**
+ * How an installed service is reached, where it is reached at all.
+ *
+ * The tier is the arm, so the label a tier earns lives only in the arm entitled to
+ * one. Only a household service is proxied — the bundled policy is that an admin
+ * surface does not get a name on the household network — and a record able to carry
+ * a loopback service with a hostname would be a record able to describe the thing
+ * that policy exists to prevent.
+ *
+ * **The group is on both arms, and that is not an oversight.** Only the proxy is
+ * the household tier's alone; the bundled dashboard carries an entry for an
+ * operator surface too, with the address it links to rendered from the tier — nine
+ * of the shipped stack's own entries point at this machine. A record that kept the
+ * group for the wider tier alone would leave a loopback service off the panel its
+ * bundled neighbours are on.
+ *
+ * A tier and never an address, either way: lemonfiber renders one from the other
+ * exactly as it does for a bundled service, so the two-tier policy stays a property
+ * of the system rather than a request a plugin made.
+ */
+export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
 
-/** What one recipe came to. */
-export interface PluginRecipeRan {
-  /** Whether every step it made came to what it should. */
-  held: boolean;
-  /** The recipe's id. */
-  recipe: string;
-  /** Every step it declares, in order, with what each came to. */
-  steps: PluginStepRan[];
-  /** Why it did not, where it did not. */
-  why?: string | null;
+/** From this machine and nowhere else. No route, and no label to route to. */
+export interface PluginReachedLoopback {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The port the service listens on. */
+  port: number;
+  tier: "loopback";
 }
 
 /**
@@ -328,54 +302,8 @@ export interface PluginServiceAdapter {
   service: string;
 }
 
-/** One call a recipe makes, in the order it makes them. */
-export interface PluginStep {
-  /**
-   * The adapter the destination is reached through, or nothing where it is a name
-   * outside the stack, which no adapter of lemonfiber's speaks to.
-   */
-  adapter?: PluginStepAdapter | null;
-  /** The step's id within its recipe. */
-  id: string;
-  /** The HTTP method it calls with. */
-  method: string;
-  /** The path it calls. */
-  path: string;
-  /**
-   * Where it calls: a service of this stack's or the plugin's own, or a name outside
-   * both, as the manifest wrote it. Never a resolved address.
-   */
-  to: string;
-}
-
-/** The adapter a call reaches its destination through. */
-export interface PluginStepAdapter {
-  /** Which of lemonfiber's adapters it is. */
-  kind: ApiKind;
-  /** Whose it is, which is lemonfiber's. */
-  owner: PluginAdapterOwner;
-}
-
-/** What one step came to. */
-export interface PluginStepRan {
-  /** What it came to. */
-  came: StepCame;
-  /**
-   * Whether it reached somewhere other than this plugin's own services, which an
-   * install going back cannot undo.
-   */
-  landed: boolean;
-  /** The status its last answer carried, where anything answered. */
-  status?: number | null;
-  /** The step's id. */
-  step: string;
-  /** Where it calls, by the name the manifest gives it. */
-  to: string;
-  /** How many times it was made. */
-  tries: number;
-  /** Why it came to what it did, where that wants saying. */
-  why?: string | null;
-}
+/** A privileged shape lemonfiber writes for a service. */
+export type PluginShape = "egress-guard" | "render";
 
 /** One service taking a privileged shape, as the reading states it. */
 export interface PluginTaking {
@@ -450,6 +378,91 @@ export interface PluginVerification {
    */
   unsettled: PluginChangedCheck[];
 }
+
+/** A value written exactly as declared. */
+export type ServiceConstant = string | number | boolean;
+
+/**
+ * The container fields an install record keeps for a service, beyond those every
+ * record already holds.
+ */
+export interface ServiceFields {
+  /** Whether its configuration directory is read-only. */
+  config_ro?: boolean;
+  /** Its environment. */
+  env?: { [key: string]: ServiceValue };
+  /** Its memory ceiling. */
+  mem_limit_mib?: number | null;
+  /** Its further mounts. */
+  mount?: ServiceMount[];
+  /** The network it runs inside. */
+  network?: ServiceNetwork | null;
+  /** How tightly it is held. */
+  posture?: ServicePosture;
+  /** Its further published ports. */
+  publish?: ServicePublish[];
+  /** Its scratch paths in memory. */
+  tmpfs?: string[];
+  /** Who it runs as, where declared. */
+  user_mode?: ServiceUserMode | null;
+}
+
+/** A further path mounted from the service's own mount tree. */
+export interface ServiceMount {
+  /** The relative path inside the mount tree. */
+  from: string;
+  /** Whether it is mounted read-only. */
+  ro?: boolean;
+  /** The absolute path inside the container. */
+  to: string;
+}
+
+/** The network a service runs inside instead of its own. */
+export interface ServiceNetwork {
+  /** The capability whose filler's network it runs inside. */
+  via: string;
+}
+
+/** How tightly the container is held. */
+export type ServicePosture = "standard" | "confined";
+
+/** A further port a service publishes on its tier. */
+export interface ServicePublish {
+  /** Where it answers inside the container, `port` where absent. */
+  listens?: number | null;
+  /** Where it is published on the host. */
+  port: number;
+}
+
+/** A secret the manifest declares. */
+export interface ServiceSecretOf {
+  /** The declared secret's name. */
+  secret: string;
+}
+
+/** An operator setting, with what is written while none is recorded. */
+export interface ServiceSetting {
+  /** What is written while the operator has recorded no value. */
+  default: ServiceConstant;
+  /** The setting's name. */
+  setting: string;
+}
+
+/** The address of a capability's filler. */
+export interface ServiceUrlOf {
+  /** The medium the filler asked for files. */
+  files?: string | null;
+  /** The upstream's own API, where the ask reaches the upstream an adapter fronts. */
+  native?: string | null;
+  /** The capability asked for. */
+  url_of: string;
+}
+
+/** Who the container runs as. */
+export type ServiceUserMode = "image" | "puid-env" | "uid";
+
+/** One environment variable's value. */
+export type ServiceValue = ServiceConstant | ServiceSetting | ServiceUrlOf | ServiceSecretOf;
 
 /**
  * An ask several services claim and nothing has chosen between, so it reaches

@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginEvidence, PluginOverriding } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginRecipeRan, PluginTaking, PluginVerification, WiringContest } from "./plugin-placed.js";
+import type { PluginChange, PluginDemand, PluginEvidence, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
+import type { PluginInstalled, PluginProving, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -114,6 +114,14 @@ export interface PluginInstalls {
    * part did.
    */
   agreement?: string | null;
+  /**
+   * What asking for one of a plugin's demand recipes came to, or nothing where none
+   * was asked for.
+   *
+   * Boxed for the reason the install is: it carries a whole recipe, and every other
+   * run's report would otherwise be as large as the one run that asks for one.
+   */
+  demand?: PluginDemand | null;
   /**
    * What this run's install came to, or nothing where it only read.
    *
