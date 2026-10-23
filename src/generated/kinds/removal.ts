@@ -25,6 +25,8 @@ export interface HouseholdRemoval {
    * as the operator typed it.
    */
   name: string;
+  /** The name of this reading, which the removal takes as its yes. */
+  offer: string;
   /**
    * Whether this was a rehearsal: what would have happened, with none of it done.
    *

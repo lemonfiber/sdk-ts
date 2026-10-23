@@ -10,6 +10,11 @@ import type { Service } from "../shared/dashboard__lifecycle__status.js";
 
 /** One thing that is wrong, as the expanded summary lists it. */
 export interface Affected {
+  /**
+   * Whether the operator has acknowledged it by declining its fix. It still stands
+   * and is still counted.
+   */
+  acknowledged?: boolean;
   /** The check that raised it. */
   check: string;
   /** What is also wrong because of this, counted with it rather than again. */

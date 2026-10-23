@@ -2,100 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChange, PluginChangedCheck, PluginDeclaration, PluginEvidence, PluginFailingAsDeclared, PluginOverriding, PluginReached, PluginShape, ServiceFields } from "./api-kind.js";
+import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReached, PluginRequest, PluginShape, ServiceFields } from "./api-kind.js";
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
-import type { UndoReversal } from "../../shared/plugins__undo.js";
-import type { Wired } from "../../shared/plugins__wiring.js";
-
-/**
- * What an install came to, and what it took to get there.
- *
- * **The three lists below are stated whether the run wrote anything or not, and that
- * is the whole of what makes a rehearsal worth running.** A rehearsal that reported
- * less than the real run would be a preview of a different operation; one that
- * reported it from code of its own would be a second derivation free to disagree
- * with the one that acts. So they are filled in one place, from the manifest and from
- * the very list of writes the install is carried out from, and the surface says them
- * in whichever tense `recorded` calls for.
- */
-export interface PluginInstall {
-  /**
-   * What those verdicts were reached against, or nothing where none were reached.
-   *
-   * Carried rather than assumed, because the two kinds of evidence are not the
-   * same claim: an author's read asks the recordings a plugin ships, and an
-   * install asks the service running on this machine. The weaker must not be
-   * readable as the stronger, and a reader handed a verdict has nothing else in
-   * the document to tell them apart.
-   */
-  against?: PluginEvidence | null;
-  /**
-   * Every ask its services would make, each with what it would reach and how that
-   * would be settled.
-   */
-  asks: Wired[];
-  /** Every change it makes to the machine, in the order it makes them. */
-  changes: PluginChange[];
-  /**
-   * Every ask of the stack's the install leaves contested that is not contested
-   * now, as it would then stand.
-   *
-   * A plugin's service that claims what the stack asks for is a candidate like any
-   * other, so installing it leaves the ask refused until somebody chooses — which is
-   * a change to what the stack does, and stated with the rest before it happens.
-   */
-  contests: WiringContest[];
-  /**
-   * Every bundled thing the plugin declares it will change.
-   *
-   * The full extent rather than a sample of it: a manifest may change a bundled
-   * setting only through a recipe, and a recipe reaching one no `[[override]]`
-   * names is refused before anything is written.
-   */
-  overrides: PluginOverriding[];
-  /**
-   * Every proof that has to hold before the plugin is installed, and on a run
-   * that asked them, what each came to.
-   */
-  proofs: PluginProving[];
-  /**
-   * Every install recipe the act ran, in order, with what each step came to; an
-   * empty list where none ran, which is every rehearsal and every plugin declaring no
-   * install recipe.
-   *
-   * A recipe that did not hold ends the act with a problem carrying the same account,
-   * so this is the account of recipes that held.
-   */
-  recipes_ran: PluginRecipeRan[];
-  /** Whether it was written down. A rehearsal leaves this false. */
-  recorded: boolean;
-  /**
-   * What putting the install back came to, where something failed and it was.
-   *
-   * The rollback layer's own report rather than a shape of this verb's: what went
-   * back, and what did not with the reason each is still standing. Absent on a run
-   * that had nothing to put back, which is both a rehearsal and an install that
-   * held.
-   */
-  reversed?: UndoReversal | null;
-  /**
-   * Every service taking a privileged shape, with what it is given, each approved
-   * apart from the offer.
-   */
-  taking: PluginTaking[];
-  /**
-   * What the stack's own checks made of the install, or nothing on a run that
-   * asked them nothing.
-   *
-   * The other half of what an install has to establish, and the half a plugin
-   * cannot establish for itself: its proofs say the plugin works, and this says the
-   * stack still does. Absent on a rehearsal, which writes nothing and so has
-   * nothing to hold a reading against.
-   */
-  verified?: PluginVerification | null;
-  /** What the install settled, said whether or not it was written down. */
-  would: PluginInstalled;
-}
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
@@ -157,6 +65,8 @@ export interface PluginInstalled {
    * kept, so a list is always there to read.
    */
   recipes?: PluginRecipe[];
+  /** Every proof it declares that asks one of its services a question. */
+  request_proofs?: PluginRequestProof[];
   /**
    * The commit it was installed at, where it came from a git source.
    *
@@ -357,6 +267,25 @@ export interface PluginRecipeRan {
   steps: PluginStepRan[];
   /** Why it did not, where it did not. */
   why?: string | null;
+}
+
+/**
+ * One proof that asks one of the plugin's services a question, kept so the doctor can ask
+ * it again without the plugin's source.
+ */
+export interface PluginRequestProof {
+  /** What the answer must be. */
+  expect: Expect;
+  /** The proof's id. */
+  proof: string;
+  /** What it asks. */
+  request: PluginRequest;
+  /** The service it asks. */
+  service: string;
+  /** What it establishes, in one line. */
+  title: string;
+  /** Why it is worth asserting. */
+  why: string;
 }
 
 /** A run of the image's own program, as a proof declares it. */
