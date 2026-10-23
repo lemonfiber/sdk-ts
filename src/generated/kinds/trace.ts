@@ -37,6 +37,14 @@ export interface Part {
   title: string;
 }
 
+/** What a search that could tell this trace's stall apart would spend, and what it covers. */
+export interface Searchable {
+  /** What the search covers: the curator's wanted list at the quality in force. */
+  covers: string;
+  /** What the search spends, in the stack's words. */
+  spends: string;
+}
+
 /**
  * How much of one season is actually here, and what is outstanding — the season-level
  * answer, which for a series is the one an operator can act on.
@@ -135,6 +143,12 @@ export interface TraceReport {
    * answer: nobody asked for it.
    */
   matched: boolean;
+  /**
+   * What a search would spend to tell nothing at the quality from nothing at all,
+   * where the trace stopped at `monitored` with that open and a search would spend
+   * something.
+   */
+  searchable?: Searchable | null;
   /** The stages it passed through, in order. */
   stages: TraceStage[];
   /** Why it stopped, where it plainly has — or absent where it is progressing or done. */
