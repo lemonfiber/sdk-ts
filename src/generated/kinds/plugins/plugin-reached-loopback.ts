@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest } from "./api-kind.js";
+import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
@@ -29,6 +30,8 @@ export interface PluginInstalled {
    * the source it was asked about, because that is what it would record.
    */
   from?: string;
+  /** Each credential of another service the operator granted it, as a third-party plugin. */
+  granted?: PluginGrant[];
   /**
    * When it was installed, as the record stamps every change: whole seconds since
    * the epoch.
@@ -180,6 +183,11 @@ export interface PluginPlaced {
   tag: string;
   /** Whether the library is mounted for it. */
   takes_data: boolean;
+  /**
+   * Each field of the `upstream.json` lemonfiber writes for it as an adapter, to the
+   * id of the plugin's secret that field holds.
+   */
+  upstream?: { [key: string]: string };
 }
 
 /** One proof that has to hold before a plugin is reported installed. */

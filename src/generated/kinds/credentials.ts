@@ -5,6 +5,23 @@
 import type { ValueOrigin } from "../shared/config__credentials__doctor__outbound__plugins__wiring__wizard.js";
 
 /**
+ * A credential of another service granted to a third-party plugin, named by the setting it
+ * is held under and never by its value.
+ */
+export interface CredentialGranted {
+  /** When the operator approved it. */
+  at: string;
+  /** The setting the credential is held under, as the inventory names it. */
+  credential: string;
+  /** The capability of the plugin's own it was granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
+  /** The plugin it is granted to. */
+  plugin: string;
+}
+
+/**
  * One credential, described without being disclosed.
  *
  * There is deliberately no value here, and no field a value could be put in later
@@ -75,6 +92,20 @@ export interface CredentialReachUpdated {
   reach: "updated";
 }
 
+/** What revoking one grant came to, or would come to. */
+export interface CredentialRevoked {
+  /** The name this reading goes by, which the revoke takes as its yes. */
+  agreement: string;
+  /** Whether the grant was ended, rather than read or rehearsed. */
+  ended: boolean;
+  /** The grant it ends. */
+  grant: CredentialGranted;
+  /** The plugin's services that read the credential, restarted once it is withdrawn. */
+  restarts: string[];
+  /** Why its services did not restart, where they did not. */
+  unrestarted?: string | null;
+}
+
 /**
  * Where a credential stands, as far as lemonfiber can tell without spending it.
  *
@@ -103,6 +134,8 @@ export interface CredentialsEnvelope {
  * against one.
  */
 export interface Inventory {
+  /** Every credential granted to a third-party plugin. */
+  grants: CredentialGranted[];
   /** Every credential, whether or not it is present. */
   held: CredentialHeld[];
   /** What keeping them in files does and does not protect against. */
@@ -116,6 +149,8 @@ export interface Inventory {
   rehearsed: boolean;
   /** One value, where one was asked for. */
   revealed?: Revealed | null;
+  /** What became of revoking a grant, where one was asked for. */
+  revoked?: CredentialRevoked | null;
   /** What became of a rotation, where one was asked for. */
   rotated?: Rotation | null;
 }

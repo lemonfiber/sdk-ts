@@ -394,7 +394,7 @@ export interface PluginPair {
 }
 
 /** What an install puts at one path. */
-export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets";
+export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets" | "starting" | "upstream";
 
 /** From the household, through the stack's own proxy, at this label. */
 export interface PluginReachedHousehold {
@@ -487,8 +487,12 @@ export interface PluginRequest {
 
 /** One credential a plugin says it will hold, without a value and with no place for one. */
 export interface PluginSecret {
+  /** The capability of the plugin's own that a credential crossing to it is needed to fill. */
+  for?: string | null;
   /** What the value is, within the plugin. */
   id: string;
+  /** Whether lemonfiber made the value at install. */
+  minted?: boolean;
   /** Whose credential it is. */
   of: string;
   /** What holding it is for. */

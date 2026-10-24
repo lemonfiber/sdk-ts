@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRehold | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -71,6 +71,17 @@ export interface ActionReconfigure {
   resource: string;
   /** What to put back, or `None` where it held nothing. */
   value?: string | null;
+}
+
+/** Give a grant back to a plugin, or end one it was given. */
+export interface ActionRegrant {
+  does: "regrant";
+  /** Whether to give it, rather than end it. */
+  give: boolean;
+  /** The grant, by the setting the credential is held under. */
+  grant: PluginGrant;
+  /** The plugin the grant is of. */
+  plugin: string;
 }
 
 /** Put a secret in the secret store back to the value it held. */
@@ -227,6 +238,21 @@ export interface ActionWithdraw {
    * what is there for taking it out to be taking out lemonfiber's own work.
    */
   written: number;
+}
+
+/**
+ * A credential of another service the operator granted a third-party plugin, named by
+ * the setting it is held under and never by its value.
+ */
+export interface PluginGrant {
+  /** When the operator approved it, as the record stamps every change. */
+  at: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it was granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
 }
 
 /** A single reversal, for the surface to carry out. */

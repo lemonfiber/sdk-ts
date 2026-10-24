@@ -30,7 +30,7 @@ export interface Reader {
 }
 
 /** Where a secret's value came from. */
-export type SecretFrom = "operator" | "recipe" | "granted";
+export type SecretFrom = "operator" | "recipe" | "granted" | "minted";
 
 /** One secret, without its value. */
 export interface SecretRead {
