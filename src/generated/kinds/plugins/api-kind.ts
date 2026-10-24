@@ -181,6 +181,8 @@ export interface PluginAsking {
   capability: string;
   /** Whether every service that fills it is reached rather than one. */
   each?: boolean;
+  /** The upstream's own API it talks in, which it reaches in place of the adapter. */
+  native?: string | null;
 }
 
 /**
@@ -395,17 +397,6 @@ export interface PluginPair {
 
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets" | "starting" | "upstream";
-
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {

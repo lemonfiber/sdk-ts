@@ -15,4 +15,6 @@ export interface Unfilled {
   by: string;
   /** What it asked for. */
   capability: string;
+  /** The upstream's own API it asked in, where no upstream filling it declares that API. */
+  native?: string | null;
 }
