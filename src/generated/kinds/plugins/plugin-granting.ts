@@ -5,6 +5,18 @@
 import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
+/** One credential that would cross to a plugin, as the reading states it. */
+export interface PluginGranting {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it would be granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
+}
+
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
   /** Every adapter of lemonfiber's its own services name, each said to be lemonfiber's. */
