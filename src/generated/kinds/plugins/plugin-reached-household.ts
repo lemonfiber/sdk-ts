@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest } from "./api-kind.js";
+import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -241,6 +241,17 @@ export interface PluginProving {
  * of the system rather than a request a plugin made.
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
+
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
 
 /** From this machine and nowhere else. No route, and no label to route to. */
 export interface PluginReachedLoopback {

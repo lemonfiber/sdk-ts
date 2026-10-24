@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginDemand, PluginEvidence, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
+import type { PluginInstalled, PluginProving, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-household.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
