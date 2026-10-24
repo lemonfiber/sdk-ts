@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginDemand, PluginEvidence, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-household.js";
+import type { PluginGranting, PluginInstalled, PluginProving, PluginTaking, PluginVerification, WiringContest } from "./plugin-granting.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -46,6 +46,11 @@ export interface PluginInstall {
    * a change to what the stack does, and stated with the rest before it happens.
    */
   contests: WiringContest[];
+  /**
+   * Every credential of another service that would cross to the plugin, each approved
+   * apart from the offer as its `approval` names it.
+   */
+  granting: PluginGranting[];
   /**
    * Every bundled thing the plugin declares it will change.
    *
