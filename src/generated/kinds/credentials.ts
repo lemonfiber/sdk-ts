@@ -52,7 +52,7 @@ export interface CredentialHeld {
   from: ValueOrigin;
   /** Where the value lives, as a path or a description of one. */
   location: string;
-  /** What it is, in the operator's words — `qBittorrent web UI password`. */
+  /** What it is, in the operator's words — `Jellyfin administrator password`. */
   name: string;
   /** Who produced it. */
   origin: Origin;
@@ -238,7 +238,7 @@ export interface SettledRefused {
  * Its own outcome rather than one of the refusals above, because it is not a
  * refusal: nothing went wrong, and what an operator is being told is what would
  * happen if they ran it again meaning it. Carrying its own three fields rather
- * than one sentence, because "it would rotate the torrent client's password" is not a
+ * than one sentence, because "it would rotate the administrator's password" is not a
  * report — where the value lives is what would be written over, and what is owed
  * afterwards is the half nobody finds out about until a consumer stops working.
  *
