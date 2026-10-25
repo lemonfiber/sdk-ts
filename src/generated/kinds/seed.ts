@@ -148,10 +148,9 @@ export interface SeedStateObserved {
 
 /**
  * Refused by lemonfiber's own policy, carrying the reason a re-run will not
- * resolve — such as two curators pointed at one root folder, or a service that
- * does not serve the API version this build speaks. Either way nothing it
- * names was written, whether it was refused before the write or the write
- * itself found nothing to land in.
+ * resolve — such as two curators pointed at one root folder. Nothing it names
+ * was written, whether it was refused before the write or the write itself
+ * found nothing to land in.
  */
 export interface SeedStateRefused {
   /** Why it was refused, in lemonfiber's own words. */
