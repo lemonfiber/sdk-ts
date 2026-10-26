@@ -410,6 +410,12 @@ export interface PluginVerification {
   unsettled: PluginChangedCheck[];
 }
 
+/**
+ * What a recording gives a service in the operator's place: a constant reaching no third
+ * party, or, written `"minted"`, a value made for that run alone.
+ */
+export type RecordedWith = string | number | boolean;
+
 /** A value written exactly as declared. */
 export type ServiceConstant = string | number | boolean;
 
@@ -475,6 +481,11 @@ export interface ServiceSecretOf {
 export interface ServiceSetting {
   /** What is written while the operator has recorded no value. */
   default: ServiceConstant;
+  /**
+   * What a recording gives the service in the operator's place, where only the
+   * operator holds the value and the service needs one to start.
+   */
+  recorded_with?: RecordedWith | null;
   /** The setting's name. */
   setting: string;
 }
