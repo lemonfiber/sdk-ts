@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginReachedLoopback, PluginRecipe, PluginRequest } from "./api-kind.js";
+import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -234,6 +234,15 @@ export interface PluginProving {
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
 
+/** From this machine and nowhere else. No route, and no label to route to. */
+export interface PluginReachedLoopback {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The port the service listens on. */
+  port: number;
+  tier: "loopback";
+}
+
 /**
  * One proof that asks one of the plugin's services a question, kept so the doctor can ask
  * it again without the plugin's source.
@@ -285,6 +294,19 @@ export interface PluginRunProof {
 
 /** A privileged shape lemonfiber writes for a service. */
 export type PluginShape = "egress-guard" | "render";
+
+/**
+ * An adapter that writes the files of the service it fronts, through that service's
+ * whole configuration directory mounted into it.
+ */
+export interface PluginSharing {
+  /** The adapter. */
+  adapter: string;
+  /** Where that service's configuration directory lands inside the adapter. */
+  at: string;
+  /** The service whose files it writes. */
+  upstream: string;
+}
 
 /** One service taking a privileged shape, as the reading states it. */
 export interface PluginTaking {
@@ -388,6 +410,10 @@ export interface ServiceFields {
   posture?: ServicePosture;
   /** Its further published ports. */
   publish?: ServicePublish[];
+  /** The paths beneath its configuration directory it rebuilds when they are missing. */
+  rebuilt?: string[];
+  /** Where the whole configuration directory of the service it fronts lands in it. */
+  shares_config?: string | null;
   /** Its scratch paths in memory. */
   tmpfs?: string[];
   /** Who it runs as, where declared. */
@@ -438,6 +464,11 @@ export interface ServiceSetting {
   recorded_with?: RecordedWith | null;
   /** The setting's name. */
   setting: string;
+  /**
+   * The variable an earlier release kept its value under in the stack's environment
+   * file.
+   */
+  was?: string | null;
 }
 
 /** The address of a capability's filler. */
