@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
-import type { UnsupportedReport } from "../shared/import__migration__seed__status__stuck.js";
+import type { UnsupportedReport } from "../shared/import__migration.js";
 
 /** The envelope carrying `import`. */
 export interface ImportEnvelope {

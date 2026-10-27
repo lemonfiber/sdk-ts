@@ -6,30 +6,6 @@ import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { DoctorVerdict, Finding } from "../../shared/doctor__plugins.js";
 
 /**
- * How lemonfiber talks to a service when seeding.
- *
- * The same shape on a plugin's service as on the stack's own, which is what lets a
- * plugin name one of these adapters rather than supply one of its own.
- */
-export interface Api {
-  /** Where the credential comes from. */
-  key_source: KeySource;
-  /** Selects the client implementation. */
-  kind: ApiKind;
-  /** The file holding the credential, where one applies. */
-  path?: string | null;
-  /**
-   * The major version of the service's HTTP API — the `/api/vN` path segment.
-   *
-   * Required for the `servarr` shape and read there, because that one shape
-   * spans two versions (Sonarr and Radarr at v3, Lidarr and Prowlarr at v1),
-   * so the version is data rather than a guess from a service's name. Absent
-   * for the other kinds, whose one fixed version their client already knows.
-   */
-  version?: number | null;
-}
-
-/**
  * The API shapes lemonfiber knows how to speak.
  *
  * Four services share the `servarr` shape, which is what makes one client
@@ -162,9 +138,6 @@ export type Expected = boolean | number | string;
  * two of them in one module is a definition nothing can be compiled against.
  */
 export type ExpectedKind = "bool" | "int" | "str" | "list" | "dict";
-
-/** Where a service's credential comes from. */
-export type KeySource = "config-xml" | "config-ini" | "config-json" | "config-yaml" | "api-settings" | "generated" | "none";
 
 /**
  * Whose an adapter is.
@@ -357,6 +330,18 @@ export interface PluginFailingAsDeclared {
   reason: string;
 }
 
+/** One credential that would cross to a plugin, as the reading states it. */
+export interface PluginGranting {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it would be granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
+}
+
 /** One bundled thing a plugin declares it will change. */
 export interface PluginOverriding {
   /** Which bundled setting it changes. */
@@ -397,6 +382,26 @@ export interface PluginPair {
 
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets" | "starting" | "upstream";
+
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
+
+/** From this machine and nowhere else. No route, and no label to route to. */
+export interface PluginReachedLoopback {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The port the service listens on. */
+  port: number;
+  tier: "loopback";
+}
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {

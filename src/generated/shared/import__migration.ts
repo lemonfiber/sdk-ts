@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `import`, `migration`, `seed`, `status` and `stuck` all carry.
+// The shapes `import` and `migration` both carry.
 // Regenerate with `npm run contract:generate`.
 
 /**

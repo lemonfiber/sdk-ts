@@ -3,7 +3,6 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Service, ServiceState } from "../shared/dashboard__lifecycle__status.js";
-import type { UnsupportedReport } from "../shared/import__migration__seed__status__stuck.js";
 import type { Filtered } from "../shared/lifecycle__preview__status.js";
 import type { Condition } from "../shared/lifecycle__status.js";
 
@@ -114,19 +113,6 @@ export interface StatusReport {
    * it.
    */
   undeclared: Undeclared[];
-  /**
-   * Services that are running and operable like any other, and that lemonfiber
-   * cannot offer the features needing to know what they are — each with why.
-   *
-   * Empty for the stack this build ships. It fills in for a stack the operator
-   * maintains, where a declaration can name an API and leave out the part that
-   * makes it addressable: such a service starts, stops and reports its state
-   * exactly as the others do, and every feature that would have spoken to it used
-   * to do nothing and say nothing. Here rather than on the service's own row,
-   * because it is a statement about what this build can do rather than about how
-   * the service is faring.
-   */
-  unsupported?: UnsupportedReport[];
 }
 
 /**
