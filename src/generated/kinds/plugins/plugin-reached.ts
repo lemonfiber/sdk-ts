@@ -2,25 +2,11 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Api, ApiKind, Contribution, Expect, PluginAdapterOwner, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest } from "./api-kind.js";
+import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginReachedLoopback, PluginRecipe, PluginRequest } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
-
-/** One credential that would cross to a plugin, as the reading states it. */
-export interface PluginGranting {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The setting the credential is held under, as the credentials read names it. */
-  credential: string;
-  /** The capability of the plugin's own it would be granted to fill. */
-  for: string;
-  /** The service whose credential it is. */
-  of: string;
-}
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
-  /** Every adapter of lemonfiber's its own services name, each said to be lemonfiber's. */
-  adapters?: PluginServiceAdapter[];
   /**
    * Every row it adds to a register lemonfiber already runs, as the install settled
    * them, so the doctor reads them off this record rather than off the plugin's files.
@@ -110,12 +96,6 @@ export interface PluginInstalled {
 
 /** One service of an installed plugin, as it was placed. */
 export interface PluginPlaced {
-  /**
-   * The adapter of lemonfiber's its manifest names, which only a part the bundle
-   * assembles is reached through. A record read from the register holds none, whatever
-   * an older one carried: an installed plugin is reached over the contracts it speaks.
-   */
-  api?: Api | null;
   /** Every capability it asks for. */
   asks?: PluginAsking[];
   /** What it asks for there, where it says. */
@@ -254,26 +234,6 @@ export interface PluginProving {
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
 
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
-
-/** From this machine and nowhere else. No route, and no label to route to. */
-export interface PluginReachedLoopback {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The port the service listens on. */
-  port: number;
-  tier: "loopback";
-}
-
 /**
  * One proof that asks one of the plugin's services a question, kept so the doctor can ask
  * it again without the plugin's source.
@@ -321,16 +281,6 @@ export interface PluginRunProof {
   title: string;
   /** Why it is worth asserting. */
   why: string;
-}
-
-/** One adapter of lemonfiber's that one of the plugin's own services names. */
-export interface PluginServiceAdapter {
-  /** Which of lemonfiber's adapters it is. */
-  kind: ApiKind;
-  /** Whose it is, which is lemonfiber's. */
-  owner: PluginAdapterOwner;
-  /** The service that names it. */
-  service: string;
 }
 
 /** A privileged shape lemonfiber writes for a service. */

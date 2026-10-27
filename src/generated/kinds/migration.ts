@@ -4,7 +4,7 @@
 
 import type { CarryingReport } from "../shared/adoption__migration.js";
 import type { MovedReport } from "../shared/beside__migration.js";
-import type { UnsupportedReport } from "../shared/import__migration__seed__status__stuck.js";
+import type { UnsupportedReport } from "../shared/import__migration.js";
 import type { ConflictReport } from "../shared/lifecycle__migration.js";
 
 /** What an existing layout costs, where it cannot hold a hardlink. */

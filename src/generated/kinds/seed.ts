@@ -2,8 +2,6 @@
 // The `seed` envelope, and the shapes only `seed` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { UnsupportedReport } from "../shared/import__migration__seed__status__stuck.js";
-
 /**
  * Whether a pass could assess drift — whether it had the record of what lemonfiber
  * last wrote to compare against.
@@ -33,17 +31,6 @@ export interface SeedReport {
    * instruction to run it for real rather than to run it again.
    */
   rehearsed: boolean;
-  /**
-   * Services this pass could not wire because it cannot speak to them, each with
-   * why.
-   *
-   * Not wirings, because nothing was attempted and a wiring says how an attempt
-   * turned out. Not absences either, which is the point: a pass that skipped a
-   * service declaring an API shape this build does not speak and said nothing would
-   * leave the operator who wrote that declaration no way to tell it from a service
-   * lemonfiber had simply forgotten.
-   */
-  unsupported?: UnsupportedReport[];
   /** Every connection attempted, and how each turned out. */
   wirings: Wiring[];
 }
@@ -186,8 +173,8 @@ export interface SeedStateUnmanaged {
 
 /**
  * Something on this machine fills what a service asks for, and nothing lemonfiber
- * does connects the two — the filler names no adapter, or none lemonfiber pairs with
- * what the asker speaks.
+ * does connects the two — the filler names no API of its own, or one lemonfiber pairs
+ * with nothing the asker speaks.
  *
  * Settled, because no run changes it: the stack, or what is installed, has to. Said
  * rather than left out, because a filler nothing reaches and a filler lemonfiber

@@ -2,7 +2,6 @@
 // The `stuck` envelope, and the shapes only `stuck` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { UnsupportedReport } from "../shared/import__migration__seed__status__stuck.js";
 import type { Stage } from "../shared/stuck__trace.js";
 
 /** One stuck item queue health found, named so it links straight to its own trace. */
@@ -37,14 +36,4 @@ export interface StuckReport {
   incomplete: boolean;
   /** The stuck items, each linkable to its trace. */
   items: StuckEntry[];
-  /**
-   * Services whose queue lemonfiber cannot read at all, each with why.
-   *
-   * Apart from [`Self::incomplete`], which is a queue that was asked and would not
-   * answer. This is a queue that was never asked, because the service declares an
-   * API shape this build does not speak or a curator declaration it cannot reach
-   * through — and a reading that dropped those would be as short as an unreadable
-   * queue makes it, without the sentence that says so.
-   */
-  unsupported?: UnsupportedReport[];
 }
