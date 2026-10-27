@@ -394,15 +394,6 @@ export interface PluginReachedHousehold {
   tier: "household";
 }
 
-/** From this machine and nowhere else. No route, and no label to route to. */
-export interface PluginReachedLoopback {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The port the service listens on. */
-  port: number;
-  tier: "loopback";
-}
-
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
   /** The recipe's id within the plugin. */
@@ -491,6 +482,11 @@ export interface PluginSecret {
   minted?: boolean;
   /** Whose credential it is. */
   of: string;
+  /**
+   * The variable an earlier release kept its value under in the stack's environment
+   * file.
+   */
+  was?: string | null;
   /** What holding it is for. */
   why: string;
 }
