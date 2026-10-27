@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -130,6 +130,20 @@ export interface ActionRemove {
   id: string;
   /** The kind of resource. */
   resource: string;
+}
+
+/**
+ * Move a value in the environment file back to the key it was under.
+ *
+ * Only where the key it is under now holds a value and the one it goes back to holds
+ * none.
+ */
+export interface ActionRenameBack {
+  does: "rename-back";
+  /** The key it goes back to. */
+  from: string;
+  /** The key it is under now. */
+  to: string;
 }
 
 /**

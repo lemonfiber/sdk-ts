@@ -52,7 +52,7 @@ export interface CredentialHeld {
   from: ValueOrigin;
   /** Where the value lives, as a path or a description of one. */
   location: string;
-  /** What it is, in the operator's words — `Jellyfin administrator password`. */
+  /** What it is, in the operator's words — `Media server administrator password`. */
   name: string;
   /** Who produced it. */
   origin: Origin;

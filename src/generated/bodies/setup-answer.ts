@@ -33,7 +33,7 @@ export interface Indexer {
  * How the operator wants their existing and downloaded media served, where they
  * want it served at all.
  */
-export type Library = "none" | "jellyfin-docker" | "jellyfin-native";
+export type Library = "none" | "container" | "host";
 
 /**
  * A Usenet provider login the operator supplied, and whether it was proven.
