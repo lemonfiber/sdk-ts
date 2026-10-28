@@ -3,8 +3,9 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-household.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
+import type { Waiting } from "../../shared/plugins__settings__status.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
 
@@ -101,6 +102,8 @@ export interface PluginInstall {
    * nothing to hold a reading against.
    */
   verified?: PluginVerification | null;
+  /** The services held back once the install is made, each with what it waits for. */
+  waiting: Waiting[];
   /** What the install settled, said whether or not it was written down. */
   would: PluginInstalled;
 }
