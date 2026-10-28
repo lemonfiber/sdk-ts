@@ -46,22 +46,28 @@ export interface SecretRead {
   whose: Owner;
 }
 
-/** A change to one setting. */
+/** A change to one or more settings, made in one act. */
 export interface SettingChange {
   /** What this reading names itself, part by part. */
   agreement: string;
   /** Whether it was written. */
   applied: boolean;
-  /** What the change costs, where it costs anything. */
-  consequence?: string | null;
   /** Every service whose entry the change regenerates. */
   regenerates: string[];
   /** Every running service the change restarts. */
   restarts: string[];
-  /** The setting. */
-  setting: string;
+  /** Each setting the act moves, in name order. */
+  settings: SettingMove[];
   /** Why the services it restarts were not restarted, where they were not. */
   unrestarted?: string | null;
+}
+
+/** One setting a change moves. */
+export interface SettingMove {
+  /** What moving it costs, where it costs anything. */
+  consequence?: string | null;
+  /** The setting. */
+  setting: string;
   /** What it is to hold, or nothing where it is cleared. */
   value?: string | null;
   /** What it holds now. */
