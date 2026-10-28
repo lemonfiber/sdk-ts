@@ -109,6 +109,11 @@ export interface PluginPlaced {
    */
   config_path: string;
   /**
+   * The port inside its container it speaks its contracts on, where it declared one
+   * apart from where it listens.
+   */
+  contract?: number | null;
+  /**
    * The line its dashboard entry shows beside it: the one its wiring names, or what
    * the plugin says it does for the operator.
    */
