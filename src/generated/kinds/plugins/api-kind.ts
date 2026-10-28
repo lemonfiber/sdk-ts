@@ -383,17 +383,6 @@ export interface PluginPair {
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets" | "starting" | "upstream";
 
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
-
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
   /** The recipe's id within the plugin. */
@@ -480,6 +469,11 @@ export interface PluginSecret {
   id: string;
   /** Whether lemonfiber made the value at install. */
   minted?: boolean;
+  /**
+   * Whether only the operator holds the value and the service reading it needs one to
+   * start.
+   */
+  needed_to_start?: boolean;
   /** The values of the plugin's settings under which it is asked for and written. */
   needs?: { [key: string]: ServiceConstant[] };
   /** Whose credential it is. */

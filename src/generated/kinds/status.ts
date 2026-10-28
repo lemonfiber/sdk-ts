@@ -5,6 +5,7 @@
 import type { Service, ServiceState } from "../shared/dashboard__lifecycle__status.js";
 import type { Filtered } from "../shared/lifecycle__preview__status.js";
 import type { Condition } from "../shared/lifecycle__status.js";
+import type { Waiting } from "../shared/plugins__settings__status.js";
 
 /**
  * What an operation with no bound on it is waiting for.
@@ -113,6 +114,14 @@ export interface StatusReport {
    * it.
    */
   undeclared: Undeclared[];
+  /**
+   * The services held back until the operator gives what they need to start, each
+   * with what it waits for and never a value.
+   *
+   * Beside the services, as what was filtered is: one that is not there is listed
+   * here and nowhere else, because it is waiting rather than failing to start.
+   */
+  waiting: Waiting[];
 }
 
 /**
