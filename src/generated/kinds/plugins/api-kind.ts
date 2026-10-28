@@ -480,6 +480,8 @@ export interface PluginSecret {
   id: string;
   /** Whether lemonfiber made the value at install. */
   minted?: boolean;
+  /** The values of the plugin's settings under which it is asked for and written. */
+  needs?: { [key: string]: ServiceConstant[] };
   /** Whose credential it is. */
   of: string;
   /**
@@ -539,3 +541,6 @@ export interface PluginStepRan {
   /** Why it came to what it did, where that wants saying. */
   why?: string | null;
 }
+
+/** A value written exactly as declared. */
+export type ServiceConstant = string | number | boolean;

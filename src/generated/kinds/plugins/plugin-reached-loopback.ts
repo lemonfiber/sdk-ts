@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest } from "./api-kind.js";
+import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -393,9 +393,6 @@ export interface PluginVerification {
  */
 export type RecordedWith = string | number | boolean;
 
-/** A value written exactly as declared. */
-export type ServiceConstant = string | number | boolean;
-
 /**
  * The container fields an install record keeps for a service, beyond those every
  * record already holds.
@@ -462,6 +459,10 @@ export interface ServiceSecretOf {
 export interface ServiceSetting {
   /** What is written while the operator has recorded no value. */
   default: ServiceConstant;
+  /** The values of other settings under which it is written. */
+  needs?: { [key: string]: ServiceConstant[] };
+  /** The values its service accepts, where it says. */
+  one_of?: SettingChoice[] | null;
   /**
    * What a recording gives the service in the operator's place, where only the
    * operator holds the value and the service needs one to start.
@@ -491,6 +492,20 @@ export type ServiceUserMode = "image" | "puid-env" | "uid";
 
 /** One environment variable's value. */
 export type ServiceValue = ServiceConstant | ServiceSetting | ServiceUrlOf | ServiceSecretOf;
+
+/** One value a setting accepts. */
+export type SettingChoice = ServiceConstant | SettingChoiceNeeding;
+
+/**
+ * Values that are choices only where the other settings `needs` names hold one of the
+ * values it lists.
+ */
+export interface SettingChoiceNeeding {
+  /** What they are choices under. */
+  needs: { [key: string]: ServiceConstant[] };
+  /** The values. */
+  values: ServiceConstant[];
+}
 
 /**
  * An ask several services claim and nothing has chosen between, so it reaches
