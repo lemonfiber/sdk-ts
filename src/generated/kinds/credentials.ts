@@ -204,6 +204,8 @@ export interface Rotation {
   consumers: Propagation[];
   /** Which credential was to be replaced. */
   credential: string;
+  /** The offer a replacement that takes one answers, where this reading named one. */
+  offer?: string | null;
   /** What became of the replacement. */
   settled: Settled;
 }

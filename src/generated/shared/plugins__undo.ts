@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -228,6 +228,18 @@ export interface ActionRewind {
    * for writing the old text back to be undoing lemonfiber's own work.
    */
   written: number;
+}
+
+/**
+ * Leave the media server's internal certificate as it is.
+ *
+ * Worked out so the record of a replacement has a reversal to name, and never carried
+ * out: the certificate is put back only by replacing it again.
+ */
+export interface ActionUnreplaced {
+  does: "unreplaced";
+  /** The media server's service. */
+  service: string;
 }
 
 /**
