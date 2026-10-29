@@ -67,7 +67,7 @@ export interface SeedSeverityWarning {
 }
 
 /** How one connection turned out after a seed pass. */
-export type SeedState = SeedStateWired | SeedStateAlreadyWired | SeedStateDrifted | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
+export type SeedState = SeedStateWired | SeedStateRestarted | SeedStateAlreadyWired | SeedStateDrifted | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
 
 /**
  * An operator's edit adopted as the accepted state, kept across seeds and
@@ -143,6 +143,16 @@ export interface SeedStateRefused {
   /** Why it was refused, in lemonfiber's own words. */
   reason: string;
   state: "refused";
+}
+
+/**
+ * Written, and in force once `service` started again, as the adapter that took it
+ * answered.
+ */
+export interface SeedStateRestarted {
+  /** The service started again. */
+  service: string;
+  state: "restarted";
 }
 
 /** Prerequisite unavailable; a later run will complete it. */
