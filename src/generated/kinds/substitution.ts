@@ -24,6 +24,13 @@ export interface Substitution {
   now: string;
   /** The setting the change writes. */
   setting: string;
+  /** Each part the change brings back to its form, started again. */
+  starts: string[];
+  /**
+   * Each part the change takes out of its form, stopped with its configuration and
+   * data kept where they are.
+   */
+  stops: string[];
   /** What fills it now, where anything does. */
   was?: string | null;
   /**
@@ -72,9 +79,19 @@ export interface SubstitutionReport {
   rehearsed: boolean;
   /** The change itself, and what it would leave with nothing filling it. */
   substitution: Substitution;
+  /** Each part the change was to stop or start and could not, with why. */
+  unran?: SubstitutionUnran[];
   /**
    * The operator's overlay and every service it changes, where there is one: merged
    * over the project this choice would write, and held to nothing lemonfiber vets.
    */
   unvetted?: Unvetted | null;
+}
+
+/** A part a substitution was to stop or start and could not. */
+export interface SubstitutionUnran {
+  /** Why it was not. */
+  because: string;
+  /** The part's service. */
+  service: string;
 }
