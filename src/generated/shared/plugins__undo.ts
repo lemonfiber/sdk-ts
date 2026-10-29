@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -228,6 +228,15 @@ export interface ActionRewind {
    * for writing the old text back to be undoing lemonfiber's own work.
    */
   written: number;
+}
+
+/** Start a service again, or stop it again. */
+export interface ActionRun {
+  does: "run";
+  /** Whether it is left running. */
+  running: boolean;
+  /** The service. */
+  service: string;
 }
 
 /**
