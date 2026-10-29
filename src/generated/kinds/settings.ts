@@ -4,19 +4,7 @@
 
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../shared/plugins__settings__status.js";
-
-/** One value a setting accepts. */
-export interface Choosable {
-  /**
-   * The values of other settings under which it is a choice: each setting with the
-   * values it has to hold one of, and none where it always is.
-   */
-  needs: { [key: string]: string[] };
-  /** Whether it is a choice now. */
-  open: boolean;
-  /** The value. */
-  value: string;
-}
+import type { Choosable } from "../shared/settings__wizard.js";
 
 /** Whose a setting or a secret is. */
 export type Owner = OwnerCore | OwnerNamespace;

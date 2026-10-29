@@ -3,6 +3,46 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { SettingReport, Validation } from "../shared/config__wizard.js";
+import type { Choosable } from "../shared/settings__wizard.js";
+
+/**
+ * One question the VPN step asks of the service filling `network.egress-guard`.
+ *
+ * Asked in order. A choice offers only the values whose needs the answers before it
+ * meet, and a value or a secret is asked only where its own needs are met.
+ */
+export type GuardQuestion = GuardQuestionChoice | GuardQuestionValue | GuardQuestionSecret;
+
+/** One of a setting's values. */
+export interface GuardQuestionChoice {
+  asks: "choice";
+  /** Every value it accepts, each with what it is a choice under. */
+  choices: Choosable[];
+  /** What it holds where it is left unanswered. */
+  default?: string | null;
+  /** The setting. */
+  setting: string;
+}
+
+/** A secret, entered without being shown. */
+export interface GuardQuestionSecret {
+  asks: "secret";
+  /** The values of settings under which it is asked. */
+  needs: { [key: string]: string[] };
+  /** The name the secret store holds it under. */
+  secret: string;
+  /** What holding it is for. */
+  why: string;
+}
+
+/** A setting's value, which only the operator holds. */
+export interface GuardQuestionValue {
+  asks: "value";
+  /** The values of other settings under which it is asked. */
+  needs: { [key: string]: string[] };
+  /** The setting. */
+  setting: string;
+}
 
 /**
  * Where an in-flight or finished setup stands in its lifecycle.
@@ -53,6 +93,11 @@ export interface WizardReport {
   asks: boolean;
   /** The step the operator is on. */
   at: WizardStep;
+  /**
+   * What the VPN step asks of the egress guard where one carries the torrents, in the
+   * order it asks it: empty where nothing fills the guard or it asks nothing.
+   */
+  guard: GuardQuestion[];
   /**
    * Whether this machine has setup left to do. False once configuration
    * exists and nothing is part-way through, which is when a surface directs
