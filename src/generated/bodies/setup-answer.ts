@@ -129,6 +129,17 @@ export interface SetupAnswerBodyVpn {
   vpn: SetupVpn;
 }
 
+/** The egress guard's settings and secrets, as setup's VPN step was answered with them. */
+export interface SetupGuarded {
+  /**
+   * Each of its secrets given, by the name the secret store holds it under, with its
+   * value.
+   */
+  secrets?: { [key: string]: string };
+  /** Each of its settings given, by name, with its value. */
+  settings?: { [key: string]: string };
+}
+
 /**
  * Whether a VPN carries the torrent traffic, and where none does, that the
  * operator was told what that costs and chose to go on.
@@ -138,5 +149,19 @@ export interface SetupAnswerBodyVpn {
  * operator has to make knowingly — and one a later run must not quietly re-ask,
  * nor a diagnosis mistake for an oversight. Recording the acceptance is what
  * makes it theirs.
+ *
+ * Read from what a progress file written before the egress guard's questions holds
+ * too: the bare `"carrying"` reads as carrying with nothing given.
  */
-export type SetupVpn = "carrying" | "absent";
+export type SetupVpn = SetupVpnCarrying | SetupVpnSaid;
+
+/** Carrying, with what was given. */
+export type SetupVpnCarrying = SetupVpnCarryingCarrying;
+
+/** A VPN carries it, through the egress guard set up with what was given. */
+export interface SetupVpnCarryingCarrying {
+  carrying: SetupGuarded;
+}
+
+/** Either answer, in a word. */
+export type SetupVpnSaid = "carrying" | "absent";

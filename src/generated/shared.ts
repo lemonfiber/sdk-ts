@@ -41,6 +41,7 @@ export * from "./shared/news__news-items.js";
 export * from "./shared/plugins__settings__status.js";
 export * from "./shared/plugins__undo.js";
 export * from "./shared/plugins__wiring.js";
+export * from "./shared/settings__wizard.js";
 export * from "./shared/space__stop-seeding.js";
 export * from "./shared/step__walkthrough.js";
 export * from "./shared/stuck__trace.js";
