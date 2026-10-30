@@ -161,10 +161,9 @@ export interface PluginAsking {
 /**
  * One change installing a plugin makes to the machine.
  *
- * A path and what goes at it, which is the whole of what an install touches. Two of
- * them can be edits to a file the stack already has — the proxy's and the
- * dashboard's — and those say so, as a region, so an operator reading the account
- * knows which of their files the install writes into.
+ * A path and what goes at it, which is the whole of what an install touches. None is an
+ * edit to a file the stack already has: a plugin's route is the proxy's routing table
+ * and its dashboard entry the panel list's, each applied over its contract.
  */
 export interface PluginChange {
   /**
@@ -381,7 +380,7 @@ export interface PluginPair {
 }
 
 /** What an install puts at one path. */
-export type PluginPuts = "directory" | "document" | "key" | "region" | "secrets" | "starting" | "upstream";
+export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
