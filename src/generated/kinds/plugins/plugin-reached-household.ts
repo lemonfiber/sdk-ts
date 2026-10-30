@@ -404,11 +404,23 @@ export interface PluginVerification {
  */
 export type RecordedWith = string | number | boolean;
 
+/** The certificate lemonfiber makes for a service before it first starts. */
+export interface ServiceCertificate {
+  /** Where the certificate is written, relative to the configuration directory. */
+  certificate: string;
+  /** Where its private key is written, relative to the configuration directory. */
+  key: string;
+  /** The host names it is made out to. */
+  names: string[];
+}
+
 /**
  * The container fields an install record keeps for a service, beyond those every
  * record already holds.
  */
 export interface ServiceFields {
+  /** The certificate lemonfiber makes for it, where it declares one. */
+  certificate?: ServiceCertificate | null;
   /** Whether its configuration directory is read-only. */
   config_ro?: boolean;
   /** Its environment. */
