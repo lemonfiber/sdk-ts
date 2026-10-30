@@ -85,6 +85,13 @@ export interface PluginInstall {
    * held.
    */
   reversed?: UndoReversal | null;
+  /**
+   * What asking the egress guard among its services to hold its control server to the
+   * credential its adapter was handed came to, where it was more than held at once:
+   * the guard restarted to take it up, or why it did not. Absent where none of its
+   * services is a guard speaking its contract, and on every rehearsal.
+   */
+  secured?: string | null;
   /** Every adapter that writes the files of the service it fronts. */
   sharing: PluginSharing[];
   /**
