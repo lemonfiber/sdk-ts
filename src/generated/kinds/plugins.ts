@@ -4,4 +4,4 @@
 
 export * from "./plugins/api-kind.js";
 export * from "./plugins/plugin-reached-household.js";
-export * from "./plugins/plugin-install.js";
+export * from "./plugins/plugin-verification.js";

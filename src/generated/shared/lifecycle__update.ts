@@ -7,6 +7,12 @@
  * would take the place of.
  */
 export interface MoveOffered {
+  /**
+   * The part's adapter that writes the configuration the service reads, where one does:
+   * it runs only once the move is taken, so until then the service starts without what
+   * that configuration holds, the credentials it reaches other services with included.
+   */
+  configured_by?: string | null;
   /** The plugin the bundle installs. */
   plugin: string;
   /**

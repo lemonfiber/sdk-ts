@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-household.js";
+import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking } from "./plugin-reached-household.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
@@ -421,6 +421,27 @@ export interface PluginUpdate {
   went_back: UndoReversal;
 }
 
+/** What the stack's own checks made of an install. */
+export interface PluginVerification {
+  /**
+   * Every check this install made worse.
+   *
+   * Empty is the answer an install needs, and it is the common one. What is here
+   * is what takes the install back.
+   */
+  broke: PluginChangedCheck[];
+  /**
+   * Every check nothing could be concluded about across the two readings.
+   *
+   * Reported and never acted on. *I could not tell* is not *it is still broken*,
+   * and an install reversed because a check could not reach a provider it also
+   * could not reach an hour ago would be punishing a plugin for the weather. It is
+   * said out loud rather than dropped, because the assurance an operator thought
+   * they had is the thing that went.
+   */
+  unsettled: PluginChangedCheck[];
+}
+
 /** The envelope carrying `plugins`. */
 export interface PluginsEnvelope {
   api_version: number;
@@ -428,4 +449,17 @@ export interface PluginsEnvelope {
   host?: string | null;
   job?: string | null;
   kind: "plugins";
+}
+
+/**
+ * An ask several services claim and nothing has chosen between, so it reaches
+ * nothing.
+ */
+export interface WiringContest {
+  /** The service that asked. */
+  by: string;
+  /** What it asked for. */
+  capability: string;
+  /** Every claimant, named — a plugin's with the plugin beside it. */
+  claimants: string[];
 }
