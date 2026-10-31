@@ -466,6 +466,11 @@ export interface PluginSecret {
   for?: string | null;
   /** What the value is, within the plugin. */
   id: string;
+  /**
+   * How many seconds a code the operator enters to claim a part holds, where it is
+   * one: asked for only to claim the part, and held no longer than the claim or this.
+   */
+  lapses_s?: number | null;
   /** Whether lemonfiber made the value at install. */
   minted?: boolean;
   /**

@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest, ServiceConstant } from "./api-kind.js";
+import type { Contribution, Expect, PluginAsking, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest, ServiceConstant } from "./api-kind.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -339,7 +339,7 @@ export interface PluginTaking {
 }
 
 /** What one assertion came to, whatever answered it. */
-export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared;
+export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared | PluginVerdictOpen;
 
 /** It does not, in every way it does not. */
 export interface PluginVerdictFailed {
@@ -365,6 +365,20 @@ export interface PluginVerdictFailingAsDeclared {
   outcome: "failing-as-declared";
 }
 
+/**
+ * The part an adapter claims is left open, because nobody entered the code its claim
+ * takes: whoever reaches it first can claim it.
+ *
+ * Apart from passed and from failed, and counted as neither: the adapter holds to its
+ * contract, and the part is not yet the household's. Only ever reached against the
+ * live service, by an install's or a re-proof's claim.
+ */
+export interface PluginVerdictOpen {
+  outcome: "open";
+  /** The part, and the code its claim takes. */
+  why: string;
+}
+
 /** The recording answers what the binding declares. */
 export interface PluginVerdictPassed {
   outcome: "passed";
@@ -375,27 +389,6 @@ export interface PluginVerdictUnproven {
   outcome: "unproven";
   /** What stopped it being run. */
   why: string;
-}
-
-/** What the stack's own checks made of an install. */
-export interface PluginVerification {
-  /**
-   * Every check this install made worse.
-   *
-   * Empty is the answer an install needs, and it is the common one. What is here
-   * is what takes the install back.
-   */
-  broke: PluginChangedCheck[];
-  /**
-   * Every check nothing could be concluded about across the two readings.
-   *
-   * Reported and never acted on. *I could not tell* is not *it is still broken*,
-   * and an install reversed because a check could not reach a provider it also
-   * could not reach an hour ago would be punishing a plugin for the weather. It is
-   * said out loud rather than dropped, because the assurance an operator thought
-   * they had is the thing that went.
-   */
-  unsettled: PluginChangedCheck[];
 }
 
 /**
@@ -455,10 +448,15 @@ export interface ServiceMount {
   to: string;
 }
 
-/** The network a service runs inside instead of its own. */
+/** The network a service runs inside instead of its own: its filler's, or a fence's. */
 export interface ServiceNetwork {
+  /**
+   * Whether it fetches whatever address it is handed, and so runs inside a fence that
+   * refuses every private address.
+   */
+  fenced?: boolean;
   /** The capability whose filler's network it runs inside. */
-  via: string;
+  via?: string | null;
 }
 
 /** How tightly the container is held. */
@@ -528,17 +526,4 @@ export interface SettingChoiceNeeding {
   needs: { [key: string]: ServiceConstant[] };
   /** The values. */
   values: ServiceConstant[];
-}
-
-/**
- * An ask several services claim and nothing has chosen between, so it reaches
- * nothing.
- */
-export interface WiringContest {
-  /** The service that asked. */
-  by: string;
-  /** What it asked for. */
-  capability: string;
-  /** Every claimant, named — a plugin's with the plugin beside it. */
-  claimants: string[];
 }
