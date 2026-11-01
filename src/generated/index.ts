@@ -1,6 +1,6 @@
 // Generated from the lemonfiber contract. Do not edit.
 // The lemonfiber contract's types.
-// Source: 792d5728a30b6a3d6fdf6d43a8afdbe0c5b9151b  ·  api_version 1
+// Source: c5cfd8e1e8dc54be43ac4ce979c87811ecd09e10  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 export * from "./bodies.js";

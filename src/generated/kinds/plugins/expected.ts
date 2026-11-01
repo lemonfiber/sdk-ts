@@ -468,6 +468,8 @@ export interface PluginRequest {
 
 /** One credential a plugin says it will hold, without a value and with no place for one. */
 export interface PluginSecret {
+  /** Whether a recipe of the plugin's captures the value. */
+  captured?: boolean;
   /** The capability of the plugin's own that a credential crossing to it is needed to fill. */
   for?: string | null;
   /** What the value is, within the plugin. */
