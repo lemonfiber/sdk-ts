@@ -436,7 +436,15 @@ export interface ServiceFields {
   /** Its scratch paths in memory. */
   tmpfs?: string[];
   /** Who it runs as, where declared. */
-  user_mode?: ServiceUserMode | null;
+  user_mode?: ServiceUserModeWritten | null;
+}
+
+/** The two variables an image reads the operator's uid and gid from. */
+export interface ServiceIdVariables {
+  /** The variable it reads the operator's gid from. */
+  gid_env: string;
+  /** The variable it reads the operator's uid from. */
+  uid_env: string;
 }
 
 /** A further path mounted from the service's own mount tree. */
@@ -509,8 +517,14 @@ export interface ServiceUrlOf {
   url_of: string;
 }
 
-/** Who the container runs as. */
+/** A user mode a manifest writes by name. */
 export type ServiceUserMode = "image" | "puid-env" | "uid";
+
+/**
+ * How a manifest writes [`UserMode`]: a mode by name, or the variables an image reads
+ * the operator's ids from.
+ */
+export type ServiceUserModeWritten = ServiceUserMode | ServiceIdVariables;
 
 /** One environment variable's value. */
 export type ServiceValue = ServiceConstant | ServiceSetting | ServiceUrlOf | ServiceSecretOf;
@@ -527,17 +541,4 @@ export interface SettingChoiceNeeding {
   needs: { [key: string]: ServiceConstant[] };
   /** The values. */
   values: ServiceConstant[];
-}
-
-/**
- * An ask several services claim and nothing has chosen between, so it reaches
- * nothing.
- */
-export interface WiringContest {
-  /** The service that asked. */
-  by: string;
-  /** What it asked for. */
-  capability: string;
-  /** Every claimant, named — a plugin's with the plugin beside it. */
-  claimants: string[];
 }
