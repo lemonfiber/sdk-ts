@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest, ServiceConstant } from "./api-kind.js";
+import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginReachedLoopback, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -239,26 +239,6 @@ export interface PluginProving {
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
 
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
-
-/** From this machine and nowhere else. No route, and no label to route to. */
-export interface PluginReachedLoopback {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The port the service listens on. */
-  port: number;
-  tier: "loopback";
-}
-
 /**
  * One proof that asks one of the plugin's services a question, kept so the doctor can ask
  * it again without the plugin's source.
@@ -339,7 +319,7 @@ export interface PluginTaking {
 }
 
 /** What one assertion came to, whatever answered it. */
-export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared;
+export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared | PluginVerdictOpen;
 
 /** It does not, in every way it does not. */
 export interface PluginVerdictFailed {
@@ -363,6 +343,20 @@ export interface PluginVerdictFailingAsDeclared {
   /** Each declared recording, what it held, and why it is one the assertion fails on. */
   declared: PluginFailingAsDeclared[];
   outcome: "failing-as-declared";
+}
+
+/**
+ * The part an adapter claims is left open, because nobody entered the code its claim
+ * takes: whoever reaches it first can claim it.
+ *
+ * Apart from passed and from failed, and counted as neither: the adapter holds to its
+ * contract, and the part is not yet the household's. Only ever reached against the
+ * live service, by an install's or a re-proof's claim.
+ */
+export interface PluginVerdictOpen {
+  outcome: "open";
+  /** The part, and the code its claim takes. */
+  why: string;
 }
 
 /** The recording answers what the binding declares. */
@@ -455,10 +449,15 @@ export interface ServiceMount {
   to: string;
 }
 
-/** The network a service runs inside instead of its own. */
+/** The network a service runs inside instead of its own: its filler's, or a fence's. */
 export interface ServiceNetwork {
+  /**
+   * Whether it fetches whatever address it is handed, and so runs inside a fence that
+   * refuses every private address.
+   */
+  fenced?: boolean;
   /** The capability whose filler's network it runs inside. */
-  via: string;
+  via?: string | null;
 }
 
 /** How tightly the container is held. */

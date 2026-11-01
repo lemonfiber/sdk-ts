@@ -6,17 +6,6 @@ import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { DoctorVerdict, Finding } from "../../shared/doctor__plugins.js";
 
 /**
- * The API shapes lemonfiber knows how to speak.
- *
- * Four services share the `servarr` shape, which is what makes one client
- * enough for them. Bindery is its own kind deliberately: it is not a Servarr
- * application and Prowlarr's app sync does not reach it. Bazarr is its own for
- * the neighbouring reason: it is told about the \*arrs rather than being one of
- * them, in a form body a client of the shared shape could not send.
- */
-export type ApiKind = "servarr" | "sabnzbd" | "qbittorrent" | "seerr" | "bindery" | "jellyfin" | "bazarr" | "audiobookshelf" | "nzbhydra2";
-
-/**
  * A row in a register lemonfiber already runs.
  *
  * The fields beyond `at` and `id` are the row its point declares, and the point is
@@ -138,15 +127,6 @@ export type Expected = boolean | number | string;
  * two of them in one module is a definition nothing can be compiled against.
  */
 export type ExpectedKind = "bool" | "int" | "str" | "list" | "dict";
-
-/**
- * Whose an adapter is.
- *
- * One answer, and the field exists so that the answer is on the wire: an adapter a
- * plugin could bring would be code a stranger wrote running with lemonfiber's
- * authority, which nothing here can load.
- */
-export type PluginAdapterOwner = "lemonfiber";
 
 /** One capability a placed service asks for. */
 export interface PluginAsking {
@@ -382,6 +362,26 @@ export interface PluginPair {
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
 
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
+
+/** From this machine and nowhere else. No route, and no label to route to. */
+export interface PluginReachedLoopback {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The port the service listens on. */
+  port: number;
+  tier: "loopback";
+}
+
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
   /** The recipe's id within the plugin. */
@@ -458,6 +458,12 @@ export interface PluginRequest {
   method: string;
   /** The path on the service being asked. */
   path: string;
+  /**
+   * Each place in the answer whose value the service makes afresh on every run, a JSON
+   * Pointer into its JSON, to the RE2 shape the whole value there is held to wherever a
+   * recording is taken again. Never sent.
+   */
+  varies?: { [key: string]: string };
 }
 
 /** One credential a plugin says it will hold, without a value and with no place for one. */
@@ -466,6 +472,11 @@ export interface PluginSecret {
   for?: string | null;
   /** What the value is, within the plugin. */
   id: string;
+  /**
+   * How many seconds a code the operator enters to claim a part holds, where it is
+   * one: asked for only to claim the part, and held no longer than the claim or this.
+   */
+  lapses_s?: number | null;
   /** Whether lemonfiber made the value at install. */
   minted?: boolean;
   /**
@@ -488,15 +499,15 @@ export interface PluginSecret {
 
 /** One call a recipe makes, in the order it makes them. */
 export interface PluginStep {
-  /**
-   * The adapter the destination is reached through, or nothing where it is a name
-   * outside the stack, which no adapter of lemonfiber's speaks to.
-   */
-  adapter?: PluginStepAdapter | null;
   /** The step's id within its recipe. */
   id: string;
   /** The HTTP method it calls with. */
   method: string;
+  /**
+   * The API the destination is reached in, as the installed plugin providing it
+   * declares it, or nothing where none does or it is a name outside the stack.
+   */
+  native?: string | null;
   /** The path it calls. */
   path: string;
   /**
@@ -504,14 +515,6 @@ export interface PluginStep {
    * both, as the manifest wrote it. Never a resolved address.
    */
   to: string;
-}
-
-/** The adapter a call reaches its destination through. */
-export interface PluginStepAdapter {
-  /** Which of lemonfiber's adapters it is. */
-  kind: ApiKind;
-  /** Whose it is, which is lemonfiber's. */
-  owner: PluginAdapterOwner;
 }
 
 /** What one step came to. */
