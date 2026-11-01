@@ -28,6 +28,11 @@ export interface LifecycleReport {
   /** What those services amount to, as one word. */
   condition?: Condition | null;
   /**
+   * Why the addresses of the engine's host were not asked or not kept for a fence, where
+   * a service is fenced and they were not. Absent for every other action.
+   */
+  fencing?: string | null;
+  /**
    * What starting the stack did about the VPN's forwarded port, where it did
    * anything. Absent in the ordinary case — the client was already on it, or
    * there is no tunnel to forward through — and a sentence where the client was
@@ -122,6 +127,11 @@ export interface LifecycleReport {
    * on purpose.
    */
   switched?: Switched | null;
+  /**
+   * Each fenced service a start holds back because no fence can be written for it, in
+   * words naming it and why. Empty for every other action.
+   */
+  unfenced?: string[];
   /**
    * The operator's overlay and every service it changes, where there is one: merged
    * over the project this run starts, and held to nothing lemonfiber vets.

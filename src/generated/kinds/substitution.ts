@@ -5,12 +5,30 @@
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Unfilled } from "../shared/substitution__wiring.js";
 
+/**
+ * One kind of thing the part a substitution stops holds, and the replacement does not
+ * receive.
+ */
+export interface LeftBehind {
+  /** The capability whose contract declares it held. */
+  capability: string;
+  /** The kind, by its stable id. */
+  kind: string;
+  /** The words the rehearsal names it in. */
+  said: string;
+}
+
 /** One service standing in for another, worked out before anything is written. */
 export interface Substitution {
   /** Every service that asks for it, so the reach of the change is visible. */
   asked_by: string[];
   /** The capability whose filler changes. */
   capability: string;
+  /**
+   * Each kind of thing the part it stops holds that its replacement is not carried,
+   * read from what each contract declares its filler holds.
+   */
+  leaves_behind: LeftBehind[];
   /**
    * What this would leave with nothing filling it, each naming what asked.
    *

@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./api-kind.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-household.js";
+import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./expected.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
