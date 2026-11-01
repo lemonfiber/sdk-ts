@@ -2,6 +2,7 @@
 // The `settings` envelope, and the shapes only `settings` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../shared/plugins__settings__status.js";
 import type { Choosable } from "../shared/settings__wizard.js";
@@ -119,6 +120,12 @@ export interface SettingsEnvelope {
 export interface SettingsReport {
   /** The change asked for, where one was. */
   change?: SettingChange | null;
+  /**
+   * Each of lemonfiber's own guards this act moved onto its plugin after its own
+   * change, or on a reading would move, for good and with no yes of its own; one it
+   * could not move stays on offer and says why.
+   */
+  guards?: StackMoveTaken[];
   /** Whether this was a rehearsal. */
   rehearsed: boolean;
   /** Every secret a service's environment names, in name order, never with its value. */

@@ -2,6 +2,7 @@
 // The `update` envelope, and the shapes only `update` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 import type { MoveOffered } from "../shared/lifecycle__update.js";
@@ -19,18 +20,6 @@ export type Ending = "updated" | "not-fetched" | "not-started" | "not-reached";
  * work that does not.
  */
 export type Jump = "major" | "minor" | "patch" | "untellable";
-
-/** A move in place this run took, or tried to take and could not. */
-export interface StackMoveTaken {
-  /** The plugin the bundle installs. */
-  plugin: string;
-  /** The stack's own service it took, or would have taken, the place of. */
-  service: string;
-  /** Whether the plugin now runs in the service's place. */
-  taken: boolean;
-  /** Why it was not taken, where it was not. */
-  why?: string | null;
-}
 
 /** What updating the stack would change, or what a run of it came to. */
 export interface StackUpdateReport {
@@ -51,6 +40,12 @@ export interface StackUpdateReport {
   changes: UpdateChange[];
   /** Whether the steps were agreed to, or only shown. */
   confirmed: boolean;
+  /**
+   * Each of lemonfiber's own guards this run moved onto its plugin, or would move once
+   * confirmed, for good and with no yes of its own; one it could not move stays on
+   * offer and says why.
+   */
+  guards?: StackMoveTaken[];
   /**
    * Why the stack is not as the run found it, where it is not.
    *
