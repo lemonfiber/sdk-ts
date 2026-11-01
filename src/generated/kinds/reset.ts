@@ -2,6 +2,7 @@
 // The `reset` envelope, and the shapes only `reset` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
 
 /** The envelope carrying `reset`. */
@@ -20,6 +21,12 @@ export interface ResetEnvelope {
 export interface ResetReport {
   /** Whether the reset was carried out, or only previewed pending confirmation. */
   confirmed: boolean;
+  /**
+   * Each of lemonfiber's own guards this act moved onto its plugin after its own
+   * change, or on a reading would move, for good and with no yes of its own; one it
+   * could not move stays on offer and says why.
+   */
+  guards?: StackMoveTaken[];
   /** The name of this reading, which the reset takes as its yes. */
   offer: string;
   /**

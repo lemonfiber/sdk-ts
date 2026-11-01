@@ -4,6 +4,7 @@
 
 import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./expected.js";
 import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification } from "./plugin-reached.js";
+import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
@@ -139,6 +140,12 @@ export interface PluginInstalls {
    * run's report would otherwise be as large as the one run that asks for one.
    */
   demand?: PluginDemand | null;
+  /**
+   * Each of lemonfiber's own guards this run moved onto its plugin after its own
+   * change, or on a reading would move, for good and with no yes of its own; one it
+   * could not move stays on offer and says why.
+   */
+  guards?: StackMoveTaken[];
   /**
    * What this run's install came to, or nothing where it only read.
    *

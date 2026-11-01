@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionRun | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -236,6 +236,18 @@ export interface ActionRun {
   /** Whether it is left running. */
   running: boolean;
   /** The service. */
+  service: string;
+}
+
+/**
+ * Leave one of lemonfiber's own guards on its plugin.
+ *
+ * Worked out so the record of the move has a reversal to name, and never carried out:
+ * the release that moved the guard moves it for good.
+ */
+export interface ActionUnmoved {
+  does: "unmoved";
+  /** The stack's own service the guard's plugin took the place of. */
   service: string;
 }
 

@@ -4,6 +4,7 @@
 
 import type { Service } from "../shared/dashboard__lifecycle__status.js";
 import type { ConflictReport } from "../shared/lifecycle__migration.js";
+import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Plan } from "../shared/lifecycle__preview.js";
 import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
@@ -39,6 +40,12 @@ export interface LifecycleReport {
    * moved, or could not be.
    */
   forwarding?: string | null;
+  /**
+   * Each of lemonfiber's own guards this act moved onto its plugin, or on a rehearsal
+   * would move, for good and with no yes of its own; one it could not move stays on
+   * offer and says why.
+   */
+  guards?: StackMoveTaken[];
   /**
    * Why nothing was run, where a start declined to run anything.
    *
