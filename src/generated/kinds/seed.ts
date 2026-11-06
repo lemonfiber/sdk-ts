@@ -67,7 +67,7 @@ export interface SeedSeverityWarning {
 }
 
 /** How one connection turned out after a seed pass. */
-export type SeedState = SeedStateWired | SeedStateRestarted | SeedStateAlreadyWired | SeedStateDrifted | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
+export type SeedState = SeedStateWired | SeedStateRestarted | SeedStateAlreadyWired | SeedStateDrifted | SeedStateKept | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
 
 /**
  * An operator's edit adopted as the accepted state, kept across seeds and
@@ -114,6 +114,17 @@ export interface SeedStateFailed {
   /** What the service said. */
   detail: string;
   state: "failed";
+}
+
+/**
+ * A hand edit to the configuration a preset is held through, left in place: a run
+ * holding the curators to their preset does not write over it, and only
+ * `lemonfiber quality reapply` puts the preset back.
+ */
+export interface SeedStateKept {
+  /** The edited configuration, as its upstream's configuration directory names it. */
+  path: string;
+  state: "kept";
 }
 
 /**

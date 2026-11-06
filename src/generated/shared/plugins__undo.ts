@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -163,6 +163,25 @@ export interface ActionRepin {
   does: "repin";
   /** The version to put back. */
   previous: string;
+}
+
+/**
+ * Write the value the secret store holds of a plugin's minted secret back into a
+ * starting file, where the shipped file puts the placeholder.
+ *
+ * Only where it still holds what was written. One written since is somebody else's
+ * work now, and is left exactly as it is.
+ */
+export interface ActionReseed {
+  does: "reseed";
+  /** The file to write back. */
+  path: string;
+  /** The plugin the secret is of. */
+  plugin: string;
+  /** The secret, by its id. */
+  secret: string;
+  /** The checksum of what lemonfiber wrote, which has to still be what is there. */
+  written: number;
 }
 
 /** Put a setting in the settings store back to what it held. */

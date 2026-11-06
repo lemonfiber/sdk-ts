@@ -2,6 +2,8 @@
 // The shapes `substitution` and `wiring` both carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { Apis } from "./plugins__substitution__wiring.js";
+
 /**
  * A capability something asks for and nothing fills, and what asked for it.
  *
@@ -15,6 +17,11 @@ export interface Unfilled {
   by: string;
   /** What it asked for. */
   capability: string;
-  /** The upstream's own API it asked in, where no upstream filling it declares that API. */
-  native?: string | null;
+  /** The medium it asked a filler of, where nothing filling it files that medium. */
+  files?: string | null;
+  /**
+   * The upstream's own API it asked in, or every API it asked in any of, where no
+   * upstream filling it declares one of them.
+   */
+  native?: Apis | null;
 }

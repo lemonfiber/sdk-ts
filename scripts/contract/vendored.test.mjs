@@ -98,6 +98,61 @@ describe("reading either layout", () => {
   });
 });
 
+describe("reading a list in a file for each part", () => {
+  const REFUSALS = {
+    "ADMIT-4": { name: "NOT_ADMITTED", status: 403, description: "Raised." },
+    "ASK-1": { name: "NOT_ASKED", status: 400, description: "Raised." },
+  };
+  const admitted = { "ADMIT-4": REFUSALS["ADMIT-4"] };
+  const parted = async (refusals, files) => {
+    const root = await held(artefact({ a: kind({ type: "string" }) }, { refusals: admitted }));
+    const index = { api_version: 1, kinds: { a: "kinds/a.json" }, refusals };
+    await laidOut(root, new Map([["index.json", index], ...files]));
+    return root;
+  };
+
+  it("gathers the parts into the one list the single file holds", async () => {
+    const files = directory(artefact({ a: kind({ type: "string" }) }, { refusals: REFUSALS }));
+    expect(files.get("index.json").refusals).toEqual({ ADMIT: "refusals/ADMIT.json", ASK: "refusals/ASK.json" });
+    const { artefact: whole } = await readArtefact(await held(artefact({ a: kind({ type: "string" }) }, { refusals: REFUSALS })));
+    expect(whole.refusals).toEqual(REFUSALS);
+  });
+
+  it("reads a list in one file, as an older core writes it", async () => {
+    const root = await parted("refusals.json", [["refusals.json", admitted]]);
+    const { artefact: whole } = await readArtefact(root);
+    expect(whole.refusals).toEqual(admitted);
+  });
+
+  it.each([
+    [
+      "one code in two parts",
+      { ADMIT: "refusals/ADMIT.json", AGAIN: "refusals/ADMIT.json" },
+      [],
+      "contract/web-api/refusals/ADMIT.json lists `ADMIT-4`, which another file of the refusals lists too.",
+    ],
+    [
+      "a part outside the directory",
+      { ADMIT: "../ADMIT.json" },
+      [],
+      'contract/web-api/index.json names "../ADMIT.json", which is not a file in contract/web-api/.',
+    ],
+    [
+      "a part that is not an object",
+      { ADMIT: "refusals/ADMIT.json" },
+      [["refusals/ADMIT.json", []]],
+      "contract/web-api/refusals/ADMIT.json holds the refusals of `ADMIT`, and it is not a JSON object.",
+    ],
+  ])("refuses %s, naming the file", async (_what, refusals, files, said) => {
+    expect(await refused(await parted(refusals, files))).toBe(said);
+  });
+
+  it("refuses a part it cannot read, naming it", async () => {
+    const root = await parted({ ADMIT: "refusals/ADMIT.json", GONE: "refusals/GONE.json" }, []);
+    expect(await refused(root)).toMatch(/^contract\/web-api\/refusals\/GONE\.json could not be read: /);
+  });
+});
+
 describe("refusing a reference that resolves to no definition", () => {
   /** A directory whose kind `a` refers from `data` with `reference`, beside the definitions given. */
   const referring = async (reference, definitions = {}) => {

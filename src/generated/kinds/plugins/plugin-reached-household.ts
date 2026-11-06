@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginFailingAsDeclared, PluginReachedHousehold, PluginReachedLoopback, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { Contribution, Expect, PluginAsking, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
 
 /** One plugin's install, as it was decided. */
@@ -239,6 +239,26 @@ export interface PluginProving {
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
 
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
+
+/** From this machine and nowhere else. No route, and no label to route to. */
+export interface PluginReachedLoopback {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The port the service listens on. */
+  port: number;
+  tier: "loopback";
+}
+
 /**
  * One proof that asks one of the plugin's services a question, kept so the doctor can ask
  * it again without the plugin's source.
@@ -312,6 +332,8 @@ export interface PluginTaking {
   devices: string[];
   /** The kernel capabilities it is given. */
   grants: string[];
+  /** Whether it is added to the group owning those devices on the engine's host. */
+  grouped: boolean;
   /** The service taking it. */
   service: string;
   /** The shape it takes. */
@@ -369,27 +391,6 @@ export interface PluginVerdictUnproven {
   outcome: "unproven";
   /** What stopped it being run. */
   why: string;
-}
-
-/** What the stack's own checks made of an install. */
-export interface PluginVerification {
-  /**
-   * Every check this install made worse.
-   *
-   * Empty is the answer an install needs, and it is the common one. What is here
-   * is what takes the install back.
-   */
-  broke: PluginChangedCheck[];
-  /**
-   * Every check nothing could be concluded about across the two readings.
-   *
-   * Reported and never acted on. *I could not tell* is not *it is still broken*,
-   * and an install reversed because a check could not reach a provider it also
-   * could not reach an hour ago would be punishing a plugin for the weather. It is
-   * said out loud rather than dropped, because the assurance an operator thought
-   * they had is the thing that went.
-   */
-  unsettled: PluginChangedCheck[];
 }
 
 /**

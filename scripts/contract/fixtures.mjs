@@ -5,6 +5,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { expect } from "vitest";
+import { isRecord } from "./artefact.mjs";
 import { ArtefactRefused, OUT, generate, run } from "./index.mjs";
 
 export const CODE = { description: "A stable identifier.\n\nNever recycled.", type: "string" };
@@ -73,10 +74,21 @@ export function directory(whole) {
       laid(index.bodies[route], schema);
     }
   }
-  for (const [list, file] of [["key_callable", "key-callable.json"], ["reads", "reads.json"], ["refusals", "refusals.json"]]) {
+  for (const [list, file] of [["key_callable", "key-callable.json"], ["reads", "reads.json"]]) {
     if (!Object.hasOwn(whole, list)) continue;
     index[list] = file;
     files.set(file, whole[list]);
+  }
+  if (isRecord(whole.refusals)) {
+    index.refusals = {};
+    for (const [code, entry] of Object.entries(whole.refusals)) {
+      const family = code.slice(0, code.lastIndexOf("-"));
+      index.refusals[family] = `refusals/${family}.json`;
+      files.set(index.refusals[family], { ...files.get(index.refusals[family]), [code]: entry });
+    }
+  } else if (Object.hasOwn(whole, "refusals")) {
+    index.refusals = "refusals.json";
+    files.set("refusals.json", whole.refusals);
   }
   files.set("index.json", index);
   return files;

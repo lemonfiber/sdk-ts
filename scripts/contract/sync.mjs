@@ -133,7 +133,9 @@ function takenDirectory(directory, revision) {
   const named = [
     ...Object.values(index.kinds),
     ...(isRecord(index[BODIES]) ? Object.values(index[BODIES]) : []),
-    ...LISTS.filter((list) => Object.hasOwn(index, list)).map((list) => index[list]),
+    ...LISTS.filter((list) => Object.hasOwn(index, list)).flatMap((list) =>
+      isRecord(index[list]) ? Object.values(index[list]) : [index[list]],
+    ),
   ];
   const missing = named.filter((file) => !staysPut(file) || !directory.has(file));
   if (missing.length > 0) {

@@ -60,6 +60,12 @@ export interface LifecycleReport {
    */
   held?: string | null;
   /**
+   * Each part this build carries that the forms hold and this machine has never run,
+   * offered as an install from the build, offline, before anything of the forms is
+   * written or started; answered by [`Self::offer`].
+   */
+  installing?: UpInstallOffered[];
+  /**
    * Each part this release installs as a plugin that the stack still runs as its own
    * service: a move in place on offer, named by every start and taken by none.
    */
@@ -97,6 +103,11 @@ export interface LifecycleReport {
   port_conflicts?: ConflictReport[];
   /** Whether this was a rehearsal. */
   rehearsed: boolean;
+  /**
+   * Why the group owning the render devices of the engine's host was not asked or not
+   * kept, where a service takes `render` and it was not. Absent for every other action.
+   */
+  rendering?: string | null;
   /**
    * What asking the egress guard to hold its control server to the credential its
    * adapter was handed came to, where it was more than held at once: the guard
@@ -140,6 +151,11 @@ export interface LifecycleReport {
    */
   unfenced?: string[];
   /**
+   * Each service taking `render` a start writes without the host's render devices, in
+   * words naming it. Empty for every other action.
+   */
+  unrendered?: string[];
+  /**
    * The operator's overlay and every service it changes, where there is one: merged
    * over the project this run starts, and held to nothing lemonfiber vets.
    */
@@ -172,4 +188,17 @@ export interface Switched {
   stop_command?: string[] | null;
   /** Stopped, because the new closure does not hold them. */
   stopped: string[];
+}
+
+/**
+ * An install of a part the bundle installs that a start offers, by the plugin and the
+ * offer its install reads as.
+ */
+export interface UpInstallOffered {
+  /** The name its install's offer goes by, where it could be read. */
+  offer?: string | null;
+  /** The plugin the bundle installs, in place of the stack's own service of its id. */
+  plugin: string;
+  /** Why its install could not be read, where it could not. */
+  why?: string | null;
 }

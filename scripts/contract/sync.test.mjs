@@ -161,6 +161,18 @@ describe("taking the contract", () => {
     );
   });
 
+  it("takes the file of each part of a list, and refuses an index naming a part the directory does not hold", () => {
+    const files = directoryOf(WHOLE);
+    files.set("web-api/index.json", { ...files.get("web-api/index.json"), refusals: { ADMIT: "refusals/ADMIT.json" } });
+    files.set("web-api/refusals/ADMIT.json", {});
+    expect([...taken(untarred(revisionOf(files)), REVISION).files.keys()]).toContain("web-api/refusals/ADMIT.json");
+    files.set("web-api/index.json", {
+      ...files.get("web-api/index.json"),
+      refusals: { ADMIT: "refusals/ADMIT.json", ASK: "refusals/ASK.json" },
+    });
+    expect(refusal(revisionOf(files))).toBe(`contract/web-api/index.json at ${REVISION} names files it does not hold: "refusals/ASK.json".`);
+  });
+
   it("refuses a file in the directory that is not JSON, and a path leaving it", () => {
     const files = directoryOf(WHOLE);
     files.set("web-api/defs/Broken.json", "{");

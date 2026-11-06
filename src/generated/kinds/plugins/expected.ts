@@ -4,6 +4,7 @@
 
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { DoctorVerdict, Finding } from "../../shared/doctor__plugins.js";
+import type { Apis } from "../../shared/plugins__substitution__wiring.js";
 
 /**
  * A row in a register lemonfiber already runs.
@@ -134,8 +135,13 @@ export interface PluginAsking {
   capability: string;
   /** Whether every service that fills it is reached rather than one. */
   each?: boolean;
-  /** The upstream's own API it talks in, which it reaches in place of the adapter. */
-  native?: string | null;
+  /** The medium the filler it reaches files, where it narrows the ask to one. */
+  files?: string | null;
+  /**
+   * The upstream's own API it talks in, or every API it talks in any of, which it
+   * reaches in place of the adapter.
+   */
+  native?: Apis | null;
 }
 
 /**
@@ -155,6 +161,11 @@ export interface PluginChange {
    * themselves.
    */
   path: string;
+  /**
+   * Each placeholder the file as shipped names a secret by, in the order it holds them:
+   * none for anything but a starting file naming a secret, and never a value.
+   */
+  placeholders: PluginPlaceholder[];
   /** What lands there. */
   puts: PluginPuts;
 }
@@ -359,28 +370,19 @@ export interface PluginPair {
   value: string;
 }
 
+/** One placeholder a starting file names a secret by, as the plugin ships it. */
+export interface PluginPlaceholder {
+  /** The form its value is written in. */
+  form: PluginPlaceholderForm;
+  /** The secret it names, by its id. */
+  secret: string;
+}
+
+/** The form a placeholder asks its secret to be written in. */
+export type PluginPlaceholderForm = "plain" | "pbkdf2";
+
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
-
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
-
-/** From this machine and nowhere else. No route, and no label to route to. */
-export interface PluginReachedLoopback {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The port the service listens on. */
-  port: number;
-  tier: "loopback";
-}
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
