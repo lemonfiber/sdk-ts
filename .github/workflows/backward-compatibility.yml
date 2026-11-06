@@ -1,0 +1,49 @@
+# A library's promise to its consumer, checked against the commit that consumer
+# pins (REPO-R103). lemonfiber-web takes this package at a commit its
+# `package.json` names, and what a pull request breaks is what its head breaks
+# against that commit and its base does not. A title declaring a break with `!`
+# allows it, and the squashed commit carries the title, so `edited` reruns the
+# check when only the title changed.
+name: backward-compatibility
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+# A pull request pushed again or retitled cancels the run on its old state,
+# which nobody will read and which holds runners the org shares (Q-R75).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  backward-compatibility:
+    name: backward compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # The whole history, so the pinned commit and the base can each be
+      # checked out and built beside the head.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exactly what the lockfile says
+        run: npm ci --ignore-scripts
+
+      - name: Compare against the commit lemonfiber-web pins
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: ${{ github.event.pull_request.title }}
+        # The base is the merge commit's first parent, the main the head was
+        # merged onto: the event's `base.sha` can name an older main than that.
+        run: npm run bc -- "$(git rev-parse HEAD^1)" "${TITLE}"

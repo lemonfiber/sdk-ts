@@ -47,7 +47,7 @@ import { refusalIn } from "./refusal.js";
 The read answered with a line of its own for each envelope rather than with
 one document. `read` takes every other read the contract lists.
 */
-type LineByLine = "logs";
+export type LineByLine = "logs";
 
 /**
 The name of a read `read` answers: one answered with one document.
@@ -57,7 +57,7 @@ export type DocumentRead = Exclude<ReadName, LineByLine>;
 /**
 The reads answered with one of the pictures of a title on a member's shelf.
 */
-type ShelfPicture = "held/poster" | "held/backdrop";
+export type ShelfPicture = "held/poster" | "held/backdrop";
 
 /**
 The reads answered with one of a title's pictures.

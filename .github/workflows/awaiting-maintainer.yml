@@ -17,6 +17,7 @@
 #   gate             gate
 #   sonar            gate / gate
 #   contract-drift   contract-drift / drift
+#   backward-compatibility  backward compatibility
 #
 # Two of the contexts are called `gate` and `gate / gate` and they are different
 # checks: `gate` is this repository's own build gate in `gate.yml`.
@@ -34,7 +35,7 @@
 name: awaiting-maintainer
 on:
   workflow_run:
-    workflows: [gates, pin-only, gate, sonar, contract-drift, codeql]
+    workflows: [gates, pin-only, gate, sonar, contract-drift, backward-compatibility, codeql]
     types: [completed]
   pull_request_review:
     types: [submitted]
