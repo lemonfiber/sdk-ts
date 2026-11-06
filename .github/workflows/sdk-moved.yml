@@ -35,7 +35,7 @@ jobs:
   tell:
     permissions:
       contents: read
-    uses: lemonfiber/spec/.github/workflows/tell.yml@8894900e86414b166ccd35f272b836d2e0d1b2c2 # v1.0.137
+    uses: lemonfiber/spec/.github/workflows/tell.yml@1cbf3e262ca3cb3cd5afe227f36bbe98ff929895 # v1.0.139
     with:
       repos: lemonfiber-web
       workflow: sdk-bump.yml
