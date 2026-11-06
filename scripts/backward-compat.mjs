@@ -50,7 +50,7 @@ try {
   added = breaks(before, reportsOf(root, { whole: true })).filter((line) => !onBase.has(line));
 } catch (error_) {
   console.error(
-    `backward-compat: ${error_ instanceof Error ? error_.message : String(error_)}`,
+    `backward-compat: ${oneLine(error_ instanceof Error ? error_.message : String(error_))}`,
   );
   process.exit(2);
 }

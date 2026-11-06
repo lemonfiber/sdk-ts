@@ -126,10 +126,11 @@ export const build = (root) => run(root, "npx", "tsdown");
  * as its lockfile says and built in a worktree of its own that is removed after.
  */
 export function reportsAt(repository, commit) {
-  if (!COMMIT.test(commit))
+  const hash = COMMIT.exec(commit)?.[0];
+  if (hash === undefined)
     throw new Error(`${JSON.stringify(commit)} is not a full commit hash`);
   const scratch = mkdtempSync(join(tmpdir(), "sdk-ts-commit-"));
-  run(repository, "git", "worktree", "add", "--detach", "--", scratch, commit);
+  run(repository, "git", "worktree", "add", "--detach", "--", scratch, hash);
   try {
     run(scratch, "npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund");
     build(scratch);
