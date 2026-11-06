@@ -20,6 +20,9 @@ import { breaks } from "./surface/compare.mjs";
 import { CONSUMER, pinnedBy } from "./surface/pin.mjs";
 import { build, reportsAt, reportsOf } from "./surface/reports.mjs";
 
+/** Text from outside as one line, so nothing it holds starts a line of its own in the log, a workflow command included. */
+const oneLine = (text) => text.replaceAll(/[\r\n]+/g, " ");
+
 /** A title declaring a break, as conventional commits write one. */
 const DECLARED = /^[a-z]+(\([a-z0-9.-]+\))?!: /;
 
@@ -38,7 +41,9 @@ let added;
 try {
   const { name } = JSON.parse(readFileSync("package.json", "utf8"));
   pinned = await pinnedBy(name, process.env.GITHUB_TOKEN);
-  console.log(`Comparing against ${pinned}, the commit ${CONSUMER}'s default branch pins.`);
+  console.log(
+    `Comparing against ${oneLine(pinned)}, the commit ${CONSUMER}'s default branch pins.`,
+  );
   const before = reportsAt(root, pinned);
   const onBase = new Set(breaks(before, reportsAt(root, base)));
   build(root);
@@ -51,9 +56,11 @@ try {
 }
 
 if (added.length === 0) {
-  console.log(`Nothing breaks against ${pinned} that ${base} did not already break.`);
+  console.log(
+    `Nothing breaks against ${oneLine(pinned)} that ${oneLine(base)} did not already break.`,
+  );
 } else {
-  for (const line of added) console.log(line);
+  for (const line of added) console.log(oneLine(line));
   if (title !== undefined && !DECLARED.test(title)) {
     console.log(
       `::error::This breaks what ${CONSUMER} pins. Declare it with '!' in the title (for example 'feat!: ...') and route its side, or keep the old surface.`,

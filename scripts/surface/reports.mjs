@@ -7,6 +7,7 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { Extractor, ExtractorConfig } from "@microsoft/api-extractor";
+import { byCodePoint } from "../contract/artefact.mjs";
 import { declarations } from "./compare.mjs";
 
 /** How the compiler API Extractor runs reads the built declarations, which import each other as ES modules. */
@@ -19,6 +20,9 @@ const COMPILER = {
     skipLibCheck: true,
   },
 };
+
+/** A commit named in full, which is all a worktree is built from. */
+const COMMIT = /^[0-9a-f]{40}$/;
 
 /** The message API Extractor gives a name an entry point reaches and does not export. */
 const FORGOTTEN = "ae-forgotten-export";
@@ -75,7 +79,7 @@ function reportOf(root, types) {
     }
     if (failed !== undefined)
       throw new Error(`API Extractor could not read ${types} under ${root}: ${failed}`);
-    const [report] = readdirSync(folder).filter((file) => file.endsWith(".api.md"));
+    const report = readdirSync(folder).find((file) => file.endsWith(".api.md"));
     return { report: readFileSync(join(folder, report), "utf8"), unexported };
   } finally {
     rmSync(folder, { recursive: true, force: true });
@@ -100,10 +104,11 @@ export function reportsOf(root, { whole = false } = {}) {
   const exported = new Set(read.flatMap(({ report }) => [...declarations(report).keys()]));
   const unseen = [...new Set(read.flatMap(({ unexported }) => [...unexported]))]
     .filter((name) => !exported.has(name))
-    .toSorted();
+    .toSorted(byCodePoint);
   if (whole && unseen.length > 0) {
+    const named = unseen.map((name) => "`" + name + "`").join(", ");
     throw new Error(
-      `the entry points reach ${unseen.map((name) => `\`${name}\``).join(", ")}, which none of them exports, so no report shows a change to it`,
+      `the entry points reach ${named}, which none of them exports, so no report shows a change to it`,
     );
   }
   return new Map(read.map(({ specifier, report }) => [specifier, report]));
@@ -121,8 +126,10 @@ export const build = (root) => run(root, "npx", "tsdown");
  * as its lockfile says and built in a worktree of its own that is removed after.
  */
 export function reportsAt(repository, commit) {
+  if (!COMMIT.test(commit))
+    throw new Error(`${JSON.stringify(commit)} is not a full commit hash`);
   const scratch = mkdtempSync(join(tmpdir(), "sdk-ts-commit-"));
-  run(repository, "git", "worktree", "add", "--detach", scratch, commit);
+  run(repository, "git", "worktree", "add", "--detach", "--", scratch, commit);
   try {
     run(scratch, "npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund");
     build(scratch);

@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { declarations } from "./compare.mjs";
-import { entriesOf, reportsOf } from "./reports.mjs";
+import { entriesOf, reportsAt, reportsOf } from "./reports.mjs";
 
 /** How long API Extractor may take to compile a tree, under a machine running the whole suite. */
 const COMPILING_MS = 60_000;
@@ -31,6 +31,15 @@ async function built(exports, dist) {
 }
 
 describe("the reports of a built tree", () => {
+  it.each(["main", "--force", "1629520"])(
+    "refuses to build %s, which is no full commit hash",
+    (commit) => {
+      expect(() => reportsAt(".", commit)).toThrow(
+        `${JSON.stringify(commit)} is not a full commit hash`,
+      );
+    },
+  );
+
   it("names each entry point that declares types by the specifier a consumer imports", async () => {
     const root = await built(
       {

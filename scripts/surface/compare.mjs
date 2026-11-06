@@ -11,6 +11,7 @@
  * lines included, are no part of a declaration.
  */
 import ts from "typescript";
+import { byCodePoint } from "../contract/artefact.mjs";
 
 const printer = ts.createPrinter({ removeComments: true });
 
@@ -41,7 +42,9 @@ function membersOf(members, file) {
     const name = memberName(member, file);
     held.set(name, [...(held.get(name) ?? []), written(member, file)]);
   }
-  return new Map([...held].map(([name, texts]) => [name, texts.toSorted().join(" ")]));
+  return new Map(
+    [...held].map(([name, texts]) => [name, texts.toSorted(byCodePoint).join(" ")]),
+  );
 }
 
 /** What a declaration says beside its members or its union: its sort, modifiers, type parameters and what it extends. */
@@ -148,5 +151,5 @@ export function breaks(before, after) {
       found.push(...lines.map((line) => `[BC] ${entry}: ${line}`));
     }
   }
-  return found.toSorted();
+  return found.toSorted(byCodePoint);
 }
