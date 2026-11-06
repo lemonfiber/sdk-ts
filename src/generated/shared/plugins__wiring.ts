@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugins__wiring__wizard.js";
+import type { Apis } from "./plugins__substitution__wiring.js";
 
 /** What one link reaches, and how that was settled. */
 export type Reaches = ReachesAsked | ReachesByName;
@@ -11,12 +12,14 @@ export type Reaches = ReachesAsked | ReachesByName;
 export interface ReachesAsked {
   /** The capability asked for. */
   capability: string;
+  /** The medium the filler it reaches files, where the ask is narrowed to one. */
+  files?: string | null;
   how: "asked";
   /**
-   * The upstream's own API the ask talks in, where it reaches the upstream an
-   * adapter fronts rather than the adapter.
+   * The upstream's own API the ask talks in, or every API it talks in any of,
+   * where it reaches the upstream an adapter fronts rather than the adapter.
    */
-  native?: string | null;
+  native?: Apis | null;
   /**
    * Where each service that claims it came from: this build's stack, or a
    * named plugin.

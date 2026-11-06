@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification } from "./plugin-reached.js";
+import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking } from "./plugin-reached-household.js";
 import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
@@ -291,6 +291,20 @@ export interface PluginReproof {
   proofs: PluginProving[];
 }
 
+/**
+ * One starting file whose placeholders an update changes, as the version installed
+ * shipped it and as the one coming ships it: the placeholders alone, never what the
+ * file on the machine holds.
+ */
+export interface PluginReshipped {
+  /** Its placeholders as the version coming ships it, none where it ships none. */
+  becomes: PluginPlaceholder[];
+  /** Where the file is, in full. */
+  path: string;
+  /** Its placeholders as the version installed shipped it, none where it shipped none. */
+  was: PluginPlaceholder[];
+}
+
 /** Where an update did not hold: what putting the version it replaced back came to. */
 export interface PluginRestored {
   /** Whether everything its record says it placed is on the machine again. */
@@ -405,6 +419,13 @@ export interface PluginUpdate {
   /** The plugin this is about. */
   plugin: string;
   /**
+   * Each starting file whose placeholders the new version changes, as the installed
+   * version shipped it and as the new one ships it. The file on the machine is left as
+   * it is, so this is what it was seeded from set against what the new version would
+   * seed it from.
+   */
+  reshipped: PluginReshipped[];
+  /**
    * Where the update did not hold, what putting the version it replaced back came
    * to. Absent on a rehearsal and on an update that held.
    */
@@ -426,6 +447,27 @@ export interface PluginUpdate {
    * be a reinstall that lost everything the old one knew.
    */
   went_back: UndoReversal;
+}
+
+/** What the stack's own checks made of an install. */
+export interface PluginVerification {
+  /**
+   * Every check this install made worse.
+   *
+   * Empty is the answer an install needs, and it is the common one. What is here
+   * is what takes the install back.
+   */
+  broke: PluginChangedCheck[];
+  /**
+   * Every check nothing could be concluded about across the two readings.
+   *
+   * Reported and never acted on. *I could not tell* is not *it is still broken*,
+   * and an install reversed because a check could not reach a provider it also
+   * could not reach an hour ago would be punishing a plugin for the weather. It is
+   * said out loud rather than dropped, because the assurance an operator thought
+   * they had is the thing that went.
+   */
+  unsettled: PluginChangedCheck[];
 }
 
 /** The envelope carrying `plugins`. */

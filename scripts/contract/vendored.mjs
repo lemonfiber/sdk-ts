@@ -4,8 +4,9 @@
  *
  * The single file `web-api.contract.json` is that document. The directory
  * `web-api/` holds an index naming every other file, one file per kind, one per
- * request body, and one per definition under `defs/`, each `$ref` a path
- * resolved against the file it appears in. Read, each kind and each body
+ * request body, one per list or per part of a list, and one per definition
+ * under `defs/`, each `$ref` a path resolved against the file it appears in.
+ * The parts of a list are gathered into the one object the single file holds. Read, each kind and each body
  * carries the definitions it reaches as its own `$defs`, every reference
  * spelled `#/$defs/<Name>`, which is the single file's shape, so both layouts
  * of one contract generate the same files.
@@ -37,7 +38,7 @@ export const INDEX = "index.json";
 /** Where the index names the file of each body a route takes, by the route. */
 export const BODIES = "bodies";
 
-/** The lists the index names a file for, each under the key the single document carries it by. */
+/** The lists the index names a file for, or a file for each part of, each under the key the single document carries it by. */
 export const LISTS = ["key_callable", "reads", "refusals"];
 
 /** What the generated files say they came from when the pin is missing. */
@@ -142,6 +143,25 @@ class Directory {
     return document(join(this.#root, CONTRACT, DIRECTORY, file), shown(file));
   }
 
+  /**
+   * A list the index names one file for, or a file for each part of, gathered
+   * into one object, refusing a part that is not an object and an entry two
+   * parts both list.
+   */
+  list(list, files) {
+    if (!isRecord(files)) return this.read(files);
+    const gathered = {};
+    for (const [part, file] of Object.entries(files)) {
+      const entries = this.read(file);
+      if (!isRecord(entries)) refuse(`${shown(file)} holds the ${list} of \`${part}\`, and it is not a JSON object.`);
+      for (const [key, entry] of Object.entries(entries)) {
+        if (Object.hasOwn(gathered, key)) refuse(`${shown(file)} lists \`${key}\`, which another file of the ${list} lists too.`);
+        gathered[key] = entry;
+      }
+    }
+    return gathered;
+  }
+
   /** Every definition `schema` in `from` refers to, refusing a reference resolving to none. */
   #referred(from, schema) {
     const names = new Set();
@@ -234,7 +254,7 @@ function readDirectory(root) {
     artefact[BODIES] = index[BODIES];
   }
   for (const list of LISTS) {
-    if (Object.hasOwn(index, list)) artefact[list] = directory.read(index[list]);
+    if (Object.hasOwn(index, list)) artefact[list] = directory.list(list, index[list]);
   }
   return artefact;
 }
