@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionPushEndpoint | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -52,6 +52,18 @@ export interface ActionMoveBack {
   from: string;
   /** Where it is now. */
   to: string;
+}
+
+/**
+ * Leave a push endpoint as it stands.
+ *
+ * Worked out so the record of a registration or a removal has a reversal to name, and
+ * never carried out: only the phone holds what a registration is made from.
+ */
+export interface ActionPushEndpoint {
+  does: "push-endpoint";
+  /** The endpoint's name. */
+  name: string;
 }
 
 /**
