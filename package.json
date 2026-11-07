@@ -51,6 +51,7 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "package:check": "publint && attw --pack . --profile esm-only",
+    "bc": "node scripts/backward-compat.mjs",
     "contract:generate": "node scripts/contract-generate.mjs",
     "changelog": "git-cliff -o CHANGELOG.md && prettier --write CHANGELOG.md",
     "ci": "npm run format:check && npm run lint && npm run types && npm run guard && npm run unused && npm run contract:check && npm run coverage && npm run build && npm run package:check",
@@ -61,6 +62,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
+    "@microsoft/api-extractor": "^7.60.1",
     "@types/node": "^26.6.5",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.5",

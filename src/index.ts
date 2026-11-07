@@ -15,9 +15,11 @@ export { type Registering } from "./device-keys.js";
 export {
   Client,
   type DocumentRead,
+  type LineByLine,
   type Opened,
   type AskablePictureQuery,
   type PictureQuery,
+  type ShelfPicture,
   type Sending,
   type Talking,
   type Walked,

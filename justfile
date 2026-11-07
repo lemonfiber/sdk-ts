@@ -27,6 +27,9 @@ hooks:
 #   contract-drift                  fetches the served contract artefact and
 #                                   deep-compares; needs the network and the
 #                                   published build
+#   backward compatibility          builds the commit lemonfiber-web pins and
+#                                   the base beside the head; `npm run bc` runs
+#                                   it, given the base commit
 #   hygiene                         actionlint, typos, links, markdown, the
 #                                   invite check and shared-files — the last
 #                                   needs a spec checkout

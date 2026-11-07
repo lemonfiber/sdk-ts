@@ -40,4 +40,6 @@ requirement = [
   { id = "ARCH-R260", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
   { id = "ARCH-R261", state = "partial", evidence = ["src/keys.ts", "src/device-keys.test.ts::prove a mint with a signature over the text the stack verifies, and no password"] },
   { id = "ARCH-R293", state = "partial", evidence = ["src/generated/kinds/keys.ts"] },
+  { id = "REPO-R103", state = "done", evidence = ["scripts/backward-compat.mjs", "scripts/surface/compare.test.mjs::names an entry point, a declaration and a member the new surface no longer holds", "scripts/surface/pin.test.mjs::reads a full commit from the dependencies or the development dependencies"] },
+  { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml"] },
 ]
