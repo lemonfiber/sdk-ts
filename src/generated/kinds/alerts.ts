@@ -8,6 +8,11 @@ export interface AlertReport {
   changed: boolean;
   /** Events set apart from the preset, quietest name first. */
   exceptions: ExceptionReport[];
+  /**
+   * The notification kinds this stack raises as it is configured, so a client offers a
+   * switch for each of those and for nothing else.
+   */
+  kinds: NotificationKind[];
   /** What that preset means, in the operator's terms. */
   means: string;
   /** The preset in force for events with no exception of their own. */
@@ -32,3 +37,6 @@ export interface ExceptionReport {
   /** Whether it is heard about, whatever the preset would say. */
   wanted: boolean;
 }
+
+/** What sort of thing an alert tells the operator. */
+export type NotificationKind = "problem" | "completion" | "update" | "backup" | "request" | "member";

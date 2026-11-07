@@ -44,6 +44,11 @@ export interface Alert {
   /** Which way it went. */
   moment: Moment;
   /**
+   * Which of the closed list of notification kinds this alert is, so a client can
+   * offer a switch for it. A problem on an alert recorded before alerts carried one.
+   */
+  notification?: "problem" | "completion" | "update" | "backup" | "request" | "member";
+  /**
    * What to do about it, most likely first. An alert that says what happened
    * and not what to do is a notification, which is a different and worse thing.
    */
