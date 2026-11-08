@@ -12,6 +12,7 @@ export * from "./shared/backup__restore.js";
 export * from "./shared/bandwidth__pausing.js";
 export * from "./shared/beside__migration.js";
 export * from "./shared/body-setup-answer__setup.js";
+export * from "./shared/boot__lifecycle.js";
 export * from "./shared/catalogue__dashboard__lifecycle__status.js";
 export * from "./shared/config__credentials__doctor__outbound__plugins__wiring__wizard.js";
 export * from "./shared/config__wizard.js";

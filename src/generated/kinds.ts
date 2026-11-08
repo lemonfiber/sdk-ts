@@ -12,6 +12,7 @@ export * from "./kinds/asked.js";
 export * from "./kinds/backup.js";
 export * from "./kinds/bandwidth.js";
 export * from "./kinds/beside.js";
+export * from "./kinds/boot.js";
 export * from "./kinds/bundle.js";
 export * from "./kinds/capabilities.js";
 export * from "./kinds/catalogue.js";
