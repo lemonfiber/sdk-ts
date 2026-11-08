@@ -137,6 +137,8 @@ export interface PluginAsking {
   each?: boolean;
   /** The medium the filler it reaches files, where it narrows the ask to one. */
   files?: string | null;
+  /** The media it asks a filler of, where it narrows the ask to the fillers of those. */
+  media_types?: string[];
   /**
    * The upstream's own API it talks in, or every API it talks in any of, which it
    * reaches in place of the adapter.

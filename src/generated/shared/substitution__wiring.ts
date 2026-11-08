@@ -19,6 +19,8 @@ export interface Unfilled {
   capability: string;
   /** The medium it asked a filler of, where nothing filling it files that medium. */
   files?: string | null;
+  /** The media it asked a filler of, where nothing filling it files one of them. */
+  media_types?: string[];
   /**
    * The upstream's own API it asked in, or every API it asked in any of, where no
    * upstream filling it declares one of them.
