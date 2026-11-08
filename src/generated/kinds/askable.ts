@@ -2,7 +2,7 @@
 // The `askable` envelope, and the shapes only `askable` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind } from "../shared/askable__asked.js";
+import type { TitleKind } from "../shared/askable__asked__plugins__undo.js";
 import type { MemberAsking } from "../shared/askable__dashboard__household.js";
 
 /** One title a member's search found. */

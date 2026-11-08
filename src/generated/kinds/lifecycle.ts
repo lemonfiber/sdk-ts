@@ -166,6 +166,12 @@ export interface LifecycleReport {
    * over the project this run starts, and held to nothing lemonfiber vets.
    */
   unvetted?: Unvetted | null;
+  /**
+   * What holding the outside watcher to the stack's monitors came to, where it was
+   * more than held already: given them, or why not. Absent where it already held them
+   * or nothing fills `status.watch`.
+   */
+  watched?: string | null;
 }
 
 /**
