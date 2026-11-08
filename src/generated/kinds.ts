@@ -86,6 +86,7 @@ export * from "./kinds/version.js";
 export * from "./kinds/walkthrough.js";
 export * from "./kinds/watch.js";
 export * from "./kinds/watched.js";
+export * from "./kinds/watcher.js";
 export * from "./kinds/wiring.js";
 export * from "./kinds/wizard.js";
 export * from "./kinds/word.js";

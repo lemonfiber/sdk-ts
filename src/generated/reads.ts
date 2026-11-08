@@ -27,6 +27,7 @@ export const READS = {
   "trace": { path: "/api/trace", segments: [], parameters: [{ name: "term", repeatable: false }, { name: "season", repeatable: false }], kinds: ["trace"] },
   "stuck": { path: "/api/stuck", segments: [], parameters: [], kinds: ["stuck"] },
   "boot": { path: "/api/boot", segments: [], parameters: [], kinds: ["boot"] },
+  "watcher": { path: "/api/watcher", segments: [], parameters: [], kinds: ["watcher"] },
   "config": { path: "/api/config", segments: [], parameters: [{ name: "key", repeatable: false }], kinds: ["config"] },
   "quality": { path: "/api/quality", segments: [], parameters: [], kinds: ["quality"] },
   "explain": { path: "/api/explain", segments: [], parameters: [{ name: "word", repeatable: false }], kinds: ["glossary", "word"] },
@@ -73,6 +74,7 @@ export interface ReadQuery {
   "trace": { term?: Scalar | undefined; season?: Scalar | undefined };
   "stuck": Record<string, never>;
   "boot": Record<string, never>;
+  "watcher": Record<string, never>;
   "config": { key?: Scalar | undefined };
   "quality": Record<string, never>;
   "explain": { word?: Scalar | undefined };

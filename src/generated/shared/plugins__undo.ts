@@ -2,13 +2,15 @@
 // The shapes `plugins` and `undo` both carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { TitleKind } from "./askable__asked__plugins__undo.js";
+
 /**
  * What an undo does.
  *
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionPushEndpoint | ActionResettle | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionPushEndpoint | ActionResettle | ActionRegrab | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -83,6 +85,20 @@ export interface ActionReconfigure {
   resource: string;
   /** What to put back, or `None` where it held nothing. */
   value?: string | null;
+}
+
+/**
+ * Ask a curator to grab a release again by its fingerprint and lift its blocklist
+ * entry.
+ */
+export interface ActionRegrab {
+  does: "regrab";
+  /** The kind of media the curator files it as. */
+  kind: TitleKind;
+  /** The release's fingerprint. */
+  release: string;
+  /** The curator's id for the title. */
+  title: number;
 }
 
 /** Give a grant back to a plugin, or end one it was given. */
