@@ -2,6 +2,7 @@
 // The `lifecycle` envelope, and the shapes only `lifecycle` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Forwarded } from "../shared/boot__lifecycle.js";
 import type { Service } from "../shared/dashboard__lifecycle__status.js";
 import type { ConflictReport } from "../shared/lifecycle__migration.js";
 import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
@@ -33,6 +34,11 @@ export interface LifecycleReport {
    * a service is fenced and they were not. Absent for every other action.
    */
   fencing?: string | null;
+  /**
+   * The VPN's forwarded port before the start and after it, and whether every client
+   * takes it, where the guard forwards one or the clients took one before.
+   */
+  forwarded?: Forwarded | null;
   /**
    * What starting the stack did about the VPN's forwarded port, where it did
    * anything. Absent in the ordinary case — the client was already on it, or
