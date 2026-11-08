@@ -59,6 +59,7 @@ export * from "./kinds/pull.js";
 export * from "./kinds/push-endpoint.js";
 export * from "./kinds/push-endpoints.js";
 export * from "./kinds/quality.js";
+export * from "./kinds/queue.js";
 export * from "./kinds/removal.js";
 export * from "./kinds/repair.js";
 export * from "./kinds/replacement.js";
