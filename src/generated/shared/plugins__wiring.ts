@@ -15,6 +15,8 @@ export interface ReachesAsked {
   /** The medium the filler it reaches files, where the ask is narrowed to one. */
   files?: string | null;
   how: "asked";
+  /** The media the fillers it reaches file one of, where the ask is narrowed to those. */
+  media_types?: string[];
   /**
    * The upstream's own API the ask talks in, or every API it talks in any of,
    * where it reaches the upstream an adapter fronts rather than the adapter.
