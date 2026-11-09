@@ -13,8 +13,8 @@ import type { NewsKind } from "../shared/news__news-items.js";
 export interface Newest {
   /** The checks most recently found wrong, each with its onset. */
   problems: NewsCheck[];
-  /** The numbers of the household's newest requests. */
-  requests: number[];
+  /** The references of the household's newest requests. */
+  requests: string[];
   /** The kinds that could not be read, as [`News::unread`] names them. */
   unread: NewsKind[];
   /** The versions of the newest releases in the record this build carries. */

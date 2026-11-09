@@ -164,6 +164,8 @@ export interface MemberRequest {
    * Absent, not null, until it is there.
    */
   arrived?: string | null;
+  /** When it was asked for, where the request service or the core says. */
+  asked?: string | null;
   /**
    * About how much room it will want, at the quality in force.
    *
@@ -173,10 +175,11 @@ export interface MemberRequest {
    */
   estimate?: Estimate | null;
   /**
-   * The number the request service files it under, which is how one is named again
-   * when somebody rules on it.
+   * The reference it is named by again when somebody rules on it: the number the
+   * request service files it under (`42`), or `music-<n>` or `books-<n>` for an ask
+   * for music or books the core keeps itself.
    */
-  id: number;
+  id: string;
   /**
    * What kind of thing it is — a series, a film — in the household's own words.
    * Absent where the request service names a kind this build does not know.

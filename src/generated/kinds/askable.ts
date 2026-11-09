@@ -2,19 +2,25 @@
 // The `askable` envelope, and the shapes only `askable` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind } from "../shared/askable__asked__plugins__undo.js";
+import type { TitleKind, TitleUnit } from "../shared/askable__asked.js";
 import type { MemberAsking } from "../shared/askable__dashboard__household.js";
 
 /** One title a member's search found. */
 export interface Askable {
+  /** Its artist or author, where it is music or books and one is known. */
+  by?: string | null;
+  /** Where its cover is published, where it is music or books and has one. */
+  cover?: string | null;
   /** The id it is asked for by. */
   id: string;
-  /** Whether it is a series or a film. */
+  /** Whether it is a series, a film, music or books. */
   kind: TitleKind;
   /** Where it stands in the house. */
   stands: Stands;
   /** What it is called. */
   title: string;
+  /** What it is within music or books, and nothing for a series or a film. */
+  unit?: TitleUnit | null;
   /** The year it came out, where that is known. */
   year?: number | null;
 }
