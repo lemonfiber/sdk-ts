@@ -2,8 +2,6 @@
 // The shapes `plugins` and `undo` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind } from "./askable__asked__plugins__undo.js";
-
 /**
  * What an undo does.
  *
@@ -94,7 +92,7 @@ export interface ActionReconfigure {
 export interface ActionRegrab {
   does: "regrab";
   /** The kind of media the curator files it as. */
-  kind: TitleKind;
+  kind: VideoKind;
   /** The release's fingerprint. */
   release: string;
   /** The curator's id for the title. */
@@ -421,3 +419,9 @@ export interface UndoReversal {
    */
   reversed: Undo[];
 }
+
+/**
+ * Whether a title a curator of video files is a series or a film, as a document that
+ * names one of those two alone publishes it.
+ */
+export type VideoKind = "tv" | "movies";

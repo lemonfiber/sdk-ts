@@ -8,7 +8,7 @@ import type { NewsKind } from "../shared/news__news-items.js";
 export interface News {
   /** The checks found wrong, the most recent onset first. */
   problems: NewsProblem[];
-  /** What the household has asked for, highest number first. */
+  /** What the household has asked for, the most recently asked first. */
   requests: NewsRequest[];
   /**
    * The kinds that could not be read.
@@ -44,12 +44,17 @@ export interface NewsProblem {
   summary: string;
 }
 
-/** One request, by its number. */
+/** One request, by its reference. */
 export interface NewsRequest {
+  /** When it was asked for, where that is known. */
+  asked?: string | null;
   /** Who asked for it, by the name the media server holds them under. */
   by: string;
-  /** The number the request service files it under. */
-  number: number;
+  /**
+   * The reference the household list names it with: the request service's number
+   * (`42`), or `music-<n>` or `books-<n>` for an ask the core keeps.
+   */
+  request: string;
   /** What it is called, where a service has been told about it. */
   title?: string | null;
 }
