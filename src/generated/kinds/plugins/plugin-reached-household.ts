@@ -414,6 +414,8 @@ export interface ServiceCertificate {
  * record already holds.
  */
 export interface ServiceFields {
+  /** The arguments its image's own entrypoint is handed, in order. */
+  args?: string[];
   /** The certificate lemonfiber makes for it, where it declares one. */
   certificate?: ServiceCertificate | null;
   /** Whether its configuration directory is read-only. */
