@@ -381,7 +381,7 @@ export interface PluginPlaceholder {
 }
 
 /** The form a placeholder asks its secret to be written in. */
-export type PluginPlaceholderForm = "plain" | "pbkdf2";
+export type PluginPlaceholderForm = "plain" | "pbkdf2" | "bcrypt";
 
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
