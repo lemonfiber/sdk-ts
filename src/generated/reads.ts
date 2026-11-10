@@ -112,7 +112,8 @@ export const FILES = {
   "bundle": { path: "/api/bundle/{name}", segments: ["name"], parameters: [] },
   "held/poster": { path: "/api/held/{id}/poster", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }] },
   "held/backdrop": { path: "/api/held/{id}/backdrop", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }] },
-  "askable/poster": { path: "/api/askable/{id}/poster", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "kind", repeatable: false }] },
+  "askable/poster": { path: "/api/askable/{id}/poster", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "kind", repeatable: false }, { name: "unit", repeatable: false }] },
+  "requests/poster": { path: "/api/requests/{reference}/poster", segments: ["reference"], parameters: [{ name: "member", repeatable: false }] },
 } as const;
 
 /** What each read answered with a file takes, as `ReadQuery` says of a read answered with a document. */
@@ -120,5 +121,6 @@ export interface FileQuery {
   "bundle": { name: Scalar };
   "held/poster": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
   "held/backdrop": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
-  "askable/poster": { id: Scalar; member?: Scalar | undefined; kind?: Scalar | undefined };
+  "askable/poster": { id: Scalar; member?: Scalar | undefined; kind?: Scalar | undefined; unit?: Scalar | undefined };
+  "requests/poster": { reference: Scalar; member?: Scalar | undefined };
 }
