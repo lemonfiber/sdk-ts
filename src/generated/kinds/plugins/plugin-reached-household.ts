@@ -221,8 +221,8 @@ export interface PluginProving {
  * How an installed service is reached, where it is reached at all.
  *
  * The tier is the arm, so the label a tier earns lives only in the arm entitled to
- * one. Only a household service is proxied — the bundled policy is that an admin
- * surface does not get a name on the household network — and a record able to carry
+ * one. Only a household or a proxied service has a label — the bundled policy is that an
+ * admin surface does not get a name on the household network — and a record able to carry
  * a loopback service with a hostname would be a record able to describe the thing
  * that policy exists to prevent.
  *
@@ -237,7 +237,7 @@ export interface PluginProving {
  * exactly as it does for a bundled service, so the two-tier policy stays a property
  * of the system rather than a request a plugin made.
  */
-export type PluginReached = PluginReachedLoopback | PluginReachedHousehold;
+export type PluginReached = PluginReachedLoopback | PluginReachedProxied | PluginReachedHousehold;
 
 /** From the household, through the stack's own proxy, at this label. */
 export interface PluginReachedHousehold {
@@ -257,6 +257,20 @@ export interface PluginReachedLoopback {
   /** The port the service listens on. */
   port: number;
   tier: "loopback";
+}
+
+/**
+ * From this machine on its port, and from the household by name through the stack's
+ * own proxy alone.
+ */
+export interface PluginReachedProxied {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "proxied";
 }
 
 /**
@@ -322,22 +336,6 @@ export interface PluginSharing {
   at: string;
   /** The service whose files it writes. */
   upstream: string;
-}
-
-/** One service taking a privileged shape, as the reading states it. */
-export interface PluginTaking {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The devices it is given. */
-  devices: string[];
-  /** The kernel capabilities it is given. */
-  grants: string[];
-  /** Whether it is added to the group owning those devices on the engine's host. */
-  grouped: boolean;
-  /** The service taking it. */
-  service: string;
-  /** The shape it takes. */
-  shape: PluginShape;
 }
 
 /** What one assertion came to, whatever answered it. */
