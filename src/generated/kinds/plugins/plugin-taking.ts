@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking } from "./plugin-reached-household.js";
+import type { PluginInstalled, PluginProving, PluginShape, PluginSharing } from "./plugin-reached-household.js";
 import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
@@ -204,6 +204,11 @@ export interface PluginInstalls {
    */
   substituted?: PluginSubstituted[];
   /**
+   * Whether the stack runs no proxy, so a proxied service is reached on this machine
+   * alone.
+   */
+  unproxied?: boolean;
+  /**
    * The operator's overlay and every service it changes, where there is one: merged
    * over the project this run would start, and held to nothing lemonfiber vets.
    */
@@ -375,6 +380,22 @@ export interface PluginSubstituted {
   plugin: string;
   /** The service chosen. */
   service: string;
+}
+
+/** One service taking a privileged shape, as the reading states it. */
+export interface PluginTaking {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The devices it is given. */
+  devices: string[];
+  /** The kernel capabilities it is given. */
+  grants: string[];
+  /** Whether it is added to the group owning those devices on the engine's host. */
+  grouped: boolean;
+  /** The service taking it. */
+  service: string;
+  /** The shape it takes. */
+  shape: PluginShape;
 }
 
 /** A capability that would have nothing filling it. */

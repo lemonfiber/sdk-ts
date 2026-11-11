@@ -4,4 +4,4 @@
 
 export * from "./plugins/expected.js";
 export * from "./plugins/plugin-reached-household.js";
-export * from "./plugins/plugin-verification.js";
+export * from "./plugins/plugin-taking.js";
