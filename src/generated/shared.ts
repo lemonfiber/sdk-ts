@@ -6,6 +6,7 @@ export * from "./shared/adoption__beside__config__import__replacement.js";
 export * from "./shared/adoption__migration.js";
 export * from "./shared/alert__dashboard.js";
 export * from "./shared/alert__dashboard__doctor__error__plugins.js";
+export * from "./shared/alerts__notify.js";
 export * from "./shared/askable__askable-kinds__asked.js";
 export * from "./shared/askable__dashboard__household.js";
 export * from "./shared/backup__restore.js";
