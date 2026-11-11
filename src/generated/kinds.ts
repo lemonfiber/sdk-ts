@@ -48,6 +48,8 @@ export * from "./kinds/minted-key.js";
 export * from "./kinds/music.js";
 export * from "./kinds/news.js";
 export * from "./kinds/news-items.js";
+export * from "./kinds/notify.js";
+export * from "./kinds/notify-mine.js";
 export * from "./kinds/outbound.js";
 export * from "./kinds/pairing.js";
 export * from "./kinds/part-way.js";

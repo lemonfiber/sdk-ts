@@ -2,6 +2,8 @@
 // The `alerts` envelope, and the shapes only `alerts` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { NotificationKind } from "../shared/alerts__notify.js";
+
 /** What the operator will be told about, and what changing it came to. */
 export interface AlertReport {
   /** Whether this call changed the answer. */
@@ -37,6 +39,3 @@ export interface ExceptionReport {
   /** Whether it is heard about, whatever the preset would say. */
   wanted: boolean;
 }
-
-/** What sort of thing an alert tells the operator. */
-export type NotificationKind = "problem" | "completion" | "update" | "backup" | "request" | "member";
