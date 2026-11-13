@@ -27,7 +27,7 @@ requirement = [
   { id = "ARCH-R67", state = "done", evidence = ["scripts/contract/artefact.mjs", "scripts/contract/shapes.test.mjs::refuses a version it does not implement, naming both, and writes nothing"] },
   { id = "ARCH-R73", state = "partial", evidence = ["scripts/contract/artefact.mjs", "scripts/contract/shapes.test.mjs::refuses a constraint beside a reference, naming where"] },
   { id = "ARCH-R99", state = "partial", evidence = ["src/address.ts", "src/client.test.ts::refuses an address that is not on this machine"] },
-  { id = "ARCH-R129", state = "partial", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a definition taking a name this generator writes"] },
+  { id = "ARCH-R129", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a definition taking any name the modules beside the shapes write, naming it and its kind", "scripts/contract/shapes.test.mjs::refuses a definition taking a name this generator writes"] },
   { id = "ARCH-R138", state = "partial", evidence = ["src/problem.ts", "src/client.test.ts::reports the refusal lemonfiber actually sends as one"] },
   { id = "ARCH-R139", state = "partial", evidence = ["scripts/contract/refused.mjs", "scripts/contract/shapes.test.mjs::writes every code the contract lists, with what it says of each"] },
   { id = "C10-R1", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are minted with the password in the body, and the secret comes back once"] },

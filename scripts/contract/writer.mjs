@@ -79,6 +79,7 @@ const OWNED = new Map([
   ["ReadQuery", "what each read takes"],
   ["ReadAnswer", "the envelope a read answers with"],
   ["FILES", "every read answered with a file"],
+  ["FileQuery", "what each read answered with a file takes"],
   ["BodyRoute", "the union of every route that takes a body"],
   ["BODY_ROUTES", "every route that takes a body"],
   ["BodyOf", "the body each route takes"],

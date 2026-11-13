@@ -3,7 +3,7 @@
  * read one way.
  */
 import { existsSync } from "node:fs";
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -171,6 +171,19 @@ describe("refusing what cannot be read one way", () => {
       expect(said).toContain(`\`${name}\`, defined by \`a\`, takes a name this generator writes itself`);
     },
   );
+
+  it("refuses a definition taking any name the modules beside the shapes write, naming it and its kind", async () => {
+    const tables = (await readdir(join(ROOT, OUT))).filter((file) => /^(?!index\.|kinds\.|shared\.|bodies\.).+\.ts$/.test(file));
+    const texts = await Promise.all(tables.map((file) => readFile(join(ROOT, OUT, file), "utf8")));
+    const declared = texts.flatMap((source) =>
+      [...source.matchAll(/^export (?:const|type|interface|function) (\w+)/gm)].map((found) => found[1]),
+    );
+    expect(declared).toContain("FileQuery");
+    for (const name of new Set(declared)) {
+      const said = refusal(artefact({ a: kind({ $ref: `#/$defs/${name}` }, { [name]: CODE }) }));
+      expect(said).toContain(`\`${name}\`, defined by \`a\`, takes a name this generator writes itself`);
+    }
+  });
 
   it("accepts a definition whose name only contains one of them", () => {
     const files = sources(artefact({ a: kind({ $ref: "#/$defs/ProblemKind" }, { ProblemKind: CODE, ByKindness: CODE }) }));
