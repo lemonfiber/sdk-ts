@@ -4,6 +4,7 @@
 
 import type { StepCame } from "../../shared/doctor__error__plugins.js";
 import type { DoctorVerdict, Finding } from "../../shared/doctor__plugins.js";
+import type { PluginConstraint } from "../../shared/plugin-claims__plugins.js";
 import type { Apis } from "../../shared/plugins__substitution__wiring.js";
 
 /**
@@ -193,16 +194,6 @@ export interface PluginChangedCheck {
   now: Finding;
 }
 
-/**
- * A kind of constraint an expectation can put on a body.
- *
- * The same vocabulary a proof's expectation and a contributed check's use, so that
- * "a status alone is not evidence" is one rule rather than three. Read as well as
- * written: a declaration that an assertion fails on a recording names the one of these
- * that fails there.
- */
-export type PluginConstraint = "status" | "json" | "json_has_keys" | "json_types" | "json_at_least" | "json_array_min" | "json_is_absent" | "content_type" | "body_starts_with" | "exit" | "stdout_starts_with";
-
 /** What a plugin declared about itself, as its install read it. */
 export interface PluginDeclaration {
   /**
@@ -260,20 +251,6 @@ export interface PluginDemand {
 }
 
 /**
- * What the verdicts in a report were reached against.
- *
- * One value, because one is all this build can produce: nothing here asks a service
- * anything. It is a field rather than a sentence for the reason a verdict is one — a
- * reader handed `demonstrated` has nothing else in the document to tell a recording
- * that answered from a service that did, and the weaker of those two claims must not
- * be readable as the stronger. The prose says it on the page; this says it to
- * whatever consumes the report: an author's own CI, a catalogue, anything counting
- * passes. Naming the axis now is what made the second kind of evidence a change the
- * compiler walked somebody through rather than one they had to remember.
- */
-export type PluginEvidence = "recordings" | "service";
-
-/**
  * A recording an assertion fails on, the one constraint of its expectation that fails
  * there, and why.
  *
@@ -308,6 +285,18 @@ export interface PluginExpectedFailure {
    * could-not-run is never excused.
    */
   verdict: PluginDeclaredVerdict;
+}
+
+/** One credential that would cross to a plugin, as the reading states it. */
+export interface PluginGranting {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it would be granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
 }
 
 /** One bundled thing a plugin declares it will change. */
@@ -361,6 +350,17 @@ export type PluginPlaceholderForm = "plain" | "pbkdf2" | "bcrypt";
 
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
+
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {
