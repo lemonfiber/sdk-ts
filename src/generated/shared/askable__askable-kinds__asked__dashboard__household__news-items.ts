@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `askable`, `askable-kinds` and `asked` all carry.
+// The shapes `askable`, `askable-kinds`, `asked`, `dashboard`, `household` and `news-items` all carry.
 // Regenerate with `npm run contract:generate`.
 
 /**

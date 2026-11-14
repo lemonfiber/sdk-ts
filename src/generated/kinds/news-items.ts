@@ -2,6 +2,7 @@
 // The `news-items` envelope, and the shapes only `news-items` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked__dashboard__household__news-items.js";
 import type { NewsKind } from "../shared/news__news-items.js";
 
 /** What a surface can mark as new, newest first within each kind. */
@@ -50,6 +51,8 @@ export interface NewsRequest {
   asked?: string | null;
   /** Who asked for it, by the name the media server holds them under. */
   by: string;
+  /** The kind of title it asks for, as the household list names it. */
+  kind?: TitleKind | null;
   /**
    * The reference the household list names it with: the request service's number
    * (`42`), or `music-<n>` or `books-<n>` for an ask the core keeps.
@@ -57,6 +60,8 @@ export interface NewsRequest {
   request: string;
   /** What it is called, where a service has been told about it. */
   title?: string | null;
+  /** What an ask for music or books asks for, as the household list names it. */
+  unit?: TitleUnit | null;
 }
 
 /** One release, by its version. */

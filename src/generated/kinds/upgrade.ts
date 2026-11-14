@@ -4,6 +4,19 @@
 
 import type { Triggered } from "../shared/music__upgrade.js";
 
+/** What upgrading one kind of media costs in total, or why that could not be worked out. */
+export type Total = TotalBytes | TotalUnknown;
+
+/** The bytes re-fetching what its curator holds below the cutoff would take. */
+export interface TotalBytes {
+  bytes: number;
+}
+
+/** Why the total could not be worked out, in the operator's words. */
+export interface TotalUnknown {
+  unknown: string;
+}
+
 /** The envelope carrying `upgrade`. */
 export interface UpgradeEnvelope {
   api_version: number;
@@ -22,17 +35,20 @@ export interface UpgradeEnvelope {
  * upgraded to different bars, and a single number would misstate one of them.
  */
 export interface UpgradeMedia {
-  /** The media type — `tv` or `movies`. */
+  /** The media type: `tv`, `movies` or `music`. */
   media_type: string;
   /**
    * What became of the re-search, or `None` where the upgrade was not confirmed
    * and only the cost was stated.
    */
   outcome?: Triggered | null;
-  /** The preset in force for it. */
+  /** The preset in force for it, or for music the format. */
   preset: string;
-  /** Roughly what an hour of it costs at that preset. */
-  size_per_hour: string;
+  /**
+   * What upgrading it costs in total: the runtime its curator holds below the cutoff
+   * times the bytes an hour takes at that preset or format.
+   */
+  total: Total;
 }
 
 /**
