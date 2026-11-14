@@ -26,6 +26,7 @@ export * from "./kinds/device-challenge.js";
 export * from "./kinds/device-key.js";
 export * from "./kinds/device-keys.js";
 export * from "./kinds/doctor.js";
+export * from "./kinds/ended.js";
 export * from "./kinds/error.js";
 export * from "./kinds/forms.js";
 export * from "./kinds/front-door.js";
