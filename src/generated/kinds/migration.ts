@@ -29,6 +29,24 @@ export interface LinkingReport {
   remedy: string;
 }
 
+/** Where something a service keeps is on this machine, or why that is not said. */
+export type Location = LocationAt | LocationUnread | LocationNone;
+
+/** The host path it is mounted from. */
+export interface LocationAt {
+  at: string;
+}
+
+/** The service keeps none, and why, in the operator's words. */
+export interface LocationNone {
+  none: string;
+}
+
+/** It could not be read, and why, in the operator's words. */
+export interface LocationUnread {
+  unread: string;
+}
+
 /** The envelope carrying `migration`. */
 export interface MigrationEnvelope {
   api_version: number;
@@ -85,6 +103,10 @@ export interface ModeReport {
 export interface OccupantReport {
   /** Whether lemonfiber knows this service and could take it over as it stands. */
   adoptable: boolean;
+  /** Where it reads its configuration from on this machine. */
+  config: Location;
+  /** Where its library is on this machine. */
+  library: Location;
   /** Every host port it publishes, lowest first. */
   ports: number[];
   /** Whether it is running now, as against present but stopped. */
