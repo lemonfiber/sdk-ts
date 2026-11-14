@@ -69,13 +69,20 @@ export interface FrontDoorBeside {
    * with a refusal, and the manifest is where a port is declared.
    */
   address?: Address | null;
-  /** Why it is not somewhere to begin. */
+  /** Why it is not somewhere to begin, or for a household member what it is to them. */
   because: string;
   /** What it is to the household. */
   facing: Facing;
+  /** Whether the address answers from where the asking came from. */
+  reaches: FrontDoorReaches;
   /** The service, by the name it shows itself under. */
   service: string;
+  /** Why there is no address, where there is none. */
+  unaddressed?: string | null;
 }
+
+/** Whether an address answers from the network a request came from. */
+export type FrontDoorReaches = "here" | "not-here" | "unknown";
 
 /**
  * The household's one front door: which service it is, where it stands, and what
@@ -97,15 +104,19 @@ export interface FrontDoorReport {
    * Carried as a state rather than left to the sentence beneath it, for the reason
    * the standing is: an operator whose setting was refused reads the sentence, and
    * a browser, a script or a dashboard reads this.
+   *
+   * Absent for a household member.
    */
-  chosen: Chosen;
+  chosen?: Chosen | null;
   /** What that service is to them. Absent for the same reason. */
   facing?: Facing | null;
   /**
-   * What this comes to, in the words an operator would say it in — including,
-   * where there is no door, that there is none.
+   * What this comes to, in the words an operator would say it in, or a household
+   * member's for one — including, where there is no door, that there is none.
    */
   meaning: string;
+  /** Whether the address answers from where the asking came from. */
+  reaches: FrontDoorReaches;
   /**
    * The service the household begins at, by the name it shows itself under.
    * Absent where this stack publishes nothing they could begin at.
@@ -113,6 +124,8 @@ export interface FrontDoorReport {
   service?: string | null;
   /** Where the front door stands. */
   standing: FrontDoorStanding;
+  /** Why there is no address, where there is a door and none. */
+  unaddressed?: string | null;
 }
 
 /** Where the household's one front door stands. */

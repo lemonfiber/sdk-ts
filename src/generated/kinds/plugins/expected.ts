@@ -237,6 +237,8 @@ export interface PluginDeclaration {
   reviewed?: boolean;
   /** Every credential it says it will hold. */
   secrets?: PluginSecret[];
+  /** What refusing each of [`Self::reaches`] stops, in the same order. */
+  stops?: PluginStopping[];
   /** Where its source is published, as the plugin names it. */
   upstream?: string;
 }
@@ -306,32 +308,6 @@ export interface PluginExpectedFailure {
    * could-not-run is never excused.
    */
   verdict: PluginDeclaredVerdict;
-}
-
-/** One recording an assertion fails on as its manifest declares. */
-export interface PluginFailingAsDeclared {
-  /** The constraint of the expectation that fails there. */
-  constraint: PluginConstraint;
-  /** The recording. */
-  fixture: string;
-  /** What the recording held there. */
-  held: string;
-  /** Where within that constraint, for one that looks at places. */
-  place?: string | null;
-  /** Why the manifest says this recording is one the assertion fails on. */
-  reason: string;
-}
-
-/** One credential that would cross to a plugin, as the reading states it. */
-export interface PluginGranting {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The setting the credential is held under, as the credentials read names it. */
-  credential: string;
-  /** The capability of the plugin's own it would be granted to fill. */
-  for: string;
-  /** The service whose credential it is. */
-  of: string;
 }
 
 /** One bundled thing a plugin declares it will change. */
@@ -542,6 +518,26 @@ export interface PluginStepRan {
   tries: number;
   /** Why it came to what it did, where that wants saying. */
   why?: string | null;
+}
+
+/** One recipe step refusing a host stops. */
+export interface PluginStopped {
+  /** The recipe's id. */
+  recipe: string;
+  /** The step's id. */
+  step: string;
+  /** What the recipe accomplishes, in its author's words. */
+  title: string;
+}
+
+/** What refusing one host a plugin's recipes reach stops. */
+export interface PluginStopping {
+  /** The host, as the recipes name it. */
+  host: string;
+  /** What stops, in its author's words, where the manifest says. */
+  said?: string | null;
+  /** Every recipe step refusing it stops: each calling it, and each depending on one. */
+  steps?: PluginStopped[];
 }
 
 /** A value written exactly as declared. */

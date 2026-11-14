@@ -53,12 +53,18 @@ export interface Leaving {
 
 /** A request lemonfiber makes on an installed plugin's behalf, attributed to it. */
 export interface OnBehalf {
+  /** Whether this machine's settings allow it. */
+  allowed: boolean;
+  /** What stops working once it is refused. */
+  cost: string;
   /** Where it goes, as the plugin declared it. */
   destination: string;
   /** The plugin that declared it, by its id. */
   plugin: string;
   /** Why it may be made. */
   purpose: string;
+  /** The setting that refuses it: `plugin.<id>.reach.<host>`. */
+  switch: string;
 }
 
 /** One request lemonfiber makes, where it goes, and what refusing it costs. */
