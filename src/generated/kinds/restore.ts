@@ -13,8 +13,8 @@ import type { Scope } from "../shared/backup__restore.js";
  * value the capture wrote is the value the restore reads.
  */
 export interface BackupManifest {
-  /** When it was taken. Opaque here; the surface stamps it from the clock. */
-  created_at: string;
+  /** When it was taken. */
+  created_at: number;
   /** The data root it was taken against, to notice a restore to a different one. */
   data_root: string;
   /** What is inside, for a listing shown before anything is overwritten. */

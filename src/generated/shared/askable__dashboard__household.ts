@@ -47,7 +47,7 @@ export interface MemberAsking {
    * nothing happens. The period is a window that rolls rather than a month that
    * ends, so this is the moment their earliest counted request ages out.
    */
-  frees_up?: string | null;
+  frees_up?: number | null;
   /** What happens to what they ask for. */
   policy: Policy;
   /** Where they stand against what their period allows, taken over both counts. */

@@ -7,7 +7,7 @@ export interface DeviceChallenge {
   /** The challenge, in base64url, signed as it is written here. */
   challenge: string;
   /** When it stops standing, one minute after it was issued. */
-  expires: string;
+  expires: number;
 }
 
 /** The envelope carrying `device-challenge`. */

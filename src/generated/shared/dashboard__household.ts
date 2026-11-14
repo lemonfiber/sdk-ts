@@ -44,10 +44,10 @@ export interface HouseholdMember {
    */
   claimed: boolean;
   /**
-   * When the media server last saw them, as it timestamps it. Absent where nobody
-   * has ever signed in, which is exactly the unclaimed invitations.
+   * When the media server last saw them. Absent where nobody has ever signed in,
+   * which is exactly the unclaimed invitations.
    */
-  last_seen?: string | null;
+  last_seen?: number | null;
   /** The member, by the name their account is held under. */
   name: string;
   /** What they asked for, newest first. */
@@ -161,12 +161,12 @@ export interface MemberAccess {
 /** One thing a household member asked for, and where it stands in their words. */
 export interface MemberRequest {
   /**
-   * When the title arrived on the media server, as the request service timestamps it.
-   * Absent, not null, until it is there.
+   * When the title arrived on the media server, as the request service says. Absent,
+   * not null, until it is there.
    */
-  arrived?: string | null;
+  arrived?: number | null;
   /** When it was asked for, where the request service or the core says. */
-  asked?: string | null;
+  asked?: number | null;
   /**
    * About how much room it will want, at the quality in force.
    *
@@ -256,8 +256,8 @@ export type MemberStanding = "invited" | "expired" | "declined" | "active" | "su
 
 /** Where a refusal's words were carried, and when. */
 export interface Passed {
-  /** When the attempt was made, absent where the clock could not be written down. */
-  at?: string | null;
+  /** When the attempt was made, absent on a record kept without one. */
+  at?: number | null;
   /**
    * The services they reached, by the names the member knows them by. Empty where
    * there was nowhere this could send.
@@ -301,12 +301,9 @@ export interface Rated {
 export interface Refused {
   /**
    * When it was turned down, so somebody reading it later knows which answer this
-   * was rather than assuming it is the newest.
-   *
-   * Absent where the machine's clock could not be written as a date, which is a
-   * refusal worth keeping the words of and not worth losing them over.
+   * was rather than assuming it is the newest. Absent on a record kept without one.
    */
-  at?: string | null;
+  at?: number | null;
   /**
    * Whether nobody ruled on it and the period the household agreed to closed it,
    * rather than an operator turning it down.
