@@ -8,7 +8,7 @@
  * Tagged by what it does rather than by the field it sits in, so a reader parsing
  * one branches on a word rather than on which keys are present.
  */
-export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionPushEndpoint | ActionResettle | ActionRegrab | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
+export type Action = ActionRemove | ActionRestore | ActionDelete | ActionWithdraw | ActionRewind | ActionReseed | ActionMoveBack | ActionRenameBack | ActionKeepCopy | ActionRepin | ActionReconfigure | ActionRevoke | ActionReinstate | ActionRevokeDevice | ActionReinstateDevice | ActionPushEndpoint | ActionResettle | ActionRegrab | ActionUnask | ActionRegrant | ActionRehold | ActionUnreplaced | ActionUnmoved | ActionRun | ActionLeave;
 
 /** Remove a path that was created. */
 export interface ActionDelete {
@@ -285,6 +285,23 @@ export interface ActionRun {
 }
 
 /**
+ * Ask a curator to remove what a member asked it for, and take the ask the core
+ * keeps for it off the household list; nothing where the curator held some of it
+ * before.
+ */
+export interface ActionUnask {
+  does: "unask";
+  /** The ask the core keeps for it, by its reference. */
+  kept: string;
+  /** The curator's reference for it. */
+  reference: string;
+  /** What was asked for. */
+  unit: Unit;
+  /** Whether the curator held none of it before. */
+  whole: boolean;
+}
+
+/**
  * Leave one of lemonfiber's own guards on its plugin.
  *
  * Worked out so the record of the move has a reversal to name, and never carried out:
@@ -331,6 +348,12 @@ export interface ActionWithdraw {
    */
   written: number;
 }
+
+/** What a member asks a curator of books for. */
+export type BookUnit = "book" | "author" | "series";
+
+/** What a member asks a curator of music for. */
+export type MusicUnit = "album" | "artist";
 
 /**
  * A credential of another service the operator granted a third-party plugin, named by
@@ -418,6 +441,21 @@ export interface UndoReversal {
    * would do, what would go back.
    */
   reversed: Undo[];
+}
+
+/** What one ask is for, within its medium. */
+export type Unit = UnitMusic | UnitBooks;
+
+/** A book, a whole author or a series. */
+export interface UnitBooks {
+  medium: "books";
+  unit: BookUnit;
+}
+
+/** An album or a whole artist. */
+export interface UnitMusic {
+  medium: "music";
+  unit: MusicUnit;
 }
 
 /**
