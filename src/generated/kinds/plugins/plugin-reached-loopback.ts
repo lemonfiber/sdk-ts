@@ -2,34 +2,9 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginConstraint, PluginDeclaration, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { PluginVerdict } from "../../shared/plugin-claims__plugins.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
-
-/** One recording an assertion fails on as its manifest declares. */
-export interface PluginFailingAsDeclared {
-  /** The constraint of the expectation that fails there. */
-  constraint: PluginConstraint;
-  /** The recording. */
-  fixture: string;
-  /** What the recording held there. */
-  held: string;
-  /** Where within that constraint, for one that looks at places. */
-  place?: string | null;
-  /** Why the manifest says this recording is one the assertion fails on. */
-  reason: string;
-}
-
-/** One credential that would cross to a plugin, as the reading states it. */
-export interface PluginGranting {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The setting the credential is held under, as the credentials read names it. */
-  credential: string;
-  /** The capability of the plugin's own it would be granted to fill. */
-  for: string;
-  /** The service whose credential it is. */
-  of: string;
-}
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
@@ -213,6 +188,36 @@ export interface PluginPlaced {
   upstream?: { [key: string]: string };
 }
 
+/** One proof that has to hold before a plugin is reported installed. */
+export interface PluginProving {
+  /** What it asks, as the method and the path it is asked at. */
+  asks: string;
+  /**
+   * What asking it came to, or nothing where it was not asked.
+   *
+   * Absent on a rehearsal, which asks nothing. That is a different fact from a
+   * proof that was asked and established nothing, and the two must not read alike:
+   * one is an account of what would happen, the other is a service that did not
+   * answer.
+   */
+  came_to?: PluginVerdict | null;
+  /** What it establishes, in one line. */
+  establishes: string;
+  /**
+   * Which of the plugin's services it asks, where the manifest settles that.
+   *
+   * Nothing where it does not, which is a manifest the reader has already refused
+   * — carried as an absence rather than as a guess, so that a report built from a
+   * manifest nobody held to the reader says *this was not settled* instead of
+   * naming whichever service came first.
+   */
+  of?: string | null;
+  /** The proof's id, which its verdict is reported against. */
+  proof: string;
+  /** Why it is worth asserting. */
+  why: string;
+}
+
 /**
  * How an installed service is reached, where it is reached at all.
  *
@@ -234,17 +239,6 @@ export interface PluginPlaced {
  * of the system rather than a request a plugin made.
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedProxied | PluginReachedHousehold;
-
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
 
 /** From this machine and nowhere else. No route, and no label to route to. */
 export interface PluginReachedLoopback {
@@ -321,57 +315,54 @@ export interface PluginRunProof {
 /** A privileged shape lemonfiber writes for a service. */
 export type PluginShape = "egress-guard" | "render";
 
-/** What one assertion came to, whatever answered it. */
-export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared | PluginVerdictOpen;
-
-/** It does not, in every way it does not. */
-export interface PluginVerdictFailed {
-  /** Every way the recorded answer is not the declared one. */
-  faults: string[];
-  outcome: "failed";
-}
-
 /**
- * It fails on the recordings its manifest declares it fails on, on the constraint
- * each declaration names and on nothing else, and holds on every other recording it
- * was run against.
- *
- * Apart from passed and from failed, and counted as neither. The assertion does not
- * hold there, so a pass would say the opposite of what the recording shows; and the
- * failure is the one its author described and gave a reason for, so it does not
- * fail the run. Only ever reached against recordings: the live service is held to
- * the expectation as it is written.
+ * An adapter that writes the files of the service it fronts, through that service's
+ * whole configuration directory mounted into it.
  */
-export interface PluginVerdictFailingAsDeclared {
-  /** Each declared recording, what it held, and why it is one the assertion fails on. */
-  declared: PluginFailingAsDeclared[];
-  outcome: "failing-as-declared";
+export interface PluginSharing {
+  /** The adapter. */
+  adapter: string;
+  /** Where that service's configuration directory lands inside the adapter. */
+  at: string;
+  /** The service whose files it writes. */
+  upstream: string;
 }
 
-/**
- * The part an adapter claims is left open, because nobody entered the code its claim
- * takes: whoever reaches it first can claim it.
- *
- * Apart from passed and from failed, and counted as neither: the adapter holds to its
- * contract, and the part is not yet the household's. Only ever reached against the
- * live service, by an install's or a re-proof's claim.
- */
-export interface PluginVerdictOpen {
-  outcome: "open";
-  /** The part, and the code its claim takes. */
-  why: string;
+/** One service taking a privileged shape, as the reading states it. */
+export interface PluginTaking {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The devices it is given. */
+  devices: string[];
+  /** The kernel capabilities it is given. */
+  grants: string[];
+  /** Whether it is added to the group owning those devices on the engine's host. */
+  grouped: boolean;
+  /** The service taking it. */
+  service: string;
+  /** The shape it takes. */
+  shape: PluginShape;
 }
 
-/** The recording answers what the binding declares. */
-export interface PluginVerdictPassed {
-  outcome: "passed";
-}
-
-/** It could not be run, and so established nothing either way. */
-export interface PluginVerdictUnproven {
-  outcome: "unproven";
-  /** What stopped it being run. */
-  why: string;
+/** What the stack's own checks made of an install. */
+export interface PluginVerification {
+  /**
+   * Every check this install made worse.
+   *
+   * Empty is the answer an install needs, and it is the common one. What is here
+   * is what takes the install back.
+   */
+  broke: PluginChangedCheck[];
+  /**
+   * Every check nothing could be concluded about across the two readings.
+   *
+   * Reported and never acted on. *I could not tell* is not *it is still broken*,
+   * and an install reversed because a check could not reach a provider it also
+   * could not reach an hour ago would be punishing a plugin for the weather. It is
+   * said out loud rather than dropped, because the assurance an operator thought
+   * they had is the thing that went.
+   */
+  unsettled: PluginChangedCheck[];
 }
 
 /**
@@ -525,4 +516,17 @@ export interface SettingChoiceNeeding {
   needs: { [key: string]: ServiceConstant[] };
   /** The values. */
   values: ServiceConstant[];
+}
+
+/**
+ * An ask several services claim and nothing has chosen between, so it reaches
+ * nothing.
+ */
+export interface WiringContest {
+  /** The service that asked. */
+  by: string;
+  /** What it asked for. */
+  capability: string;
+  /** Every claimant, named — a plugin's with the plugin beside it. */
+  claimants: string[];
 }

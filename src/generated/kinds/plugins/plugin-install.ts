@@ -2,10 +2,11 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginGranting, PluginInstalled, PluginShape, PluginVerdict } from "./plugin-failing-as-declared.js";
+import type { PluginChange, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
 import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
+import type { PluginEvidence } from "../../shared/plugin-claims__plugins.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
 import type { UndoReversal } from "../../shared/plugins__undo.js";
 import type { Wired } from "../../shared/plugins__wiring.js";
@@ -239,36 +240,6 @@ export interface PluginNonconforming {
   why: string;
 }
 
-/** One proof that has to hold before a plugin is reported installed. */
-export interface PluginProving {
-  /** What it asks, as the method and the path it is asked at. */
-  asks: string;
-  /**
-   * What asking it came to, or nothing where it was not asked.
-   *
-   * Absent on a rehearsal, which asks nothing. That is a different fact from a
-   * proof that was asked and established nothing, and the two must not read alike:
-   * one is an account of what would happen, the other is a service that did not
-   * answer.
-   */
-  came_to?: PluginVerdict | null;
-  /** What it establishes, in one line. */
-  establishes: string;
-  /**
-   * Which of the plugin's services it asks, where the manifest settles that.
-   *
-   * Nothing where it does not, which is a manifest the reader has already refused
-   * — carried as an absence rather than as a guess, so that a report built from a
-   * manifest nobody held to the reader says *this was not settled* instead of
-   * naming whichever service came first.
-   */
-  of?: string | null;
-  /** The proof's id, which its verdict is reported against. */
-  proof: string;
-  /** Why it is worth asserting. */
-  why: string;
-}
-
 /** What taking a plugin off the machine came to, or would come to. */
 export interface PluginRemoval {
   /**
@@ -356,19 +327,6 @@ export interface PluginRestored {
   version: string;
 }
 
-/**
- * An adapter that writes the files of the service it fronts, through that service's
- * whole configuration directory mounted into it.
- */
-export interface PluginSharing {
-  /** The adapter. */
-  adapter: string;
-  /** Where that service's configuration directory lands inside the adapter. */
-  at: string;
-  /** The service whose files it writes. */
-  upstream: string;
-}
-
 /** Whether one installed plugin's source can still be fetched. */
 export interface PluginSource {
   /** The source the record says it came from. */
@@ -423,22 +381,6 @@ export interface PluginSubstituted {
   plugin: string;
   /** The service chosen. */
   service: string;
-}
-
-/** One service taking a privileged shape, as the reading states it. */
-export interface PluginTaking {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The devices it is given. */
-  devices: string[];
-  /** The kernel capabilities it is given. */
-  grants: string[];
-  /** Whether it is added to the group owning those devices on the engine's host. */
-  grouped: boolean;
-  /** The service taking it. */
-  service: string;
-  /** The shape it takes. */
-  shape: PluginShape;
 }
 
 /** A capability that would have nothing filling it. */
@@ -513,36 +455,11 @@ export interface PluginUpdate {
   went_back: UndoReversal;
 }
 
-/** What the stack's own checks made of an install. */
-export interface PluginVerification {
-  /**
-   * Every check this install made worse.
-   *
-   * Empty is the answer an install needs, and it is the common one. What is here
-   * is what takes the install back.
-   */
-  broke: PluginChangedCheck[];
-  /**
-   * Every check nothing could be concluded about across the two readings.
-   *
-   * Reported and never acted on. *I could not tell* is not *it is still broken*,
-   * and an install reversed because a check could not reach a provider it also
-   * could not reach an hour ago would be punishing a plugin for the weather. It is
-   * said out loud rather than dropped, because the assurance an operator thought
-   * they had is the thing that went.
-   */
-  unsettled: PluginChangedCheck[];
-}
-
-/**
- * An ask several services claim and nothing has chosen between, so it reaches
- * nothing.
- */
-export interface WiringContest {
-  /** The service that asked. */
-  by: string;
-  /** What it asked for. */
-  capability: string;
-  /** Every claimant, named — a plugin's with the plugin beside it. */
-  claimants: string[];
+/** The envelope carrying `plugins`. */
+export interface PluginsEnvelope {
+  api_version: number;
+  data: PluginInstalls;
+  host?: string | null;
+  job?: string | null;
+  kind: "plugins";
 }
