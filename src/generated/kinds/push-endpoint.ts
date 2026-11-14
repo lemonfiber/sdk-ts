@@ -18,7 +18,7 @@ export interface RegisteredPushEndpoint {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: string;
+  registered: number;
   /** Whether this was a rehearsal: what registering would come to, with nothing kept. */
   rehearsed: boolean;
 }

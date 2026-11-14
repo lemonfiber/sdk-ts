@@ -144,7 +144,7 @@ export interface Finding {
    * move it. Absent where the finding says nothing is wrong, and where the checks
    * ran for something other than a diagnosis.
    */
-  onset?: string | null;
+  onset?: number | null;
   /**
    * Whose check this is: one this build ships, or one a named plugin contributed.
    *

@@ -9,7 +9,7 @@ export interface ListedPushEndpoint {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: string;
+  registered: number;
 }
 
 /** Every push endpoint, and what became of a removal. */

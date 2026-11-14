@@ -360,8 +360,11 @@ export type MusicUnit = "album" | "artist";
  * the setting it is held under and never by its value.
  */
 export interface PluginGrant {
-  /** When the operator approved it, as the record stamps every change. */
-  at: string;
+  /**
+   * When the operator approved it, as the record stamps every change.
+   * Absent on an offer's account of a grant, which nobody has approved yet.
+   */
+  at?: number | null;
   /** The setting the credential is held under, as the credentials read names it. */
   credential: string;
   /** The capability of the plugin's own it was granted to fill. */

@@ -6,8 +6,8 @@ import type { KeyPurpose } from "../shared/key-claim__keys__minted-key.js";
 
 /** A key minted as a claim: the link that collects it, and no secret. */
 export interface KeyClaim {
-  /** When the claim stops collecting the key, written as every other instant is. */
-  lapses: string;
+  /** When the claim stops collecting the key. */
+  lapses: number;
   /**
    * The key link: `lemonfiber://key` with the address, the certificate fingerprint,
    * the stack, when the claim lapses and the claim. Shown once, and drawn as a code.

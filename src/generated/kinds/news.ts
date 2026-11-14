@@ -29,7 +29,7 @@ export interface NewsCheck {
    * When the stack first saw it wrong since it last saw it right, in whole seconds
    * since the epoch.
    */
-  onset: string;
+  onset: number;
 }
 
 /** The envelope carrying `news`. */

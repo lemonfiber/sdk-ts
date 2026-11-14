@@ -228,8 +228,8 @@ export interface PluginInstalls {
 
 /** One answer a plugin's adapter gave outside a contract it speaks. */
 export interface PluginNonconforming {
-  /** When it answered so, as RFC 3339. */
-  at: string;
+  /** When it answered so. */
+  at: number;
   /** The capability it was asked as. */
   capability: string;
   /** The operation it was asked. */

@@ -39,7 +39,7 @@ export interface Affected {
    * The condition's own stamp, kept between runs, so every surface that reports
    * the check names the same moment and a restart does not make an old fault new.
    */
-  onset: string;
+  onset: number;
   /** What to do about it, most likely first. */
   remedies: string[];
   /** How bad it is. */

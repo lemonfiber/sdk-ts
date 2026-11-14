@@ -91,8 +91,8 @@ export interface TraceEnvelope {
  * pattern it is rather than flattened to a single furthest stage.
  */
 export interface TraceMoment {
-  /** When the service reported it. */
-  at: string;
+  /** When it happened, where the service reported it. */
+  at?: number | null;
   /** What happened. */
   outcome: TraceOutcome;
 }
@@ -164,7 +164,7 @@ export interface TraceStage {
    * When it happened, as the service reported it — absent for a stage inferred
    * rather than timed, such as being monitored.
    */
-  at?: string | null;
+  at?: number | null;
   /** The service that recorded it. */
   service: string;
   /** The stage reached. */

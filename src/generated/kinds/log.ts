@@ -31,15 +31,6 @@ export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
  */
 export interface LogLine {
   /**
-   * When the container itself says it wrote the line, where it said so.
-   *
-   * Kept verbatim and unparsed. Containers disagree with the host clock and
-   * with each other, and the only defensible ordering is each container's own
-   * account of itself — which a reader can only apply if it is carried
-   * rather than replaced by an arrival time.
-   */
-  at?: string | null;
-  /**
    * How bad the line says it is, in one lowercase word.
    *
    * Absent where the line says nothing about itself. It is never guessed from
@@ -52,6 +43,16 @@ export interface LogLine {
   line: string;
   /** The Compose service it came from. */
   service: string;
+  /**
+   * The container's own text stamped on the line, where it stamped one: not one
+   * of lemonfiber's instants.
+   *
+   * Kept verbatim and unparsed. Containers disagree with the host clock and
+   * with each other, and the only defensible ordering is each container's own
+   * account of itself — which a reader can only apply if it is carried
+   * rather than replaced by an arrival time.
+   */
+  stamped?: string | null;
   /** Which stream it arrived on. */
   stream: Stream;
 }

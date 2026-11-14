@@ -36,11 +36,11 @@ export interface PluginInstalled {
    * the epoch.
    *
    * The install's own stamp, the one its changes are journalled under, so the
-   * listing and the history name the same moment. Empty where the record predates
-   * it; a rehearsal's account carries the moment it was asked, which is the stamp
-   * the install would have run under.
+   * listing and the history name the same moment. Absent where the record predates
+   * it, and on an offer's account of what installing would record, which is not yet
+   * stamped.
    */
-  installed_at?: string;
+  installed_at?: number | null;
   /** The SHA-256 of the manifest it was installed from, in lower-case hexadecimal. */
   manifest?: string;
   /**
