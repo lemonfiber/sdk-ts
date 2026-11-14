@@ -2,7 +2,7 @@
 // The `asked` envelope, and the shapes only `asked` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked.js";
+import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked__dashboard__household__news-items.js";
 
 /** The envelope carrying `asked`. */
 export interface AskedEnvelope {

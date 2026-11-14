@@ -2,7 +2,7 @@
 // The body `/api/setup/answer` takes, and the shapes only it carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Protocols } from "../shared/body-setup-answer__setup.js";
+import type { Protocols } from "../shared/body-setup-answer__settled__setup.js";
 
 /** How much an operator wants to be told. */
 export type Appetite = "problems-only" | "with-completions" | "everything";

@@ -2,7 +2,7 @@
 // The `askable-kinds` envelope, and the shapes only `askable-kinds` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked.js";
+import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked__dashboard__household__news-items.js";
 
 /** One kind a member may ask for now, with the units it is asked for in. */
 export interface AskableKind {

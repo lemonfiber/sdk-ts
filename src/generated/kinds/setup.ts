@@ -2,7 +2,7 @@
 // The `setup` envelope, and the shapes only `setup` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Protocols } from "../shared/body-setup-answer__setup.js";
+import type { Protocols } from "../shared/body-setup-answer__settled__setup.js";
 
 /** The envelope carrying `setup`. */
 export interface SetupEnvelope {

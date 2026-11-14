@@ -1,5 +1,5 @@
 // Generated from the lemonfiber contract. Do not edit.
-// The shapes `/api/setup/answer` and `setup` both carry.
+// The shapes `/api/setup/answer`, `settled` and `setup` all carry.
 // Regenerate with `npm run contract:generate`.
 
 /**

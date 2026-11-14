@@ -2,6 +2,7 @@
 // The shapes `dashboard` and `household` both carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { TitleKind, TitleUnit } from "./askable__askable-kinds__asked__dashboard__household__news-items.js";
 import type { MemberAsking, Policy } from "./askable__dashboard__household.js";
 import type { Unrated } from "./dashboard__household__invitation.js";
 
@@ -181,6 +182,11 @@ export interface MemberRequest {
    */
   id: string;
   /**
+   * The kind of title it asks for: a series, a film, music or books. Absent, not
+   * null, where the request service names a kind this build does not know.
+   */
+  kind?: TitleKind | null;
+  /**
    * What kind of thing it is — a series, a film — in the household's own words.
    * Absent where the request service names a kind this build does not know.
    */
@@ -216,6 +222,11 @@ export interface MemberRequest {
    * service's own record of the title. Absent where neither names it.
    */
   title?: string | null;
+  /**
+   * What an ask for music or books asks for: one album or book, or a whole artist,
+   * author or series. Absent, not null, on a series or a film.
+   */
+  unit?: TitleUnit | null;
   /**
    * How many whole days it has been waiting on somebody, where it is waiting at all
    * and the service's own date could be read.
