@@ -61,4 +61,4 @@ export interface ProblemStep {
 }
 
 /** What one step of a recipe came to. */
-export type StepCame = "answered" | "skipped" | "not-reached" | "unreachable" | "refused" | "withheld" | "unexpected" | "uncaptured" | "oversized";
+export type StepCame = "answered" | "skipped" | "not-reached" | "unreachable" | "refused" | "withheld" | "declined" | "unexpected" | "uncaptured" | "oversized";

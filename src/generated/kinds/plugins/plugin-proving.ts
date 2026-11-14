@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginShape, PluginSharing } from "./plugin-reached-household.js";
+import type { PluginChange, PluginChangedCheck, PluginDemand, PluginEvidence, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
+import type { PluginGranting, PluginInstalled, PluginShape, PluginVerdict } from "./plugin-failing-as-declared.js";
 import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
 import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
 import type { Waiting } from "../../shared/plugins__settings__status.js";
@@ -239,6 +239,36 @@ export interface PluginNonconforming {
   why: string;
 }
 
+/** One proof that has to hold before a plugin is reported installed. */
+export interface PluginProving {
+  /** What it asks, as the method and the path it is asked at. */
+  asks: string;
+  /**
+   * What asking it came to, or nothing where it was not asked.
+   *
+   * Absent on a rehearsal, which asks nothing. That is a different fact from a
+   * proof that was asked and established nothing, and the two must not read alike:
+   * one is an account of what would happen, the other is a service that did not
+   * answer.
+   */
+  came_to?: PluginVerdict | null;
+  /** What it establishes, in one line. */
+  establishes: string;
+  /**
+   * Which of the plugin's services it asks, where the manifest settles that.
+   *
+   * Nothing where it does not, which is a manifest the reader has already refused
+   * — carried as an absence rather than as a guess, so that a report built from a
+   * manifest nobody held to the reader says *this was not settled* instead of
+   * naming whichever service came first.
+   */
+  of?: string | null;
+  /** The proof's id, which its verdict is reported against. */
+  proof: string;
+  /** Why it is worth asserting. */
+  why: string;
+}
+
 /** What taking a plugin off the machine came to, or would come to. */
 export interface PluginRemoval {
   /**
@@ -324,6 +354,19 @@ export interface PluginRestored {
   running: boolean;
   /** The version put back, which is the one the record still names. */
   version: string;
+}
+
+/**
+ * An adapter that writes the files of the service it fronts, through that service's
+ * whole configuration directory mounted into it.
+ */
+export interface PluginSharing {
+  /** The adapter. */
+  adapter: string;
+  /** Where that service's configuration directory lands inside the adapter. */
+  at: string;
+  /** The service whose files it writes. */
+  upstream: string;
 }
 
 /** Whether one installed plugin's source can still be fetched. */
@@ -489,15 +532,6 @@ export interface PluginVerification {
    * they had is the thing that went.
    */
   unsettled: PluginChangedCheck[];
-}
-
-/** The envelope carrying `plugins`. */
-export interface PluginsEnvelope {
-  api_version: number;
-  data: PluginInstalls;
-  host?: string | null;
-  job?: string | null;
-  kind: "plugins";
 }
 
 /**

@@ -2,8 +2,34 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginDeclaration, PluginFailingAsDeclared, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { Contribution, Expect, PluginAsking, PluginConstraint, PluginDeclaration, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/plugins__undo.js";
+
+/** One recording an assertion fails on as its manifest declares. */
+export interface PluginFailingAsDeclared {
+  /** The constraint of the expectation that fails there. */
+  constraint: PluginConstraint;
+  /** The recording. */
+  fixture: string;
+  /** What the recording held there. */
+  held: string;
+  /** Where within that constraint, for one that looks at places. */
+  place?: string | null;
+  /** Why the manifest says this recording is one the assertion fails on. */
+  reason: string;
+}
+
+/** One credential that would cross to a plugin, as the reading states it. */
+export interface PluginGranting {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it would be granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
+}
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
@@ -187,36 +213,6 @@ export interface PluginPlaced {
   upstream?: { [key: string]: string };
 }
 
-/** One proof that has to hold before a plugin is reported installed. */
-export interface PluginProving {
-  /** What it asks, as the method and the path it is asked at. */
-  asks: string;
-  /**
-   * What asking it came to, or nothing where it was not asked.
-   *
-   * Absent on a rehearsal, which asks nothing. That is a different fact from a
-   * proof that was asked and established nothing, and the two must not read alike:
-   * one is an account of what would happen, the other is a service that did not
-   * answer.
-   */
-  came_to?: PluginVerdict | null;
-  /** What it establishes, in one line. */
-  establishes: string;
-  /**
-   * Which of the plugin's services it asks, where the manifest settles that.
-   *
-   * Nothing where it does not, which is a manifest the reader has already refused
-   * — carried as an absence rather than as a guess, so that a report built from a
-   * manifest nobody held to the reader says *this was not settled* instead of
-   * naming whichever service came first.
-   */
-  of?: string | null;
-  /** The proof's id, which its verdict is reported against. */
-  proof: string;
-  /** Why it is worth asserting. */
-  why: string;
-}
-
 /**
  * How an installed service is reached, where it is reached at all.
  *
@@ -324,19 +320,6 @@ export interface PluginRunProof {
 
 /** A privileged shape lemonfiber writes for a service. */
 export type PluginShape = "egress-guard" | "render";
-
-/**
- * An adapter that writes the files of the service it fronts, through that service's
- * whole configuration directory mounted into it.
- */
-export interface PluginSharing {
-  /** The adapter. */
-  adapter: string;
-  /** Where that service's configuration directory lands inside the adapter. */
-  at: string;
-  /** The service whose files it writes. */
-  upstream: string;
-}
 
 /** What one assertion came to, whatever answered it. */
 export type PluginVerdict = PluginVerdictPassed | PluginVerdictFailed | PluginVerdictUnproven | PluginVerdictFailingAsDeclared | PluginVerdictOpen;
