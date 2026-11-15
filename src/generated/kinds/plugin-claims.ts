@@ -2,8 +2,8 @@
 // The `plugin-claims` envelope, and the shapes only `plugin-claims` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Violation } from "../shared/plugin-claims__plugin-conformance__plugin-recording.js";
-import type { PluginEvidence, PluginVerdict } from "../shared/plugin-claims__plugins.js";
+import type { PluginEvidence, PluginVerdict } from "../shared/plugin-constraint.js";
+import type { Violation } from "../shared/violation.js";
 
 /** One assertion that is not a probe, and what its recording came to. */
 export interface Asserted {

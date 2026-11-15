@@ -2,7 +2,7 @@
 // The `repair` envelope, and the shapes only `repair` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Remedy } from "../shared/doctor__error__plugins__repair.js";
+import type { Remedy } from "../shared/remedy.js";
 
 /** A repair that has run out of chances, and where to go instead. */
 export interface Beyond {

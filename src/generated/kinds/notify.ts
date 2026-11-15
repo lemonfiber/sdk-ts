@@ -2,7 +2,7 @@
 // The `notify` envelope, and the shapes only `notify` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { NotificationKind } from "../shared/alerts__notify.js";
+import type { NotificationKind } from "../shared/notification-kind.js";
 
 /** One back-end, as the read lists it. */
 export interface NotifyBackend {

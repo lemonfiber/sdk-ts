@@ -2,7 +2,7 @@
 // The `preview` envelope, and the shapes only `preview` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Plan } from "../shared/lifecycle__preview.js";
+import type { Plan } from "../shared/dropped.js";
 
 /** The envelope carrying `preview`. */
 export interface PreviewEnvelope {

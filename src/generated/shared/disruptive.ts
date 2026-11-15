@@ -2,10 +2,10 @@
 // The shapes `doctor` and `plugins` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { ProblemSeverity } from "./alert__dashboard__doctor__error__plugins.js";
-import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugins__wiring__wizard.js";
-import type { Code, Problem, ProblemState, ProblemStep } from "./doctor__error__plugins.js";
-import type { Remedy } from "./doctor__error__plugins__repair.js";
+import type { Code, Problem, ProblemState, ProblemStep } from "./code.js";
+import type { ProblemSeverity } from "./problem-severity.js";
+import type { Remedy } from "./remedy.js";
+import type { ValueOrigin } from "./value-origin.js";
 
 /** What checking a finding disturbs, and the narrowing a diagnosis runs it under. */
 export interface Disruptive {

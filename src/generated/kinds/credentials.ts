@@ -2,7 +2,7 @@
 // The `credentials` envelope, and the shapes only `credentials` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { ValueOrigin } from "../shared/config__credentials__doctor__outbound__plugins__wiring__wizard.js";
+import type { ValueOrigin } from "../shared/value-origin.js";
 
 /**
  * A credential of another service granted to a third-party plugin, named by the setting it

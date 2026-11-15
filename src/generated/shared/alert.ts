@@ -2,7 +2,7 @@
 // The shapes `alert` and `dashboard` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { ProblemSeverity } from "./alert__dashboard__doctor__error__plugins.js";
+import type { ProblemSeverity } from "./problem-severity.js";
 
 /** One interruption: what happened, which way, and how much it matters. */
 export interface Alert {

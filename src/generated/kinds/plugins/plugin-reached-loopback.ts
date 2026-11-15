@@ -3,8 +3,8 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
-import type { PluginVerdict } from "../../shared/plugin-claims__plugins.js";
-import type { PluginGrant } from "../../shared/plugins__undo.js";
+import type { PluginGrant } from "../../shared/action.js";
+import type { PluginVerdict } from "../../shared/plugin-constraint.js";
 
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {

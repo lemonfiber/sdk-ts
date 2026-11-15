@@ -2,8 +2,8 @@
 // The `config` envelope, and the shapes only `config` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
-import type { SettingReport, Validation } from "../shared/config__wizard.js";
+import type { SettingReport, Validation } from "../shared/setting-report.js";
+import type { Stance } from "../shared/stance.js";
 
 /** One download still coming down when a reduction was asked for. */
 export interface Active {

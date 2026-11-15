@@ -2,7 +2,7 @@
 // The `key-claim` envelope, and the shapes only `key-claim` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { KeyPurpose } from "../shared/key-claim__keys__minted-key.js";
+import type { KeyPurpose } from "../shared/key-purpose.js";
 
 /** A key minted as a claim: the link that collects it, and no secret. */
 export interface KeyClaim {

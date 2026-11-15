@@ -2,7 +2,7 @@
 // The `alert` envelope, and the shapes only `alert` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Alert } from "../shared/alert__dashboard.js";
+import type { Alert } from "../shared/alert.js";
 
 /** The envelope carrying `alert`. */
 export interface AlertEnvelope {

@@ -2,7 +2,7 @@
 // The `trace` envelope, and the shapes only `trace` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stage } from "../shared/stuck__trace.js";
+import type { Stage } from "../shared/stage.js";
 
 /**
  * How much of a traced series is here, season by season — the aggregate that turns a

@@ -2,7 +2,7 @@
 // The `replacement` envelope, and the shapes only `replacement` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
+import type { Stance } from "../shared/stance.js";
 
 /** What standing in place of a setup already here came to, or would come to. */
 export interface ReplaceReport {

@@ -2,7 +2,7 @@
 // The `step` envelope, and the shapes only `step` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Line } from "../shared/step__walkthrough.js";
+import type { Line } from "../shared/line.js";
 
 /** The envelope carrying `step`. */
 export interface StepEnvelope {

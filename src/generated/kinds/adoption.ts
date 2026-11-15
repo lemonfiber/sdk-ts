@@ -2,8 +2,8 @@
 // The `adoption` envelope, and the shapes only `adoption` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
-import type { CarryingReport } from "../shared/adoption__migration.js";
+import type { CarryingReport } from "../shared/carrying-report.js";
+import type { Stance } from "../shared/stance.js";
 
 /** What adopting a setup already here came to, or would come to. */
 export interface AdoptReport {

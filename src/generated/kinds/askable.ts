@@ -2,8 +2,8 @@
 // The `askable` envelope, and the shapes only `askable` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked__dashboard__household__news-items.js";
-import type { MemberAsking } from "../shared/askable__dashboard__household.js";
+import type { MemberAsking } from "../shared/asking-standing.js";
+import type { TitleKind, TitleUnit } from "../shared/title-kind.js";
 
 /** One title a member's search found. */
 export interface Askable {

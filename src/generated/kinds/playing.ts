@@ -2,7 +2,7 @@
 // The `playing` envelope, and the shapes only `playing` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Medium } from "../shared/held__part-way__playing__title.js";
+import type { Medium } from "../shared/medium.js";
 
 /**
  * Somebody watching something now, as the media server lists the session.

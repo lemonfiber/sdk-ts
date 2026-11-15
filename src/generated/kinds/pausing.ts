@@ -2,7 +2,7 @@
 // The `pausing` envelope, and the shapes only `pausing` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Pulling } from "../shared/bandwidth__pausing.js";
+import type { Pulling } from "../shared/pulling.js";
 
 /** What one download client said about being paused or resumed. */
 export interface PausedClient {

@@ -2,7 +2,7 @@
 // The `alerts` envelope, and the shapes only `alerts` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { NotificationKind } from "../shared/alerts__notify.js";
+import type { NotificationKind } from "../shared/notification-kind.js";
 
 /** What the operator will be told about, and what changing it came to. */
 export interface AlertReport {

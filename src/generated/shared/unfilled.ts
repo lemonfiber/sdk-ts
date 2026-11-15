@@ -2,7 +2,7 @@
 // The shapes `substitution` and `wiring` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { Apis } from "./plugins__substitution__wiring.js";
+import type { Apis } from "./apis.js";
 
 /**
  * A capability something asks for and nothing fills, and what asked for it.

@@ -2,7 +2,7 @@
 // The `walkthrough` envelope, and the shapes only `walkthrough` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Line, WalkthroughStep } from "../shared/step__walkthrough.js";
+import type { Line, WalkthroughStep } from "../shared/line.js";
 
 /** Where a finished walkthrough leaves the operator. */
 export interface Handover {

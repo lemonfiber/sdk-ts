@@ -2,7 +2,7 @@
 // The `plugin-conformance` envelope, and the shapes only `plugin-conformance` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Violation } from "../shared/plugin-claims__plugin-conformance__plugin-recording.js";
+import type { Violation } from "../shared/violation.js";
 
 /** What a plugin's recordings say about the contracts its adapters speak. */
 export interface Conformed {

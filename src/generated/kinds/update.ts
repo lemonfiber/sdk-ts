@@ -2,11 +2,11 @@
 // The `update` envelope, and the shapes only `update` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
-import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
-import type { MoveOffered } from "../shared/lifecycle__update.js";
-import type { Notes } from "../shared/update__version.js";
+import type { Notes } from "../shared/changelog-state.js";
+import type { MoveOffered } from "../shared/move-offered.js";
+import type { StackEdit } from "../shared/stack-edit.js";
+import type { StackMoveTaken } from "../shared/stack-move-taken.js";
+import type { Unvetted } from "../shared/unvetted.js";
 
 /** How one service's update ended. */
 export type Ending = "updated" | "not-fetched" | "not-started" | "not-reached";

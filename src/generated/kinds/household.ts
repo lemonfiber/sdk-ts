@@ -2,7 +2,7 @@
 // The `household` envelope, and the shapes only `household` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { HouseholdReport } from "../shared/dashboard__household.js";
+import type { HouseholdReport } from "../shared/estimate.js";
 
 /** The envelope carrying `household`. */
 export interface HouseholdEnvelope {

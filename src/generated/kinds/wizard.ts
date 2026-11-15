@@ -2,8 +2,8 @@
 // The `wizard` envelope, and the shapes only `wizard` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { SettingReport, Validation } from "../shared/config__wizard.js";
-import type { Choosable } from "../shared/settings__wizard.js";
+import type { Choosable } from "../shared/choosable.js";
+import type { SettingReport, Validation } from "../shared/setting-report.js";
 
 /**
  * One question the VPN step asks of the service filling `network.egress-guard`.

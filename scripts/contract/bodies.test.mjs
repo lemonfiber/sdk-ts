@@ -90,9 +90,9 @@ describe("writing each route's body", () => {
   });
 
   it("writes a shape a body and a kind both carry once, beside both", () => {
-    expect(written.get("shared/body-setup-answer__setup.ts")).toContain("export interface Protocols {");
+    expect(written.get("shared/protocols.ts")).toContain("export interface Protocols {");
     expect(written.get("bodies/setup-answer.ts")).toContain(
-      'import type { Protocols } from "../shared/body-setup-answer__setup.js";',
+      'import type { Protocols } from "../shared/protocols.js";',
     );
     expect(written.get("kinds/setup.ts")).not.toContain("export interface Protocols");
   });
@@ -181,13 +181,4 @@ describe("refusing a body that cannot be written one way", () => {
     );
   });
 
-  it("refuses a kind and a body whose shapes would be written in one module", () => {
-    const other = { type: "integer" };
-    const kinds = {
-      "body-keys": kind({ $ref: "#/$defs/Code" }, { Code: CODE }),
-      wizard: kind({ $ref: "#/$defs/Code" }, { Code: CODE, Other: other }),
-    };
-    const bodies = { "/api/keys": { type: "object", properties: { o: { $ref: "#/$defs/Other" } }, $defs: { Other: other } } };
-    expect(refusal(artefact(kinds, { bodies }))).toContain("would both be written in `shared/body-keys__wizard`.");
-  });
 });

@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { HealthSummary, PanelArray_of_Downloader, PanelArray_of_Queue, PanelArray_of_Service, PanelArray_of_Transfer, PanelFrontDoorReport, PanelHouseholdReport, PanelStorage, PanelVpn, Stuck, Telemetry } from "./affected.js";
-import type { Alert } from "../../shared/alert__dashboard.js";
+import type { Alert } from "../../shared/alert.js";
 
 /** The envelope carrying `dashboard`. */
 export interface DashboardEnvelope {

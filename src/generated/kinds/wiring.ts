@@ -2,8 +2,8 @@
 // The `wiring` envelope, and the shapes only `wiring` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Wired } from "../shared/plugins__wiring.js";
-import type { Unfilled } from "../shared/substitution__wiring.js";
+import type { Wired } from "../shared/reaches.js";
+import type { Unfilled } from "../shared/unfilled.js";
 
 /** The envelope carrying `wiring`. */
 export interface WiringEnvelope {

@@ -2,7 +2,7 @@
 // The `doctor` envelope, and the shapes only `doctor` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Finding } from "../shared/doctor__plugins.js";
+import type { Finding } from "../shared/disruptive.js";
 
 /** The envelope carrying `doctor`. */
 export interface DoctorEnvelope {

@@ -2,7 +2,7 @@
 // The `bandwidth` envelope, and the shapes only `bandwidth` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Pulling } from "../shared/bandwidth__pausing.js";
+import type { Pulling } from "../shared/pulling.js";
 
 /** How one download client answered about the limits on it. */
 export type Answer = AnswerHeld | AnswerSilent;

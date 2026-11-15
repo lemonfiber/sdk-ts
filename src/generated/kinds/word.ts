@@ -2,7 +2,7 @@
 // The `word` envelope, and the shapes only `word` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Term } from "../shared/glossary__word.js";
+import type { Term } from "../shared/term.js";
 
 /** The envelope carrying `word`. */
 export interface WordEnvelope {

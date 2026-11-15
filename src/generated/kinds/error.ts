@@ -2,7 +2,7 @@
 // The `error` envelope, and the shapes only `error` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Problem } from "../shared/doctor__error__plugins.js";
+import type { Problem } from "../shared/code.js";
 
 /** The envelope carrying `error`. */
 export interface ErrorEnvelope {

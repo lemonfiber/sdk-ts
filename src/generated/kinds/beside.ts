@@ -2,8 +2,8 @@
 // The `beside` envelope, and the shapes only `beside` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
-import type { MovedReport } from "../shared/beside__migration.js";
+import type { MovedReport } from "../shared/moved-report.js";
+import type { Stance } from "../shared/stance.js";
 
 /** The envelope carrying `beside`. */
 export interface BesideEnvelope {

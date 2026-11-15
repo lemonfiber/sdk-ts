@@ -2,7 +2,7 @@
 // The `news` envelope, and the shapes only `news` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { NewsKind } from "../shared/news__news-items.js";
+import type { NewsKind } from "../shared/news-kind.js";
 
 /**
  * The newest of each kind, by what names them and nothing else.

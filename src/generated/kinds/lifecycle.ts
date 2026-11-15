@@ -2,15 +2,15 @@
 // The `lifecycle` envelope, and the shapes only `lifecycle` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Forwarded } from "../shared/boot__lifecycle.js";
-import type { Service } from "../shared/dashboard__lifecycle__status.js";
-import type { ConflictReport } from "../shared/lifecycle__migration.js";
-import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
-import type { Plan } from "../shared/lifecycle__preview.js";
-import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
-import type { Condition } from "../shared/lifecycle__status.js";
-import type { MoveOffered } from "../shared/lifecycle__update.js";
+import type { Condition } from "../shared/condition.js";
+import type { ConflictReport } from "../shared/conflict-report.js";
+import type { Plan } from "../shared/dropped.js";
+import type { Forwarded } from "../shared/forwarded.js";
+import type { MoveOffered } from "../shared/move-offered.js";
+import type { Service } from "../shared/service.js";
+import type { StackEdit } from "../shared/stack-edit.js";
+import type { StackMoveTaken } from "../shared/stack-move-taken.js";
+import type { Unvetted } from "../shared/unvetted.js";
 
 /** The envelope carrying `lifecycle`. */
 export interface LifecycleEnvelope {

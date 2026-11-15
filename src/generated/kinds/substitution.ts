@@ -2,9 +2,9 @@
 // The `substitution` envelope, and the shapes only `substitution` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
-import type { Unfilled } from "../shared/substitution__wiring.js";
+import type { StackMoveTaken } from "../shared/stack-move-taken.js";
+import type { Unfilled } from "../shared/unfilled.js";
+import type { Unvetted } from "../shared/unvetted.js";
 
 /**
  * One kind of thing the part a substitution stops holds, and the replacement does not

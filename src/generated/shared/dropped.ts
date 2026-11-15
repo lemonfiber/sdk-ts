@@ -2,7 +2,7 @@
 // The shapes `lifecycle` and `preview` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { Filtered, StackProtocol } from "./lifecycle__preview__status.js";
+import type { Filtered, StackProtocol } from "./filtered.js";
 
 /**
  * A profile left out of a closure, and what it would have needed.

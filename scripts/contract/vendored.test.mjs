@@ -71,7 +71,7 @@ describe("reading either layout", () => {
   it("generates from a directory exactly what the single file generates, the lists included", async () => {
     const files = await generated(await held(WHOLE));
     expect(files).toEqual(await generated(await held(WHOLE, "single")));
-    expect(files.get(`${OUT}/shared/error__status.ts`)).toContain("export type Code = string;");
+    expect(files.get(`${OUT}/shared/code.ts`)).toContain("export type Code = string;");
     expect(files.get(`${OUT}/refusals.ts`)).toContain('"READ-1"');
   });
 

@@ -2,8 +2,8 @@
 // The `title` envelope, and the shapes only `title` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Medium } from "../shared/held__part-way__playing__title.js";
-import type { Pinned } from "../shared/held__part-way__title.js";
+import type { Medium } from "../shared/medium.js";
+import type { Pinned } from "../shared/pinned.js";
 
 /** One episode, with where it is served. */
 export interface Episode {
