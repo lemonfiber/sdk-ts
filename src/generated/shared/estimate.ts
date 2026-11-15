@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { MemberAsking, Policy } from "./asking-standing.js";
+import type { Obstacle } from "./obstacle.js";
 import type { TitleKind, TitleUnit } from "./title-kind.js";
 import type { Unrated } from "./unrated.js";
 
@@ -95,14 +96,20 @@ export interface HouseholdReport {
    * exactly the reader who might take it for a lock.
    */
   filtering?: string | null;
-  /** What could not be read, and anything else worth the operator's attention. */
-  findings: string[];
+  /** What could not be read, each by the code that names it. */
+  findings: Obstacle[];
   /**
    * Everybody the media server holds an account for, in name order — including
    * those who have never asked for anything, and the invitations nobody has taken
    * up yet.
    */
   members: HouseholdMember[];
+  /**
+   * What else is worth the operator's attention about the household: who has used
+   * their limit, what is waiting on them, what nobody has claimed. Written for the
+   * operator alone, so a member's own reading carries none.
+   */
+  noted: string[];
   /**
    * What happens to what the household asks for where nobody chose otherwise for
    * one person. Absent where the request service could not be asked.

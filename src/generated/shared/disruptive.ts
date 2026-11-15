@@ -2,7 +2,8 @@
 // The shapes `doctor` and `plugins` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { Code, Problem, ProblemState, ProblemStep } from "./code.js";
+import type { Code } from "./code.js";
+import type { Problem, ProblemState, ProblemStep } from "./problem.js";
 import type { ProblemSeverity } from "./problem-severity.js";
 import type { Remedy } from "./remedy.js";
 import type { ValueOrigin } from "./value-origin.js";

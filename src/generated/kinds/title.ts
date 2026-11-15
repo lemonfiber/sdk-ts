@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Medium } from "../shared/medium.js";
+import type { Obstacle } from "../shared/obstacle.js";
 import type { Pinned } from "../shared/pinned.js";
 
 /** One episode, with where it is served. */
@@ -30,8 +31,8 @@ export interface Episode {
   stream_from?: string | null;
   /** What it is called, in the words the server holds it under. */
   title: string;
-  /** Why no location is stated, where none is. */
-  unlocated?: string | null;
+  /** Why no location is stated, where none is, by the code that names it. */
+  unlocated?: Obstacle | null;
   /**
    * The year it came out, where the server knows one. Absent rather than guessed:
    * two films share a title far more often than they share a title and a year.
@@ -87,8 +88,8 @@ export interface Title {
   stream_from?: string | null;
   /** What it is called, in the words the server holds it under. */
   title: string;
-  /** Why no location is stated, where none is. */
-  unlocated?: string | null;
+  /** Why no location is stated, where none is, by the code that names it. */
+  unlocated?: Obstacle | null;
   /**
    * The year it came out, where the server knows one. Absent rather than guessed:
    * two films share a title far more often than they share a title and a year.

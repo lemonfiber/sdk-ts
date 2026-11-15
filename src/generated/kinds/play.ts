@@ -2,6 +2,8 @@
 // The `play` envelope, and the shapes only `play` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Obstacle } from "../shared/obstacle.js";
+
 /** The envelope carrying `play`. */
 export interface PlayEnvelope {
   api_version: number;
@@ -30,5 +32,5 @@ export interface PlayReport {
   /** The playlist it plays from at the front door, carrying its pass. */
   stream_from?: string | null;
   /** Why nothing is located, where nothing is. */
-  unlocated?: string | null;
+  unlocated?: Obstacle | null;
 }
