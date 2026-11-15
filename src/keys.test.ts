@@ -39,7 +39,7 @@ const listing = {
       scope: "read",
       purpose: "home-assistant",
       state: "active",
-      minted: "1790000000",
+      minted: 1_790_000_000,
       member_minted: false,
     },
   ],
@@ -97,7 +97,7 @@ describe("the integration keys", () => {
       scope: "read",
       purpose: "home-assistant",
       link: "lemonfiber://key?address=https%3A%2F%2F192.0.2.10%3A7777&claim=c1",
-      lapses: "2026-10-11T14:10:00Z",
+      lapses: 1_791_727_800,
     };
     const got = await open(answering("key-claim", claimed, seen)).mintClaim(minting);
 

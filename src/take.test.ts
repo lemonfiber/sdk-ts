@@ -80,7 +80,7 @@ const written = (path: string): Bundle & { path: string } => ({
   contents: {
     missing: [],
     pieces: [],
-    taken: { at: "2026-09-28T10:00:00Z", lemonfiber: "0.9.0", stack: "1.4.0" },
+    taken: { at: 1_790_589_600, lemonfiber: "0.9.0", stack: "1.4.0" },
     terms: { filenames: false, revealed: [], window: "last 2000 lines" },
   },
   path,
