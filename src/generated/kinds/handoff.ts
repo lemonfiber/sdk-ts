@@ -58,8 +58,8 @@ export interface HandoffReport {
   caution?: string | null;
   /** The apps to point a device at the stack with, each with its code. */
   clients: HandoffClient[];
-  /** When a code was first issued for them, as an instant. Absent until one is. */
-  issued?: string | null;
+  /** When a code was first issued for them. Absent until one is. */
+  issued?: number | null;
   /**
    * Who it is for, as the media server spells their account where it holds one, and as
    * it was asked for otherwise.
@@ -108,7 +108,7 @@ export interface HandoffSession {
   /** What the device calls itself. */
   device: string;
   /** When the media server last heard from it, where it says. */
-  last_seen?: string | null;
+  last_seen?: number | null;
 }
 
 /**

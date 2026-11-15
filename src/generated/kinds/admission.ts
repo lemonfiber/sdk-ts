@@ -31,6 +31,6 @@ export interface Admitted {
   name?: string | null;
   /** The secret this session is carried by, sent in the header the per-run token is. */
   token: string;
-  /** When it stops being one, written as every other instant this product writes. */
-  until: string;
+  /** When it stops being one. */
+  until: number;
 }

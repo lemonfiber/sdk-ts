@@ -23,6 +23,13 @@ export interface PluginInstalled {
   /** What it does for the operator, in its author's words. Absent alike. */
   description?: string | null;
   /**
+   * The forms its manifest names its services join.
+   *
+   * Empty on a record written before they were kept, which joins every form, as such a
+   * plugin always ran.
+   */
+  forms?: string[];
+  /**
    * The source it was installed from, as the operator named it.
    *
    * Empty for a record written before this was kept. A rehearsal's account carries
@@ -36,11 +43,11 @@ export interface PluginInstalled {
    * the epoch.
    *
    * The install's own stamp, the one its changes are journalled under, so the
-   * listing and the history name the same moment. Empty where the record predates
-   * it; a rehearsal's account carries the moment it was asked, which is the stamp
-   * the install would have run under.
+   * listing and the history name the same moment. Absent where the record predates
+   * it, and on an offer's account of what installing would record, which is not yet
+   * stamped.
    */
-  installed_at?: string;
+  installed_at?: number | null;
   /** The SHA-256 of the manifest it was installed from, in lower-case hexadecimal. */
   manifest?: string;
   /**
@@ -392,6 +399,8 @@ export interface ServiceFields {
   certificate?: ServiceCertificate | null;
   /** Whether its configuration directory is read-only. */
   config_ro?: boolean;
+  /** The name its container knows itself by, where it declares one. */
+  container_hostname?: string | null;
   /** Its environment. */
   env?: { [key: string]: ServiceValue };
   /** Its memory ceiling. */
@@ -432,8 +441,16 @@ export interface ServiceMount {
   to: string;
 }
 
-/** The network a service runs inside instead of its own: its filler's, or a fence's. */
+/**
+ * The network a service runs inside instead of its own, its filler's or a fence's, or the
+ * sibling it carries out of the machine.
+ */
 export interface ServiceNetwork {
+  /**
+   * The service of its own plugin it carries out of the machine, holding nothing, where
+   * it is that service's egress.
+   */
+  egress_for?: string | null;
   /**
    * Whether it fetches whatever address it is handed, and so runs inside a fence that
    * refuses every private address.

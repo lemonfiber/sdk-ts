@@ -189,7 +189,7 @@ secret is in that one reply and no other.
 
 `mintClaim` mints a key as a claim instead. Its `key-claim` reply carries no
 secret but the key link a program collects the key with, once, within ten
-minutes, and when the claim lapses:
+minutes, and when the claim lapses, in whole seconds since the Unix epoch:
 
 ```ts
 const claimed = await client.mintClaim({

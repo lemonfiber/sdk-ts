@@ -75,4 +75,17 @@ export interface Plan {
    * appearing twice is not a state this can hold.
    */
   services: string[];
+  /**
+   * Each installed plugin naming a form this stack no longer declares, with those
+   * forms: a plugin that joins none of the rest does not run.
+   */
+  vanished?: Vanished[];
+}
+
+/** A plugin naming forms the stack does not declare. */
+export interface Vanished {
+  /** The forms it names that the stack does not declare, in the order it names them. */
+  forms: string[];
+  /** The plugin, by its id. */
+  plugin: string;
 }

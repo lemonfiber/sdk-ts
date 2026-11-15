@@ -19,8 +19,8 @@ export interface Pairing {
    * is each surface's own to say, so this names no command.
    */
   replacing: string;
-  /** When it stops being good, as a date and a time of day. */
-  until: string;
+  /** When it stops being good. */
+  until: number;
   /** The material as the one line a code carries and a person types. */
   written: string;
 }
@@ -43,7 +43,7 @@ export interface PairingEnvelope {
 export interface PairingMaterial {
   /** Where the phone reaches the stack: an `https` address on the household network. */
   address: string;
-  /** When the material stops being good, in seconds since the Unix epoch. */
+  /** When the material stops being good. */
   expires: number;
   /**
    * The certificate that address presents: SHA-256 over its DER encoding, in

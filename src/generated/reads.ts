@@ -19,6 +19,7 @@ export const READS = {
   "held": { path: "/api/held", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }, { name: "most", repeatable: false }], kinds: ["held"] },
   "held/{id}": { path: "/api/held/{id}", segments: ["id"], parameters: [{ name: "member", repeatable: false }, { name: "defaults", repeatable: false }], kinds: ["title"] },
   "watching": { path: "/api/watching", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "most", repeatable: false }], kinds: ["part-way"] },
+  "channels": { path: "/api/channels", segments: [], parameters: [{ name: "member", repeatable: false }], kinds: ["channels"] },
   "askable": { path: "/api/askable", segments: [], parameters: [{ name: "member", repeatable: false }, { name: "term", repeatable: false }, { name: "after", repeatable: false }, { name: "kind", repeatable: false }, { name: "unit", repeatable: false }], kinds: ["askable"] },
   "askable/kinds": { path: "/api/askable/kinds", segments: [], parameters: [{ name: "member", repeatable: false }], kinds: ["askable-kinds"] },
   "playing": { path: "/api/playing", segments: [], parameters: [{ name: "member", repeatable: false }], kinds: ["playing"] },
@@ -72,6 +73,7 @@ export interface ReadQuery {
   "held": { member?: Scalar | undefined; defaults?: Scalar | undefined; most?: Scalar | undefined };
   "held/{id}": { id: Scalar; member?: Scalar | undefined; defaults?: Scalar | undefined };
   "watching": { member?: Scalar | undefined; most?: Scalar | undefined };
+  "channels": { member?: Scalar | undefined };
   "askable": { member?: Scalar | undefined; term?: Scalar | undefined; after?: Scalar | undefined; kind?: Scalar | undefined; unit?: Scalar | undefined };
   "askable/kinds": { member?: Scalar | undefined };
   "playing": { member?: Scalar | undefined };

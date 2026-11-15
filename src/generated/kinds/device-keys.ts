@@ -34,9 +34,9 @@ export interface ListedDeviceKey {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: string;
+  registered: number;
   /** When it was revoked, where it has been. */
-  revoked?: string | null;
+  revoked?: number | null;
   /** When it last proved a mint, where it has. */
-  used?: string | null;
+  used?: number | null;
 }

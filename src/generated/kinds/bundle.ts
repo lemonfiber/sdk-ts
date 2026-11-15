@@ -105,8 +105,8 @@ export interface Piece {
  * of those threads goes wrong, and nothing in the contents tells either of them.
  */
 export interface Taken {
-  /** When, as a service writes a moment. */
-  at: string;
+  /** When it was written. */
+  at: number;
   /** The lemonfiber that wrote it. */
   lemonfiber: string;
   /** The stack it was written from. */

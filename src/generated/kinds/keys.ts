@@ -33,7 +33,7 @@ export interface ListedKey {
   /** Whether a household member minted it for themselves. */
   member_minted: boolean;
   /** When it was minted. */
-  minted: string;
+  minted: number;
   /** The name it was minted under. */
   name: string;
   /** The device key whose signature proved its mint, absent where none did. */
@@ -41,11 +41,11 @@ export interface ListedKey {
   /** What the minter said it is for. A declaration, not something the core verified. */
   purpose: KeyPurpose;
   /** When it was revoked, where it has been. */
-  revoked?: string | null;
+  revoked?: number | null;
   /** What it admits: `read`, `act` or `member:<name>`. */
   scope: string;
   /** Where it stands. */
   state: KeyState;
   /** When it was last admitted, where it has been. */
-  used?: string | null;
+  used?: number | null;
 }

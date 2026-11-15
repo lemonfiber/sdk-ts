@@ -24,5 +24,5 @@ export interface RegisteredDeviceKey {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: string;
+  registered: number;
 }
