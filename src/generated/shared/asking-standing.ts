@@ -2,6 +2,8 @@
 // The shapes `askable`, `dashboard` and `household` all carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "./instant.js";
+
 /**
  * Where one member stands against what a period allows them.
  *
@@ -47,7 +49,7 @@ export interface MemberAsking {
    * nothing happens. The period is a window that rolls rather than a month that
    * ends, so this is the moment their earliest counted request ages out.
    */
-  frees_up?: number | null;
+  frees_up?: Instant | null;
   /** What happens to what they ask for. */
   policy: Policy;
   /** Where they stand against what their period allows, taken over both counts. */

@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { DeviceKeyBacking } from "../shared/device-key-backing.js";
+import type { Instant } from "../shared/instant.js";
 
 /** Every device key this machine has registered, and what became of a revoke. */
 export interface DeviceKeyListing {
@@ -34,9 +35,9 @@ export interface ListedDeviceKey {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: number;
+  registered: Instant;
   /** When it was revoked, where it has been. */
-  revoked?: number | null;
+  revoked?: Instant | null;
   /** When it last proved a mint, where it has. */
-  used?: number | null;
+  used?: Instant | null;
 }

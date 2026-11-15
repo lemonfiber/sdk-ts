@@ -2,6 +2,7 @@
 // The `keys` envelope, and the shapes only `keys` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { KeyPurpose } from "../shared/key-purpose.js";
 
 /** Every key this machine has minted, and what became of a revoke. */
@@ -33,7 +34,7 @@ export interface ListedKey {
   /** Whether a household member minted it for themselves. */
   member_minted: boolean;
   /** When it was minted. */
-  minted: number;
+  minted: Instant;
   /** The name it was minted under. */
   name: string;
   /** The device key whose signature proved its mint, absent where none did. */
@@ -41,11 +42,11 @@ export interface ListedKey {
   /** What the minter said it is for. A declaration, not something the core verified. */
   purpose: KeyPurpose;
   /** When it was revoked, where it has been. */
-  revoked?: number | null;
+  revoked?: Instant | null;
   /** What it admits: `read`, `act` or `member:<name>`. */
   scope: string;
   /** Where it stands. */
   state: KeyState;
   /** When it was last admitted, where it has been. */
-  used?: number | null;
+  used?: Instant | null;
 }

@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Notes } from "../shared/changelog-state.js";
+import type { Instant } from "../shared/instant.js";
 
 /** The envelope carrying `version`. */
 export interface VersionEnvelope {
@@ -28,7 +29,7 @@ export interface VersionReport {
    * taken, which an Android device key's chain is checked against; nothing where it
    * does not read.
    */
-  attestation_status?: number | null;
+  attestation_status?: Instant | null;
   /** The running binary's version. */
   binary: string;
   /** What this build's release changed, and every release there has been. */

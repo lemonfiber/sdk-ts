@@ -2,6 +2,8 @@
 // The shapes `plugins` and `undo` both carry.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "./instant.js";
+
 /**
  * What an undo does.
  *
@@ -364,7 +366,7 @@ export interface PluginGrant {
    * When the operator approved it, as the record stamps every change.
    * Absent on an offer's account of a grant, which nobody has approved yet.
    */
-  at?: number | null;
+  at?: Instant | null;
   /** The setting the credential is held under, as the credentials read names it. */
   credential: string;
   /** The capability of the plugin's own it was granted to fill. */

@@ -2,6 +2,7 @@
 // The `trace` envelope, and the shapes only `trace` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { Stage } from "../shared/stage.js";
 
 /**
@@ -92,7 +93,7 @@ export interface TraceEnvelope {
  */
 export interface TraceMoment {
   /** When it happened, where the service reported it. */
-  at?: number | null;
+  at?: Instant | null;
   /** What happened. */
   outcome: TraceOutcome;
 }
@@ -164,7 +165,7 @@ export interface TraceStage {
    * When it happened, as the service reported it — absent for a stage inferred
    * rather than timed, such as being monitored.
    */
-  at?: number | null;
+  at?: Instant | null;
   /** The service that recorded it. */
   service: string;
   /** The stage reached. */

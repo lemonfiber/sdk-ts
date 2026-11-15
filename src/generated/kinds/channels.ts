@@ -2,6 +2,8 @@
 // The `channels` envelope, and the shapes only `channels` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** One live TV channel, as one member's account may watch it. */
 export interface Channel {
   /** The identifier the server tells it apart by. */
@@ -43,7 +45,7 @@ export interface Programme {
   /** Its certificate, as the server holds it, where it has one. */
   certificate?: string | null;
   /** When it ends, where the server knows. */
-  ends?: number | null;
+  ends?: Instant | null;
   /** What it is called. */
   title: string;
 }

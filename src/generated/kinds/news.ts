@@ -2,6 +2,7 @@
 // The `news` envelope, and the shapes only `news` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { NewsKind } from "../shared/news-kind.js";
 
 /**
@@ -29,7 +30,7 @@ export interface NewsCheck {
    * When the stack first saw it wrong since it last saw it right, in whole seconds
    * since the epoch.
    */
-  onset: number;
+  onset: Instant;
 }
 
 /** The envelope carrying `news`. */

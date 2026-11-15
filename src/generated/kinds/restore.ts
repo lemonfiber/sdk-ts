@@ -2,6 +2,7 @@
 // The `restore` envelope, and the shapes only `restore` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { Scope } from "../shared/scope.js";
 
 /**
@@ -14,7 +15,7 @@ import type { Scope } from "../shared/scope.js";
  */
 export interface BackupManifest {
   /** When it was taken. */
-  created_at: number;
+  created_at: Instant;
   /** The data root it was taken against, to notice a restore to a different one. */
   data_root: string;
   /** What is inside, for a listing shown before anything is overwritten. */

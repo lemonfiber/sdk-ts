@@ -22,6 +22,7 @@ export * from "./shared/dropped.js";
 export * from "./shared/estimate.js";
 export * from "./shared/filtered.js";
 export * from "./shared/forwarded.js";
+export * from "./shared/instant.js";
 export * from "./shared/key-purpose.js";
 export * from "./shared/line.js";
 export * from "./shared/medium.js";

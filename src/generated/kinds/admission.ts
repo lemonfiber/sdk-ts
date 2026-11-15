@@ -2,6 +2,8 @@
 // The `admission` envelope, and the shapes only `admission` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** The envelope carrying `admission`. */
 export interface AdmissionEnvelope {
   api_version: number;
@@ -32,5 +34,5 @@ export interface Admitted {
   /** The secret this session is carried by, sent in the header the per-run token is. */
   token: string;
   /** When it stops being one. */
-  until: number;
+  until: Instant;
 }

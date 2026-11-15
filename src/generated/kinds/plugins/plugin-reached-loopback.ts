@@ -4,6 +4,7 @@
 
 import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/action.js";
+import type { Instant } from "../../shared/instant.js";
 import type { PluginVerdict } from "../../shared/plugin-constraint.js";
 
 /** One plugin's install, as it was decided. */
@@ -47,7 +48,7 @@ export interface PluginInstalled {
    * it, and on an offer's account of what installing would record, which is not yet
    * stamped.
    */
-  installed_at?: number | null;
+  installed_at?: Instant | null;
   /** The SHA-256 of the manifest it was installed from, in lower-case hexadecimal. */
   manifest?: string;
   /**
@@ -533,17 +534,4 @@ export interface SettingChoiceNeeding {
   needs: { [key: string]: ServiceConstant[] };
   /** The values. */
   values: ServiceConstant[];
-}
-
-/**
- * An ask several services claim and nothing has chosen between, so it reaches
- * nothing.
- */
-export interface WiringContest {
-  /** The service that asked. */
-  by: string;
-  /** What it asked for. */
-  capability: string;
-  /** Every claimant, named — a plugin's with the plugin beside it. */
-  claimants: string[];
 }

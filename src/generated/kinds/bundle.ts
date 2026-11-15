@@ -2,6 +2,8 @@
 // The `bundle` envelope, and the shapes only `bundle` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /**
  * What a support request said: what a bundle holds, and where it is if it exists.
  *
@@ -106,7 +108,7 @@ export interface Piece {
  */
 export interface Taken {
   /** When it was written. */
-  at: number;
+  at: Instant;
   /** The lemonfiber that wrote it. */
   lemonfiber: string;
   /** The stack it was written from. */
