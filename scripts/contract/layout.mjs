@@ -46,7 +46,9 @@ function pathOf(carriers, first) {
  *
  * A module name holds no underscore, so where two sets' shared modules would take
  * one name, the set later in code-point order of its carriers takes that name
- * followed by two underscores and the next number from 2.
+ * followed by two underscores and the next number from 2. Two kinds or two
+ * bodies never meet here under one name: their own types would already share
+ * one, which is refused before.
  */
 function grouped(shapes) {
   const sets = new Map();
@@ -61,9 +63,6 @@ function grouped(shapes) {
     const { carriers, members } = sets.get(signature);
     const path = pathOf(carriers, members.keys().next().value);
     let key = path.join("/");
-    if (groups.has(key) && carriers.size === 1) {
-      refuse(`${ticked(groups.get(key).carriers)} and ${ticked(carriers)} would both be written in \`${key}\`.`);
-    }
     for (let next = 2; groups.has(key); next += 1) key = `${path.join("/")}__${next}`;
     groups.set(key, { path: key.split("/"), carriers, members });
   }
