@@ -2,8 +2,8 @@
 // The shapes `doctor`, `error` and `plugins` all carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { ProblemSeverity } from "./alert__dashboard__doctor__error__plugins.js";
-import type { Remedy } from "./doctor__error__plugins__repair.js";
+import type { ProblemSeverity } from "./problem-severity.js";
+import type { Remedy } from "./remedy.js";
 
 /**
  * A stable identifier for a kind of problem.

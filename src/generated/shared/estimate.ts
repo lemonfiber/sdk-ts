@@ -2,9 +2,9 @@
 // The shapes `dashboard` and `household` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind, TitleUnit } from "./askable__askable-kinds__asked__dashboard__household__news-items.js";
-import type { MemberAsking, Policy } from "./askable__dashboard__household.js";
-import type { Unrated } from "./dashboard__household__invitation.js";
+import type { MemberAsking, Policy } from "./asking-standing.js";
+import type { TitleKind, TitleUnit } from "./title-kind.js";
+import type { Unrated } from "./unrated.js";
 
 /**
  * About how much room one request will want.

@@ -2,7 +2,7 @@
 // The `plugin-recording` envelope, and the shapes only `plugin-recording` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Violation } from "../shared/plugin-claims__plugin-conformance__plugin-recording.js";
+import type { Violation } from "../shared/violation.js";
 
 /** A service none of whose recordings was written, and why. */
 export interface Failed {

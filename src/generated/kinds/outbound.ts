@@ -2,7 +2,7 @@
 // The `outbound` envelope, and the shapes only `outbound` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { ValueOrigin } from "../shared/config__credentials__doctor__outbound__plugins__wiring__wizard.js";
+import type { ValueOrigin } from "../shared/value-origin.js";
 
 /** A request one of the stack's services makes, which is not lemonfiber's. */
 export interface Elsewhere {

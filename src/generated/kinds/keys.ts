@@ -2,7 +2,7 @@
 // The `keys` envelope, and the shapes only `keys` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { KeyPurpose } from "../shared/key-claim__keys__minted-key.js";
+import type { KeyPurpose } from "../shared/key-purpose.js";
 
 /** Every key this machine has minted, and what became of a revoke. */
 export interface KeyListing {

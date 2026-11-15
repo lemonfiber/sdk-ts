@@ -2,7 +2,7 @@
 // The `device-key` envelope, and the shapes only `device-key` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { DeviceKeyBacking } from "../shared/device-key__device-keys.js";
+import type { DeviceKeyBacking } from "../shared/device-key-backing.js";
 
 /** The envelope carrying `device-key`. */
 export interface DeviceKeyEnvelope {

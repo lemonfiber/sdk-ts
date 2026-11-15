@@ -2,8 +2,8 @@
 // The `part-way` envelope, and the shapes only `part-way` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Medium } from "../shared/held__part-way__playing__title.js";
-import type { Pinned } from "../shared/held__part-way__title.js";
+import type { Medium } from "../shared/medium.js";
+import type { Pinned } from "../shared/pinned.js";
 
 /** Something a member was part-way through, and how far. */
 export interface PartWay {

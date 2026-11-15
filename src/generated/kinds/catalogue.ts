@@ -2,7 +2,7 @@
 // The `catalogue` envelope, and the shapes only `catalogue` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Criticality } from "../shared/catalogue__dashboard__lifecycle__status.js";
+import type { Criticality } from "../shared/criticality.js";
 
 /** The envelope carrying `catalogue`. */
 export interface CatalogueEnvelope {

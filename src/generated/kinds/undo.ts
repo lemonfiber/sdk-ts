@@ -2,7 +2,7 @@
 // The `undo` envelope, and the shapes only `undo` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { UndoReversal } from "../shared/plugins__undo.js";
+import type { UndoReversal } from "../shared/action.js";
 
 /** The envelope carrying `undo`. */
 export interface UndoEnvelope {

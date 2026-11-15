@@ -2,7 +2,7 @@
 // The `boot` envelope, and the shapes only `boot` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Forwarded } from "../shared/boot__lifecycle.js";
+import type { Forwarded } from "../shared/forwarded.js";
 
 /** The envelope carrying `boot`. */
 export interface BootEnvelope {

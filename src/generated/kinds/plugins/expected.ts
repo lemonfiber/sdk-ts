@@ -2,10 +2,10 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { StepCame } from "../../shared/doctor__error__plugins.js";
-import type { DoctorVerdict, Finding } from "../../shared/doctor__plugins.js";
-import type { PluginConstraint } from "../../shared/plugin-claims__plugins.js";
-import type { Apis } from "../../shared/plugins__substitution__wiring.js";
+import type { Apis } from "../../shared/apis.js";
+import type { StepCame } from "../../shared/code.js";
+import type { DoctorVerdict, Finding } from "../../shared/disruptive.js";
+import type { PluginConstraint } from "../../shared/plugin-constraint.js";
 
 /**
  * A row in a register lemonfiber already runs.

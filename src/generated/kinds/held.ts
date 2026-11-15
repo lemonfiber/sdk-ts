@@ -2,8 +2,8 @@
 // The `held` envelope, and the shapes only `held` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Medium } from "../shared/held__part-way__playing__title.js";
-import type { Pinned } from "../shared/held__part-way__title.js";
+import type { Medium } from "../shared/medium.js";
+import type { Pinned } from "../shared/pinned.js";
 
 /**
  * One thing the household holds, as a member is shown it.

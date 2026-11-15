@@ -32,7 +32,7 @@ afterEach(async () => {
 });
 
 describe("placing each type", () => {
-  it("writes a kind's own types in its module and shared ones in a module of their carriers", () => {
+  it("writes a kind's own types in its module and shared ones in a module named after the first of them", () => {
     const files = sources(
       artefact({
         a: kind({ $ref: "#/$defs/Shared" }, { Shared: SHARED, Code: CODE, Own: OWN }),
@@ -41,18 +41,35 @@ describe("placing each type", () => {
     );
     expect(files.get("kinds/a.ts")).toContain("export interface AEnvelope {");
     expect(files.get("kinds/a.ts")).toContain("export interface Own {");
-    expect(files.get("kinds/a.ts")).toContain('import type { Shared } from "../shared/a__b.js";');
-    expect(files.get("shared/a__b.ts")).toContain("// The shapes `a` and `b` both carry.");
+    expect(files.get("kinds/a.ts")).toContain('import type { Shared } from "../shared/code.js";');
+    expect(files.get("shared/code.ts")).toContain("// The shapes `a` and `b` both carry.");
     expect(files.get("kinds.ts")).toContain('export * from "./kinds/a.js";');
     expect(files.get("index.ts")).toContain('export * from "./shared.js";');
     expect(files.get("envelope.ts")).toContain('import type { AEnvelope, BEnvelope } from "./kinds.js";');
     expect(files.get("envelope.ts")).toContain('export type Kind = "a" | "b";');
   });
 
-  it("writes the types three kinds carry in a module naming all three, and no shared index where nothing is shared", () => {
-    const files = sources(artefact(Object.fromEntries(["a", "b", "c"].map((one) => [one, kind({ $ref: "#/$defs/Code" }, { Code: CODE })]))));
-    expect(files.get("shared/a__b__c.ts")).toContain("// The shapes `a`, `b` and `c` all carry.");
+  it("writes a type forty kinds carry in one module named after it, and no shared index where nothing is shared", () => {
+    const many = Array.from({ length: 40 }, (_, at) => `kind-with-a-long-name-${String(at).padStart(2, "0")}`);
+    const files = sources(artefact(Object.fromEntries(many.map((one) => [one, kind({ $ref: "#/$defs/Code" }, { Code: CODE })]))));
+    expect(files.get("shared/code.ts")).toContain("export type Code = string;");
+    expect([...files.keys()].filter((path) => path.startsWith("shared/"))).toEqual(["shared/code.ts"]);
     expect(sources(artefact({ pull: kind({ type: "string" }) })).has("shared.ts")).toBe(false);
+  });
+});
+
+describe("naming a shared module", () => {
+  it("numbers a set of carriers whose first shape takes a name another set's took, in the order of their carriers", () => {
+    const files = sources(
+      artefact({
+        a: kind({ $ref: "#/$defs/Code" }, { Code: CODE }),
+        b: kind({ $ref: "#/$defs/Code" }, { Code: CODE }),
+        c: kind({ $ref: "#/$defs/CODE" }, { CODE }),
+        d: kind({ $ref: "#/$defs/CODE" }, { CODE }),
+      }),
+    );
+    expect(files.get("shared/code.ts")).toContain("// The shapes `a` and `b` both carry.");
+    expect(files.get("shared/code__2.ts")).toContain("// The shapes `c` and `d` both carry.");
   });
 });
 

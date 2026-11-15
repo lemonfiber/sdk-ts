@@ -2,8 +2,8 @@
 // The `reset` envelope, and the shapes only `reset` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
+import type { StackEdit } from "../shared/stack-edit.js";
+import type { StackMoveTaken } from "../shared/stack-move-taken.js";
 
 /** The envelope carrying `reset`. */
 export interface ResetEnvelope {

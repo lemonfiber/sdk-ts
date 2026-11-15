@@ -2,7 +2,7 @@
 // The `front-door` envelope, and the shapes only `front-door` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { FrontDoorReport } from "../shared/dashboard__front-door.js";
+import type { FrontDoorReport } from "../shared/address.js";
 
 /** The envelope carrying `front-door`. */
 export interface FrontDoorEnvelope {

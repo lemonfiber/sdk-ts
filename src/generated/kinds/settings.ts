@@ -2,10 +2,10 @@
 // The `settings` envelope, and the shapes only `settings` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { StackMoveTaken } from "../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { Unvetted } from "../shared/lifecycle__plugins__settings__substitution__update.js";
-import type { Waiting } from "../shared/plugins__settings__status.js";
-import type { Choosable } from "../shared/settings__wizard.js";
+import type { Choosable } from "../shared/choosable.js";
+import type { StackMoveTaken } from "../shared/stack-move-taken.js";
+import type { Unvetted } from "../shared/unvetted.js";
+import type { Waiting } from "../shared/waiting.js";
 
 /** Whose a setting or a secret is. */
 export type Owner = OwnerCore | OwnerNamespace;

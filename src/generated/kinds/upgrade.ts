@@ -2,7 +2,7 @@
 // The `upgrade` envelope, and the shapes only `upgrade` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Triggered } from "../shared/music__upgrade.js";
+import type { Triggered } from "../shared/triggered.js";
 
 /** What upgrading one kind of media costs in total, or why that could not be worked out. */
 export type Total = TotalBytes | TotalUnknown;

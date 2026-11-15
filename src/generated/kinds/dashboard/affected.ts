@@ -2,10 +2,10 @@
 // Some of the shapes only `dashboard` carries; `kinds/dashboard` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { ProblemSeverity } from "../../shared/alert__dashboard__doctor__error__plugins.js";
-import type { FrontDoorReport } from "../../shared/dashboard__front-door.js";
-import type { HouseholdReport } from "../../shared/dashboard__household.js";
-import type { Service } from "../../shared/dashboard__lifecycle__status.js";
+import type { FrontDoorReport } from "../../shared/address.js";
+import type { HouseholdReport } from "../../shared/estimate.js";
+import type { ProblemSeverity } from "../../shared/problem-severity.js";
+import type { Service } from "../../shared/service.js";
 
 /** One thing that is wrong, as the expanded summary lists it. */
 export interface Affected {

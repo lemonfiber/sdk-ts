@@ -4,12 +4,12 @@
 
 import type { PluginChange, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
 import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
-import type { StackMoveTaken } from "../../shared/lifecycle__plugins__reset__settings__substitution__update.js";
-import type { Unvetted } from "../../shared/lifecycle__plugins__settings__substitution__update.js";
-import type { PluginEvidence } from "../../shared/plugin-claims__plugins.js";
-import type { Waiting } from "../../shared/plugins__settings__status.js";
-import type { UndoReversal } from "../../shared/plugins__undo.js";
-import type { Wired } from "../../shared/plugins__wiring.js";
+import type { UndoReversal } from "../../shared/action.js";
+import type { PluginEvidence } from "../../shared/plugin-constraint.js";
+import type { Wired } from "../../shared/reaches.js";
+import type { StackMoveTaken } from "../../shared/stack-move-taken.js";
+import type { Unvetted } from "../../shared/unvetted.js";
+import type { Waiting } from "../../shared/waiting.js";
 
 /**
  * What an install came to, and what it took to get there.

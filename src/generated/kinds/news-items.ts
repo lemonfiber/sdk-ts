@@ -2,8 +2,8 @@
 // The `news-items` envelope, and the shapes only `news-items` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { TitleKind, TitleUnit } from "../shared/askable__askable-kinds__asked__dashboard__household__news-items.js";
-import type { NewsKind } from "../shared/news__news-items.js";
+import type { NewsKind } from "../shared/news-kind.js";
+import type { TitleKind, TitleUnit } from "../shared/title-kind.js";
 
 /** What a surface can mark as new, newest first within each kind. */
 export interface News {

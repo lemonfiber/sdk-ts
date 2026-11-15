@@ -32,32 +32,40 @@ const wordOf = (carrier) => (isRoute(carrier) ? `body-${stemOf(carrier)}` : modu
 
 /**
  * The module the shapes some kinds or bodies carry are written in: one kind's
- * under `kinds/`, one body's under `bodies/`, and any more under `shared/`.
+ * under `kinds/`, one body's under `bodies/`, and any more under `shared/`,
+ * named after `first`, the first of those shapes.
  */
-function pathOf(carriers) {
+function pathOf(carriers, first) {
   const sorted = [...carriers].toSorted(byCodePoint);
   if (sorted.length === 1 && isRoute(sorted[0])) return [...BODIES_MODULE, stemOf(sorted[0])];
-  const words = sorted.map((carrier) => wordOf(carrier));
-  return words.length === 1 ? [...KINDS_MODULE, words[0]] : [...SHARED_MODULE, words.join("__")];
+  return sorted.length === 1 ? [...KINDS_MODULE, wordOf(sorted[0])] : [...SHARED_MODULE, moduleName(first)];
 }
 
 /**
- * Every shape by the module it is written in.
+ * Every shape by the module it is written in: one module per set of carriers.
  *
- * A module name holds no underscore, so kinds joined by two of them name one set
- * of kinds and no other.
+ * A module name holds no underscore, so where two sets' shared modules would take
+ * one name, the set later in code-point order of its carriers takes that name
+ * followed by two underscores and the next number from 2.
  */
 function grouped(shapes) {
-  const groups = new Map();
+  const sets = new Map();
   for (const name of [...shapes.keys()].toSorted(byCodePoint)) {
     const shape = shapes.get(name);
-    const key = pathOf(shape.carriers).join("/");
-    if (!groups.has(key)) groups.set(key, { path: key.split("/"), carriers: shape.carriers, members: new Map() });
-    const held = groups.get(key).carriers;
-    if (held.size !== shape.carriers.size || [...held].some((carrier) => !shape.carriers.has(carrier))) {
-      refuse(`${ticked(held)} and ${ticked(shape.carriers)} would both be written in \`${key}\`.`);
+    const signature = [...shape.carriers].toSorted(byCodePoint).join("\n");
+    if (!sets.has(signature)) sets.set(signature, { carriers: shape.carriers, members: new Map() });
+    sets.get(signature).members.set(name, shape);
+  }
+  const groups = new Map();
+  for (const signature of [...sets.keys()].toSorted(byCodePoint)) {
+    const { carriers, members } = sets.get(signature);
+    const path = pathOf(carriers, members.keys().next().value);
+    let key = path.join("/");
+    if (groups.has(key) && carriers.size === 1) {
+      refuse(`${ticked(groups.get(key).carriers)} and ${ticked(carriers)} would both be written in \`${key}\`.`);
     }
-    groups.get(key).members.set(name, shape);
+    for (let next = 2; groups.has(key); next += 1) key = `${path.join("/")}__${next}`;
+    groups.set(key, { path: key.split("/"), carriers, members });
   }
   return groups;
 }

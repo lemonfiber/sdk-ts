@@ -2,7 +2,7 @@
 // The `invitation` envelope, and the shapes only `invitation` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Unrated } from "../shared/dashboard__household__invitation.js";
+import type { Unrated } from "../shared/unrated.js";
 
 /**
  * One invitation, as it was just made.

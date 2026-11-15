@@ -2,7 +2,7 @@
 // The `restore` envelope, and the shapes only `restore` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Scope } from "../shared/backup__restore.js";
+import type { Scope } from "../shared/scope.js";
 
 /**
  * The record written inside an archive, and read back to decide a restore.

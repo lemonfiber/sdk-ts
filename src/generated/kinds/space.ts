@@ -2,7 +2,7 @@
 // The `space` envelope, and the shapes only `space` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Candidate } from "../shared/space__stop-seeding.js";
+import type { Candidate } from "../shared/candidate.js";
 
 /** One line of the accounting. */
 export interface Consumption {

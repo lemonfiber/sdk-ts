@@ -2,7 +2,7 @@
 // The `stop-seeding` envelope, and the shapes only `stop-seeding` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Candidate } from "../shared/space__stop-seeding.js";
+import type { Candidate } from "../shared/candidate.js";
 
 /** What became of a download the client was asked to let go. */
 export interface Gone {

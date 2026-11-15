@@ -2,10 +2,10 @@
 // The `status` envelope, and the shapes only `status` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Service, ServiceState } from "../shared/dashboard__lifecycle__status.js";
-import type { Filtered } from "../shared/lifecycle__preview__status.js";
-import type { Condition } from "../shared/lifecycle__status.js";
-import type { Waiting } from "../shared/plugins__settings__status.js";
+import type { Condition } from "../shared/condition.js";
+import type { Filtered } from "../shared/filtered.js";
+import type { Service, ServiceState } from "../shared/service.js";
+import type { Waiting } from "../shared/waiting.js";
 
 /**
  * What an operation with no bound on it is waiting for.

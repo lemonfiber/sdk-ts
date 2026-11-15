@@ -2,7 +2,7 @@
 // The `device-keys` envelope, and the shapes only `device-keys` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { DeviceKeyBacking } from "../shared/device-key__device-keys.js";
+import type { DeviceKeyBacking } from "../shared/device-key-backing.js";
 
 /** Every device key this machine has registered, and what became of a revoke. */
 export interface DeviceKeyListing {

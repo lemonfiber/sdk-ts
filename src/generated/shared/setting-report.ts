@@ -2,7 +2,7 @@
 // The shapes `config` and `wizard` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugins__wiring__wizard.js";
+import type { ValueOrigin } from "./value-origin.js";
 
 /** One setting, as it is safe to show. */
 export interface SettingReport {

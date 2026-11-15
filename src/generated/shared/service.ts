@@ -2,7 +2,7 @@
 // The shapes `dashboard`, `lifecycle` and `status` all carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { Criticality } from "./catalogue__dashboard__lifecycle__status.js";
+import type { Criticality } from "./criticality.js";
 
 /** One service, as it stands. */
 export interface Service {

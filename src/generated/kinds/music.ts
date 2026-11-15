@@ -2,8 +2,8 @@
 // The `music` envelope, and the shapes only `music` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Disposition, MusicChoice } from "../shared/music__quality.js";
-import type { Triggered } from "../shared/music__upgrade.js";
+import type { Disposition, MusicChoice } from "../shared/disposition.js";
+import type { Triggered } from "../shared/triggered.js";
 
 /** The envelope carrying `music`. */
 export interface MusicEnvelope {

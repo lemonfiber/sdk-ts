@@ -2,7 +2,7 @@
 // The `stuck` envelope, and the shapes only `stuck` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stage } from "../shared/stuck__trace.js";
+import type { Stage } from "../shared/stage.js";
 
 /** One stuck item queue health found, named so it links straight to its own trace. */
 export interface StuckEntry {

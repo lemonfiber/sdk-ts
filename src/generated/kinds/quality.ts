@@ -2,8 +2,8 @@
 // The `quality` envelope, and the shapes only `quality` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { StackEdit } from "../shared/lifecycle__quality__reset__update.js";
-import type { Disposition, MusicChoice } from "../shared/music__quality.js";
+import type { Disposition, MusicChoice } from "../shared/disposition.js";
+import type { StackEdit } from "../shared/stack-edit.js";
 
 /**
  * One preset in force, and what it means for the media it applies to — the

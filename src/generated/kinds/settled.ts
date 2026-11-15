@@ -2,7 +2,7 @@
 // The `settled` envelope, and the shapes only `settled` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Protocols } from "../shared/body-setup-answer__settled__setup.js";
+import type { Protocols } from "../shared/protocols.js";
 
 /** The user and group the stack's services run as. */
 export interface ServiceUser {

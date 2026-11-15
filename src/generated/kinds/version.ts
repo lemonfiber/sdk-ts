@@ -2,7 +2,7 @@
 // The `version` envelope, and the shapes only `version` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Notes } from "../shared/update__version.js";
+import type { Notes } from "../shared/changelog-state.js";
 
 /** The envelope carrying `version`. */
 export interface VersionEnvelope {

@@ -2,8 +2,8 @@
 // The `import` envelope, and the shapes only `import` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Stance } from "../shared/adoption__beside__config__import__replacement.js";
-import type { UnsupportedReport } from "../shared/import__migration.js";
+import type { Stance } from "../shared/stance.js";
+import type { UnsupportedReport } from "../shared/unsupported-report.js";
 
 /** The envelope carrying `import`. */
 export interface ImportEnvelope {

@@ -2,8 +2,8 @@
 // The shapes `plugins` and `wiring` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { ValueOrigin } from "./config__credentials__doctor__outbound__plugins__wiring__wizard.js";
-import type { Apis } from "./plugins__substitution__wiring.js";
+import type { Apis } from "./apis.js";
+import type { ValueOrigin } from "./value-origin.js";
 
 /** What one link reaches, and how that was settled. */
 export type Reaches = ReachesAsked | ReachesByName;

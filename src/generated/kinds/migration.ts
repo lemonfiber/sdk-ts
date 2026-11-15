@@ -2,10 +2,10 @@
 // The `migration` envelope, and the shapes only `migration` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { CarryingReport } from "../shared/adoption__migration.js";
-import type { MovedReport } from "../shared/beside__migration.js";
-import type { UnsupportedReport } from "../shared/import__migration.js";
-import type { ConflictReport } from "../shared/lifecycle__migration.js";
+import type { CarryingReport } from "../shared/carrying-report.js";
+import type { ConflictReport } from "../shared/conflict-report.js";
+import type { MovedReport } from "../shared/moved-report.js";
+import type { UnsupportedReport } from "../shared/unsupported-report.js";
 
 /** What an existing layout costs, where it cannot hold a hardlink. */
 export interface LinkingReport {

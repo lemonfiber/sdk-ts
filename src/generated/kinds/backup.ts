@@ -2,7 +2,7 @@
 // The `backup` envelope, and the shapes only `backup` carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { Scope } from "../shared/backup__restore.js";
+import type { Scope } from "../shared/scope.js";
 
 /** The envelope carrying `backup`. */
 export interface BackupEnvelope {
