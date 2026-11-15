@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Medium } from "../shared/medium.js";
+import type { Obstacle } from "../shared/obstacle.js";
 
 /**
  * Somebody watching something now, as the media server lists the session.
@@ -55,12 +56,12 @@ export interface PlayingReport {
    */
   available: boolean;
   /**
-   * What is worth saying about this reading, in the words its reader would use.
+   * What stood in the way of this reading, each by the code that names it.
    *
    * Always written, empty or not, so a reader never has to guess what an absent
    * field means.
    */
-  findings: string[];
+  findings: Obstacle[];
   /**
    * The member this was narrowed to, by the name they are known by, or empty where
    * it is every session in the house.

@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Medium } from "../shared/medium.js";
+import type { Obstacle } from "../shared/obstacle.js";
 import type { Pinned } from "../shared/pinned.js";
 
 /**
@@ -30,8 +31,8 @@ export interface Held {
   stream_from?: string | null;
   /** What it is called, in the words the server holds it under. */
   title: string;
-  /** Why no location is stated, where none is. */
-  unlocated?: string | null;
+  /** Why no location is stated, where none is, by the code that names it. */
+  unlocated?: Obstacle | null;
   /**
    * The year it came out, where the server knows one. Absent rather than guessed:
    * two films share a title far more often than they share a title and a year.
@@ -59,13 +60,13 @@ export interface HeldReport {
    */
   available: boolean;
   /**
-   * What is worth saying about this shelf, in the words its reader would use.
+   * What stood in the way of reading this shelf, each by the code that names it.
    *
    * Always written, empty or not. A field the schema requires and the document
    * sometimes omits is one a reader has to guess about, and an empty list already
-   * says the thing it would say: there is nothing to report about this shelf.
+   * says the thing it would say: nothing stood in the way.
    */
-  findings: string[];
+  findings: Obstacle[];
   /** What they hold, newest first. */
   holdings: Held[];
   /** The identifier the media server files them under. */

@@ -3,9 +3,9 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Apis } from "../../shared/apis.js";
-import type { StepCame } from "../../shared/code.js";
 import type { DoctorVerdict, Finding } from "../../shared/disruptive.js";
 import type { PluginConstraint } from "../../shared/plugin-constraint.js";
+import type { StepCame } from "../../shared/problem.js";
 
 /**
  * A row in a register lemonfiber already runs.

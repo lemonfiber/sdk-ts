@@ -2,6 +2,8 @@
 // The `tuned` envelope, and the shapes only `tuned` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Obstacle } from "../shared/obstacle.js";
+
 /** The envelope carrying `tuned`. */
 export interface TunedEnvelope {
   api_version: number;
@@ -39,5 +41,5 @@ export interface TunedReport {
   /** Where a transcoded playlist of it is served, carrying its pass. */
   transcoded?: string | null;
   /** Why nothing is located, where nothing is. */
-  unlocated?: string | null;
+  unlocated?: Obstacle | null;
 }

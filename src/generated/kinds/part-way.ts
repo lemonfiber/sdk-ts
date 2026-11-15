@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Medium } from "../shared/medium.js";
+import type { Obstacle } from "../shared/obstacle.js";
 import type { Pinned } from "../shared/pinned.js";
 
 /** Something a member was part-way through, and how far. */
@@ -28,8 +29,8 @@ export interface PartWay {
   stream_from?: string | null;
   /** What it is called, in the words the server holds it under. */
   title: string;
-  /** Why no location is stated, where none is. */
-  unlocated?: string | null;
+  /** Why no location is stated, where none is, by the code that names it. */
+  unlocated?: Obstacle | null;
   /**
    * The year it came out, where the server knows one. Absent rather than guessed:
    * two films share a title far more often than they share a title and a year.
@@ -53,8 +54,8 @@ export interface PartWayReport {
    * answers, and what could not be read is said in `findings`.
    */
   available: boolean;
-  /** What is worth saying about this read, in the words its reader would use. */
-  findings: string[];
+  /** What stood in the way of this read, each by the code that names it. */
+  findings: Obstacle[];
   /** The identifier the media server files them under. */
   id: string;
   /** The member this was asked for, by the name they are known by. */
