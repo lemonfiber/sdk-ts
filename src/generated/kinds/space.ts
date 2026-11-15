@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Candidate } from "../shared/candidate.js";
+import type { Instant } from "../shared/instant.js";
 
 /** One line of the accounting. */
 export interface Consumption {
@@ -24,7 +25,7 @@ export type Freshness = FreshnessLive | FreshnessAsOf;
  */
 export interface FreshnessAsOf {
   as: "as_of";
-  at: number;
+  at: Instant;
 }
 
 /** Read off a local disk, so it is true as of now. */

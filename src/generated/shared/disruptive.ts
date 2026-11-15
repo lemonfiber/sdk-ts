@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Code } from "./code.js";
+import type { Instant } from "./instant.js";
 import type { Problem, ProblemState, ProblemStep } from "./problem.js";
 import type { ProblemSeverity } from "./problem-severity.js";
 import type { Remedy } from "./remedy.js";
@@ -145,7 +146,7 @@ export interface Finding {
    * move it. Absent where the finding says nothing is wrong, and where the checks
    * ran for something other than a diagnosis.
    */
-  onset?: number | null;
+  onset?: Instant | null;
   /**
    * Whose check this is: one this build ships, or one a named plugin contributed.
    *

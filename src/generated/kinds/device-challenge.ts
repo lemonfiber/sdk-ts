@@ -2,12 +2,14 @@
 // The `device-challenge` envelope, and the shapes only `device-challenge` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** A challenge, as the phone is handed it to sign. */
 export interface DeviceChallenge {
   /** The challenge, in base64url, signed as it is written here. */
   challenge: string;
   /** When it stops standing, one minute after it was issued. */
-  expires: number;
+  expires: Instant;
 }
 
 /** The envelope carrying `device-challenge`. */

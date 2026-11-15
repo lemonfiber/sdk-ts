@@ -2,12 +2,13 @@
 // The `key-claim` envelope, and the shapes only `key-claim` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { KeyPurpose } from "../shared/key-purpose.js";
 
 /** A key minted as a claim: the link that collects it, and no secret. */
 export interface KeyClaim {
   /** When the claim stops collecting the key. */
-  lapses: number;
+  lapses: Instant;
   /**
    * The key link: `lemonfiber://key` with the address, the certificate fingerprint,
    * the stack, when the claim lapses and the claim. Shown once, and drawn as a code.

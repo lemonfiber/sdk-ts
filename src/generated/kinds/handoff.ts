@@ -2,6 +2,8 @@
 // The `handoff` envelope, and the shapes only `handoff` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** One app a device can be pointed at the stack with, and the code that points it. */
 export interface HandoffClient {
   /** What to use on it. */
@@ -59,7 +61,7 @@ export interface HandoffReport {
   /** The apps to point a device at the stack with, each with its code. */
   clients: HandoffClient[];
   /** When a code was first issued for them. Absent until one is. */
-  issued?: number | null;
+  issued?: Instant | null;
   /**
    * Who it is for, as the media server spells their account where it holds one, and as
    * it was asked for otherwise.
@@ -108,7 +110,7 @@ export interface HandoffSession {
   /** What the device calls itself. */
   device: string;
   /** When the media server last heard from it, where it says. */
-  last_seen?: number | null;
+  last_seen?: Instant | null;
 }
 
 /**

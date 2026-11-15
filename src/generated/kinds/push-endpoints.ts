@@ -2,6 +2,8 @@
 // The `push-endpoints` envelope, and the shapes only `push-endpoints` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** One push endpoint as the listing shows it. */
 export interface ListedPushEndpoint {
   /** The `https` address its distributor gave. */
@@ -9,7 +11,7 @@ export interface ListedPushEndpoint {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: number;
+  registered: Instant;
 }
 
 /** Every push endpoint, and what became of a removal. */

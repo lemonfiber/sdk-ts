@@ -2,6 +2,7 @@
 // The `credentials` envelope, and the shapes only `credentials` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { ValueOrigin } from "../shared/value-origin.js";
 
 /**
@@ -10,7 +11,7 @@ import type { ValueOrigin } from "../shared/value-origin.js";
  */
 export interface CredentialGranted {
   /** When the operator approved it, where the record says. */
-  at?: number | null;
+  at?: Instant | null;
   /** The setting the credential is held under, as the inventory names it. */
   credential: string;
   /** The capability of the plugin's own it was granted to fill. */

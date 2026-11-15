@@ -2,6 +2,8 @@
 // The `pairing` envelope, and the shapes only `pairing` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** Pairing material, and what the operator is told beside it. */
 export interface Pairing {
   /** What is worth knowing about the address itself, where anything is. */
@@ -20,7 +22,7 @@ export interface Pairing {
    */
   replacing: string;
   /** When it stops being good. */
-  until: number;
+  until: Instant;
   /** The material as the one line a code carries and a person types. */
   written: string;
 }
@@ -44,7 +46,7 @@ export interface PairingMaterial {
   /** Where the phone reaches the stack: an `https` address on the household network. */
   address: string;
   /** When the material stops being good. */
-  expires: number;
+  expires: Instant;
   /**
    * The certificate that address presents: SHA-256 over its DER encoding, in
    * lower-case hex. Not the digest of its public key.

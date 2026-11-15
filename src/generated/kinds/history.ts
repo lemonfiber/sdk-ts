@@ -2,6 +2,8 @@
 // The `history` envelope, and the shapes only `history` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** One change lemonfiber made, and whether it could be put back. */
 export interface ChangeReport {
   /**
@@ -20,7 +22,7 @@ export interface ChangeReport {
    * change. Two changes both stamped `0` were not made at the same moment, and a
    * reader showing it as a date in 1970 would be inventing one.
    */
-  at: number;
+  at: Instant;
   /** Why it could not go further, where it could not. */
   because?: string | null;
   /** What it did, in the operator's terms. */

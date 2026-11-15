@@ -4,6 +4,7 @@
 
 import type { FrontDoorReport } from "../../shared/address.js";
 import type { HouseholdReport } from "../../shared/estimate.js";
+import type { Instant } from "../../shared/instant.js";
 import type { ProblemSeverity } from "../../shared/problem-severity.js";
 import type { Service } from "../../shared/service.js";
 
@@ -38,7 +39,7 @@ export interface Affected {
    * The condition's own stamp, kept between runs, so every surface that reports
    * the check names the same moment and a restart does not make an old fault new.
    */
-  onset: number;
+  onset: Instant;
   /** What to do about it, most likely first. */
   remedies: string[];
   /** How bad it is. */

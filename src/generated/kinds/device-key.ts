@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { DeviceKeyBacking } from "../shared/device-key-backing.js";
+import type { Instant } from "../shared/instant.js";
 
 /** The envelope carrying `device-key`. */
 export interface DeviceKeyEnvelope {
@@ -24,5 +25,5 @@ export interface RegisteredDeviceKey {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: number;
+  registered: Instant;
 }

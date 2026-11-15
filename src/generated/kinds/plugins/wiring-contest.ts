@@ -3,8 +3,9 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification, WiringContest } from "./plugin-reached-loopback.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification } from "./plugin-reached-loopback.js";
 import type { UndoReversal } from "../../shared/action.js";
+import type { Instant } from "../../shared/instant.js";
 import type { PluginEvidence } from "../../shared/plugin-constraint.js";
 import type { Wired } from "../../shared/reaches.js";
 import type { StackMoveTaken } from "../../shared/stack-move-taken.js";
@@ -234,7 +235,7 @@ export interface PluginInstalls {
 /** One answer a plugin's adapter gave outside a contract it speaks. */
 export interface PluginNonconforming {
   /** When it answered so. */
-  at: number;
+  at: Instant;
   /** The capability it was asked as. */
   capability: string;
   /** The operation it was asked. */
@@ -467,4 +468,17 @@ export interface PluginsEnvelope {
   host?: string | null;
   job?: string | null;
   kind: "plugins";
+}
+
+/**
+ * An ask several services claim and nothing has chosen between, so it reaches
+ * nothing.
+ */
+export interface WiringContest {
+  /** The service that asked. */
+  by: string;
+  /** What it asked for. */
+  capability: string;
+  /** Every claimant, named — a plugin's with the plugin beside it. */
+  claimants: string[];
 }

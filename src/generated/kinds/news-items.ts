@@ -2,6 +2,7 @@
 // The `news-items` envelope, and the shapes only `news-items` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
 import type { NewsKind } from "../shared/news-kind.js";
 import type { TitleKind, TitleUnit } from "../shared/title-kind.js";
 
@@ -40,7 +41,7 @@ export interface NewsProblem {
    * When the stack first saw it wrong since it last saw it right, in whole seconds
    * since the epoch: the same moment the health summary names for it.
    */
-  onset: number;
+  onset: Instant;
   /** What is wrong, in one line. */
   summary: string;
 }
@@ -48,7 +49,7 @@ export interface NewsProblem {
 /** One request, by its reference. */
 export interface NewsRequest {
   /** When it was asked for, where that is known. */
-  asked?: number | null;
+  asked?: Instant | null;
   /** Who asked for it, by the name the media server holds them under. */
   by: string;
   /** The kind of title it asks for, as the household list names it. */

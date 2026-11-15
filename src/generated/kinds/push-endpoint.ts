@@ -2,6 +2,8 @@
 // The `push-endpoint` envelope, and the shapes only `push-endpoint` carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { Instant } from "../shared/instant.js";
+
 /** The envelope carrying `push-endpoint`. */
 export interface PushEndpointEnvelope {
   api_version: number;
@@ -18,7 +20,7 @@ export interface RegisteredPushEndpoint {
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
-  registered: number;
+  registered: Instant;
   /** Whether this was a rehearsal: what registering would come to, with nothing kept. */
   rehearsed: boolean;
 }
