@@ -9,8 +9,8 @@ import type { ValueOrigin } from "../shared/config__credentials__doctor__outboun
  * is held under and never by its value.
  */
 export interface CredentialGranted {
-  /** When the operator approved it. */
-  at: string;
+  /** When the operator approved it, where the record says. */
+  at?: number | null;
   /** The setting the credential is held under, as the inventory names it. */
   credential: string;
   /** The capability of the plugin's own it was granted to fill. */

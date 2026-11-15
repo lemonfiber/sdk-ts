@@ -38,6 +38,11 @@ export interface PluginInstall {
    * would be settled.
    */
   asks: Wired[];
+  /**
+   * The forms it joins, where none of them was running once it was installed: its
+   * services were stopped then, and start with the first of these that is started.
+   */
+  awaits?: string[];
   /** Every change it makes to the machine, in the order it makes them. */
   changes: PluginChange[];
   /**
@@ -228,8 +233,8 @@ export interface PluginInstalls {
 
 /** One answer a plugin's adapter gave outside a contract it speaks. */
 export interface PluginNonconforming {
-  /** When it answered so, as RFC 3339. */
-  at: string;
+  /** When it answered so. */
+  at: number;
   /** The capability it was asked as. */
   capability: string;
   /** The operation it was asked. */

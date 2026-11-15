@@ -13,19 +13,14 @@ export interface ChangeReport {
    */
   alongside: number;
   /**
-   * When it was made, as whole seconds since the Unix epoch, written in decimal.
-   *
-   * A string of digits rather than a number, because it is the stamp the record keeps
-   * and a stamp is compared and stored as text; what it counts is stated here so a
-   * reader can turn it into a time without guessing at a format.
+   * When it was made, in whole seconds since the Unix epoch.
    *
    * **`0` means the clock was unreadable when the change was written**, not that it
    * was made at the epoch: it is how a machine whose clock would not answer stamps a
-   * change. It is not an instant, so two changes both stamped `0` were not made at
-   * the same moment, and a reader showing it as a date in 1970 would be inventing
-   * one.
+   * change. Two changes both stamped `0` were not made at the same moment, and a
+   * reader showing it as a date in 1970 would be inventing one.
    */
-  at: string;
+  at: number;
   /** Why it could not go further, where it could not. */
   because?: string | null;
   /** What it did, in the operator's terms. */
