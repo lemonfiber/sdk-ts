@@ -63,7 +63,11 @@ function grouped(shapes) {
     const { carriers, members } = sets.get(signature);
     const path = pathOf(carriers, members.keys().next().value);
     let key = path.join("/");
-    for (let next = 2; groups.has(key); next += 1) key = `${path.join("/")}__${next}`;
+    let next = 2;
+    while (groups.has(key)) {
+      key = `${path.join("/")}__${next}`;
+      next += 1;
+    }
     groups.set(key, { path: key.split("/"), carriers, members });
   }
   return groups;
