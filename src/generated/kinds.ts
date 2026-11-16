@@ -33,6 +33,7 @@ export * from "./kinds/forms.js";
 export * from "./kinds/front-door.js";
 export * from "./kinds/glossary.js";
 export * from "./kinds/grant.js";
+export * from "./kinds/guide.js";
 export * from "./kinds/handoff.js";
 export * from "./kinds/held.js";
 export * from "./kinds/history.js";
