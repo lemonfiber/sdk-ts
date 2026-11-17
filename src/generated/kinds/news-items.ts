@@ -56,7 +56,8 @@ export interface NewsRequest {
   kind?: TitleKind | null;
   /**
    * The reference the household list names it with: the request service's number
-   * (`42`), or `music-<n>` or `books-<n>` for an ask the core keeps.
+   * (`42`), or `tv-<n>`, `movies-<n>`, `music-<n>` or `books-<n>` for an ask the core
+   * keeps.
    */
   request: string;
   /** What it is called, where a service has been told about it. */

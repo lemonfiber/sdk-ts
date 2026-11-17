@@ -169,6 +169,12 @@ export interface MemberAccess {
 /** One thing a household member asked for, and where it stands in their words. */
 export interface MemberRequest {
   /**
+   * The other members an ask the core keeps is also for, by name, where more than one
+   * member asked for it: one ask, ruled on once for all of them. Only on the
+   * household's whole list; a member's own read never names anybody else who asked.
+   */
+  also_asked?: string[];
+  /**
    * When the title arrived on the media server, as the request service says. Absent,
    * not null, until it is there.
    */
@@ -185,8 +191,9 @@ export interface MemberRequest {
   estimate?: Estimate | null;
   /**
    * The reference it is named by again when somebody rules on it: the number the
-   * request service files it under (`42`), or `music-<n>` or `books-<n>` for an ask
-   * for music or books the core keeps itself.
+   * request service files it under (`42`), `tv-<n>` or `movies-<n>` for an ask the core
+   * keeps until it files it as the request service's owner, or `music-<n>` or
+   * `books-<n>` for an ask for music or books the core keeps itself.
    */
   id: string;
   /**
