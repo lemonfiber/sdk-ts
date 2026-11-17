@@ -6,6 +6,7 @@
 export * from "./bodies.js";
 export * from "./body-routes.js";
 export * from "./envelope.js";
+export * from "./household-words.js";
 export * from "./key-callable.js";
 export * from "./kinds.js";
 export * from "./reads.js";

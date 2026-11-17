@@ -388,6 +388,31 @@ describe("generating the actions a key may call", () => {
     expect(refusal(artefact(PULL, { keyCallable }))).toContain(named);
   });
 
+  it("writes what a member's surface may not show as the contract publishes it, and empty lists where it publishes none", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const householdWords = {
+      names: ["jellyfin"],
+      terms: ["indexer"],
+      sizes: ["gb"],
+      examples: [{ text: "Now on v1.4.2", names: "v1.4.2" }],
+    };
+    const carried = await imported(artefact(PULL, { householdWords }));
+    roots.push(carried.root);
+    expect(carried.generated.HOUSEHOLD_WORDS).toEqual(householdWords);
+    const bare = await imported(artefact(PULL));
+    roots.push(bare.root);
+    expect(bare.generated.HOUSEHOLD_WORDS).toEqual({ names: [], terms: [], sizes: [], examples: [] });
+  });
+
+  it.each([
+    ["not an object", "words"],
+    ["names that are not words", { names: [1], terms: [], sizes: [], examples: [] }],
+    ["no terms", { names: [], sizes: [], examples: [] }],
+    ["an example without what it names", { names: [], terms: [], sizes: [], examples: [{ text: "v1" }] }],
+  ])("refuses household words that are %s", (_what, householdWords) => {
+    expect(refusal(artefact(PULL, { householdWords }))).toContain("household_words cannot be written");
+  });
+
   it("refuses a definition taking a name this generator writes for the actions a key may call", () => {
     expect(refusal(artefact({ pull: kind({ $ref: "#/$defs/KeyCallable" }, { KeyCallable: { type: "string" } }) }))).toContain(
       "what the contract says of one action a key may call",

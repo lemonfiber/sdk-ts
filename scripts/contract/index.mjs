@@ -10,7 +10,17 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { LINE_CAP, linesIn } from "../line-cap.mjs";
-import { bodiesOf, byCodePoint, checked, keyCallableOf, kindsOf, readsOf, refusalsOf, usersOf } from "./artefact.mjs";
+import {
+  bodiesOf,
+  byCodePoint,
+  checked,
+  householdWordsOf,
+  keyCallableOf,
+  kindsOf,
+  readsOf,
+  refusalsOf,
+  usersOf,
+} from "./artefact.mjs";
 import { Layout } from "./layout.mjs";
 import { OUT, fileOf, index, sourceOf } from "./modules.mjs";
 import { ArtefactRefused, refuse } from "./refused.mjs";
@@ -21,6 +31,7 @@ import {
   SHARED_MODULE,
   bodyRoutesModule,
   envelopeModule,
+  householdWordsModule,
   keyCallableModule,
   readsModule,
   refusalsModule,
@@ -42,8 +53,9 @@ Each kind's envelope and the types only it carries are one module under
 \`kinds/\`, each route's body and the types only it carries one module under
 \`bodies/\`, the types several kinds or bodies carry are one module per set of
 them under \`shared/\`, and \`envelope.ts\`, \`reads.ts\`, \`body-routes.ts\`,
-\`refusals.ts\` and \`key-callable.ts\` hold the kinds, the reads, the routes that
-take a body, the refusal codes and the actions an integration key may call. No module holds more lines than the guards allow a source file; one that
+\`refusals.ts\`, \`key-callable.ts\` and \`household-words.ts\` hold the kinds, the
+reads, the routes that take a body, the refusal codes, the actions an integration key
+may call and what a member's surface may not show. No module holds more lines than the guards allow a source file; one that
 would is written as parts beside it. \`index.ts\` hands on every name.
 `;
 export { OUT } from "./modules.mjs";
@@ -58,6 +70,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const kinds = kindsOf(artefact);
   const refusals = refusalsOf(artefact);
   const keyCallable = keyCallableOf(artefact);
+  const householdWords = householdWordsOf(artefact);
   const reads = readsOf(artefact, kinds);
   const bodies = bodiesOf(artefact);
   const writer = new Writer(usersOf(kinds, bodies));
@@ -74,10 +87,11 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const modules = layout.modules();
   const groups = [...layout.groups.values()].map((group) => group.path);
   const under = (top) => groups.filter((path) => path[0] === top[0]).toSorted((a, b) => byCodePoint(a.join("/"), b.join("/")));
-  const members = [["body-routes"], ["envelope"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
+  const members = [["body-routes"], ["envelope"], ["household-words"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
   modules.push(
     bodyRoutesModule(bodies, (name) => layout.whereIs(name)),
     envelopeModule(names),
+    householdWordsModule(householdWords),
     keyCallableModule(keyCallable),
     readsModule(reads),
     refusalsModule(refusals),
