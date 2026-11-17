@@ -8,5 +8,6 @@ export * from "./bodies/keys-claim.js";
 export * from "./bodies/notify-events.js";
 export * from "./bodies/push-endpoints.js";
 export * from "./bodies/session.js";
+export * from "./bodies/session-code.js";
 export * from "./bodies/setup-answer.js";
 export * from "./bodies/setup-recover.js";

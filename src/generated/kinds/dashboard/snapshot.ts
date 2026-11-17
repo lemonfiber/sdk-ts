@@ -4,6 +4,7 @@
 
 import type { HealthSummary, PanelArray_of_Downloader, PanelArray_of_Queue, PanelArray_of_Service, PanelArray_of_Transfer, PanelFrontDoorReport, PanelHouseholdReport, PanelStorage, PanelVpn, Stuck, Telemetry } from "./affected.js";
 import type { Alert } from "../../shared/alert.js";
+import type { ScheduledService } from "../../shared/run-health.js";
 
 /** The envelope carrying `dashboard`. */
 export interface DashboardEnvelope {
@@ -60,6 +61,8 @@ export interface Snapshot {
   household: PanelHouseholdReport;
   /** The per-service queues. */
   queue: PanelArray_of_Queue;
+  /** Each run-and-exit service, with how its last run ended. */
+  scheduled: ScheduledService[];
   /** Every service and what it is doing. */
   services: PanelArray_of_Service;
   /** The storage picture. */

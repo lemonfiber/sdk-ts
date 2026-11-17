@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginChangedCheck, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { Contribution, Expect, PluginAsking, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginVerdict } from "../../shared/plugin-constraint.js";
@@ -352,32 +352,25 @@ export interface PluginTaking {
   shape: PluginShape;
 }
 
-/** What the stack's own checks made of an install. */
-export interface PluginVerification {
-  /**
-   * Every check this install made worse.
-   *
-   * Empty is the answer an install needs, and it is the common one. What is here
-   * is what takes the install back.
-   */
-  broke: PluginChangedCheck[];
-  /**
-   * Every check nothing could be concluded about across the two readings.
-   *
-   * Reported and never acted on. *I could not tell* is not *it is still broken*,
-   * and an install reversed because a check could not reach a provider it also
-   * could not reach an hour ago would be punishing a plugin for the weather. It is
-   * said out loud rather than dropped, because the assurance an operator thought
-   * they had is the thing that went.
-   */
-  unsettled: PluginChangedCheck[];
-}
-
 /**
  * What a recording gives a service in the operator's place: a constant reaching no third
  * party, or, written `"minted"`, a value made for that run alone.
  */
 export type RecordedWith = string | number | boolean;
+
+/**
+ * The setting naming when a run-and-exit service runs, and the times where it holds
+ * nothing.
+ */
+export interface Schedule {
+  /**
+   * The times where the setting holds nothing: a five-field cron expression or one of
+   * `@hourly`, `@daily`, `@weekly` and `@monthly`.
+   */
+  default: string;
+  /** The setting, as `<plugin>:<name>`. */
+  setting: string;
+}
 
 /** The certificate lemonfiber makes for a service before it first starts. */
 export interface ServiceCertificate {
@@ -416,6 +409,8 @@ export interface ServiceFields {
   publish?: ServicePublish[];
   /** The paths beneath its configuration directory it rebuilds when they are missing. */
   rebuilt?: string[];
+  /** When it runs, where it runs to completion on a schedule rather than for good. */
+  schedule?: Schedule | null;
   /** Where the whole configuration directory of the service it fronts lands in it. */
   shares_config?: string | null;
   /** Its scratch paths in memory. */

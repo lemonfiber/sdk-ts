@@ -4,6 +4,7 @@
 
 import type { Condition } from "../shared/condition.js";
 import type { Filtered } from "../shared/filtered.js";
+import type { ScheduledService } from "../shared/run-health.js";
 import type { Service, ServiceState } from "../shared/service.js";
 import type { Waiting } from "../shared/waiting.js";
 
@@ -96,6 +97,13 @@ export interface StatusReport {
   filtered: Filtered[];
   /** The forms asked about; empty means the whole stack was. */
   forms: string[];
+  /**
+   * Each run-and-exit service, with how its last run ended.
+   *
+   * Apart from the services, which are kept running: one of these has a container
+   * only while a run of it is going, and its health is the exit of its last run.
+   */
+  scheduled: ScheduledService[];
   /**
    * Each service, worst first.
    *

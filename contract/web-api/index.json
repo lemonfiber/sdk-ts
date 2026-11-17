@@ -45,6 +45,7 @@
     "reset": "actions/reset.json",
     "restart": "actions/restart.json",
     "restore": "actions/restore.json",
+    "run": "actions/run.json",
     "search": "actions/search.json",
     "seed": "actions/seed.json",
     "settings-clear": "actions/settings-clear.json",
@@ -70,6 +71,7 @@
     "/api/notify/events": "bodies/notify-events.json",
     "/api/push-endpoints": "bodies/push-endpoints.json",
     "/api/session": "bodies/session.json",
+    "/api/session/code": "bodies/session-code.json",
     "/api/setup/answer": "bodies/setup-answer.json",
     "/api/setup/recover": "bodies/setup-recover.json"
   },
@@ -214,6 +216,7 @@
     "push-endpoints": "kinds/push-endpoints.json",
     "quality": "kinds/quality.json",
     "queue": "kinds/queue.json",
+    "ran": "kinds/ran.json",
     "removal": "kinds/removal.json",
     "repair": "kinds/repair.json",
     "replacement": "kinds/replacement.json",
@@ -224,6 +227,7 @@
     "settings": "kinds/settings.json",
     "settled": "kinds/settled.json",
     "setup": "kinds/setup.json",
+    "sign-in-code": "kinds/sign-in-code.json",
     "space": "kinds/space.json",
     "stack": "kinds/stack.json",
     "start": "kinds/start.json",
@@ -258,6 +262,7 @@
     "DEVICE": "refusals/DEVICE.json",
     "FORM": "refusals/FORM.json",
     "GONE": "refusals/GONE.json",
+    "HOST": "refusals/HOST.json",
     "KEY": "refusals/KEY.json",
     "LIFE": "refusals/LIFE.json",
     "MIGRATE": "refusals/MIGRATE.json",
@@ -355,6 +360,7 @@
       "push-endpoints": "examples/kinds/push-endpoints.json",
       "quality": "examples/kinds/quality.json",
       "queue": "examples/kinds/queue.json",
+      "ran": "examples/kinds/ran.json",
       "removal": "examples/kinds/removal.json",
       "repair": "examples/kinds/repair.json",
       "replacement": "examples/kinds/replacement.json",
@@ -365,6 +371,7 @@
       "settings": "examples/kinds/settings.json",
       "settled": "examples/kinds/settled.json",
       "setup": "examples/kinds/setup.json",
+      "sign-in-code": "examples/kinds/sign-in-code.json",
       "space": "examples/kinds/space.json",
       "stack": "examples/kinds/stack.json",
       "start": "examples/kinds/start.json",
@@ -435,6 +442,7 @@
       "reset": "examples/actions/reset.json",
       "restart": "examples/actions/restart.json",
       "restore": "examples/actions/restore.json",
+      "run": "examples/actions/run.json",
       "search": "examples/actions/search.json",
       "seed": "examples/actions/seed.json",
       "settings-clear": "examples/actions/settings-clear.json",
@@ -453,5 +461,6 @@
       "watched": "examples/actions/watched.json",
       "wiring-fill": "examples/actions/wiring-fill.json"
     }
-  }
+  },
+  "household_words": "household-words.json"
 }

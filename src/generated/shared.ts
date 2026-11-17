@@ -39,6 +39,8 @@ export * from "./shared/protocols.js";
 export * from "./shared/pulling.js";
 export * from "./shared/reaches.js";
 export * from "./shared/remedy.js";
+export * from "./shared/run-health.js";
+export * from "./shared/scheduled-run.js";
 export * from "./shared/scope.js";
 export * from "./shared/service.js";
 export * from "./shared/setting-report.js";

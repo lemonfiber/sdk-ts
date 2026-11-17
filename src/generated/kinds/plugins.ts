@@ -4,4 +4,4 @@
 
 export * from "./plugins/expected.js";
 export * from "./plugins/plugin-reached-loopback.js";
-export * from "./plugins/wiring-contest.js";
+export * from "./plugins/plugin-verification.js";

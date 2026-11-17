@@ -16,8 +16,8 @@ export interface HouseholdWords {
 
 /** What a member's surface may not show, as the contract publishes it. */
 export const HOUSEHOLD_WORDS: HouseholdWords = {
-  names: [],
-  terms: [],
-  sizes: [],
-  examples: [],
+  names: ["apprise","audiobookshelf","bazarr","bindery","byparr","caddy","calibre","calibre web automated","docker","emby","flaresolverr","gluetun","gotify","homepage","jellyfin","jellyseerr","komga","lemonfiber","lidarr","medusa","navidrome","ntfy","nzbget","nzbhydra","nzbhydra2","overseerr","plex","podman","prowlarr","qbittorrent","radarr","readarr","recyclarr","sabnzbd","seerr","sickchill","sickgear","sonarr","tdarr","transmission","unpackerr","whisparr","wireguard"],
+  terms: ["administrator","admin","api","backbone","bitrate","block account","byte","bytes","certificate","codec","compose","config","configuration","container","containers","curator","custom format","dashboard","database","disk","dns","download client","downloaded","downloader","downloading","endpoint","engine","error","gigabyte","grab","grabbed","hardlink","hdr","http","https","id","identifier","image","import","imported","indexer","indexers","ip","json","killswitch","log","logs","media server","megabyte","monitored","nzb","operator","peer","pem","pipeline","plugin","port","port forwarding","proxy","quality","quality profile","queue","queued","quick connect","ratio","remux","request service","retention","root folder","seed","seeding","server","servers","service","services","stack","stalled","storage","terabyte","token","torrent","tracker","transcode","transcoding","tunnel","upstream","url","usenet","vpn","webhook"],
+  sizes: ["b","kb","mb","gb","tb","kib","mib","gib","tib","kbps","mbps","gbps"],
+  examples: [{"text":"It needs 4 GB more","names":"4"},{"text":"It needs 12GB more","names":"12gb"},{"text":"Fetching at 3 MB/s","names":"3"},{"text":"Fetching forty per second","names":"per second"},{"text":"Reached at 192.168.1.20","names":"192.168.1.20"},{"text":"Open it at localhost","names":"localhost"},{"text":"See www.house.example","names":"www."},{"text":"Open it at house://shelf","names":"://"},{"text":"Now on v1.4.2","names":"v1.4.2"}],
 };
