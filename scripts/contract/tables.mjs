@@ -104,6 +104,35 @@ export function readsModule(listed) {
   };
 }
 
+/** The module of what a member's surface may not show, as the contract publishes it. */
+export function householdWordsModule(words) {
+  const listed = (list) => `  ${list}: ${JSON.stringify(words[list])},`;
+  return {
+    path: ["household-words"],
+    summary: "What a member's surface may not show, as the contract publishes it.",
+    imports: new Map(),
+    body: [
+      "/** What a member's surface may not show. */",
+      "export interface HouseholdWords {",
+      "  /** Every service, engine and tunnel named, the bundle's parts with hyphens read as spaces. */",
+      "  readonly names: readonly string[];",
+      "  /** Every term for how the stack is built and run. */",
+      "  readonly terms: readonly string[];",
+      "  /** Every unit a size or a rate is written in. */",
+      "  readonly sizes: readonly string[];",
+      "  /** Texts a version, an address, a size or a rate makes unfit, each with what in it a member may not be shown. */",
+      "  readonly examples: readonly { readonly text: string; readonly names: string }[];",
+      "}",
+      "",
+      "/** What a member's surface may not show, as the contract publishes it. */",
+      "export const HOUSEHOLD_WORDS: HouseholdWords = {",
+      ...["names", "terms", "sizes"].map(listed),
+      `  examples: ${JSON.stringify(words.examples.map(({ text, names }) => ({ text, names })))},`,
+      "};",
+    ],
+  };
+}
+
 /** The module of the actions an integration key may call, and what the contract says of each. */
 export function keyCallableModule(listed) {
   const union = listed.length === 0 ? "never" : listed.map(({ action }) => JSON.stringify(action)).join(" | ");

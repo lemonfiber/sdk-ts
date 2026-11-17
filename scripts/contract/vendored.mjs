@@ -39,7 +39,7 @@ export const INDEX = "index.json";
 export const BODIES = "bodies";
 
 /** The lists the index names a file for, or a file for each part of, each under the key the single document carries it by. */
-export const LISTS = ["key_callable", "reads", "refusals"];
+export const LISTS = ["key_callable", "reads", "refusals", "household_words"];
 
 /** What the generated files say they came from when the pin is missing. */
 const UNKNOWN = "unknown";

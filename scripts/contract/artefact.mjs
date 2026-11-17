@@ -224,6 +224,37 @@ function* wrongWithAction(entry, at) {
   }
 }
 
+/** The lists `household_words` carries, each of words. */
+const WORD_LISTS = ["names", "terms", "sizes"];
+
+/**
+ * What a member's surface may not show, as the contract publishes it, or empty
+ * lists.
+ *
+ * An artefact older than the file has no `household_words`, and reads as holding
+ * no word rather than as an error, so a consumer compiles against every artefact.
+ */
+export function householdWordsOf(artefact) {
+  const words = Object.hasOwn(artefact, "household_words")
+    ? artefact.household_words
+    : { names: [], terms: [], sizes: [], examples: [] };
+  const wrong = [];
+  if (!isRecord(words)) wrong.push("it is not an object");
+  for (const list of WORD_LISTS) {
+    const listed = isRecord(words) ? words[list] : undefined;
+    if (!Array.isArray(listed) || listed.some((word) => typeof word !== "string"))
+      wrong.push(`\`${list}\` is not a list of words`);
+  }
+  const examples = isRecord(words) ? words.examples : undefined;
+  if (
+    !Array.isArray(examples) ||
+    examples.some((one) => !isRecord(one) || typeof one.text !== "string" || typeof one.names !== "string")
+  )
+    wrong.push("`examples` is not a list of a text and what it names");
+  if (wrong.length > 0) refuse(`The vendored contract's household_words cannot be written: ${wrong.join("; ")}.`);
+  return words;
+}
+
 /**
  * The actions an integration key may call, as the contract lists them, in its
  * order, or none.

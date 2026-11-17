@@ -73,6 +73,8 @@ const OWNED = new Map([
   ["KeyCallable", "what the contract says of one action a key may call"],
   ["KEY_CALLABLE", "what the contract says of each action a key may call"],
   ["isKeyCallable", "whether an action is one a key may call"],
+  ["HouseholdWords", "what a member's surface may not show"],
+  ["HOUSEHOLD_WORDS", "what a member's surface may not show, as the contract publishes it"],
   ["Scalar", "one value a query parameter carries"],
   ["READS", "every read answered with a document"],
   ["ReadName", "the name of a read answered with a document"],
