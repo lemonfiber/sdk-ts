@@ -394,6 +394,8 @@ describe("generating the actions a key may call", () => {
       names: ["jellyfin"],
       terms: ["indexer"],
       sizes: ["gb"],
+      marks: ["://"],
+      declared: { form: "names a combination of profiles", stack: "names the machine" },
       examples: [{ text: "Now on v1.4.2", names: "v1.4.2" }],
     };
     const carried = await imported(artefact(PULL, { householdWords }));
@@ -401,14 +403,27 @@ describe("generating the actions a key may call", () => {
     expect(carried.generated.HOUSEHOLD_WORDS).toEqual(householdWords);
     const bare = await imported(artefact(PULL));
     roots.push(bare.root);
-    expect(bare.generated.HOUSEHOLD_WORDS).toEqual({ names: [], terms: [], sizes: [], examples: [] });
+    expect(bare.generated.HOUSEHOLD_WORDS).toEqual({
+      names: [],
+      terms: [],
+      sizes: [],
+      marks: [],
+      declared: {},
+      examples: [],
+    });
   });
 
   it.each([
     ["not an object", "words"],
-    ["names that are not words", { names: [1], terms: [], sizes: [], examples: [] }],
-    ["no terms", { names: [], sizes: [], examples: [] }],
-    ["an example without what it names", { names: [], terms: [], sizes: [], examples: [{ text: "v1" }] }],
+    ["names that are not words", { names: [1], terms: [], sizes: [], marks: [], declared: {}, examples: [] }],
+    ["no terms", { names: [], sizes: [], marks: [], declared: {}, examples: [] }],
+    ["no marks", { names: [], terms: [], sizes: [], declared: {}, examples: [] }],
+    ["declared names as a list", { names: [], terms: [], sizes: [], marks: [], declared: ["form"], examples: [] }],
+    ["a declared name without what it names", { names: [], terms: [], sizes: [], marks: [], declared: { form: 1 }, examples: [] }],
+    [
+      "an example without what it names",
+      { names: [], terms: [], sizes: [], marks: [], declared: {}, examples: [{ text: "v1" }] },
+    ],
   ])("refuses household words that are %s", (_what, householdWords) => {
     expect(refusal(artefact(PULL, { householdWords }))).toContain("household_words cannot be written");
   });
