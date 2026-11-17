@@ -88,4 +88,4 @@ export interface HostingReport {
  * nothing is known about, and guessing at a manager is how a report comes to
  * claim a platform it never asked.
  */
-export type Manager = "launchd" | "systemd" | "unsupported";
+export type Manager = "launchd" | "systemd" | "task-scheduler" | "unsupported";

@@ -35,7 +35,10 @@ export interface Reader {
   needs: { [key: string]: string[] };
   /** The service. */
   service: string;
-  /** The variable it is read into. */
+  /**
+   * The variable it is read into, or `schedule` where the setting names when the
+   * service runs.
+   */
   variable: string;
 }
 

@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking, PluginVerification } from "./plugin-reached-loopback.js";
+import type { PluginChange, PluginChangedCheck, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
+import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking } from "./plugin-reached-loopback.js";
 import type { UndoReversal } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginEvidence } from "../../shared/plugin-constraint.js";
@@ -459,6 +459,27 @@ export interface PluginUpdate {
    * be a reinstall that lost everything the old one knew.
    */
   went_back: UndoReversal;
+}
+
+/** What the stack's own checks made of an install. */
+export interface PluginVerification {
+  /**
+   * Every check this install made worse.
+   *
+   * Empty is the answer an install needs, and it is the common one. What is here
+   * is what takes the install back.
+   */
+  broke: PluginChangedCheck[];
+  /**
+   * Every check nothing could be concluded about across the two readings.
+   *
+   * Reported and never acted on. *I could not tell* is not *it is still broken*,
+   * and an install reversed because a check could not reach a provider it also
+   * could not reach an hour ago would be punishing a plugin for the weather. It is
+   * said out loud rather than dropped, because the assurance an operator thought
+   * they had is the thing that went.
+   */
+  unsettled: PluginChangedCheck[];
 }
 
 /** The envelope carrying `plugins`. */

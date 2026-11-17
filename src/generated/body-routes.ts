@@ -2,10 +2,10 @@
 // Every route that takes a body, and the type of the body each takes.
 // Regenerate with `npm run contract:generate`.
 
-import type { DeviceKeysBody, KeysBody, KeysClaimBody, NotifyEventsBody, PushEndpointsBody, SessionBody, SetupAnswerBody, SetupRecoverBody } from "./bodies.js";
+import type { DeviceKeysBody, KeysBody, KeysClaimBody, NotifyEventsBody, PushEndpointsBody, SessionBody, SessionCodeBody, SetupAnswerBody, SetupRecoverBody } from "./bodies.js";
 
 /** Every route that takes a body. */
-export type BodyRoute = "/api/device-keys" | "/api/keys" | "/api/keys/claim" | "/api/notify/events" | "/api/push-endpoints" | "/api/session" | "/api/setup/answer" | "/api/setup/recover";
+export type BodyRoute = "/api/device-keys" | "/api/keys" | "/api/keys/claim" | "/api/notify/events" | "/api/push-endpoints" | "/api/session" | "/api/session/code" | "/api/setup/answer" | "/api/setup/recover";
 
 /** Every route that takes a body, in path order. */
 export const BODY_ROUTES: readonly BodyRoute[] = [
@@ -15,6 +15,7 @@ export const BODY_ROUTES: readonly BodyRoute[] = [
   "/api/notify/events",
   "/api/push-endpoints",
   "/api/session",
+  "/api/session/code",
   "/api/setup/answer",
   "/api/setup/recover",
 ];
@@ -27,6 +28,7 @@ export interface BodyOf {
   "/api/notify/events": NotifyEventsBody;
   "/api/push-endpoints": PushEndpointsBody;
   "/api/session": SessionBody;
+  "/api/session/code": SessionCodeBody;
   "/api/setup/answer": SetupAnswerBody;
   "/api/setup/recover": SetupRecoverBody;
 }
