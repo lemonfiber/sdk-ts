@@ -11,6 +11,11 @@ export interface Askable {
   by?: string | null;
   /** Where its cover is published, where it is music or books and has one. */
   cover?: string | null;
+  /**
+   * The token vouching that this member's search offered it, for their ask to hand
+   * back, where the core could sign one.
+   */
+  found?: string | null;
   /** The id it is asked for by. */
   id: string;
   /** Whether it is a series, a film, music or books. */
