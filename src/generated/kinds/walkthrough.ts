@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Line, WalkthroughStep } from "../shared/line.js";
+import type { Reason, Shape } from "../shared/reason.js";
 
 /** Where a finished walkthrough leaves the operator. */
 export interface Handover {
@@ -18,12 +19,6 @@ export type Link = "hardlinked" | "copied";
 
 /** One thing to do next. */
 export type Next = "more-content" | "household" | "client-apps";
-
-/** Why a walkthrough could not go on. */
-export type Reason = "no-indexers" | "indexers-failed" | "nothing-matched" | "none-met-the-preset" | "tunnel-down" | "not-grabbed" | "stalled" | "import-failed" | "no-media-server" | "not-visible";
-
-/** Which walkthrough this stack is offered. */
-export type Shape = "pipeline" | "library-only";
 
 /** A walkthrough that stopped: where, why, what the services were saying, and what to do. */
 export interface Stopped {
