@@ -225,7 +225,7 @@ function* wrongWithAction(entry, at) {
 }
 
 /** The lists `household_words` carries, each of words. */
-const WORD_LISTS = ["names", "terms", "sizes"];
+const WORD_LISTS = ["names", "terms", "sizes", "marks"];
 
 /**
  * What a member's surface may not show, as the contract publishes it, or empty
@@ -237,7 +237,7 @@ const WORD_LISTS = ["names", "terms", "sizes"];
 export function householdWordsOf(artefact) {
   const words = Object.hasOwn(artefact, "household_words")
     ? artefact.household_words
-    : { names: [], terms: [], sizes: [], examples: [] };
+    : { names: [], terms: [], sizes: [], marks: [], declared: {}, examples: [] };
   const wrong = [];
   if (!isRecord(words)) wrong.push("it is not an object");
   for (const list of WORD_LISTS) {
@@ -245,6 +245,9 @@ export function householdWordsOf(artefact) {
     if (!Array.isArray(listed) || listed.some((word) => typeof word !== "string"))
       wrong.push(`\`${list}\` is not a list of words`);
   }
+  const declared = isRecord(words) ? words.declared : undefined;
+  if (!isRecord(declared) || Object.values(declared).some((names) => typeof names !== "string"))
+    wrong.push("`declared` is not each name with what it names");
   const examples = isRecord(words) ? words.examples : undefined;
   if (
     !Array.isArray(examples) ||
