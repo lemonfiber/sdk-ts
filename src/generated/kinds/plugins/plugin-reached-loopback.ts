@@ -452,6 +452,11 @@ export interface ServiceNetwork {
    * refuses every private address.
    */
   fenced?: boolean;
+  /**
+   * Whether it is held inside the stack, behind a fence passing only what is inside its
+   * own networks.
+   */
+  internal?: boolean;
   /** The capability whose filler's network it runs inside. */
   via?: string | null;
 }
