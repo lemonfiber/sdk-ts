@@ -77,6 +77,18 @@ export interface LifecycleReport {
    */
   moves?: MoveOffered[];
   /**
+   * Every network of the project the engine held none of, by the engine's name: created
+   * before a start, or named and left uncreated by a rehearsal. Empty for every other
+   * action.
+   */
+  networks_created?: string[];
+  /**
+   * Every network of the project the engine held in another shape than the project
+   * gives it, by the engine's name: taken away and created again before a start, with
+   * every service on it, or named and left by a rehearsal. Empty for every other action.
+   */
+  networks_recreated?: string[];
+  /**
    * The offer a restart answers: the services it would restart, named so that a
    * restart carrying it back is carried out against those services or refused.
    * Absent for every other action.
