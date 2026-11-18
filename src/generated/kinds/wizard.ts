@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Choosable } from "../shared/choosable.js";
+import type { SetUp } from "../shared/set-up.js";
 import type { SettingReport, Validation } from "../shared/setting-report.js";
 
 /**
@@ -64,6 +65,36 @@ export type Phase = "in-progress" | "reviewing" | "applying" | "applied";
  * is the same boolean every report carries, so a client reads one shape.
  */
 export type Ran = boolean;
+
+/**
+ * What testing a data location for hardlinks found.
+ *
+ * Tested on the location itself where it exists, and otherwise on the deepest parent
+ * that does, which is named so that a result read off a parent is never shown as the
+ * location's own.
+ */
+export type StorageFinding = StorageFindingLinks | StorageFindingCopyOnly | StorageFindingUntested;
+
+/** It works but cannot hardlink, so every import is a copy. */
+export interface StorageFindingCopyOnly {
+  found: "copy-only";
+  /** The filesystem's reason, where it has one that can be named. */
+  limitation?: string | null;
+}
+
+/** It hardlinks, so imports are instant and cost no extra disk. */
+export interface StorageFindingLinks {
+  found: "links";
+  /** The parent the test ran on, where the location did not exist yet. */
+  inferred_from?: string | null;
+}
+
+/** It could not be tested, with the platform's words for why. */
+export interface StorageFindingUntested {
+  found: "untested";
+  /** Why the test could not run. */
+  reason: string;
+}
 
 /** The envelope carrying `wizard`. */
 export interface WizardEnvelope {
@@ -132,6 +163,19 @@ export interface WizardReport {
    * its wording alone.
    */
   rehearsed: Ran;
+  /**
+   * Whether this stack is set up: a previous run left setup part-way, nothing is
+   * configured and no setup has begun, or it is configured.
+   */
+  setup: SetUp;
+  /**
+   * What testing the data location just given found, where one was given.
+   *
+   * Absent for every other answer. A location that does not hardlink is still kept,
+   * because whether to use it anyway is the operator's to decide once they have read
+   * this.
+   */
+  storage?: StorageFinding | null;
   /**
    * Every question that applies on this machine and has no answer yet, in the
    * order they are put.

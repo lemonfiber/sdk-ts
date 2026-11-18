@@ -4,7 +4,7 @@
 
 import type { Condition } from "../shared/condition.js";
 import type { ConflictReport } from "../shared/conflict-report.js";
-import type { Plan } from "../shared/dropped.js";
+import type { Plan, UpInstallOffered } from "../shared/dropped.js";
 import type { Forwarded } from "../shared/forwarded.js";
 import type { MoveOffered } from "../shared/move-offered.js";
 import type { Service } from "../shared/service.js";
@@ -212,17 +212,4 @@ export interface Switched {
   stop_command?: string[] | null;
   /** Stopped, because the new closure does not hold them. */
   stopped: string[];
-}
-
-/**
- * An install of a part the bundle installs that a start offers, by the plugin and the
- * offer its install reads as.
- */
-export interface UpInstallOffered {
-  /** The name its install's offer goes by, where it could be read. */
-  offer?: string | null;
-  /** The plugin the bundle installs, in place of the stack's own service of its id. */
-  plugin: string;
-  /** Why its install could not be read, where it could not. */
-  why?: string | null;
 }

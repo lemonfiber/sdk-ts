@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { FrontDoorReport } from "../../shared/address.js";
+import type { DashboardProtocol } from "../../shared/dashboard-protocol.js";
 import type { HouseholdReport } from "../../shared/estimate.js";
 import type { Instant } from "../../shared/instant.js";
 import type { ProblemSeverity } from "../../shared/problem-severity.js";
@@ -47,12 +48,6 @@ export interface Affected {
   /** What is wrong, in one line. */
   summary: string;
 }
-
-/**
- * Which protocol a transfer is moving over, since the same download reads
- * differently on each — a Usenet download has no peers, a torrent has no server.
- */
-export type DashboardProtocol = "usenet" | "torrent";
 
 /**
  * A figure a source reports, kept apart from the two ways it can be missing.

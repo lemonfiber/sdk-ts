@@ -54,6 +54,17 @@ export interface Plan {
   footprint: Footprint;
   /** The forms the operator named, in the order they named them. */
   forms: string[];
+  /**
+   * Each part this build carries that the forms hold and this machine has never run,
+   * offered as an install from the build before a start writes anything; answered by
+   * [`Self::offer`]. Empty on every plan but a preview's.
+   */
+  installing?: UpInstallOffered[];
+  /**
+   * The offer a start answers to take every install in [`Self::installing`], where it
+   * could be read.
+   */
+  offer?: string | null;
   /** The profiles to activate, sorted so the command is reproducible. */
   profiles: string[];
   /**
@@ -80,6 +91,19 @@ export interface Plan {
    * forms: a plugin that joins none of the rest does not run.
    */
   vanished?: Vanished[];
+}
+
+/**
+ * An install of a part the bundle installs that a start offers, by the plugin and the
+ * offer its install reads as.
+ */
+export interface UpInstallOffered {
+  /** The name its install's offer goes by, where it could be read. */
+  offer?: string | null;
+  /** The plugin the bundle installs, in place of the stack's own service of its id. */
+  plugin: string;
+  /** Why its install could not be read, where it could not. */
+  why?: string | null;
 }
 
 /** A plugin naming forms the stack does not declare. */

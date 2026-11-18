@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Protocols } from "../shared/protocols.js";
+import type { SetUp } from "../shared/set-up.js";
 
 /** The user and group the stack's services run as. */
 export interface ServiceUser {
@@ -13,9 +14,6 @@ export interface ServiceUser {
   /** The user id. */
   uid: number;
 }
-
-/** Whether this stack is set up. */
-export type SetUp = "none" | "part-way" | "done";
 
 /** The envelope carrying `settled`. */
 export interface SettledEnvelope {
