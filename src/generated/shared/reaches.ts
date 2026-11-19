@@ -60,7 +60,7 @@ export interface Wired {
 }
 
 /** How an ask was settled. */
-export type WiringSettled = WiringSettledOutright | WiringSettledEach | WiringSettledContested | WiringSettledChosen | WiringSettledUnfilled;
+export type WiringSettled = WiringSettledOutright | WiringSettledEach | WiringSettledContested | WiringSettledChosen | WiringSettledUnfilled | WiringSettledDeclined;
 
 /** Several claimants, and a choice is recorded. */
 export interface WiringSettledChosen {
@@ -83,6 +83,13 @@ export interface WiringSettledContested {
   /** Every candidate, named, so a choice is made from a list. */
   claimants: string[];
   settled: "contested";
+}
+
+/** The operator chose that nothing fills it. */
+export interface WiringSettledDeclined {
+  /** Every claimant passed over. */
+  over: string[];
+  settled: "declined";
 }
 
 /** Every claimant, because the link asked for all of them rather than one. */
