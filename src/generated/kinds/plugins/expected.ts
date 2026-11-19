@@ -148,6 +148,17 @@ export interface PluginAsking {
 }
 
 /**
+ * The upstream image a service's image is built on, and the release of it the build
+ * started from.
+ */
+export interface PluginBuiltOn {
+  /** The upstream image's registry path as the build names it, without tag or digest. */
+  image: string;
+  /** The upstream's release the build started from, as that image tags it. */
+  release: string;
+}
+
+/**
  * One change installing a plugin makes to the machine.
  *
  * A path and what goes at it, which is the whole of what an install touches. None is an
@@ -350,17 +361,6 @@ export type PluginPlaceholderForm = "plain" | "pbkdf2" | "bcrypt";
 
 /** What an install puts at one path. */
 export type PluginPuts = "directory" | "document" | "key" | "secrets" | "starting" | "upstream";
-
-/** From the household, through the stack's own proxy, at this label. */
-export interface PluginReachedHousehold {
-  /** The group on the bundled dashboard, where the manifest named one. */
-  group?: string | null;
-  /** The single label in front of the operator's domain. */
-  hostname: string;
-  /** The port the service listens on. */
-  port: number;
-  tier: "household";
-}
 
 /** One recipe, as an operator agrees to what it does. */
 export interface PluginRecipe {

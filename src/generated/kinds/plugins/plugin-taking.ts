@@ -3,7 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { PluginChange, PluginChangedCheck, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginSharing, PluginTaking } from "./plugin-reached-loopback.js";
+import type { PluginInstalled, PluginProving, PluginShape, PluginSharing } from "./plugin-reached-household.js";
 import type { UndoReversal } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginEvidence } from "../../shared/plugin-constraint.js";
@@ -387,6 +387,22 @@ export interface PluginSubstituted {
   plugin: string;
   /** The service chosen. */
   service: string;
+}
+
+/** One service taking a privileged shape, as the reading states it. */
+export interface PluginTaking {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The devices it is given. */
+  devices: string[];
+  /** The kernel capabilities it is given. */
+  grants: string[];
+  /** Whether it is added to the group owning those devices on the engine's host. */
+  grouped: boolean;
+  /** The service taking it. */
+  service: string;
+  /** The shape it takes. */
+  shape: PluginShape;
 }
 
 /** A capability that would have nothing filling it. */

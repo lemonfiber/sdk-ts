@@ -3,5 +3,5 @@
 // Regenerate with `npm run contract:generate`.
 
 export * from "./plugins/expected.js";
-export * from "./plugins/plugin-reached-loopback.js";
-export * from "./plugins/plugin-verification.js";
+export * from "./plugins/plugin-reached-household.js";
+export * from "./plugins/plugin-taking.js";
