@@ -18,6 +18,8 @@ export interface Problem {
   meaning: string;
   /** What to do, most likely first. */
   remedies: Remedy[];
+  /** How many whole seconds to wait before asking again, where the refusal says. */
+  retry_after?: number | null;
   /** How much it matters. */
   severity: ProblemSeverity;
   /** Where it stands with respect to being fixed. */
