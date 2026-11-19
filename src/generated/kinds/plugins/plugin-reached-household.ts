@@ -2,7 +2,7 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { Contribution, Expect, PluginAsking, PluginDeclaration, PluginReachedHousehold, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
+import type { Contribution, Expect, PluginAsking, PluginBuiltOn, PluginDeclaration, PluginRecipe, PluginRequest, ServiceConstant } from "./expected.js";
 import type { PluginGrant } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginVerdict } from "../../shared/plugin-constraint.js";
@@ -109,6 +109,8 @@ export interface PluginPlaced {
   asks?: PluginAsking[];
   /** What it asks for there, where it says. */
   asks_for?: string | null;
+  /** The upstream image and release its image is built on, where its manifest says. */
+  built_on?: PluginBuiltOn | null;
   /**
    * Where inside the container its one configuration directory is mounted.
    *
@@ -248,6 +250,17 @@ export interface PluginProving {
  */
 export type PluginReached = PluginReachedLoopback | PluginReachedProxied | PluginReachedHousehold;
 
+/** From the household, through the stack's own proxy, at this label. */
+export interface PluginReachedHousehold {
+  /** The group on the bundled dashboard, where the manifest named one. */
+  group?: string | null;
+  /** The single label in front of the operator's domain. */
+  hostname: string;
+  /** The port the service listens on. */
+  port: number;
+  tier: "household";
+}
+
 /** From this machine and nowhere else. No route, and no label to route to. */
 export interface PluginReachedLoopback {
   /** The group on the bundled dashboard, where the manifest named one. */
@@ -334,22 +347,6 @@ export interface PluginSharing {
   at: string;
   /** The service whose files it writes. */
   upstream: string;
-}
-
-/** One service taking a privileged shape, as the reading states it. */
-export interface PluginTaking {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The devices it is given. */
-  devices: string[];
-  /** The kernel capabilities it is given. */
-  grants: string[];
-  /** Whether it is added to the group owning those devices on the engine's host. */
-  grouped: boolean;
-  /** The service taking it. */
-  service: string;
-  /** The shape it takes. */
-  shape: PluginShape;
 }
 
 /**
