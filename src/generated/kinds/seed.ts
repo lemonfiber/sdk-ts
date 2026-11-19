@@ -67,7 +67,7 @@ export interface SeedSeverityWarning {
 }
 
 /** How one connection turned out after a seed pass. */
-export type SeedState = SeedStateWired | SeedStateRestarted | SeedStateAlreadyWired | SeedStateDrifted | SeedStateKept | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
+export type SeedState = SeedStateWired | SeedStateRestarted | SeedStateAlreadyWired | SeedStateDrifted | SeedStateKept | SeedStateStale | SeedStateConflicted | SeedStateAdopted | SeedStateUnmanaged | SeedStateWouldWire | SeedStateWouldAdopt | SeedStateTakenBack | SeedStateWouldTakeBack | SeedStateObserved | SeedStateUnmatched | SeedStateSkipped | SeedStateFailed | SeedStateRefused;
 
 /**
  * An operator's edit adopted as the accepted state, kept across seeds and
@@ -183,6 +183,14 @@ export interface SeedStateStale {
 }
 
 /**
+ * A download client lemonfiber created in a curator, taken back out of it because
+ * nothing here answers where it points any more.
+ */
+export interface SeedStateTakenBack {
+  state: "taken-back";
+}
+
+/**
  * A value the service already held that lemonfiber never wrote — the operator's
  * own, pre-existing. Adopted as the baseline this run rather than reported as
  * drift, so an existing setup is taken on instead of flagged wholesale. Its
@@ -224,6 +232,11 @@ export interface SeedStateWired {
  */
 export interface SeedStateWouldAdopt {
   state: "would-adopt";
+}
+
+/** A download client a real run would take back, and this one did not. */
+export interface SeedStateWouldTakeBack {
+  state: "would-take-back";
 }
 
 /**
