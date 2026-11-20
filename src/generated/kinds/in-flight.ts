@@ -13,7 +13,7 @@ export interface InFlightEnvelope {
   kind: "in-flight";
 }
 
-/** What is still coming down inside the forms a teardown would stop. */
+/** What is still coming down inside what a stop would stop. */
 export interface InFlightReport {
   /** Each download still coming down, with how far it has got. */
   downloads: Unfinished[];
