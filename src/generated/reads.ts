@@ -28,6 +28,8 @@ export const READS = {
   "front-door": { path: "/api/front-door", segments: [], parameters: [], kinds: ["front-door"] },
   "stack": { path: "/api/stack", segments: [], parameters: [], kinds: ["stack"] },
   "settled": { path: "/api/settled", segments: [], parameters: [], kinds: ["settled"] },
+  "in-flight": { path: "/api/in-flight", segments: [], parameters: [{ name: "forms", repeatable: true }, { name: "services", repeatable: true }], kinds: ["in-flight"] },
+  "served": { path: "/api/served", segments: [], parameters: [], kinds: ["served"] },
   "notify": { path: "/api/notify", segments: [], parameters: [], kinds: ["notify"] },
   "notify/mine": { path: "/api/notify/mine", segments: [], parameters: [{ name: "member", repeatable: false }], kinds: ["notify-mine"] },
   "news": { path: "/api/news", segments: [], parameters: [], kinds: ["news-items"] },
@@ -83,6 +85,8 @@ export interface ReadQuery {
   "front-door": Record<string, never>;
   "stack": Record<string, never>;
   "settled": Record<string, never>;
+  "in-flight": { forms?: Scalar | readonly Scalar[] | undefined; services?: Scalar | readonly Scalar[] | undefined };
+  "served": Record<string, never>;
   "notify": Record<string, never>;
   "notify/mine": { member?: Scalar | undefined };
   "news": Record<string, never>;
