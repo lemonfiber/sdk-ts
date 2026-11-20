@@ -26,6 +26,7 @@ export * from "./shared/forwarded.js";
 export * from "./shared/instant.js";
 export * from "./shared/key-purpose.js";
 export * from "./shared/line.js";
+export * from "./shared/locale.js";
 export * from "./shared/medium.js";
 export * from "./shared/move-offered.js";
 export * from "./shared/moved-report.js";

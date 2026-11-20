@@ -2,6 +2,7 @@
 // The body `/api/setup/answer` takes, and the shapes only it carries.
 // Regenerate with `npm run contract:generate`.
 
+import type { SetupHouse } from "../shared/locale.js";
 import type { Protocols } from "../shared/protocols.js";
 
 /** How much an operator wants to be told. */
@@ -68,7 +69,7 @@ export interface Provider {
  * submits one: the tag is the step, so an answer names the question it belongs
  * to rather than arriving as a field a reader has to guess the meaning of.
  */
-export type SetupAnswerBody = SetupAnswerBodyProtocols | SetupAnswerBodyVpn | SetupAnswerBodyDataLocation | SetupAnswerBodyCredentials | SetupAnswerBodyProvider | SetupAnswerBodyServiceUser | SetupAnswerBodyLibrary | SetupAnswerBodyNotifications | SetupAnswerBodyHousehold | SetupAnswerBodyAutostart;
+export type SetupAnswerBody = SetupAnswerBodyHouse | SetupAnswerBodyProtocols | SetupAnswerBodyVpn | SetupAnswerBodyDataLocation | SetupAnswerBodyCredentials | SetupAnswerBodyProvider | SetupAnswerBodyServiceUser | SetupAnswerBodyLibrary | SetupAnswerBodyNotifications | SetupAnswerBodyHousehold | SetupAnswerBodyAutostart;
 
 /** Whether to start on boot. */
 export interface SetupAnswerBodyAutostart {
@@ -86,6 +87,11 @@ export interface SetupAnswerBodyCredentials {
 /** The data location. */
 export interface SetupAnswerBodyDataLocation {
   "data-location": string;
+}
+
+/** The house's zone and locale, as the operator confirmed or gave them. */
+export interface SetupAnswerBodyHouse {
+  house: SetupHouse;
 }
 
 /** Whether the household uses it. */

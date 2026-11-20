@@ -3,6 +3,7 @@
 // Regenerate with `npm run contract:generate`.
 
 import type { Choosable } from "../shared/choosable.js";
+import type { SetupHouse } from "../shared/locale.js";
 import type { SetUp } from "../shared/set-up.js";
 import type { SettingReport, Validation } from "../shared/setting-report.js";
 
@@ -129,6 +130,11 @@ export interface WizardReport {
    * order it asks it: empty where nothing fills the guard or it asks nothing.
    */
   guard: GuardQuestion[];
+  /**
+   * The house's zone and locale: the ones the operator confirmed or gave, or the ones
+   * proposed from the host's where none are yet.
+   */
+  house: SetupHouse;
   /**
    * Whether this machine has setup left to do. False once configuration
    * exists and nothing is part-way through, which is when a surface directs
