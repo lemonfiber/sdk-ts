@@ -59,6 +59,11 @@ export interface ConfigReport {
    */
   consequence?: string | null;
   /**
+   * Every answer setup writes, in the catalogue's order, whether or not anything holds
+   * it. Never a value: a value is read where it is held, withheld there as it is.
+   */
+  decisions: DecisionReport[];
+  /**
    * Whether this was a rehearsal, so a change that `changed` reports was one
    * that *would* be made rather than one that was.
    */
@@ -75,6 +80,28 @@ export interface ConfigReport {
 
 /** What changing a decision costs. */
 export type Cost = "cheap" | "consequential";
+
+/** The setting an answer setup writes is held in. */
+export type DecisionKey = "DATA_ROOT" | "MEDIA_SERVER_MODE" | "LEMONFIBER_USENET" | "LEMONFIBER_TORRENT" | "LEMONFIBER_VPN" | "PUID" | "PGID" | "VPN_PROVIDER" | "INDEXER_URL" | "INDEXER_APIKEY" | "USENET_HOST" | "USENET_PORT" | "USENET_USER" | "USENET_PASS" | "USENET_TLS" | "LEMONFIBER_FRONT_DOOR" | "TZ" | "LEMONFIBER_LOCALE";
+
+/** One answer setup writes, as it can be changed afterwards. */
+export interface DecisionReport {
+  /** What changing it affects, in the core's words. */
+  affects: string;
+  /** What changing it costs. */
+  cost: Cost;
+  /** Whether its value is withheld as a credential. */
+  credential: boolean;
+  /** Whether the answer is held, in the configuration or the settings store. */
+  held: boolean;
+  /** The setting the answer is kept in. */
+  key: DecisionKey;
+  /**
+   * The name `settings set` takes, where the settings store keeps the answer. Absent
+   * where `config set` takes it.
+   */
+  setting?: string | null;
+}
 
 /**
  * A setting changed outside lemonfiber since it last wrote one.
