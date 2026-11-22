@@ -56,6 +56,7 @@ export const READS = {
   "history": { path: "/api/history", segments: [], parameters: [], kinds: ["history"] },
   "update": { path: "/api/update", segments: [], parameters: [{ name: "what", repeatable: false }, { name: "to", repeatable: false }], kinds: ["self-update", "update"] },
   "plugins": { path: "/api/plugins", segments: [], parameters: [], kinds: ["plugins"] },
+  "plugins/catalogue": { path: "/api/plugins/catalogue", segments: [], parameters: [], kinds: ["plugin-catalogue"] },
   "wiring": { path: "/api/wiring", segments: [], parameters: [], kinds: ["wiring"] },
   "settings": { path: "/api/settings", segments: [], parameters: [], kinds: ["settings"] },
   "logs": { path: "/api/logs", segments: [], parameters: [{ name: "form", repeatable: true }, { name: "service", repeatable: true }, { name: "tail", repeatable: false }, { name: "follow", repeatable: false }], kinds: ["job", "log"] },
@@ -113,6 +114,7 @@ export interface ReadQuery {
   "history": Record<string, never>;
   "update": { what?: Scalar | undefined; to?: Scalar | undefined };
   "plugins": Record<string, never>;
+  "plugins/catalogue": Record<string, never>;
   "wiring": Record<string, never>;
   "settings": Record<string, never>;
   "logs": { form?: Scalar | readonly Scalar[] | undefined; service?: Scalar | readonly Scalar[] | undefined; tail?: Scalar | undefined; follow?: Scalar | undefined };

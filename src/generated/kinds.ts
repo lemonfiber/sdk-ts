@@ -63,6 +63,7 @@ export * from "./kinds/password.js";
 export * from "./kinds/pausing.js";
 export * from "./kinds/play.js";
 export * from "./kinds/playing.js";
+export * from "./kinds/plugin-catalogue.js";
 export * from "./kinds/plugin-claims.js";
 export * from "./kinds/plugin-conformance.js";
 export * from "./kinds/plugin-provenance.js";
