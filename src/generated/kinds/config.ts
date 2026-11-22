@@ -76,10 +76,37 @@ export interface ConfigReport {
   review?: Review | null;
   /** The settings asked about — one for a lookup, all of them for a listing. */
   settings: SettingReport[];
+  /**
+   * Each area the operator declared unmanaged, in the order written, with what it
+   * covers now. Empty where nothing is declared. An area and a reason are the
+   * operator's own text, to be shown as plain text.
+   */
+  unmanaged: UnmanagedReport[];
+  /** How many declared areas `unmanaged` leaves out for being too many. */
+  unmanaged_more: number;
 }
 
 /** What changing a decision costs. */
 export type Cost = "cheap" | "consequential";
+
+/**
+ * What a thing a declaration covers is, read off where it was found.
+ *
+ * Never off its name, since a stack may name a service `config`: one area can cover a
+ * service, a file and a setting at once, each listed as what it is.
+ */
+export type CoveredKind = "service" | "path" | "setting";
+
+/** One thing a declaration covers. */
+export interface CoveredReport {
+  /** What it is. */
+  kind: CoveredKind;
+  /**
+   * Its name: a service's id, a file's place in the stack or the project, or a
+   * setting's key.
+   */
+  name: string;
+}
 
 /** The setting an answer setup writes is held in. */
 export type DecisionKey = "DATA_ROOT" | "MEDIA_SERVER_MODE" | "LEMONFIBER_USENET" | "LEMONFIBER_TORRENT" | "LEMONFIBER_VPN" | "PUID" | "PGID" | "VPN_PROVIDER" | "INDEXER_URL" | "INDEXER_APIKEY" | "USENET_HOST" | "USENET_PORT" | "USENET_USER" | "USENET_PASS" | "USENET_TLS" | "LEMONFIBER_FRONT_DOOR" | "TZ" | "LEMONFIBER_LOCALE";
@@ -216,4 +243,23 @@ export interface Review {
   refusal?: string | null;
   /** Where the proposal stands. */
   stance: Stance;
+}
+
+/** One area the operator declared unmanaged, as it covers things now. */
+export interface UnmanagedReport {
+  /** The area as written, a control or layout character written as its bytes in hex. */
+  area: string;
+  /** Whether `area` was cut short. */
+  area_cut: boolean;
+  /**
+   * Each thing the area covers now, in the order the stack holds them. Empty where it
+   * covers nothing.
+   */
+  covers: CoveredReport[];
+  /** How many covered things `covers` leaves out for being too many. */
+  covers_more: number;
+  /** The reason the operator gave, written as `area` is. */
+  why: string;
+  /** Whether `why` was cut short. */
+  why_cut: boolean;
 }
