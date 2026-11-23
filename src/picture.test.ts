@@ -51,9 +51,7 @@ describe("poster and backdrop", () => {
     const seen: Seen[] = [];
     const got = await open(showing(new Blob([PNG], { type: "image/png" }), seen)).poster(
       "4f2a9c",
-      {
-        member: "ana",
-      },
+      { query: { member: "ana" } },
     );
 
     if (!got.ok) throw new Error(got.problem.message);
@@ -88,7 +86,7 @@ describe("poster and backdrop", () => {
     "report a title with nothing to show as missing, keeping %s",
     async (code) => {
       const got = await open(showing(new Blob([]), [], absent(code))).poster("81", {
-        member: "ana",
+        query: { member: "ana" },
       });
 
       expect(got).toMatchObject({ ok: false, problem: { kind: "missing", code } });
@@ -102,7 +100,7 @@ describe("askablePoster", () => {
     const seen: Seen[] = [];
     const got = await open(
       showing(new Blob([PNG], { type: "image/jpeg" }), seen),
-    ).askablePoster("603", { member: "ana", kind: "movies" });
+    ).askablePoster("603", { query: { member: "ana", kind: "movies" } });
 
     expect(got).toMatchObject({ ok: true, value: { mediaType: "image/jpeg" } });
     expect(seen[0]?.url).toBe(
@@ -117,8 +115,10 @@ describe("askablePoster", () => {
     "reports a found title with nothing to show as missing, keeping %s",
     async (code) => {
       const got = await open(showing(new Blob([]), [], absent(code))).askablePoster("603", {
-        member: "ana",
-        kind: "tv",
+        query: {
+          member: "ana",
+          kind: "tv",
+        },
       });
 
       expect(got).toMatchObject({ ok: false, problem: { kind: "missing", code } });

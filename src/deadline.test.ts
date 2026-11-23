@@ -70,7 +70,23 @@ describe("a call's deadline", () => {
   });
 
   it("takes the wait a call gives in place of the client's", async () => {
-    const got = await open(deaf, 60_000).read("status", {}, { timeoutMs: 30 });
+    const got = await open(deaf, 60_000).read("status", { timeoutMs: 30 });
+    expect(got).toEqual({ ok: false, problem: outOfTime(30) });
+  });
+
+  it("takes the wait beside a read's query, in the one object the read is asked with", async () => {
+    const got = await open(deaf, 60_000).read("explain", {
+      query: { word: "hello" },
+      timeoutMs: 30,
+    });
+    expect(got).toEqual({ ok: false, problem: outOfTime(30) });
+  });
+
+  it("takes the wait beside an action's body, in the one object the action is told with", async () => {
+    const got = await open(deaf, 60_000).act("retry-import", {
+      body: { item: "S03E04" },
+      timeoutMs: 30,
+    });
     expect(got).toEqual({ ok: false, problem: outOfTime(30) });
   });
 
@@ -108,7 +124,7 @@ describe("a call's deadline", () => {
   });
 
   it("waits for an answer that comes within the wait", async () => {
-    const got = await open(answering({}), 1000).read("explain", { word: "hello" });
+    const got = await open(answering({}), 1000).read("explain", { query: { word: "hello" } });
     expect(got).toMatchObject({ ok: true, value: { kind: "word", data: "hello" } });
   });
 
@@ -120,7 +136,7 @@ describe("a call's deadline", () => {
 describe("a call its caller stops", () => {
   it("ends where the caller raises its signal before an answer comes", async () => {
     const stopping = new AbortController();
-    const asking = open(deaf).read("status", {}, { signal: stopping.signal });
+    const asking = open(deaf).read("status", { signal: stopping.signal });
     stopping.abort();
     expect(await asking).toEqual({ ok: false, problem: stopped() });
   });
@@ -128,7 +144,7 @@ describe("a call its caller stops", () => {
   it("ends at once where the caller had already stopped it", async () => {
     const stopping = new AbortController();
     stopping.abort();
-    expect(await open(answering({})).read("status", {}, { signal: stopping.signal })).toEqual({
+    expect(await open(answering({})).read("status", { signal: stopping.signal })).toEqual({
       ok: false,
       problem: stopped(),
     });
@@ -183,7 +199,7 @@ describe("a wait that is not one", () => {
     const signals: AbortSignal[] = [];
     const client = open(answering({}, signals));
 
-    expect(await client.read("status", {}, { timeoutMs: 0 })).toMatchObject({
+    expect(await client.read("status", { timeoutMs: 0 })).toMatchObject({
       ok: false,
       problem: { kind: "configuration" },
     });

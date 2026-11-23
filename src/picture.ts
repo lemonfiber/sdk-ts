@@ -3,6 +3,8 @@ A title's pictures, as lemonfiber hands them over for a browser to draw.
 
 Spec: 10-functional/features/d-content/d11-watching-what-the-house-holds.md
 */
+import type { Asking } from "./deadline.js";
+import type { FileQuery } from "./generated/index.js";
 import { problem, type Problem } from "./problem.js";
 
 /**
@@ -124,4 +126,34 @@ export function pictureOf(file: Blob): Pictured {
   if (!isAPictureType(type)) return notAPicture;
   if (file.size > PICTURE_MOST) return tooLarge;
   return { ok: true, value: { bytes: file, mediaType: type } };
+}
+
+/**
+The reads answered with one of the pictures of a title on a member's shelf.
+*/
+export type ShelfPicture = "held/poster" | "held/backdrop";
+
+/**
+The reads answered with one of a title's pictures.
+*/
+export type PictureRead = ShelfPicture | "askable/poster";
+
+/**
+What a shelf's picture read takes beside the title's id.
+*/
+export type PictureQuery = Omit<FileQuery[ShelfPicture], "id">;
+
+/**
+What the read of a found title's poster takes beside the title's id.
+*/
+export type AskablePictureQuery = Omit<FileQuery["askable/poster"], "id">;
+
+/**
+What one picture read takes: its query beside what any call may say.
+*/
+export interface PictureAsking<Q> extends Asking {
+  /**
+  The picture read's parameters beside the title's id.
+  */
+  query?: Q;
 }

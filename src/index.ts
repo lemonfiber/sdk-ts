@@ -1,6 +1,7 @@
 export { address, type Address } from "./address.js";
 export { TOKEN_HEADER } from "./credential.js";
 export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
+export { type Acting, type DocumentRead, type LineByLine, type ReadAsking } from "./asked.js";
 export { type Query } from "./query.js";
 export {
   base64url,
@@ -12,18 +13,7 @@ export {
   type PasswordProof,
 } from "./keys.js";
 export { type Registering } from "./device-keys.js";
-export {
-  Client,
-  type DocumentRead,
-  type LineByLine,
-  type Opened,
-  type AskablePictureQuery,
-  type PictureQuery,
-  type ShelfPicture,
-  type Sending,
-  type Talking,
-  type Walked,
-} from "./client.js";
+export { Client, type Opened, type Sending, type Talking, type Walked } from "./client.js";
 export {
   API_VERSION,
   isKind,
@@ -73,9 +63,13 @@ export { Ledger, type Held } from "./ledger.js";
 export {
   PICTURE_MOST,
   PICTURE_TYPES,
+  type AskablePictureQuery,
   type Picture,
+  type PictureAsking,
   type Pictured,
+  type PictureQuery,
   type PictureType,
+  type ShelfPicture,
 } from "./picture.js";
 export {
   busy,

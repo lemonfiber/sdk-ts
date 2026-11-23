@@ -54,23 +54,24 @@ if (status.ok) {
   console.log(status.value.data.condition); // "inactive" | "degraded" | "partial" | "active"
 }
 
-await client.act("restart", { forms: ["tv"], services: ["sonarr"] });
+await client.act("restart", { body: { forms: ["tv"], services: ["sonarr"] } });
 ```
 
-- `read(name, query?)` asks for a read by the name the contract lists it under,
-  such as `status`, `front-door` or `requests`. The query takes the parameters
-  that read takes, and the answer is typed as the kind the contract lists for it.
+- `read(name, { query? })` asks for a read by the name the contract lists it
+  under, such as `status`, `front-door` or `requests`. `query` takes the
+  parameters that read takes, and the answer is typed as the kind the contract lists for it.
   An answer of any other kind is an `unrecognised` problem. `READS` is the
   generated list of reads, with each one's path, segments, parameters and kinds.
   The logs answer with one envelope per line, so they are not among the names
   `read` takes.
 - A read whose path has a segment the caller fills keeps it in its name, such as
-  `held/{id}`, and takes it in the query:
-  `read("held/{id}", { id: "tt0111161", member: "ada" })` asks
+  `held/{id}`, and takes it in `query`:
+  `read("held/{id}", { query: { id: "tt0111161", member: "ada" } })` asks
   `/api/held/tt0111161?member=ada`. The segment is written escaped, so it stays
   one segment. One not given, given as a list, empty, `.` or `..` is a
   `misasked` problem, and nothing is sent.
-- `act(name, body?)` sends `POST /api/actions/<name>`. The action names and their
+- `act(name, { body? })` sends `POST /api/actions/<name>` with `body` as its JSON,
+  an empty object where it is absent. The action names and their
   arguments are the command line's own. lemonfiber refuses a name it does not
   offer and a field the action does not take.
 
@@ -82,11 +83,11 @@ Nothing throws for an expected failure. Every call returns either
 Every call waits at most `timeoutMs`: ten seconds (`DEFAULT_TIMEOUT_MS`) unless
 `Client.at` is given another. The wait covers the whole call, including a read
 asked again after a gateway could not reach lemonfiber. A call can set its own
-wait, and pass a signal to stop it:
+wait, and pass a signal to stop it, in the same object as its `query` or `body`:
 
 ```ts
 const stopping = new AbortController();
-const status = await client.read("status", {}, { timeoutMs: 3000, signal: stopping.signal });
+const status = await client.read("status", { timeoutMs: 3000, signal: stopping.signal });
 ```
 
 A call that runs out of time, or that is stopped, comes back `unreachable` and
@@ -114,7 +115,7 @@ lemonfiber served it with. Ask for it by the name it was written under, or by th
 payload the `support` action answered with:
 
 ```ts
-const made = await client.act("support", { write: true });
+const made = await client.act("support", { body: { write: true } });
 if (made.ok && isKind(made.value, "bundle")) {
   const { path } = made.value.data; // absent when the run described a bundle and wrote none
   if (typeof path === "string") {
@@ -133,7 +134,7 @@ shelf lists the title under. Each arrives as a `Picture`: the image as a `Blob`
 and its `mediaType`.
 
 ```ts
-const poster = await client.poster(id, { member: "ada" }); // or client.backdrop
+const poster = await client.poster(id, { query: { member: "ada" } }); // or client.backdrop
 if (poster.ok) draw(URL.createObjectURL(poster.value.bytes));
 ```
 
@@ -151,13 +152,15 @@ under, taking `member` and `kind`, and arrives and is refused as a shelf's
 pictures are:
 
 ```ts
-const found = await client.read("askable", { member: "ada", term: "dune" });
+const found = await client.read("askable", { query: { member: "ada", term: "dune" } });
 if (found.ok && isKind(found.value, "askable")) {
   const [title] = found.value.data.titles;
   if (title) {
-    const poster = await client.askablePoster(title.id, { member: "ada", kind: title.kind });
+    const poster = await client.askablePoster(title.id, {
+      query: { member: "ada", kind: title.kind },
+    });
     if (poster.ok) draw(URL.createObjectURL(poster.value.bytes));
-    await client.act("ask", { name: "ada", id: title.id, kind: title.kind });
+    await client.act("ask", { body: { name: "ada", id: title.id, kind: title.kind } });
   }
 }
 ```
