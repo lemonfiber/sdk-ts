@@ -134,7 +134,7 @@ describe("read", () => {
   // The token is a header, never a URL.
   it("sends the token in its header and nowhere else", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held", { member: "ada" });
+    await open(answering({}, seen)).read("held", { query: { member: "ada" } });
 
     expect(seen[0]?.headers[TOKEN_HEADER]).toBe("a-run-token");
     expect(seen[0]?.url).not.toContain("a-run-token");
@@ -142,7 +142,9 @@ describe("read", () => {
 
   it("turns arguments into query parameters", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held", { most: 50, defaults: true, member: "ada" });
+    await open(answering({}, seen)).read("held", {
+      query: { most: 50, defaults: true, member: "ada" },
+    });
 
     expect(seen[0]?.url).toContain("most=50");
     expect(seen[0]?.url).toContain("defaults=true");
@@ -153,14 +155,14 @@ describe("read", () => {
   // what the server reads as a list.
   it("repeats a parameter once for each value in a list, in order", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("forms", { form: ["library", "watch"] });
+    await open(answering({}, seen)).read("forms", { query: { form: ["library", "watch"] } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=library&form=watch");
   });
 
   it("sends a list of one as the parameter given once", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("forms", { form: ["library"] });
+    await open(answering({}, seen)).read("forms", { query: { form: ["library"] } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=library");
   });
@@ -169,28 +171,28 @@ describe("read", () => {
   // an empty name.
   it("sends nothing for an empty list", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("forms", { form: [] });
+    await open(answering({}, seen)).read("forms", { query: { form: [] } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms");
   });
 
   it("escapes every value in a list on its own", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("forms", { form: ["a b", "c&d=e"] });
+    await open(answering({}, seen)).read("forms", { query: { form: ["a b", "c&d=e"] } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=a+b&form=c%26d%3De");
   });
 
   it("writes numbers and booleans in a list as it writes them alone", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("forms", { form: [5, true] });
+    await open(answering({}, seen)).read("forms", { query: { form: [5, true] } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/forms?form=5&form=true");
   });
 
   it("leaves out an argument that was not given", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held", { most: undefined, member: "ada" });
+    await open(answering({}, seen)).read("held", { query: { most: undefined, member: "ada" } });
 
     expect(seen[0]?.url).not.toContain("most");
     expect(seen[0]?.url).toContain("member=ada");
@@ -215,20 +217,22 @@ describe("read", () => {
 
   it("writes a segment the caller fills into the path, and the rest as parameters", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held/{id}", { id: "tt0111161", member: "ada" });
+    await open(answering({}, seen)).read("held/{id}", {
+      query: { id: "tt0111161", member: "ada" },
+    });
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/tt0111161?member=ada");
   });
 
   // An identifier with a slash in it is still one title, not a path beside it.
   it("escapes a segment so it stays one segment", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held/{id}", { id: "a/b?c#d" });
+    await open(answering({}, seen)).read("held/{id}", { query: { id: "a/b?c#d" } });
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/a%2Fb%3Fc%23d");
   });
 
   it("writes a number as a segment as it writes it alone", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).read("held/{id}", { id: 42 });
+    await open(answering({}, seen)).read("held/{id}", { query: { id: 42 } });
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/held/42");
   });
 
@@ -244,10 +248,9 @@ describe("read", () => {
     ["the folder above it", { id: ".." }],
   ])("asks nothing for a segment %s, and says which", async (_what, query) => {
     const seen: Seen[] = [];
-    const got = await open(answering({}, seen)).read(
-      "held/{id}",
-      query as ReadQuery["held/{id}"],
-    );
+    const got = await open(answering({}, seen)).read("held/{id}", {
+      query: query as ReadQuery["held/{id}"],
+    });
     expect(got).toEqual({
       ok: false,
       problem: {
@@ -309,9 +312,7 @@ describe("read", () => {
     const said = "That is not a group of checks lemonfiber knows.";
     const got = await open(answering({ ok: false, status: 400, text: said }, [])).read(
       "checks",
-      {
-        only: "nope",
-      },
+      { query: { only: "nope" } },
     );
 
     expect(got).toEqual({ ok: false, problem: { kind: "misasked", message: said } });
@@ -321,7 +322,7 @@ describe("read", () => {
 describe("act", () => {
   it("posts to the action named after the command", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).act("retry-import", { item: "S03E04" });
+    await open(answering({}, seen)).act("retry-import", { body: { item: "S03E04" } });
 
     expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/actions/retry-import");
     expect(seen[0]?.method).toBe("POST");
@@ -451,7 +452,7 @@ describe("a refusal the caller can tell apart", () => {
   it("reports a name lemonfiber does not have as missing", async () => {
     const got = await open(answering({ ok: false, status: 404, text: entry }, [])).read(
       "explain",
-      { word: "kubernetes" },
+      { query: { word: "kubernetes" } },
     );
 
     expect(got).toEqual({ ok: false, problem: { kind: "missing", message: said } });
@@ -508,7 +509,7 @@ describe("a refusal the caller can tell apart", () => {
     const page = "<html><head><title>404 Not Found</title></head><body>nginx</body></html>";
     const got = await open(answering({ ok: false, status: 404, text: page }, [])).read(
       "explain",
-      { word: "kubernetes" },
+      { query: { word: "kubernetes" } },
     );
 
     expect(got).toMatchObject({ ok: false, problem: { kind: "unreachable" } });
@@ -518,7 +519,7 @@ describe("a refusal the caller can tell apart", () => {
   it("keeps a rejected key a refusal and nothing else", async () => {
     const got = await open(answering({ ok: false, status: 403, text: "no" }, [])).read(
       "explain",
-      { word: "hardlink" },
+      { query: { word: "hardlink" } },
     );
 
     expect(got).toEqual({ ok: false, problem: refused() });

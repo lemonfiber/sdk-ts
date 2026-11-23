@@ -4,6 +4,7 @@ Asking lemonfiber for something, and telling it to do something.
 Spec: 20-architecture/contracts/web-api.md
 */
 import { address } from "./address.js";
+import type { Acting, DocumentRead, ReadAsking } from "./asked.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
 import {
@@ -24,8 +25,6 @@ import {
   type FileQuery,
   type Kind,
   type ReadAnswer,
-  type ReadName,
-  type ReadQuery,
   type SetupAnswerBody,
 } from "./generated/index.js";
 import { lastSegment, type Handed, type Written } from "./handed.js";
@@ -38,41 +37,18 @@ import {
 } from "./device-keys.js";
 import { KEYS, type Minting } from "./keys.js";
 import type { Answer, Sending } from "./sending.js";
-import { PICTURE_TYPES, pictureFrom, type Pictured } from "./picture.js";
+import {
+  PICTURE_TYPES,
+  pictureFrom,
+  type AskablePictureQuery,
+  type PictureAsking,
+  type PictureQuery,
+  type PictureRead,
+  type Pictured,
+} from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { filledIn, search } from "./query.js";
 import { refusalIn } from "./refusal.js";
-
-/**
-The read answered with a line of its own for each envelope rather than with
-one document. `read` takes every other read the contract lists.
-*/
-export type LineByLine = "logs";
-
-/**
-The name of a read `read` answers: one answered with one document.
-*/
-export type DocumentRead = Exclude<ReadName, LineByLine>;
-
-/**
-The reads answered with one of the pictures of a title on a member's shelf.
-*/
-export type ShelfPicture = "held/poster" | "held/backdrop";
-
-/**
-The reads answered with one of a title's pictures.
-*/
-type PictureRead = ShelfPicture | "askable/poster";
-
-/**
-What a shelf's picture read takes beside the title's id.
-*/
-export type PictureQuery = Omit<FileQuery[ShelfPicture], "id">;
-
-/**
-What the read of a found title's poster takes beside the title's id.
-*/
-export type AskablePictureQuery = Omit<FileQuery["askable/poster"], "id">;
 
 export type { Sending } from "./sending.js";
 
@@ -155,17 +131,16 @@ export class Client {
   read is `unrecognised` rather than handed on as the read's.
   
   A read whose path has a segment the caller fills, such as `held/{id}`, takes
-  it in the query, and its query type needs it. Asked without it, the read is
-  `misasked` and nothing is sent: the query stays optional in the signature so
-  a caller generic over the read name can still pass one along.
+  it in `query`, and its query type needs it. Asked without it, the read is
+  `misasked` and nothing is sent: `query` stays optional so a caller generic
+  over the read name can still pass one along.
   */
   async read<N extends DocumentRead>(
     name: N,
-    query?: ReadQuery[N],
-    asking: Asking = {},
+    asking: ReadAsking<N> = {},
   ): Promise<Reading<ReadAnswer<N>>> {
     const read = READS[name];
-    const filled = filledIn(read.path, read.segments, query ?? {});
+    const filled = filledIn(read.path, read.segments, asking.query ?? {});
     if (!filled.ok) return filled;
     const answered = await this.#ask(
       "GET",
@@ -183,12 +158,8 @@ export class Client {
   /**
   Tells lemonfiber to do something the command line could also do.
   */
-  async act(
-    name: string,
-    body: Record<string, unknown> = {},
-    asking: Asking = {},
-  ): Promise<Reading<Envelope>> {
-    return this.#ask("POST", `/api/actions/${name}`, asking, JSON.stringify(body));
+  async act(name: string, acting: Acting = {}): Promise<Reading<Envelope>> {
+    return this.#ask("POST", `/api/actions/${name}`, acting, JSON.stringify(acting.body ?? {}));
   }
 
   /**
@@ -361,15 +332,15 @@ export class Client {
   of at most `PICTURE_MOST` bytes. `query` takes `member` and `defaults`, as the
   title read does.
   */
-  async poster(id: string, query: PictureQuery = {}, asking: Asking = {}): Promise<Pictured> {
-    return this.#picture("held/poster", id, query, asking);
+  async poster(id: string, asking: PictureAsking<PictureQuery> = {}): Promise<Pictured> {
+    return this.#picture("held/poster", id, asking.query, asking);
   }
 
   /**
   A title's backdrop, read and refused as `poster` reads its poster.
   */
-  async backdrop(id: string, query: PictureQuery = {}, asking: Asking = {}): Promise<Pictured> {
-    return this.#picture("held/backdrop", id, query, asking);
+  async backdrop(id: string, asking: PictureAsking<PictureQuery> = {}): Promise<Pictured> {
+    return this.#picture("held/backdrop", id, asking.query, asking);
   }
 
   /**
@@ -379,16 +350,15 @@ export class Client {
   */
   async askablePoster(
     id: string,
-    query: AskablePictureQuery = {},
-    asking: Asking = {},
+    asking: PictureAsking<AskablePictureQuery> = {},
   ): Promise<Pictured> {
-    return this.#picture("askable/poster", id, query, asking);
+    return this.#picture("askable/poster", id, asking.query, asking);
   }
 
   async #picture<R extends PictureRead>(
     name: R,
     id: string,
-    query: Omit<FileQuery[R], "id">,
+    query: Omit<FileQuery[R], "id"> | undefined,
     asking: Asking,
   ): Promise<Pictured> {
     const file = FILES[name];
