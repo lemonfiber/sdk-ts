@@ -6,9 +6,9 @@ Spec: 20-architecture/contracts/web-api.md
 import { askedAgain } from "./again.js";
 import { address } from "./address.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
-import { parse, type Envelope } from "./envelope.js";
+import { parse } from "./envelope.js";
 import type { ByKind, Kind } from "./generated/index.js";
-import { Ledger } from "./ledger.js";
+import { Ledger, type Beside } from "./ledger.js";
 import { streamEnded, streamLost, unreachable, type Problem } from "./problem.js";
 import { refusalIn } from "./refusal.js";
 import { SseParser } from "./sse.js";
@@ -46,25 +46,36 @@ export type Arrival =
 
 /**
 A kind and the payload the contract gives it, told apart by the kind, so
-narrowing an arrival by its `kind` types its `data`.
+narrowing an arrival by its `kind` types its `data`, beside every other field
+its envelope carries.
 
 `job` is the job the event was said for, where its envelope names one: a
 walk's steps carry the name its accepting reply gave, so a surface ties each
-step to the walk it started. It is absent wherever the envelope names none.
+step to the walk it started. `host` is the machine the event is about, where
+it is not the one lemonfiber runs on. Each is absent wherever the envelope
+names none.
 */
-export type Heard = { [K in Kind]: { kind: K; data: ByKind[K]["data"]; job?: string } }[Kind];
+export type Heard = {
+  [K in Kind]: Omit<ByKind[K], "job" | "host"> & { job?: string; host?: string };
+}[Kind];
 
 /**
-The job an envelope was said for, where it names one.
+The fields an envelope may name as null or empty, which an arrival leaves out
+rather than carries.
 */
-const jobOf = (job: string | null | undefined): { job?: string } =>
-  typeof job === "string" && job !== "" ? { job } : {};
+const NAMED_WHERE_GIVEN: ReadonlySet<string> = new Set(["job", "host"]);
 
 /**
-What an envelope said, as an arrival carries it.
+What an envelope said, as an arrival carries it: every field, its kind and
+data among them.
 */
-const heardIn = (envelope: Envelope): Heard =>
-  ({ kind: envelope.kind, data: envelope.data, ...jobOf(envelope.job) }) as Heard;
+const heardIn = (kind: string, data: unknown, beside: Beside): Heard =>
+  Object.fromEntries(
+    Object.entries({ ...beside, kind, data }).filter(
+      ([field, value]) =>
+        !NAMED_WHERE_GIVEN.has(field) || (typeof value === "string" && value !== ""),
+    ),
+  ) as Heard;
 
 /**
 The slice of `fetch` this needs, so a test can supply its own.
@@ -187,7 +198,7 @@ export async function* follow(options: Following): AsyncGenerator<Arrival> {
     for (const held of ledger.cooled(now())) {
       yield {
         at: "stale",
-        ...({ kind: held.kind, data: held.data, ...jobOf(held.job) } as Heard),
+        ...heardIn(held.kind, held.data, held.beside),
         quietForMs: held.quietForMs,
       };
     }
@@ -264,8 +275,9 @@ function received(text: string, opening: Opening): Arrival {
 
   if (!read.ok) return { at: "unreadable", problem: read.problem };
 
-  opening.ledger.record(read.value.kind, read.value.data, opening.now(), read.value.job);
-  return { at: "live", ...heardIn(read.value) };
+  const { kind, data, ...beside } = read.value;
+  opening.ledger.record(kind, data, opening.now(), beside);
+  return { at: "live", ...heardIn(kind, data, beside) };
 }
 
 /**

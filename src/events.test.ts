@@ -137,7 +137,12 @@ describe("follow", () => {
     await following.return(undefined);
 
     expect(first.done).toBe(false);
-    expect(first.value).toEqual({ at: "live", kind: "status", data: { free: 7 } });
+    expect(first.value).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: { free: 7 },
+    });
   });
 
   it("hands over what arrives", async () => {
@@ -151,7 +156,12 @@ describe("follow", () => {
       1,
     );
 
-    expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 412 } });
+    expect(got[0]).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: { free: 412 },
+    });
   });
 
   // A walk's steps name the job its accepting reply gave, so a surface can tie
@@ -169,20 +179,57 @@ describe("follow", () => {
       3,
     );
 
-    expect(got[0]).toEqual({ at: "live", kind: "step", data: line, job: "5c63" });
-    expect(got[1]).toEqual({ at: "live", kind: "step", data: line });
-    expect(got[2]).toEqual({ at: "live", kind: "step", data: line });
+    expect(got[0]).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "step",
+      data: line,
+      job: "5c63",
+    });
+    expect(got[1]).toEqual({ at: "live", api_version: API_VERSION, kind: "step", data: line });
+    expect(got[2]).toEqual({ at: "live", api_version: API_VERSION, kind: "step", data: line });
   });
 
-  it("keeps the job on what it held when it hands it over again after a break", async () => {
+  it("hands over the machine an event is about, and none where it names none", async () => {
+    const named = (host: string | null): string =>
+      `event: status\ndata: ${JSON.stringify({ api_version: API_VERSION, kind: "status", data: 1, host })}\n\n`;
+    const got = await take(
+      follow({
+        ...base,
+        fetching: serving([[named("nas"), named(null), named("")]], { headers: [] }),
+        reconnectsAllowed: 0,
+      }),
+      3,
+    );
+
+    expect(got[0]).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: 1,
+      host: "nas",
+    });
+    expect(got[1]).toEqual({ at: "live", api_version: API_VERSION, kind: "status", data: 1 });
+    expect(got[2]).toEqual({ at: "live", api_version: API_VERSION, kind: "status", data: 1 });
+  });
+
+  it("keeps the job and the machine on what it held when it hands it over again after a break", async () => {
     const line = { step: "importing", said: "Moving it in.", detail: "" };
-    const event = `event: step\ndata: ${JSON.stringify({ api_version: API_VERSION, kind: "step", data: line, job: "5c63" })}\n\n`;
+    const event = `event: step\ndata: ${JSON.stringify({ api_version: API_VERSION, kind: "step", data: line, job: "5c63", host: "nas" })}\n\n`;
     const got = await take(
       follow({ ...base, fetching: serving([[event]], { headers: [] }), reconnectsAllowed: 0 }),
       3,
     );
 
-    expect(got[2]).toMatchObject({ at: "stale", kind: "step", data: line, job: "5c63" });
+    expect(got[2]).toEqual({
+      at: "stale",
+      api_version: API_VERSION,
+      kind: "step",
+      data: line,
+      job: "5c63",
+      host: "nas",
+      quietForMs: expect.any(Number),
+    });
   });
 
   // The token is a header, never a query parameter.
@@ -225,7 +272,7 @@ describe("follow", () => {
 
     expect(got).toEqual([
       { at: "unreadable", problem: unrecognised("teleport") },
-      { at: "live", kind: "status", data: 2 },
+      { at: "live", api_version: API_VERSION, kind: "status", data: 2 },
     ]);
   });
 
@@ -445,8 +492,18 @@ describe("follow", () => {
       2,
     );
 
-    expect(got[0]).toEqual({ at: "live", kind: "status", data: { free: 7 } });
-    expect(got[1]).toEqual({ at: "live", kind: "status", data: { free: 6 } });
+    expect(got[0]).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: { free: 7 },
+    });
+    expect(got[1]).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: { free: 6 },
+    });
   });
 
   it("holds what arrives in the ledger it was given, and cools it on a break", async () => {
@@ -567,7 +624,12 @@ describe("follow", () => {
     await settled();
     gate.abort();
 
-    expect(first.value).toEqual({ at: "live", kind: "status", data: 1 });
+    expect(first.value).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: 1,
+    });
     expect(letting.go).toBe(true);
 
     const after = await waiting;

@@ -110,15 +110,15 @@ describe("Ledger", () => {
 });
 
 describe("Ledger.cooled", () => {
-  it("gives everything held with how long since each arrived", () => {
+  it("gives everything held with how long since each arrived, and what came beside it", () => {
     const ledger = new Ledger();
     ledger.record("status", { free: 412 }, 1000);
-    ledger.record("services", 9, 2000);
+    ledger.record("services", 9, 2000, { job: "5c63", host: "nas" });
     ledger.cool();
 
     expect(ledger.cooled(5000)).toEqual([
-      { kind: "status", data: { free: 412 }, quietForMs: 4000 },
-      { kind: "services", data: 9, quietForMs: 3000 },
+      { kind: "status", data: { free: 412 }, beside: {}, quietForMs: 4000 },
+      { kind: "services", data: 9, beside: { job: "5c63", host: "nas" }, quietForMs: 3000 },
     ]);
   });
 

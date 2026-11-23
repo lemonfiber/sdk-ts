@@ -11,9 +11,14 @@ export type Held =
   | { at: "live"; kind: string; data: unknown }
   | { at: "stale"; kind: string; data: unknown; quietForMs: number };
 
+/**
+What an envelope carried beside its kind and data.
+*/
+export type Beside = Readonly<Record<string, unknown>>;
+
 interface Entry {
   data: unknown;
-  job: string | null | undefined;
+  beside: Beside;
   recordedAtMs: number;
   live: boolean;
 }
@@ -29,10 +34,10 @@ export class Ledger {
   #lastArrivalMs: number | undefined;
 
   /**
-  Records a value arriving now, with the job it was said for where it names one.
+  Records a value arriving now, with what its envelope carried beside it.
   */
-  record(kind: string, data: unknown, atMs: number, job?: string | null): void {
-    this.#entries.set(kind, { data, job, recordedAtMs: atMs, live: true });
+  record(kind: string, data: unknown, atMs: number, beside: Beside = {}): void {
+    this.#entries.set(kind, { data, beside, recordedAtMs: atMs, live: true });
     this.spoke(atMs);
   }
 
@@ -90,13 +95,11 @@ export class Ledger {
   /**
   Everything held, all of it stale. Read after `cool`.
   */
-  cooled(
-    nowMs: number,
-  ): { kind: string; data: unknown; job: string | null | undefined; quietForMs: number }[] {
+  cooled(nowMs: number): { kind: string; data: unknown; beside: Beside; quietForMs: number }[] {
     return [...this.#entries].map(([kind, entry]) => ({
       kind,
       data: entry.data,
-      job: entry.job,
+      beside: entry.beside,
       quietForMs: nowMs - entry.recordedAtMs,
     }));
   }
