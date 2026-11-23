@@ -59,7 +59,7 @@ export {
   type Heard,
 } from "./events.js";
 export { type Handed, type Written } from "./handed.js";
-export { Ledger, type Held } from "./ledger.js";
+export { Ledger, type Beside, type Held } from "./ledger.js";
 export {
   PICTURE_MOST,
   PICTURE_TYPES,

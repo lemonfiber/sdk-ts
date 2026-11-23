@@ -163,7 +163,12 @@ describe("live updates at an address", () => {
       follow({ url: `${stack.base}/api/events`, token: TOKEN, fetching }),
     );
 
-    expect(first).toEqual({ at: "live", kind: "status", data: { free: 1 } });
+    expect(first).toEqual({
+      at: "live",
+      api_version: API_VERSION,
+      kind: "status",
+      data: { free: 1 },
+    });
     expect(stack.tokens).toEqual([TOKEN]);
   });
 
