@@ -80,6 +80,7 @@ export * from "./kinds/ran.js";
 export * from "./kinds/removal.js";
 export * from "./kinds/repair.js";
 export * from "./kinds/replacement.js";
+export * from "./kinds/replay.js";
 export * from "./kinds/reset.js";
 export * from "./kinds/restore.js";
 export * from "./kinds/seed.js";
