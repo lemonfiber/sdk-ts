@@ -37,6 +37,7 @@ export const READS = {
   "stuck": { path: "/api/stuck", segments: [], parameters: [], kinds: ["stuck"] },
   "boot": { path: "/api/boot", segments: [], parameters: [], kinds: ["boot"] },
   "watcher": { path: "/api/watcher", segments: [], parameters: [], kinds: ["watcher"] },
+  "copying": { path: "/api/copying", segments: [], parameters: [], kinds: ["copying"] },
   "queue": { path: "/api/queue", segments: [], parameters: [], kinds: ["queue"] },
   "config": { path: "/api/config", segments: [], parameters: [{ name: "key", repeatable: false }], kinds: ["config"] },
   "quality": { path: "/api/quality", segments: [], parameters: [], kinds: ["quality"] },
@@ -95,6 +96,7 @@ export interface ReadQuery {
   "stuck": Record<string, never>;
   "boot": Record<string, never>;
   "watcher": Record<string, never>;
+  "copying": Record<string, never>;
   "queue": Record<string, never>;
   "config": { key?: Scalar | undefined };
   "quality": Record<string, never>;
