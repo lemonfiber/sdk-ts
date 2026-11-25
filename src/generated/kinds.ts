@@ -22,6 +22,7 @@ export * from "./kinds/certificate.js";
 export * from "./kinds/channels.js";
 export * from "./kinds/clients.js";
 export * from "./kinds/config.js";
+export * from "./kinds/copying.js";
 export * from "./kinds/credentials.js";
 export * from "./kinds/dashboard.js";
 export * from "./kinds/device-challenge.js";

@@ -54,6 +54,7 @@ export * from "./shared/stage.js";
 export * from "./shared/stance.js";
 export * from "./shared/term.js";
 export * from "./shared/title-kind.js";
+export * from "./shared/tree.js";
 export * from "./shared/triggered.js";
 export * from "./shared/unfilled.js";
 export * from "./shared/unrated.js";
