@@ -98,6 +98,11 @@ export interface SettingMove {
 export interface SettingRead {
   /** Every value it accepts, where its manifest declares them. */
   choices?: Choosable[] | null;
+  /**
+   * What the core reads while no value is recorded, for one of the core's own settings
+   * that holds anything then; a service's setting has its manifest's on each reader.
+   */
+  default?: string | null;
   /** The environment file's key it is held under, where it is held there. */
   environment?: string | null;
   /** Its name. */
