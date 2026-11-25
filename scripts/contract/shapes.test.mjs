@@ -93,10 +93,12 @@ describe("writing a shape", () => {
       oneOf: [
         { type: "object", properties: { state: { const: "working" } }, required: ["state"] },
         { type: "object", properties: { state: { const: "paced" }, limit: { type: "integer" } }, required: ["state", "limit"] },
+        { type: "object", properties: { state: { const: "stalled" } } },
       ],
     };
     const source = sources(artefact({ copying: kind({ $ref: "#/$defs/Running" }, { Running: running }) })).get("kinds/copying.ts");
-    expect(source).toContain("export type Running = RunningWorking | RunningPaced;");
+    expect(source).toContain("export type Running = RunningWorking | RunningPaced | RunningStalled;");
+    expect(source).toContain('export interface RunningStalled {\n  part: string;\n  state?: "stalled";\n}');
     expect(source).toContain('export interface RunningWorking {\n  part: string;\n  state: "working";\n}');
     expect(source).toContain('export interface RunningPaced {\n  limit: number;\n  part: string;\n  state: "paced";\n}');
   });
