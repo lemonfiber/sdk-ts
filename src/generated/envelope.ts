@@ -2,13 +2,13 @@
 // Every kind the server may send, and the envelope each one carries.
 // Regenerate with `npm run contract:generate`.
 
-import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, AskableEnvelope, AskableKindsEnvelope, AskedEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BootEnvelope, BundleEnvelope, CallerEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ChannelsEnvelope, ClientsEnvelope, ConfigEnvelope, CopyingEnvelope, CredentialsEnvelope, DashboardEnvelope, DeviceChallengeEnvelope, DeviceKeyEnvelope, DeviceKeysEnvelope, DoctorEnvelope, EndedEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, GrantEnvelope, GuideEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InFlightEnvelope, InvitationEnvelope, JobEnvelope, KeyClaimEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, LogsEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, NotifyEnvelope, NotifyMineEnvelope, OutboundEnvelope, PairingEnvelope, PartWayEnvelope, PasswordEnvelope, PausingEnvelope, PlayEnvelope, PlayingEnvelope, PluginCatalogueEnvelope, PluginClaimsEnvelope, PluginConformanceEnvelope, PluginProvenanceEnvelope, PluginRecordingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, PushEndpointEnvelope, PushEndpointsEnvelope, QualityEnvelope, QueueEnvelope, RanEnvelope, RemovalEnvelope, RepairEnvelope, ReplacementEnvelope, ReplayEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, ServedEnvelope, SettingsEnvelope, SettledEnvelope, SetupEnvelope, SignInCodeEnvelope, SpaceEnvelope, StackEnvelope, StandingEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TitleEnvelope, TraceEnvelope, TunedEnvelope, UndoEnvelope, UninstallEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WalkthroughOfferEnvelope, WatchEnvelope, WatchedEnvelope, WatcherEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
+import type { AdmissionEnvelope, AdoptionEnvelope, AlertEnvelope, AlertsEnvelope, ArchivesEnvelope, AskableEnvelope, AskableKindsEnvelope, AskedEnvelope, BackupEnvelope, BandwidthEnvelope, BesideEnvelope, BootEnvelope, BundleEnvelope, CallerEnvelope, CapabilitiesEnvelope, CatalogueEnvelope, CertificateEnvelope, ChannelsEnvelope, ClientsEnvelope, ConfigEnvelope, CopyingEnvelope, CredentialsEnvelope, DashboardEnvelope, DeviceChallengeEnvelope, DeviceKeyEnvelope, DeviceKeysEnvelope, DoctorEnvelope, EndedEnvelope, ErrorEnvelope, FormsEnvelope, FrontDoorEnvelope, GlossaryEnvelope, GrantEnvelope, GuideEnvelope, HandoffEnvelope, HeldEnvelope, HistoryEnvelope, HostingEnvelope, HouseholdEnvelope, ImportEnvelope, InFlightEnvelope, InvitationEnvelope, JobEnvelope, KeyClaimEnvelope, KeysEnvelope, LifecycleEnvelope, LogEnvelope, LogsEnvelope, MigrationEnvelope, MintedKeyEnvelope, MusicEnvelope, NewsEnvelope, NewsItemsEnvelope, NotifyEnvelope, NotifyHeardEnvelope, NotifyMineEnvelope, OutboundEnvelope, PairingEnvelope, PartWayEnvelope, PasswordEnvelope, PausingEnvelope, PlayEnvelope, PlayingEnvelope, PluginCatalogueEnvelope, PluginClaimsEnvelope, PluginConformanceEnvelope, PluginProvenanceEnvelope, PluginRecordingEnvelope, PluginsEnvelope, PreviewEnvelope, ProvenanceEnvelope, PullEnvelope, PushEndpointEnvelope, PushEndpointsEnvelope, QualityEnvelope, QueueEnvelope, RanEnvelope, RemovalEnvelope, RenewedEnvelope, RepairEnvelope, ReplacementEnvelope, ReplayEnvelope, ResetEnvelope, RestoreEnvelope, SeedEnvelope, SelfUpdateEnvelope, ServedEnvelope, SettingsEnvelope, SettledEnvelope, SetupEnvelope, SignInCodeEnvelope, SpaceEnvelope, StackEnvelope, StandingEnvelope, StartEnvelope, StatusEnvelope, StepEnvelope, StopSeedingEnvelope, StoredEnvelope, StuckEnvelope, SubstitutionEnvelope, TitleEnvelope, TraceEnvelope, TunedEnvelope, UndoEnvelope, UninstallEnvelope, UntunedEnvelope, UpdateEnvelope, UpgradeEnvelope, VersionEnvelope, WalkthroughEnvelope, WalkthroughOfferEnvelope, WatchEnvelope, WatchedEnvelope, WatcherEnvelope, WiringEnvelope, WizardEnvelope, WordEnvelope } from "./kinds.js";
 
 /** The wire version these types were generated for. */
 export const CONTRACT_API_VERSION = 1;
 
 /** Every kind the server may send. */
-export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "askable" | "askable-kinds" | "asked" | "backup" | "bandwidth" | "beside" | "boot" | "bundle" | "caller" | "capabilities" | "catalogue" | "certificate" | "channels" | "clients" | "config" | "copying" | "credentials" | "dashboard" | "device-challenge" | "device-key" | "device-keys" | "doctor" | "ended" | "error" | "forms" | "front-door" | "glossary" | "grant" | "guide" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "in-flight" | "invitation" | "job" | "key-claim" | "keys" | "lifecycle" | "log" | "logs" | "migration" | "minted-key" | "music" | "news" | "news-items" | "notify" | "notify-mine" | "outbound" | "pairing" | "part-way" | "password" | "pausing" | "play" | "playing" | "plugin-catalogue" | "plugin-claims" | "plugin-conformance" | "plugin-provenance" | "plugin-recording" | "plugins" | "preview" | "provenance" | "pull" | "push-endpoint" | "push-endpoints" | "quality" | "queue" | "ran" | "removal" | "repair" | "replacement" | "replay" | "reset" | "restore" | "seed" | "self-update" | "served" | "settings" | "settled" | "setup" | "sign-in-code" | "space" | "stack" | "standing" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "title" | "trace" | "tuned" | "undo" | "uninstall" | "update" | "upgrade" | "version" | "walkthrough" | "walkthrough-offer" | "watch" | "watched" | "watcher" | "wiring" | "wizard" | "word";
+export type Kind = "admission" | "adoption" | "alert" | "alerts" | "archives" | "askable" | "askable-kinds" | "asked" | "backup" | "bandwidth" | "beside" | "boot" | "bundle" | "caller" | "capabilities" | "catalogue" | "certificate" | "channels" | "clients" | "config" | "copying" | "credentials" | "dashboard" | "device-challenge" | "device-key" | "device-keys" | "doctor" | "ended" | "error" | "forms" | "front-door" | "glossary" | "grant" | "guide" | "handoff" | "held" | "history" | "hosting" | "household" | "import" | "in-flight" | "invitation" | "job" | "key-claim" | "keys" | "lifecycle" | "log" | "logs" | "migration" | "minted-key" | "music" | "news" | "news-items" | "notify" | "notify-heard" | "notify-mine" | "outbound" | "pairing" | "part-way" | "password" | "pausing" | "play" | "playing" | "plugin-catalogue" | "plugin-claims" | "plugin-conformance" | "plugin-provenance" | "plugin-recording" | "plugins" | "preview" | "provenance" | "pull" | "push-endpoint" | "push-endpoints" | "quality" | "queue" | "ran" | "removal" | "renewed" | "repair" | "replacement" | "replay" | "reset" | "restore" | "seed" | "self-update" | "served" | "settings" | "settled" | "setup" | "sign-in-code" | "space" | "stack" | "standing" | "start" | "status" | "step" | "stop-seeding" | "stored" | "stuck" | "substitution" | "title" | "trace" | "tuned" | "undo" | "uninstall" | "untuned" | "update" | "upgrade" | "version" | "walkthrough" | "walkthrough-offer" | "watch" | "watched" | "watcher" | "wiring" | "wizard" | "word";
 
 /** Every kind the server may send, in name order. */
 export const KINDS: readonly Kind[] = [
@@ -66,6 +66,7 @@ export const KINDS: readonly Kind[] = [
   "news",
   "news-items",
   "notify",
+  "notify-heard",
   "notify-mine",
   "outbound",
   "pairing",
@@ -89,6 +90,7 @@ export const KINDS: readonly Kind[] = [
   "queue",
   "ran",
   "removal",
+  "renewed",
   "repair",
   "replacement",
   "replay",
@@ -116,6 +118,7 @@ export const KINDS: readonly Kind[] = [
   "tuned",
   "undo",
   "uninstall",
+  "untuned",
   "update",
   "upgrade",
   "version",
@@ -188,6 +191,7 @@ export interface ByKind {
   "news": NewsEnvelope;
   "news-items": NewsItemsEnvelope;
   "notify": NotifyEnvelope;
+  "notify-heard": NotifyHeardEnvelope;
   "notify-mine": NotifyMineEnvelope;
   "outbound": OutboundEnvelope;
   "pairing": PairingEnvelope;
@@ -211,6 +215,7 @@ export interface ByKind {
   "queue": QueueEnvelope;
   "ran": RanEnvelope;
   "removal": RemovalEnvelope;
+  "renewed": RenewedEnvelope;
   "repair": RepairEnvelope;
   "replacement": ReplacementEnvelope;
   "replay": ReplayEnvelope;
@@ -238,6 +243,7 @@ export interface ByKind {
   "tuned": TunedEnvelope;
   "undo": UndoEnvelope;
   "uninstall": UninstallEnvelope;
+  "untuned": UntunedEnvelope;
   "update": UpdateEnvelope;
   "upgrade": UpgradeEnvelope;
   "version": VersionEnvelope;
