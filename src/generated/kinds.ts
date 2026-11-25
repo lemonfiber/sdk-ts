@@ -50,6 +50,7 @@ export * from "./kinds/keys.js";
 export * from "./kinds/lifecycle.js";
 export * from "./kinds/log.js";
 export * from "./kinds/logs.js";
+export * from "./kinds/logs-exported.js";
 export * from "./kinds/migration.js";
 export * from "./kinds/minted-key.js";
 export * from "./kinds/music.js";
