@@ -115,6 +115,30 @@ const typesOf = (node) => {
 };
 
 /** Whether a schema is an object with properties and nothing beside it. */
+/**
+ * A schema holding fields beside a `oneOf` or `anyOf`, as the union of every branch
+ * with those fields joined to it.
+ */
+function joined(node, origin) {
+  const combinator = ["oneOf", "anyOf"].find((one) => one in node);
+  if (combinator === undefined || !("properties" in node)) return node;
+  const { properties, required = [], [combinator]: branches, ...rest } = node;
+  return {
+    ...rest,
+    [combinator]: branches.map((branch, at) => {
+      if (!isRecord(branch) || "$ref" in branch) {
+        refuse(`${origin} ${combinator}/${String(at)} is a branch the fields beside it cannot join.`);
+      }
+      return {
+        ...branch,
+        type: "object",
+        properties: { ...properties, ...branch.properties },
+        required: [...required, ...(branch.required ?? [])],
+      };
+    }),
+  };
+}
+
 const isObject = (node) => {
   const declared = typesOf(node);
   return declared.length === 1 && declared[0] === "object" && "properties" in node;
@@ -221,7 +245,7 @@ export class Writer {
     if (unread.length > 0) {
       refuse(`${origin} uses ${unread.join(", ")}, which this generator does not read.`);
     }
-    return schema;
+    return joined(schema, origin);
   }
 
   /** Writes an object schema as an interface. */

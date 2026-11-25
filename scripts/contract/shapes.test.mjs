@@ -85,6 +85,22 @@ describe("writing a shape", () => {
     expect(source).toContain('  scope: "service";');
   });
 
+  it("joins the fields beside a union to every branch of it", () => {
+    const running = {
+      type: "object",
+      properties: { part: { type: "string" } },
+      required: ["part"],
+      oneOf: [
+        { type: "object", properties: { state: { const: "working" } }, required: ["state"] },
+        { type: "object", properties: { state: { const: "paced" }, limit: { type: "integer" } }, required: ["state", "limit"] },
+      ],
+    };
+    const source = sources(artefact({ copying: kind({ $ref: "#/$defs/Running" }, { Running: running }) })).get("kinds/copying.ts");
+    expect(source).toContain("export type Running = RunningWorking | RunningPaced;");
+    expect(source).toContain('export interface RunningWorking {\n  part: string;\n  state: "working";\n}');
+    expect(source).toContain('export interface RunningPaced {\n  limit: number;\n  part: string;\n  state: "paced";\n}');
+  });
+
   it("names an untagged variant for the one field it holds, or for its place, and a tag naming nothing for its place too", () => {
     const either = {
       oneOf: [
@@ -160,6 +176,11 @@ describe("refusing what cannot be read one way", () => {
     [{ type: "object" }, "is an object that says nothing of its fields"],
     [{ type: "tuple" }, 'is of type "tuple"'],
     [{ const: [1] }, "a constant of [1] has no TypeScript literal"],
+    [
+      { type: "object", properties: { part: { type: "string" } }, oneOf: [{ $ref: "#/$defs/Code" }] },
+      "oneOf/0 is a branch the fields beside it cannot join",
+    ],
+    [{ type: "object", properties: { part: { type: "string" } }, anyOf: ["working"] }, "anyOf/0 is a branch the fields beside it cannot join"],
   ])("refuses %j rather than guess", (schema, said) => {
     expect(refusal(artefact({ a: kind(schema, {}) }))).toContain(said);
   });
