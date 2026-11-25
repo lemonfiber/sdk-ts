@@ -48,7 +48,31 @@ export interface CopyingReport {
 }
 
 /** A backup or restore running now. */
-export interface RunningCopy {
+export type RunningCopy = RunningCopyWorking | RunningCopyPaced | RunningCopyStalled;
+
+/** Held to the operator's limit. */
+export interface RunningCopyPaced {
+  /** The name an accepting reply gave the work, where one did. */
+  job?: string | null;
+  /** The limit, in bytes a second. */
+  limit: number;
+  /** The area being written now, named. */
+  part: string;
+  /** What it copies. */
+  scope: CopiedScope;
+  /** When it started. */
+  started: Instant;
+  state: "paced";
+  /** Whether it is a backup or a restore. */
+  what: CopyWhat;
+  /** The bytes it will write. */
+  whole: number;
+  /** The bytes written so far. */
+  written: number;
+}
+
+/** Nothing written for the minutes the operator's setting holds. */
+export interface RunningCopyStalled {
   /** The name an accepting reply gave the work, where one did. */
   job?: string | null;
   /** The area being written now, named. */
@@ -57,6 +81,28 @@ export interface RunningCopy {
   scope: CopiedScope;
   /** When it started. */
   started: Instant;
+  state: "stalled";
+  /** Whether it is a backup or a restore. */
+  what: CopyWhat;
+  /** The bytes it will write. */
+  whole: number;
+  /** The bytes written so far. */
+  written: number;
+  /** The instant it last wrote. */
+  wrote: Instant;
+}
+
+/** Writing as fast as it can. */
+export interface RunningCopyWorking {
+  /** The name an accepting reply gave the work, where one did. */
+  job?: string | null;
+  /** The area being written now, named. */
+  part: string;
+  /** What it copies. */
+  scope: CopiedScope;
+  /** When it started. */
+  started: Instant;
+  state: "working";
   /** Whether it is a backup or a restore. */
   what: CopyWhat;
   /** The bytes it will write. */
