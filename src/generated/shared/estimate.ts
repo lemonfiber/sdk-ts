@@ -2,9 +2,10 @@
 // The shapes `dashboard` and `household` both carry.
 // Regenerate with `npm run contract:generate`.
 
-import type { MemberAsking, Policy } from "./asking-standing.js";
+import type { MemberAsking } from "./asking-standing.js";
 import type { Instant } from "./instant.js";
 import type { Obstacle } from "./obstacle.js";
+import type { Policy } from "./policy.js";
 import type { TitleKind, TitleUnit } from "./title-kind.js";
 import type { Unrated } from "./unrated.js";
 
