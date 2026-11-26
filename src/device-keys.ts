@@ -4,7 +4,7 @@ challenged, and what a registration is asked with.
 
 Spec: 20-architecture/contracts/web-api.md
 */
-import type { DeviceKeyAttestation } from "./generated/index.js";
+import type { DeviceKeyAttestation, DeviceKeysBody } from "./generated/index.js";
 import { base64url } from "./keys.js";
 
 /**
@@ -56,5 +56,5 @@ export function registrationBody(registering: Registering): string {
     public_key: base64url(registering.publicKey),
     attestation: registering.attestation,
     password: registering.password,
-  });
+  } satisfies DeviceKeysBody);
 }

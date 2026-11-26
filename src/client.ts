@@ -23,6 +23,7 @@ import {
   type ByKind,
   type Choice,
   type FileQuery,
+  type KeysBody,
   type Kind,
   type ReadAnswer,
   type SetupAnswerBody,
@@ -182,7 +183,7 @@ export class Client {
   */
   async mint(minting: Minting, asking: Asking = {}): Promise<Reading<ByKind["minted-key"]>> {
     return answeredAs(
-      await this.#ask("POST", KEYS, asking, JSON.stringify(minting)),
+      await this.#ask("POST", KEYS, asking, JSON.stringify(minting satisfies KeysBody)),
       "minted-key",
     );
   }
@@ -196,7 +197,12 @@ export class Client {
     asking: Asking = {},
   ): Promise<Reading<ByKind["key-claim"]>> {
     return answeredAs(
-      await this.#ask("POST", KEYS, asking, JSON.stringify({ ...minting, claim: true })),
+      await this.#ask(
+        "POST",
+        KEYS,
+        asking,
+        JSON.stringify({ ...minting, claim: true } satisfies KeysBody),
+      ),
       "key-claim",
     );
   }
