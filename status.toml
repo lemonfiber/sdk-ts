@@ -1,45 +1,45 @@
 # What this repository implements, one row per requirement (OPS-R74).
 #
-# `done` means the requirement is met in full by what is here, `partial` that this
-# repository holds its part and the rest lives elsewhere, `open` that nothing here
-# meets it yet. The release gate and the no-stubs gate read this file; a pull
-# request that changes whether a requirement is met changes its row.
+# Each row records this client's own share of the requirement: `done` where that
+# share is built and tested here, `partial` where part of it is, `open` where none
+# of it is yet. Where a requirement also binds the server or the artefact the core
+# publishes, the core's tracker records that share. The release gate and the
+# no-stubs gate read this file, and a `partial` or `open` row here holds the
+# requirement open; a pull request that changes whether this share is met changes
+# its row.
 #
-# These are the client's requirements of the web API contract. Where a requirement
-# also binds the server or the artefact the core publishes (the heartbeat, event
-# ids, publishing the artefact, listing refusal codes), this client's half is here
-# and the row is partial. This client takes no certificate pin: it refuses every
-# address off this machine, so ARCH-R99's pin is not held here.
+# This client takes no certificate pin: it refuses every address off this
+# machine, which is the whole of its share of ARCH-R99.
 
 requirement = [
   { id = "ARCH-R51", state = "done", evidence = ["src/ledger.ts", "src/events.test.ts::does not present what it held before a break as current"] },
-  { id = "ARCH-R52", state = "partial", evidence = ["src/client.ts", "src/client.test.ts::sends the token in its header and nowhere else"] },
+  { id = "ARCH-R52", state = "done", evidence = ["src/client.ts", "src/client.test.ts::sends the token in its header and nowhere else"] },
   { id = "ARCH-R55", state = "done", evidence = ["src/envelope.ts", "src/envelope.test.ts::refuses a wire version it cannot speak, naming both"] },
   { id = "ARCH-R58", state = "done", evidence = ["src/generated", "scripts/contract/shapes.test.mjs::generates exactly what is committed"] },
   { id = "ARCH-R59", state = "done", evidence = ["src/client.ts", "src/client.test.ts::sends the token in its header and nowhere else"] },
   { id = "ARCH-R60", state = "done", evidence = ["src/address.ts", "src/client.test.ts::refuses an address that is not on this machine"] },
-  { id = "ARCH-R61", state = "partial", evidence = ["src/events.ts", "src/events.test.ts::calls the stream broken once silence outlasts what is allowed"] },
-  { id = "ARCH-R62", state = "partial", evidence = ["src/events.ts", "src/events.test.ts::resumes from the last event it saw"] },
+  { id = "ARCH-R61", state = "done", evidence = ["src/events.ts", "src/events.test.ts::calls the stream broken once silence outlasts what is allowed"] },
+  { id = "ARCH-R62", state = "done", evidence = ["src/events.ts", "src/events.test.ts::resumes from the last event it saw"] },
   { id = "ARCH-R63", state = "done", evidence = ["src/envelope.ts", "src/envelope.test.ts::narrows an envelope to the kind it names"] },
-  { id = "ARCH-R64", state = "partial", evidence = ["contract/VERSION", "scripts/contract-sync.mjs"] },
+  { id = "ARCH-R64", state = "done", evidence = ["contract/VERSION", "scripts/contract-sync.mjs", "scripts/contract/sync.test.mjs::replaces a single file with the directory, and a directory with what the revision holds now"] },
   { id = "ARCH-R65", state = "done", evidence = ["scripts/contract-generate.mjs", "scripts/contract/shapes.test.mjs::generates exactly what is committed"] },
   { id = "ARCH-R66", state = "done", evidence = ["scripts/contract-generate.mjs", "scripts/contract/shapes.test.mjs::generates exactly what is committed"] },
   { id = "ARCH-R67", state = "done", evidence = ["scripts/contract/artefact.mjs", "scripts/contract/shapes.test.mjs::refuses a version it does not implement, naming both, and writes nothing"] },
-  { id = "ARCH-R73", state = "partial", evidence = ["scripts/contract/artefact.mjs", "scripts/contract/shapes.test.mjs::refuses a constraint beside a reference, naming where"] },
-  { id = "ARCH-R99", state = "partial", evidence = ["src/address.ts", "src/client.test.ts::refuses an address that is not on this machine"] },
+  { id = "ARCH-R73", state = "done", evidence = ["scripts/contract/artefact.mjs", "scripts/contract/shapes.test.mjs::refuses a constraint beside a reference, naming where"] },
+  { id = "ARCH-R99", state = "done", evidence = ["src/address.ts", "src/client.test.ts::refuses an address that is not on this machine"] },
   { id = "ARCH-R129", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a definition taking any name the modules beside the shapes write, naming it and its kind", "scripts/contract/shapes.test.mjs::refuses a definition taking a name this generator writes"] },
-  { id = "ARCH-R138", state = "partial", evidence = ["src/problem.ts", "src/client.test.ts::reports the refusal lemonfiber actually sends as one"] },
-  { id = "ARCH-R139", state = "partial", evidence = ["scripts/contract/refused.mjs", "scripts/contract/shapes.test.mjs::writes every code the contract lists, with what it says of each"] },
+  { id = "ARCH-R138", state = "done", evidence = ["src/problem.ts", "src/refusal.ts", "src/client.test.ts::reports the refusal lemonfiber actually sends as one", "src/client.test.ts::reads any other code it turned a request away with as declined, in its words", "src/client.test.ts::reads a code the contract does not list by its status alone"] },
+  { id = "ARCH-R139", state = "done", evidence = ["scripts/contract/refused.mjs", "scripts/contract/shapes.test.mjs::writes every code the contract lists, with what it says of each"] },
   { id = "C10-R1", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are minted with the password in the body, and the secret comes back once"] },
   { id = "C10-R6", state = "done", evidence = ["src/client.ts", "src/keys.test.ts::are listed from the keys route, with the token as a header", "src/keys.test.ts::are revoked by name, sent as one path segment"] },
-  { id = "ARCH-R133", state = "partial", evidence = ["scripts/contract/writer.mjs", "scripts/contract/bodies.test.mjs::writes a body under its route's name, in a module of its own", "src/setup.test.ts::sends an answer as the body, tagged by the question it answers"] },
-  { id = "D3-R14", state = "partial", evidence = ["src/events.ts", "src/events.test.ts::hands over the job an event was said for, and none where it names none"] },
+  { id = "ARCH-R133", state = "done", evidence = ["scripts/contract/writer.mjs", "src/generated/body-routes.ts", "src/client.ts", "scripts/contract/bodies.test.mjs::writes a body under its route's name, in a module of its own", "src/setup.test.ts::sends an answer as the body, tagged by the question it answers"] },
+  { id = "D3-R14", state = "done", evidence = ["src/events.ts", "src/events.test.ts::hands over the job an event was said for, and none where it names none"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract/writer.mjs", "scripts/contract/shapes.test.mjs::refuses a reference it cannot resolve"] },
-  { id = "ARCH-R258", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are registered with the public half and the attestation in base64url, and the password"] },
-  { id = "ARCH-R259", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
-  { id = "ARCH-R260", state = "partial", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
-  { id = "ARCH-R261", state = "partial", evidence = ["src/keys.ts", "src/device-keys.test.ts::prove a mint with a signature over the text the stack verifies, and no password"] },
-  { id = "ARCH-R293", state = "partial", evidence = ["src/generated/kinds/keys.ts"] },
+  { id = "ARCH-R258", state = "done", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are registered with the public half and the attestation in base64url, and the password"] },
+  { id = "ARCH-R259", state = "done", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are listed, and say an answer of another kind is not theirs", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
+  { id = "ARCH-R260", state = "done", evidence = ["src/device-keys.ts", "src/device-keys.test.ts::are challenged and revoked by name, sent as one path segment"] },
+  { id = "ARCH-R261", state = "done", evidence = ["src/keys.ts", "src/device-keys.test.ts::prove a mint with a signature over the text the stack verifies, and no password"] },
+  { id = "ARCH-R293", state = "done", evidence = ["src/generated/kinds/keys.ts", "src/keys.test.ts::name the device key that proved a mint, and none for a key minted with the password"] },
   { id = "REPO-R103", state = "done", evidence = ["scripts/backward-compat.mjs", "scripts/surface/compare.test.mjs::names an entry point, a declaration and a member the new surface no longer holds", "scripts/surface/pin.test.mjs::reads a full commit from the dependencies or the development dependencies"] },
   { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml"] },
   { id = "ARCH-R454", state = "done", evidence = ["src/events.ts", "src/envelope-fields.test.ts::types every top-level property $kind declares", "src/envelope-fields.test.ts::hands a follower every top-level property each kind declares"] },

@@ -32,17 +32,17 @@ const open = (sending: Sending): Client => {
   return got.client;
 };
 
+const home = {
+  name: "home",
+  scope: "read",
+  purpose: "home-assistant",
+  state: "active",
+  minted: 1_790_000_000,
+  member_minted: false,
+};
+
 const listing = {
-  keys: [
-    {
-      name: "home",
-      scope: "read",
-      purpose: "home-assistant",
-      state: "active",
-      minted: 1_790_000_000,
-      member_minted: false,
-    },
-  ],
+  keys: [home],
   purposes: "What each key is for is the minter's own word.",
   rehearsed: false,
 };
@@ -78,6 +78,14 @@ describe("the integration keys", () => {
       ok: true,
       value: { api_version: API_VERSION, kind: "keys", data: listing },
     });
+  });
+
+  it("name the device key that proved a mint, and none for a key minted with the password", async () => {
+    const proved = { ...listing, keys: [{ ...home, name: "phone", proved_by: "pixel" }, home] };
+    const got = await open(answering("keys", proved, [])).keys();
+    if (!got.ok) throw new Error(got.problem.message);
+
+    expect(got.value.data.keys.map((key) => key.proved_by)).toStrictEqual(["pixel", undefined]);
   });
 
   it("are minted with the password in the body, and the secret comes back once", async () => {
