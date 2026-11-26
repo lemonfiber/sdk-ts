@@ -35,6 +35,7 @@ export * from "./shared/notification-kind.js";
 export * from "./shared/obstacle.js";
 export * from "./shared/pinned.js";
 export * from "./shared/plugin-constraint.js";
+export * from "./shared/policy.js";
 export * from "./shared/problem.js";
 export * from "./shared/problem-severity.js";
 export * from "./shared/protocols.js";
