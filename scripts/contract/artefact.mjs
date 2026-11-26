@@ -294,6 +294,16 @@ const ACTION = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 /** An action's argument, as the core spells one: `dry_run`. */
 const ARGUMENT = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
 
+/** Why one action's arguments cannot be written, one reason at a time, noting each name in `named`. */
+function* wrongWithArguments(name, listed, named) {
+  for (const [at, argument] of listed.entries()) {
+    const called = isRecord(argument) ? argument.name : undefined;
+    if (typeof called !== "string" || !ARGUMENT.test(called)) yield `${name}: argument ${String(at)} is not named as an argument`;
+    else if (named.has(called)) yield `${name}: argument ${called} is listed twice`;
+    else named.add(called);
+  }
+}
+
 /** Why one action the contract describes cannot be written, one reason at a time. */
 function* wrongWithDescribed(name, entry) {
   if (!ACTION.test(name)) {
@@ -306,15 +316,9 @@ function* wrongWithDescribed(name, entry) {
   }
   if (entry.action !== name) yield `${name}: describes itself as ${JSON.stringify(entry.action)}`;
   if (typeof entry.rehearsal !== "boolean") yield `${name}: rehearsal ${JSON.stringify(entry.rehearsal)} is not true or false`;
-  const listed = Array.isArray(entry.arguments) ? entry.arguments : undefined;
-  if (listed === undefined) yield `${name}: arguments ${JSON.stringify(entry.arguments)} is not a list`;
+  if (!Array.isArray(entry.arguments)) yield `${name}: arguments ${JSON.stringify(entry.arguments)} is not a list`;
   const named = new Set();
-  for (const [at, argument] of (listed ?? []).entries()) {
-    const called = isRecord(argument) ? argument.name : undefined;
-    if (typeof called !== "string" || !ARGUMENT.test(called)) yield `${name}: argument ${String(at)} is not named as an argument`;
-    else if (named.has(called)) yield `${name}: argument ${called} is listed twice`;
-    else named.add(called);
-  }
+  yield* wrongWithArguments(name, Array.isArray(entry.arguments) ? entry.arguments : [], named);
   if (!Array.isArray(entry.consent)) {
     yield `${name}: consent ${JSON.stringify(entry.consent)} is not a list`;
     return;
