@@ -7,6 +7,7 @@ export {
   type DocumentRead,
   type LineByLine,
   type ReadAsking,
+  type TakesNone,
 } from "./asked.js";
 export { type Query } from "./query.js";
 export {

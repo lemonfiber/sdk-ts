@@ -31,7 +31,7 @@ export interface ReadAsking<N extends DocumentRead> extends Asking {
 /**
 Whether every argument the action takes has a default, so it may be sent with none.
 */
-type TakesNone<N extends ActionName> =
+export type TakesNone<N extends ActionName> =
   Partial<ArgumentsOf[N]> extends ArgumentsOf[N] ? true : false;
 
 /**
