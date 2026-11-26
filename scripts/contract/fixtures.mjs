@@ -28,12 +28,13 @@ export function kind(data, definitions) {
   return schema;
 }
 
-/** A whole artefact describing these kinds, and the bodies, refusals, key-callable actions, reads and household words where given. */
-export function artefact(kinds, { bodies, refusals, keyCallable, reads, householdWords, version = 1 } = {}) {
+/** A whole artefact describing these kinds, and the bodies, actions, refusals, key-callable actions, reads and household words where given. */
+export function artefact(kinds, { bodies, actions, refusals, keyCallable, reads, householdWords, version = 1 } = {}) {
   return {
     api_version: version,
     kinds,
     ...(bodies !== undefined && { bodies }),
+    ...(actions !== undefined && { actions }),
     ...(refusals !== undefined && { refusals }),
     ...(keyCallable !== undefined && { key_callable: keyCallable }),
     ...(reads !== undefined && { reads }),
@@ -74,6 +75,15 @@ export function directory(whole) {
       index.bodies[route] = `bodies/${route.slice("/api/".length).replaceAll("/", "-")}.json`;
       laid(index.bodies[route], schema);
     }
+  }
+  if (isRecord(whole.actions)) {
+    index.actions = {};
+    for (const [name, action] of Object.entries(whole.actions)) {
+      index.actions[name] = `actions/${name}.json`;
+      files.set(index.actions[name], action);
+    }
+  } else if (Object.hasOwn(whole, "actions")) {
+    index.actions = whole.actions;
   }
   for (const [list, file] of [
     ["key_callable", "key-callable.json"],

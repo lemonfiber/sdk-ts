@@ -3,6 +3,7 @@
 // Source: bd7969c200c8762edc120cd5cea7f70a91a60ef6  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
+export * from "./actions.js";
 export * from "./bodies.js";
 export * from "./body-routes.js";
 export * from "./envelope.js";
