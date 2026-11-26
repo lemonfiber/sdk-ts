@@ -75,7 +75,10 @@ export interface FrontDoorBeside {
   facing: Facing;
   /** Whether the address answers from where the asking came from. */
   reaches: FrontDoorReaches;
-  /** The service, by the name it shows itself under. */
+  /**
+   * The service, by the name it shows itself under, or for a household member by what
+   * it is to them.
+   */
   service: string;
   /** Why there is no address, where there is none. */
   unaddressed?: string | null;
@@ -118,8 +121,9 @@ export interface FrontDoorReport {
   /** Whether the address answers from where the asking came from. */
   reaches: FrontDoorReaches;
   /**
-   * The service the household begins at, by the name it shows itself under.
-   * Absent where this stack publishes nothing they could begin at.
+   * The service the household begins at, by the name it shows itself under, or for a
+   * household member by what it is to them. Absent where this stack publishes nothing
+   * they could begin at.
    */
   service?: string | null;
   /** Where the front door stands. */

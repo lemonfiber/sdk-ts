@@ -42,6 +42,18 @@ export interface Reader {
   variable: string;
 }
 
+/** One reader's own default for a setting. */
+export interface ReaderDefault {
+  /** What its manifest declares while no value is recorded, where it declares one. */
+  default?: string | null;
+  /** Whether the settings it needs hold what it needs, so the variable is written. */
+  met: boolean;
+  /** The service. */
+  service: string;
+  /** The variable it is read into. */
+  variable: string;
+}
+
 /** Where a secret's value came from. */
 export type SecretFrom = "operator" | "recipe" | "granted" | "minted";
 
@@ -82,10 +94,47 @@ export interface SettingChange {
   waiting: Waiting[];
 }
 
+/** What a setting falls back to while it holds no operator value. */
+export type SettingDefault = SettingDefaultCore | SettingDefaultDeclared | SettingDefaultPerReader | SettingDefaultNone;
+
+/** One of the core's own settings, with what the core reads while none is recorded. */
+export interface SettingDefaultCore {
+  of: "core";
+  /** The value. */
+  value: string;
+}
+
+/**
+ * The one default every reader whose `needs` are met declares. Empty is empty by
+ * default.
+ */
+export interface SettingDefaultDeclared {
+  of: "declared";
+  /** The value. */
+  value: string;
+}
+
+/** Nothing declares one, so nothing is written for it. */
+export interface SettingDefaultNone {
+  of: "none";
+}
+
+/** Each reader's own, where the readers whose `needs` are met declare different ones. */
+export interface SettingDefaultPerReader {
+  of: "per-reader";
+  /** Every reader, those whose `needs` are unmet included. */
+  readers: ReaderDefault[];
+}
+
 /** One setting a change moves. */
 export interface SettingMove {
   /** What moving it costs, where it costs anything. */
   consequence?: string | null;
+  /**
+   * What it falls back to while it holds no operator value, read with the change in
+   * place.
+   */
+  default: SettingDefault;
   /** The setting. */
   setting: string;
   /** What it is to hold, or nothing where it is cleared. */
