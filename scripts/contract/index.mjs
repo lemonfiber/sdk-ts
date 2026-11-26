@@ -11,6 +11,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { LINE_CAP, linesIn } from "../line-cap.mjs";
 import {
+  actionRoute,
   actionsOf,
   bodiesOf,
   byCodePoint,
@@ -76,6 +77,11 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const householdWords = householdWordsOf(artefact);
   const reads = readsOf(artefact, kinds);
   const bodies = bodiesOf(artefact);
+  for (const { action, body } of actions) {
+    const route = actionRoute(action);
+    if (Object.hasOwn(bodies, route)) refuse(`The vendored contract describes a body for ${route}, which the action \`${action}\` is posted with.`);
+    bodies[route] = body;
+  }
   const writer = new Writer(usersOf(kinds, bodies));
   const names = Object.keys(kinds).toSorted(byCodePoint);
   for (const kind of names) writer.owned.set(`${pascal(kind)}Envelope`, `the envelope carrying \`${kind}\``);
@@ -92,7 +98,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const under = (top) => groups.filter((path) => path[0] === top[0]).toSorted((a, b) => byCodePoint(a.join("/"), b.join("/")));
   const members = [["actions"], ["body-routes"], ["envelope"], ["household-words"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
   modules.push(
-    actionsModule(actions),
+    actionsModule(actions, (name) => layout.whereIs(name)),
     bodyRoutesModule(bodies, (name) => layout.whereIs(name)),
     envelopeModule(names),
     householdWordsModule(householdWords),

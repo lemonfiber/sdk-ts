@@ -212,24 +212,53 @@ class Directory {
     if (Object.hasOwn(schema, "$defs")) {
       refuse(`${shown(file)} carries $defs, and every definition is a file in ${shown("defs/")}.`);
     }
+    const reaching = schema.$schema === undefined ? "names none" : `is written in ${JSON.stringify(schema.$schema)}`;
+    return this.#carrying(named, file, schema, (dialect) => dialect === schema.$schema || reaching);
+  }
+
+  /**
+   * An action, carrying every definition its arguments reach as its own `$defs`.
+   *
+   * An action names no dialect of its own, so the definitions it reaches have to
+   * agree on one.
+   */
+  action(named, file) {
+    const action = this.read(file);
+    if (!isRecord(action)) return action;
+    if (Object.hasOwn(action, "$defs")) {
+      refuse(`${shown(file)} carries $defs, and every definition is a file in ${shown("defs/")}.`);
+    }
+    let first;
+    return this.#carrying(named, file, action, (dialect) => {
+      first ??= dialect;
+      return dialect === first || `reaches another in ${JSON.stringify(first)}`;
+    });
+  }
+
+  /**
+   * A document in `file` with every reference spelled as one beside it, and every
+   * definition it reaches as its own `$defs`, refusing a definition whose dialect
+   * `agrees` says why it may not be reached.
+   */
+  #carrying(named, file, node, agrees) {
     const reached = new Map();
-    const pending = [...this.#referred(file, schema)];
+    const pending = [...this.#referred(file, node)];
     while (pending.length > 0) {
       const name = pending.pop();
       if (reached.has(name)) continue;
       const definition = this.#definition(name);
-      if (definition.dialect !== undefined && definition.dialect !== schema.$schema) {
+      const agreed = definition.dialect === undefined || agrees(definition.dialect);
+      if (agreed !== true) {
         const where = shown(`defs/${name}.json`);
-        const reaching = schema.$schema === undefined ? "names none" : `is written in ${JSON.stringify(schema.$schema)}`;
-        refuse(`${where} is written in ${JSON.stringify(definition.dialect)}, and \`${named}\`, which reaches it, ${reaching}.`);
+        refuse(`${where} is written in ${JSON.stringify(definition.dialect)}, and \`${named}\`, which reaches it, ${agreed}.`);
       }
       reached.set(name, definition.schema);
       pending.push(...definition.referred);
     }
-    const envelope = Directory.#beside(file, schema);
-    if (reached.size === 0) return envelope;
+    const beside = Directory.#beside(file, node);
+    if (reached.size === 0) return beside;
     const names = [...reached.keys()].toSorted(byCodePoint);
-    return { ...envelope, $defs: Object.fromEntries(names.map((name) => [name, reached.get(name)])) };
+    return { ...beside, $defs: Object.fromEntries(names.map((name) => [name, reached.get(name)])) };
   }
 }
 
@@ -259,7 +288,7 @@ function readDirectory(root) {
   if (isRecord(index[ACTIONS])) {
     const actions = Object.keys(index[ACTIONS])
       .toSorted(byCodePoint)
-      .map((name) => [name, directory.read(index[ACTIONS][name])]);
+      .map((name) => [name, directory.action(name, index[ACTIONS][name])]);
     artefact[ACTIONS] = Object.fromEntries(actions);
   } else if (Object.hasOwn(index, ACTIONS)) {
     artefact[ACTIONS] = index[ACTIONS];

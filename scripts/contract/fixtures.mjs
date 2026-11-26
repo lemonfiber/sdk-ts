@@ -80,7 +80,7 @@ export function directory(whole) {
     index.actions = {};
     for (const [name, action] of Object.entries(whole.actions)) {
       index.actions[name] = `actions/${name}.json`;
-      files.set(index.actions[name], action);
+      laid(index.actions[name], action);
     }
   } else if (Object.hasOwn(whole, "actions")) {
     index.actions = whole.actions;

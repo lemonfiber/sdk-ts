@@ -2,7 +2,7 @@
  * Generating every action the web API takes, and what the contract says of each.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { artefact, imported, kind, refusal, removed, sources, tree } from "./fixtures.mjs";
+import { artefact, imported, kind, laidOut, refusal, removed, sources, tree } from "./fixtures.mjs";
 import { generate } from "./index.mjs";
 import { readArtefact } from "./vendored.mjs";
 
@@ -30,6 +30,18 @@ const ACTIONS = {
   "downloads-pause": described("downloads-pause", ["offer"], ["offer"], true),
 };
 
+/** An action whose arguments reach a definition, and one with no default. */
+const UNDO = {
+  action: "undo",
+  arguments: [
+    { name: "at", type: { anyOf: [{ $ref: "#/$defs/Instant" }, { type: "null" }], default: null } },
+    { name: "why", type: { type: "string", description: "Why it is undone." } },
+  ],
+  consent: [],
+  rehearsal: true,
+  $defs: { Instant: { description: "A moment.", type: "integer", minimum: 0 } },
+};
+
 describe("generating the actions the web API takes", () => {
   it("writes an empty table from a contract that describes none", () => {
     const source = sources(artefact(PULL)).get("actions.ts");
@@ -49,12 +61,57 @@ describe("generating the actions the web API takes", () => {
     expect(generated.isActionName("toString")).toBe(false);
   });
 
-  it("reads each action from its own file in the directory layout", async () => {
-    const whole = artefact(PULL, { actions: ACTIONS });
+  it("writes each action's body: an argument with no default required, `dry_run` where it rehearses, the definitions it reaches carried", () => {
+    const files = sources(artefact(PULL, { actions: { ...ACTIONS, undo: UNDO } }));
+    const body = files.get("bodies/actions-undo.ts");
+    expect(body).toContain("/** What the `undo` action is posted with. */\nexport interface ActionsUndoBody {");
+    expect(body).toContain("  at?: Instant | null;");
+    expect(body).toContain("  dry_run?: boolean;");
+    expect(body).toContain("  /** Why it is undone. */\n  why: string;");
+    expect(body).toContain("export type Instant = number;");
+    expect(files.get("bodies/actions-diagnose.ts")).not.toContain("dry_run");
+    expect(files.get("actions.ts")).toContain('  "undo": ActionsUndoBody;');
+    expect(files.get("body-routes.ts")).toContain('"/api/actions/undo": ActionsUndoBody;');
+  });
+
+  it("writes an empty map of arguments from a contract that describes no action", () => {
+    expect(sources(artefact(PULL)).get("actions.ts")).toContain("export type ArgumentsOf = Record<ActionName, never>;");
+  });
+
+  it("refuses a body the contract describes for the route an action is posted to", () => {
+    const bodies = { "/api/actions/restart": { type: "object", properties: { forms: { type: "string" } } } };
+    expect(refusal(artefact(PULL, { actions: ACTIONS, bodies }))).toContain(
+      "describes a body for /api/actions/restart, which the action `restart` is posted with",
+    );
+  });
+
+  it("reads each action from its own file in the directory layout, with the definitions its arguments reach", async () => {
+    const whole = artefact(PULL, { actions: { ...ACTIONS, undo: UNDO } });
     const root = await tree(whole, { layout: "directory" });
     roots.push(root);
     const { artefact: read } = await readArtefact(root);
+    expect(read.actions.undo.$defs).toEqual(UNDO.$defs);
     expect(generate(read, "v1.0.0")).toEqual(generate(whole, "v1.0.0"));
+  });
+
+  it("refuses an action whose arguments reach definitions written in two dialects, naming both", async () => {
+    const root = await tree(artefact(PULL), { layout: "directory" });
+    roots.push(root);
+    const at = (definition) => ({ name: definition.toLowerCase(), type: { $ref: `../defs/${definition}.json` } });
+    await laidOut(
+      root,
+      new Map([
+        ["index.json", { api_version: 1, kinds: {}, actions: { undo: "actions/undo.json" } }],
+        ["actions/undo.json", { action: "undo", arguments: [at("Early"), at("Late")], consent: [], rehearsal: false }],
+        ["defs/Early.json", { $schema: "https://json-schema.org/draft/2020-12/schema", type: "integer" }],
+        ["defs/Late.json", { $schema: "http://json-schema.org/draft-07/schema#", type: "integer" }],
+      ]),
+    );
+    let said = "";
+    await readArtefact(root).catch((error_) => {
+      said = error_.message;
+    });
+    expect(said).toContain("`undo`, which reaches it, reaches another in");
   });
 
   it.each([
@@ -82,6 +139,8 @@ describe("generating the actions the web API takes", () => {
     ["an argument with no name", { restart: { ...ACTIONS.restart, arguments: [{ type: LIST }] } }, "restart: argument 0 is not named"],
     ["an argument named as no argument is", { restart: described("restart", ["Forms"], [], true) }, "restart: argument 0 is not named"],
     ["one argument listed twice", { restart: described("restart", ["forms", "forms"], [], true) }, "restart: argument forms is listed twice"],
+    ["an argument with no schema for its type", { restart: { ...ACTIONS.restart, arguments: [{ name: "forms" }] } }, "restart: argument 0 has no schema"],
+    ["the rehearsal listed as an argument", { restart: described("restart", ["dry_run"], [], true) }, "restart: argument dry_run is the rehearsal"],
     ["a consent that is not a list", { restart: { ...ACTIONS.restart, consent: "offer" } }, 'restart: consent "offer" is not a list'],
     ["a consent naming no argument", { restart: described("restart", ["forms"], ["offer"], true) }, 'restart: consent names "offer"'],
   ])("refuses %s, naming the action", (_what, actions, named) => {

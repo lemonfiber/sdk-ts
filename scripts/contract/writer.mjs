@@ -73,6 +73,7 @@ const OWNED = new Map([
   ["ActionDescribed", "what the contract says of one action"],
   ["ACTIONS", "what the contract says of every action the web API takes"],
   ["isActionName", "whether a name is one of an action the web API takes"],
+  ["ArgumentsOf", "the arguments each action is posted with"],
   ["KeyCallableAction", "the union of every action an integration key may call"],
   ["KeyCallable", "what the contract says of one action a key may call"],
   ["KEY_CALLABLE", "what the contract says of each action a key may call"],

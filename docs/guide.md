@@ -70,10 +70,15 @@ await client.act("restart", { body: { forms: ["tv"], services: ["sonarr"] } });
   `/api/held/tt0111161?member=ada`. The segment is written escaped, so it stays
   one segment. One not given, given as a list, empty, `.` or `..` is a
   `misasked` problem, and nothing is sent.
-- `act(name, { body? })` sends `POST /api/actions/<name>` with `body` as its JSON,
-  an empty object where it is absent. The action names and their
-  arguments are the command line's own. lemonfiber refuses a name it does not
-  offer and a field the action does not take.
+- `act(name, { body })` sends `POST /api/actions/<name>` with `body` as its JSON,
+  an empty object where it is absent. `name` is one of the actions the contract
+  lists (`ActionName`), and `body` is typed as that action's arguments
+  (`ArgumentsOf[name]`): an argument the contract gives no default is required,
+  and `dry_run` is there only where the action can be rehearsed. `body` may be
+  left out only where every argument has a default. `ACTIONS` is the generated
+  table of every action, with each one's argument names, the arguments carrying
+  the operator's yes, and whether it can be rehearsed; `isActionName` narrows a
+  name read at run time to one `act` takes.
 
 Nothing throws for an expected failure. Every call returns either
 `{ ok: true, value }` or `{ ok: false, problem }`; see [Problems](#problems).

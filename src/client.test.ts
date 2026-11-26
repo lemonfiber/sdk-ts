@@ -1,9 +1,17 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import type { Acting, ActingOn } from "./asked.js";
 import { Client, type Sending } from "./client.js";
 import { refusalIn } from "./refusal.js";
 import { API_VERSION } from "./envelope.js";
 import { TOKEN_HEADER } from "./credential.js";
-import type { ReadQuery, RefusalCode } from "./generated/index.js";
+import {
+  ACTIONS,
+  isActionName,
+  type ActionName,
+  type ArgumentsOf,
+  type ReadQuery,
+  type RefusalCode,
+} from "./generated/index.js";
 import { refused, tooMany, unreachable, unrecognised } from "./problem.js";
 
 // The vendored contract may list no refusal codes, so these tests read against a
@@ -322,24 +330,48 @@ describe("read", () => {
 describe("act", () => {
   it("posts to the action named after the command", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).act("retry-import", { body: { item: "S03E04" } });
+    await open(answering({}, seen)).act("restart", { body: { forms: ["tv"], dry_run: true } });
 
-    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/actions/retry-import");
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/actions/restart");
     expect(seen[0]?.method).toBe("POST");
     expect(seen[0]?.headers["Content-Type"]).toBe("application/json");
-    expect(seen[0]?.body).toBe(JSON.stringify({ item: "S03E04" }));
+    expect(seen[0]?.body).toBe(JSON.stringify({ forms: ["tv"], dry_run: true }));
   });
 
   it("posts an empty body when there is nothing to say", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).act("check-everything");
+    await open(answering({}, seen)).act("pull");
     expect(seen[0]?.body).toBe("{}");
   });
 
   it("carries the token too", async () => {
     const seen: Seen[] = [];
-    await open(answering({}, seen)).act("retry-import");
+    await open(answering({}, seen)).act("pull");
     expect(seen[0]?.headers[TOKEN_HEADER]).toBe("a-run-token");
+  });
+
+  it("takes only the actions the contract lists, each with the arguments it types for that action", () => {
+    expectTypeOf<"retry-import">().not.toExtend<ActionName>();
+    expectTypeOf<ActingOn<"diagnose">>().toEqualTypeOf<[acting: Acting<"diagnose">]>();
+    expectTypeOf<ActingOn<"pull">>().toEqualTypeOf<[acting?: Acting<"pull">]>();
+    expectTypeOf<ArgumentsOf["diagnose"]>()
+      .toHaveProperty("disruptive")
+      .toEqualTypeOf<boolean>();
+    expectTypeOf<ArgumentsOf["diagnose"]>().not.toHaveProperty("dry_run");
+    expectTypeOf<ArgumentsOf["restart"]>()
+      .toHaveProperty("dry_run")
+      .toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<ArgumentsOf["restart"]>().not.toHaveProperty("item");
+    expect([ACTIONS.diagnose.rehearsal, ACTIONS.restart.rehearsal]).toEqual([false, true]);
+  });
+
+  it("takes an action named at run time, as a caller reading the contract's table names it", async () => {
+    const seen: Seen[] = [];
+    const named = Object.keys(ACTIONS).find((name) => name === "downloads-pause") ?? "";
+    if (!isActionName(named)) throw new Error(`${named} is an action the contract lists`);
+    expect(ACTIONS[named].consent).toEqual(["offer"]);
+    await open(answering({}, seen)).act(named, { body: { offer: "o1" } });
+    expect(seen[0]?.url).toBe("http://127.0.0.1:7777/api/actions/downloads-pause");
   });
 });
 
@@ -386,7 +418,7 @@ describe("a refusal the caller can read", () => {
     });
 
     const got = await open(answering({ ok: false, status: 500, text: envelope }, [])).act(
-      "check-everything",
+      "pull",
     );
 
     expect(got).toEqual({ ok: false, problem: { kind: "failed", message: said } });

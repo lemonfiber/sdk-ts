@@ -83,8 +83,8 @@ describe("a call's deadline", () => {
   });
 
   it("takes the wait beside an action's body, in the one object the action is told with", async () => {
-    const got = await open(deaf, 60_000).act("retry-import", {
-      body: { item: "S03E04" },
+    const got = await open(deaf, 60_000).act("restart", {
+      body: { forms: ["tv"] },
       timeoutMs: 30,
     });
     expect(got).toEqual({ ok: false, problem: outOfTime(30) });
