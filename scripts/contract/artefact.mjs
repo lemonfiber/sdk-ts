@@ -288,6 +288,74 @@ export function keyCallableOf(artefact) {
   return listed;
 }
 
+/** An action's name, as the core spells one: `downloads-pause`. */
+const ACTION = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+
+/** An action's argument, as the core spells one: `dry_run`. */
+const ARGUMENT = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
+
+/** Why one action's arguments cannot be written, one reason at a time, noting each name in `named`. */
+function* wrongWithArguments(name, listed, named) {
+  for (const [at, argument] of listed.entries()) {
+    const called = isRecord(argument) ? argument.name : undefined;
+    if (typeof called !== "string" || !ARGUMENT.test(called)) yield `${name}: argument ${String(at)} is not named as an argument`;
+    else if (named.has(called)) yield `${name}: argument ${called} is listed twice`;
+    else named.add(called);
+  }
+}
+
+/** Why one action the contract describes cannot be written, one reason at a time. */
+function* wrongWithDescribed(name, entry) {
+  if (!ACTION.test(name)) {
+    yield `${JSON.stringify(name)}: not an action's name`;
+    return;
+  }
+  if (!isRecord(entry)) {
+    yield `${name}: not an object`;
+    return;
+  }
+  if (entry.action !== name) yield `${name}: describes itself as ${JSON.stringify(entry.action)}`;
+  if (typeof entry.rehearsal !== "boolean") yield `${name}: rehearsal ${JSON.stringify(entry.rehearsal)} is not true or false`;
+  if (!Array.isArray(entry.arguments)) yield `${name}: arguments ${JSON.stringify(entry.arguments)} is not a list`;
+  const named = new Set();
+  yield* wrongWithArguments(name, Array.isArray(entry.arguments) ? entry.arguments : [], named);
+  if (!Array.isArray(entry.consent)) {
+    yield `${name}: consent ${JSON.stringify(entry.consent)} is not a list`;
+    return;
+  }
+  for (const carrying of entry.consent) {
+    if (!named.has(carrying)) yield `${name}: consent names ${JSON.stringify(carrying)}, which is none of its arguments`;
+  }
+}
+
+/**
+ * Every action the web API takes, by name in code-point order: the names of its
+ * arguments in the order the contract lists them, the arguments carrying the
+ * operator's yes, and whether it takes `dry_run`.
+ *
+ * An artefact older than the list has no `actions`, and reads as listing no action
+ * rather than as an error, so a consumer compiles against every artefact.
+ */
+export function actionsOf(artefact) {
+  const described = Object.hasOwn(artefact, "actions") ? artefact.actions : {};
+  if (!isRecord(described)) {
+    refuse(
+      `The vendored contract's actions are ${JSON.stringify(described)}, and they are a map from each action's name to the action.`,
+    );
+  }
+  const names = Object.keys(described).toSorted(byCodePoint);
+  const malformed = names.flatMap((name) => [...wrongWithDescribed(name, described[name])]);
+  if (malformed.length > 0) {
+    refuse("The vendored contract describes an action this generator cannot write:\n  " + malformed.join("\n  "));
+  }
+  return names.map((name) => ({
+    action: name,
+    arguments: described[name].arguments.map((argument) => argument.name),
+    consent: described[name].consent,
+    rehearsal: described[name].rehearsal,
+  }));
+}
+
 /** A read's path: segments under `/api`, a `{name}` segment standing for one the caller fills. */
 const READ_PATH = /^\/api(?:\/(?:[a-z][a-z0-9-]*|\{[a-z]+\}))+$/;
 

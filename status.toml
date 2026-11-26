@@ -43,4 +43,5 @@ requirement = [
   { id = "REPO-R103", state = "done", evidence = ["scripts/backward-compat.mjs", "scripts/surface/compare.test.mjs::names an entry point, a declaration and a member the new surface no longer holds", "scripts/surface/pin.test.mjs::reads a full commit from the dependencies or the development dependencies"] },
   { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml"] },
   { id = "ARCH-R454", state = "done", evidence = ["src/events.ts", "src/envelope-fields.test.ts::types every top-level property $kind declares", "src/envelope-fields.test.ts::hands a follower every top-level property each kind declares"] },
+  { id = "ARCH-R134", state = "partial", evidence = ["scripts/contract/tables.mjs", "src/generated/actions.ts", "scripts/contract/actions.test.mjs::writes every action by name, with its arguments in the contract's order, its consent and its rehearsal, and a guard knowing only those"] },
 ]

@@ -23,8 +23,10 @@ export {
   type Reading,
 } from "./envelope.js";
 export {
+  ACTIONS,
   BODY_ROUTES,
   CONTRACT_API_VERSION,
+  isActionName,
   isKeyCallable,
   isRefusalCode,
   KEY_CALLABLE,
@@ -33,6 +35,8 @@ export {
   KINDS,
   READS,
   FILES,
+  type ActionDescribed,
+  type ActionName,
   type BodyOf,
   type FileQuery,
   type BodyRoute,

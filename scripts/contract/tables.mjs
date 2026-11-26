@@ -175,6 +175,43 @@ export function keyCallableModule(listed) {
   };
 }
 
+/** The module of every action the web API takes, and what the contract says of each. */
+export function actionsModule(described) {
+  const union = described.length === 0 ? "never" : described.map(({ action }) => JSON.stringify(action)).join(" | ");
+  const entries = described.map(
+    ({ action, arguments: names, consent, rehearsal }) =>
+      `  ${JSON.stringify(action)}: { arguments: ${JSON.stringify(names)}, consent: ${JSON.stringify(consent)}, rehearsal: ${String(rehearsal)} },`,
+  );
+  return {
+    path: ["actions"],
+    summary: "Every action the web API takes, and what the contract says of each.",
+    imports: new Map(),
+    body: [
+      "/** Every action the web API takes, by the name it is posted to under `/api/actions/`. */",
+      `export type ActionName = ${union};`,
+      "",
+      "/** What the contract says of one action. */",
+      "export interface ActionDescribed {",
+      "  /** The name of every argument it takes, in the order the contract lists them. */",
+      "  readonly arguments: readonly string[];",
+      "  /** The arguments carrying the operator's yes, without which it writes nothing. */",
+      "  readonly consent: readonly string[];",
+      "  /** Whether it takes `dry_run`, so it can be rehearsed before the real call. */",
+      "  readonly rehearsal: boolean;",
+      "}",
+      "",
+      "/** What the contract says of every action the web API takes, by name. */",
+      ...(described.length === 0
+        ? ["export const ACTIONS: Readonly<Record<ActionName, ActionDescribed>> = {};"]
+        : ["export const ACTIONS: Readonly<Record<ActionName, ActionDescribed>> = {", ...entries, "};"]),
+      "",
+      "/** Whether a name is one of an action the web API takes. */",
+      "export const isActionName = (value: string): value is ActionName =>",
+      "  Object.hasOwn(ACTIONS, value);",
+    ],
+  };
+}
+
 /** The module of the refusal codes the contract lists, and what it says of each. */
 export function refusalsModule(listed) {
   const codes = Object.keys(listed).toSorted(byCodePoint);

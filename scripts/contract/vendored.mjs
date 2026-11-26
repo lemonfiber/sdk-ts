@@ -38,6 +38,9 @@ export const INDEX = "index.json";
 /** Where the index names the file of each body a route takes, by the route. */
 export const BODIES = "bodies";
 
+/** Where the index names the file of each action, by the action's name. */
+const ACTIONS = "actions";
+
 /** The lists the index names a file for, or a file for each part of, each under the key the single document carries it by. */
 export const LISTS = ["key_callable", "reads", "refusals", "household_words"];
 
@@ -252,6 +255,14 @@ function readDirectory(root) {
     artefact[BODIES] = Object.fromEntries(bodies);
   } else if (Object.hasOwn(index, BODIES)) {
     artefact[BODIES] = index[BODIES];
+  }
+  if (isRecord(index[ACTIONS])) {
+    const actions = Object.keys(index[ACTIONS])
+      .toSorted(byCodePoint)
+      .map((name) => [name, directory.read(index[ACTIONS][name])]);
+    artefact[ACTIONS] = Object.fromEntries(actions);
+  } else if (Object.hasOwn(index, ACTIONS)) {
+    artefact[ACTIONS] = index[ACTIONS];
   }
   for (const list of LISTS) {
     if (Object.hasOwn(index, list)) artefact[list] = directory.list(list, index[list]);
