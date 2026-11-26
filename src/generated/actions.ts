@@ -2,6 +2,8 @@
 // Every action the web API takes, and what the contract says of each.
 // Regenerate with `npm run contract:generate`.
 
+import type { ActionsAcceptBody, ActionsAdoptBody, ActionsAskBody, ActionsBackupBody, ActionsBandwidthBody, ActionsCompanionPairBody, ActionsConfigSetBody, ActionsCredentialsRevokeBody, ActionsDiagnoseBody, ActionsDownBody, ActionsDownloadsPauseBody, ActionsDownloadsResumeBody, ActionsForgetBody, ActionsGrantBody, ActionsHostingInstallBody, ActionsHostingRemoveBody, ActionsHouseholdAllowBody, ActionsHouseholdApproveBody, ActionsHouseholdDeclineBody, ActionsHouseholdHandoffBody, ActionsInternalCertificateReplaceBody, ActionsInviteBody, ActionsMigrateAdoptBody, ActionsMigrateBesideBody, ActionsMigrateImportBody, ActionsMigrateReplaceBody, ActionsNotifyChooseBody, ActionsPlayBody, ActionsPluginInstallBody, ActionsPluginProveBody, ActionsPluginRemoveBody, ActionsPluginRunBody, ActionsPluginUpdateBody, ActionsPullBody, ActionsPushWokenBody, ActionsQualityReapplyBody, ActionsQualitySetBody, ActionsQualityUpgradeBody, ActionsReissueBody, ActionsRemoveBody, ActionsRepairBody, ActionsResetBody, ActionsRestartBody, ActionsRestoreBody, ActionsRunBody, ActionsSearchBody, ActionsSeedBody, ActionsSettingsClearBody, ActionsSettingsSetBody, ActionsSpaceBody, ActionsStopSeedingBody, ActionsSupportBody, ActionsSwitchBody, ActionsTuneBody, ActionsUndoBody, ActionsUninstallBody, ActionsUpBody, ActionsUpdateBody, ActionsWalkthroughBody, ActionsWatchBody, ActionsWatchedBody, ActionsWiringFillBody } from "./bodies.js";
+
 /** Every action the web API takes, by the name it is posted to under `/api/actions/`. */
 export type ActionName = "accept" | "adopt" | "ask" | "backup" | "bandwidth" | "companion-pair" | "config-set" | "credentials-revoke" | "diagnose" | "down" | "downloads-pause" | "downloads-resume" | "forget" | "grant" | "hosting-install" | "hosting-remove" | "household-allow" | "household-approve" | "household-decline" | "household-handoff" | "internal-certificate-replace" | "invite" | "migrate-adopt" | "migrate-beside" | "migrate-import" | "migrate-replace" | "notify-choose" | "play" | "plugin-install" | "plugin-prove" | "plugin-remove" | "plugin-run" | "plugin-update" | "pull" | "push-woken" | "quality-reapply" | "quality-set" | "quality-upgrade" | "reissue" | "remove" | "repair" | "reset" | "restart" | "restore" | "run" | "search" | "seed" | "settings-clear" | "settings-set" | "space" | "stop-seeding" | "support" | "switch" | "tune" | "undo" | "uninstall" | "up" | "update" | "walkthrough" | "watch" | "watched" | "wiring-fill";
 
@@ -84,3 +86,69 @@ export const ACTIONS: Readonly<Record<ActionName, ActionDescribed>> = {
 /** Whether a name is one of an action the web API takes. */
 export const isActionName = (value: string): value is ActionName =>
   Object.hasOwn(ACTIONS, value);
+
+/** The arguments each action is posted with, so what is sent is typed by the action it goes to. */
+export interface ArgumentsOf {
+  "accept": ActionsAcceptBody;
+  "adopt": ActionsAdoptBody;
+  "ask": ActionsAskBody;
+  "backup": ActionsBackupBody;
+  "bandwidth": ActionsBandwidthBody;
+  "companion-pair": ActionsCompanionPairBody;
+  "config-set": ActionsConfigSetBody;
+  "credentials-revoke": ActionsCredentialsRevokeBody;
+  "diagnose": ActionsDiagnoseBody;
+  "down": ActionsDownBody;
+  "downloads-pause": ActionsDownloadsPauseBody;
+  "downloads-resume": ActionsDownloadsResumeBody;
+  "forget": ActionsForgetBody;
+  "grant": ActionsGrantBody;
+  "hosting-install": ActionsHostingInstallBody;
+  "hosting-remove": ActionsHostingRemoveBody;
+  "household-allow": ActionsHouseholdAllowBody;
+  "household-approve": ActionsHouseholdApproveBody;
+  "household-decline": ActionsHouseholdDeclineBody;
+  "household-handoff": ActionsHouseholdHandoffBody;
+  "internal-certificate-replace": ActionsInternalCertificateReplaceBody;
+  "invite": ActionsInviteBody;
+  "migrate-adopt": ActionsMigrateAdoptBody;
+  "migrate-beside": ActionsMigrateBesideBody;
+  "migrate-import": ActionsMigrateImportBody;
+  "migrate-replace": ActionsMigrateReplaceBody;
+  "notify-choose": ActionsNotifyChooseBody;
+  "play": ActionsPlayBody;
+  "plugin-install": ActionsPluginInstallBody;
+  "plugin-prove": ActionsPluginProveBody;
+  "plugin-remove": ActionsPluginRemoveBody;
+  "plugin-run": ActionsPluginRunBody;
+  "plugin-update": ActionsPluginUpdateBody;
+  "pull": ActionsPullBody;
+  "push-woken": ActionsPushWokenBody;
+  "quality-reapply": ActionsQualityReapplyBody;
+  "quality-set": ActionsQualitySetBody;
+  "quality-upgrade": ActionsQualityUpgradeBody;
+  "reissue": ActionsReissueBody;
+  "remove": ActionsRemoveBody;
+  "repair": ActionsRepairBody;
+  "reset": ActionsResetBody;
+  "restart": ActionsRestartBody;
+  "restore": ActionsRestoreBody;
+  "run": ActionsRunBody;
+  "search": ActionsSearchBody;
+  "seed": ActionsSeedBody;
+  "settings-clear": ActionsSettingsClearBody;
+  "settings-set": ActionsSettingsSetBody;
+  "space": ActionsSpaceBody;
+  "stop-seeding": ActionsStopSeedingBody;
+  "support": ActionsSupportBody;
+  "switch": ActionsSwitchBody;
+  "tune": ActionsTuneBody;
+  "undo": ActionsUndoBody;
+  "uninstall": ActionsUninstallBody;
+  "up": ActionsUpBody;
+  "update": ActionsUpdateBody;
+  "walkthrough": ActionsWalkthroughBody;
+  "watch": ActionsWatchBody;
+  "watched": ActionsWatchedBody;
+  "wiring-fill": ActionsWiringFillBody;
+}

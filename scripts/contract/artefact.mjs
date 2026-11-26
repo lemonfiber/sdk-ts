@@ -294,6 +294,12 @@ const ACTION = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 /** An action's argument, as the core spells one: `dry_run`. */
 const ARGUMENT = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
 
+/** The argument an action that can be rehearsed takes to rehearse. */
+const DRY_RUN = "dry_run";
+
+/** How the rehearsal is described in an action's body. */
+const REHEARSING = { description: "Whether to rehearse: write nothing, and answer with what the action would do.", type: "boolean" };
+
 /** Why one action's arguments cannot be written, one reason at a time, noting each name in `named`. */
 function* wrongWithArguments(name, listed, named) {
   for (const [at, argument] of listed.entries()) {
@@ -301,6 +307,8 @@ function* wrongWithArguments(name, listed, named) {
     if (typeof called !== "string" || !ARGUMENT.test(called)) yield `${name}: argument ${String(at)} is not named as an argument`;
     else if (named.has(called)) yield `${name}: argument ${called} is listed twice`;
     else named.add(called);
+    if (typeof called === "string" && !isRecord(argument.type)) yield `${name}: argument ${String(at)} has no schema for its type`;
+    if (called === DRY_RUN) yield `${name}: argument ${DRY_RUN} is the rehearsal, which \`rehearsal\` says`;
   }
 }
 
@@ -353,7 +361,28 @@ export function actionsOf(artefact) {
     arguments: described[name].arguments.map((argument) => argument.name),
     consent: described[name].consent,
     rehearsal: described[name].rehearsal,
+    body: bodyOf(name, described[name]),
   }));
+}
+
+/** Where an action is posted. */
+export const actionRoute = (action) => `/api/actions/${action}`;
+
+/**
+ * The body an action is posted with: each argument under its name, required
+ * where the contract gives it no default, and `dry_run` where it can be rehearsed.
+ */
+function bodyOf(name, described) {
+  const properties = Object.fromEntries(described.arguments.map((argument) => [argument.name, argument.type]));
+  if (described.rehearsal) properties[DRY_RUN] = REHEARSING;
+  const required = described.arguments.filter((argument) => !Object.hasOwn(argument.type, "default"));
+  return {
+    description: `What the \`${name}\` action is posted with.`,
+    type: "object",
+    properties,
+    ...(required.length > 0 && { required: required.map((argument) => argument.name) }),
+    ...(Object.hasOwn(described, "$defs") && { $defs: described.$defs }),
+  };
 }
 
 /** A read's path: segments under `/api`, a `{name}` segment standing for one the caller fills. */

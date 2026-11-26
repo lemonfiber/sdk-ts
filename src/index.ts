@@ -1,7 +1,13 @@
 export { address, type Address } from "./address.js";
 export { TOKEN_HEADER } from "./credential.js";
 export { DEFAULT_TIMEOUT_MS, type Asking } from "./deadline.js";
-export { type Acting, type DocumentRead, type LineByLine, type ReadAsking } from "./asked.js";
+export {
+  type Acting,
+  type ActingOn,
+  type DocumentRead,
+  type LineByLine,
+  type ReadAsking,
+} from "./asked.js";
 export { type Query } from "./query.js";
 export {
   base64url,

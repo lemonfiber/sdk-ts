@@ -5,7 +5,7 @@ or the action's body, beside what any call may say.
 Spec: 20-architecture/contracts/web-api.md
 */
 import type { Asking } from "./deadline.js";
-import type { ReadName, ReadQuery } from "./generated/index.js";
+import type { ActionName, ArgumentsOf, ReadName, ReadQuery } from "./generated/index.js";
 
 /**
 The read answered with a line of its own for each envelope rather than with
@@ -29,11 +29,22 @@ export interface ReadAsking<N extends DocumentRead> extends Asking {
 }
 
 /**
-What one action takes: its body beside what any call may say.
+Whether every argument the action takes has a default, so it may be sent with none.
 */
-export interface Acting extends Asking {
-  /**
-  What the action is told, sent as its JSON body. An empty object where absent.
-  */
-  body?: Record<string, unknown>;
-}
+type TakesNone<N extends ActionName> =
+  Partial<ArgumentsOf[N]> extends ArgumentsOf[N] ? true : false;
+
+/**
+What one action takes: its arguments, typed as the contract types that action's,
+beside what any call may say. The arguments are sent as its JSON body, an empty
+object where absent, and may be absent only where every argument has a default.
+*/
+export type Acting<N extends ActionName> = Asking &
+  (TakesNone<N> extends true ? { body?: ArgumentsOf[N] } : { body: ArgumentsOf[N] });
+
+/**
+What `act` takes after the action's name: nothing more where every argument has
+a default, and what it is told otherwise.
+*/
+export type ActingOn<N extends ActionName> =
+  TakesNone<N> extends true ? [acting?: Acting<N>] : [acting: Acting<N>];

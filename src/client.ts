@@ -4,7 +4,7 @@ Asking lemonfiber for something, and telling it to do something.
 Spec: 20-architecture/contracts/web-api.md
 */
 import { address } from "./address.js";
-import type { Acting, DocumentRead, ReadAsking } from "./asked.js";
+import type { ActingOn, DocumentRead, ReadAsking } from "./asked.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
 import {
@@ -20,6 +20,7 @@ import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
 import {
   FILES,
   READS,
+  type ActionName,
   type ByKind,
   type Choice,
   type FileQuery,
@@ -157,10 +158,19 @@ export class Client {
   }
 
   /**
-  Tells lemonfiber to do something the command line could also do.
+  Tells lemonfiber to do something the command line could also do: one of the
+  actions the contract lists, with the arguments the contract types for it.
   */
-  async act(name: string, acting: Acting = {}): Promise<Reading<Envelope>> {
-    return this.#ask("POST", `/api/actions/${name}`, acting, JSON.stringify(acting.body ?? {}));
+  async act<N extends ActionName>(
+    name: N,
+    ...[acting]: ActingOn<N>
+  ): Promise<Reading<Envelope>> {
+    return this.#ask(
+      "POST",
+      `/api/actions/${name}`,
+      acting ?? {},
+      JSON.stringify(acting?.body ?? {}),
+    );
   }
 
   /**

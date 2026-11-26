@@ -2,7 +2,7 @@
  * The modules written from the artefact's lists rather than its schemas: the
  * kinds and the refusal codes.
  */
-import { SPOKEN, bodyName, byCodePoint, documentNameOf, readNameOf, segmentsOf } from "./artefact.mjs";
+import { SPOKEN, actionRoute, bodyName, byCodePoint, documentNameOf, readNameOf, segmentsOf } from "./artefact.mjs";
 import { pascal, property } from "./spelling.mjs";
 
 /** Where each kind's envelope, and the shapes only it carries, are written. */
@@ -176,8 +176,15 @@ export function keyCallableModule(listed) {
 }
 
 /** The module of every action the web API takes, and what the contract says of each. */
-export function actionsModule(described) {
+export function actionsModule(described, whereIs) {
   const union = described.length === 0 ? "never" : described.map(({ action }) => JSON.stringify(action)).join(" | ");
+  const imports = new Map();
+  for (const { action } of described) {
+    const name = bodyName(actionRoute(action));
+    const from = whereIs(name)[0];
+    if (!imports.has(from)) imports.set(from, new Set());
+    imports.get(from).add(name);
+  }
   const entries = described.map(
     ({ action, arguments: names, consent, rehearsal }) =>
       `  ${JSON.stringify(action)}: { arguments: ${JSON.stringify(names)}, consent: ${JSON.stringify(consent)}, rehearsal: ${String(rehearsal)} },`,
@@ -185,7 +192,7 @@ export function actionsModule(described) {
   return {
     path: ["actions"],
     summary: "Every action the web API takes, and what the contract says of each.",
-    imports: new Map(),
+    imports,
     body: [
       "/** Every action the web API takes, by the name it is posted to under `/api/actions/`. */",
       `export type ActionName = ${union};`,
@@ -208,6 +215,15 @@ export function actionsModule(described) {
       "/** Whether a name is one of an action the web API takes. */",
       "export const isActionName = (value: string): value is ActionName =>",
       "  Object.hasOwn(ACTIONS, value);",
+      "",
+      "/** The arguments each action is posted with, so what is sent is typed by the action it goes to. */",
+      ...(described.length === 0
+        ? ["export type ArgumentsOf = Record<ActionName, never>;"]
+        : [
+            "export interface ArgumentsOf {",
+            ...described.map(({ action }) => `  ${JSON.stringify(action)}: ${bodyName(actionRoute(action))};`),
+            "}",
+          ]),
     ],
   };
 }
