@@ -2,8 +2,8 @@
 // Some of the shapes only `plugins` carries; `kinds/plugins` gathers them all.
 // Regenerate with `npm run contract:generate`.
 
-import type { PluginChange, PluginChangedCheck, PluginDemand, PluginGranting, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
-import type { PluginInstalled, PluginProving, PluginShape, PluginSharing } from "./plugin-reached-household.js";
+import type { PluginChange, PluginChangedCheck, PluginDemand, PluginOverriding, PluginPlaceholder, PluginRecipeRan } from "./expected.js";
+import type { PluginGranting, PluginInstalled, PluginProving, PluginShape, PluginSharing } from "./plugin-granting.js";
 import type { UndoReversal } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginEvidence } from "../../shared/plugin-constraint.js";

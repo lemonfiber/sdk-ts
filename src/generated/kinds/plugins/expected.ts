@@ -298,18 +298,6 @@ export interface PluginExpectedFailure {
   verdict: PluginDeclaredVerdict;
 }
 
-/** One credential that would cross to a plugin, as the reading states it. */
-export interface PluginGranting {
-  /** What approving it is written as, apart from the offer. */
-  approval: string;
-  /** The setting the credential is held under, as the credentials read names it. */
-  credential: string;
-  /** The capability of the plugin's own it would be granted to fill. */
-  for: string;
-  /** The service whose credential it is. */
-  of: string;
-}
-
 /** One bundled thing a plugin declares it will change. */
 export interface PluginOverriding {
   /** Which bundled setting it changes. */
@@ -368,7 +356,10 @@ export interface PluginRecipe {
   id: string;
   /** Every value it asks the operator for when it runs, in the order it declares them. */
   inputs?: PluginRecipeInput[];
-  /** When it runs: as part of an install and an update, or only when asked for by name. */
+  /**
+   * When it runs: as part of an install and an update, only when asked for by name, or
+   * once the part its plugin claims is lemonfiber's.
+   */
   on?: PluginRecipeOn;
   /** Every value it could carry, and where to. */
   pairs: PluginPair[];
@@ -396,7 +387,7 @@ export interface PluginRecipeInput {
 }
 
 /** When a recipe runs. */
-export type PluginRecipeOn = "install" | "demand";
+export type PluginRecipeOn = "install" | "demand" | "claim";
 
 /** What one recipe came to. */
 export interface PluginRecipeRan {

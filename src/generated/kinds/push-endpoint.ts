@@ -15,8 +15,10 @@ export interface PushEndpointEnvelope {
 
 /** A push endpoint registered. */
 export interface RegisteredPushEndpoint {
-  /** The `https` address its distributor gave. */
-  endpoint: string;
+  /** The first sixteen lower-case hexadecimal digits of the SHA-256 of that address. */
+  fingerprint: string;
+  /** The host the address its distributor gave reaches. */
+  host: string;
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */

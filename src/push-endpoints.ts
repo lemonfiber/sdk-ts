@@ -20,8 +20,8 @@ const PUSH_ENDPOINTS = "/api/push-endpoints" satisfies BodyRoute;
 The push endpoints this credential may keep: every one for the operator, a
 member's own for a member's session. A key is refused here whatever its scope.
 
-Each endpoint's address is the distributor's whole address, and whoever holds
-it can wake the phone: a screen shows its host alone.
+Whoever holds an endpoint's address can wake the phone, so no answer carries
+it once it is registered: each carries its host and a fingerprint instead.
 */
 export interface PushEndpoints {
   /**

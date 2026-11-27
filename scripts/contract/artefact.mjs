@@ -13,8 +13,8 @@ export const ANNOTATIONS = new Set(["description", "title", "default", "examples
 /** A kind, as the core spells one: `front-door`. */
 const KIND = /^[a-z][a-z0-9_-]*$/;
 
-/** A route a body is sent to, as the core spells one: `/api/setup/answer`. */
-const ROUTE = /^\/api(?:\/[a-z][a-z0-9-]*)+$/;
+/** A route, as the core spells one: segments under `/api`, a `{name}` segment standing for one the caller fills. */
+const ROUTE = /^\/api(?:\/(?:[a-z][a-z0-9-]*|\{[a-z]+\}))+$/;
 
 /** What every route a body is sent to begins with, which its module name leaves out. */
 const API = "/api/";
@@ -22,8 +22,8 @@ const API = "/api/";
 /** Whether a carrier of a shape is a route's body rather than a kind, which never begins with a slash. */
 export const isRoute = (carrier) => carrier.startsWith("/");
 
-/** A route as a module is named: `/api/setup/answer` is `setup-answer`. */
-export const stemOf = (route) => route.slice(API.length).replaceAll("/", "-");
+/** A route as a module is named: `/api/setup/answer` is `setup-answer`, `/api/keys/{name}` is `keys-name`. */
+export const stemOf = (route) => route.slice(API.length).replaceAll("/", "-").replaceAll(/[{}]/g, "");
 
 /**
  * The type a route's body is written as: `/api/setup/answer` takes a
@@ -385,9 +385,6 @@ function bodyOf(name, described) {
   };
 }
 
-/** A read's path: segments under `/api`, a `{name}` segment standing for one the caller fills. */
-const READ_PATH = /^\/api(?:\/(?:[a-z][a-z0-9-]*|\{[a-z]+\}))+$/;
-
 /** A query parameter's name, as a command's flag is spelled. */
 const PARAMETER = /^[a-z][a-z0-9_]*$/;
 
@@ -422,7 +419,7 @@ function* wrongWithRead(entry, at, kinds) {
     return;
   }
   const where = typeof entry.path === "string" ? entry.path : `read ${String(at)}`;
-  if (typeof entry.path !== "string" || !READ_PATH.test(entry.path)) yield `${where}: path ${JSON.stringify(entry.path)} is not one under /api`;
+  if (typeof entry.path !== "string" || !ROUTE.test(entry.path)) yield `${where}: path ${JSON.stringify(entry.path)} is not one under /api`;
   if (typeof entry.file !== "boolean") yield `${where}: file ${JSON.stringify(entry.file)} is not true or false`;
   if (!Array.isArray(entry.kinds) || entry.kinds.some((kind) => typeof kind !== "string" || !Object.hasOwn(kinds, kind))) {
     yield `${where}: kinds ${JSON.stringify(entry.kinds)} are not kinds the contract describes`;
@@ -464,7 +461,7 @@ export function readsOf(artefact, kinds) {
   const malformed = listed.flatMap((entry, at) => [...wrongWithRead(entry, at, kinds)]);
   const named = new Map();
   for (const entry of listed) {
-    if (!isRecord(entry) || typeof entry.path !== "string" || !READ_PATH.test(entry.path)) continue;
+    if (!isRecord(entry) || typeof entry.path !== "string" || !ROUTE.test(entry.path)) continue;
     const name = nameOfRead(entry);
     if (named.has(name)) malformed.push(`${entry.path}: goes by ${name}, as ${named.get(name)} does`);
     else named.set(name, entry.path);

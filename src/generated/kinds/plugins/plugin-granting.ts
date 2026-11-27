@@ -7,6 +7,18 @@ import type { PluginGrant } from "../../shared/action.js";
 import type { Instant } from "../../shared/instant.js";
 import type { PluginVerdict } from "../../shared/plugin-constraint.js";
 
+/** One credential that would cross to a plugin, as the reading states it. */
+export interface PluginGranting {
+  /** What approving it is written as, apart from the offer. */
+  approval: string;
+  /** The setting the credential is held under, as the credentials read names it. */
+  credential: string;
+  /** The capability of the plugin's own it would be granted to fill. */
+  for: string;
+  /** The service whose credential it is. */
+  of: string;
+}
+
 /** One plugin's install, as it was decided. */
 export interface PluginInstalled {
   /**
