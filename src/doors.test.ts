@@ -120,6 +120,16 @@ describe("a job", () => {
     expect(got.ok && isKind(got.value, "ended") && got.value.data.ended).toBe("released");
   });
 
+  it("is forgotten by name, sent as one path segment, and answered as asking would be", async () => {
+    const seen: Seen[] = [];
+    const got = await open(answering(example("job"), seen, 202)).jobs.forget("a job/1");
+
+    expect(asked(seen)).toStrictEqual([
+      ["POST", "http://127.0.0.1:7777/api/jobs/a%20job%2F1/forget"],
+    ]);
+    expect(got.ok && isKind(got.value, "job")).toBe(true);
+  });
+
   it("is missing where this run never issued its name", async () => {
     const said = "No work in this run goes by that name.";
     const refused = JSON.stringify({

@@ -248,15 +248,20 @@ if (can.ok && can.value.data.capabilities["/api/actions/restart"] === "available
 ## Work already begun
 
 An action that runs for minutes is answered with a job's name. `jobs.about`
-asks where it stands and `jobs.release` lets the name go, ending the work at
-the next moment it can be ended. The answer's kind says which: `job` is still
-going, `ended` ended before it finished (`released` or `let-go`), and the
-command's own kind finished:
+asks where it stands, `jobs.release` lets the name go, ending the work at the
+next moment it can be ended, and `jobs.forget` lets the name go and leaves the
+work running. The answer's kind says which: `job` is still going, `ended` ended
+before it finished (`released`, `let-go` or `quiet`), and the command's own
+kind finished:
 
 ```ts
 const now = await client.jobs.release(name);
 if (now.ok && isKind(now.value, "ended")) say(now.value.data.ended);
 ```
+
+A screen that stops watching work it did not mean to end forgets the name
+rather than releasing it. After that the name is missing, as is a name another
+credential started, and what the work ends with is kept for nobody.
 
 ## Phones that are woken
 
