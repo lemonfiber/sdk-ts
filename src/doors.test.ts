@@ -38,7 +38,7 @@ const open = (sending: Sending): Client => {
 const asked = (seen: Seen[]) => seen.map(({ method, url }) => [method, url]);
 
 describe("the push endpoints", () => {
-  it("are listed as the contract's example lists them, with the whole address", async () => {
+  it("are listed as the contract's example lists them, by host and fingerprint", async () => {
     const seen: Seen[] = [];
     const listed = await open(answering(example("push-endpoints"), seen)).pushEndpoints.list();
 
@@ -46,7 +46,8 @@ describe("the push endpoints", () => {
     expect(seen[0]?.token).toBe("a-run-token");
     expect(listed.ok && listed.value.data.endpoints).toStrictEqual([
       {
-        endpoint: "https://push.example/send/a-phone",
+        fingerprint: "2fb15b007051cfa9",
+        host: "push.example",
         name: "a-phone",
         registered: 1_893_456_000,
       },

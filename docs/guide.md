@@ -268,12 +268,15 @@ credential started, and what the work ends with is kept for nobody.
 `pushEndpoints.list`, `pushEndpoints.register` and `pushEndpoints.remove` keep
 the phones the stack wakes: every one for the operator, a member's own for a
 member's session, and none for a key. An endpoint's address lets whoever holds
-it wake the phone, so a screen shows its host alone:
+it wake the phone, so once registered it is never answered again: the
+registration and every listed endpoint carry its `host` and a `fingerprint`, the
+first sixteen hexadecimal digits of the SHA-256 of the whole address, instead:
 
 ```ts
 const listed = await client.pushEndpoints.list();
 if (listed.ok)
-  for (const one of listed.value.data.endpoints) show(one.name, new URL(one.endpoint).host);
+  for (const one of listed.value.data.endpoints)
+    show(one.name, `${one.host} (${one.fingerprint})`);
 await client.pushEndpoints.remove("a-phone");
 ```
 

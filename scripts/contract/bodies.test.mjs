@@ -112,6 +112,18 @@ describe("writing each route's body", () => {
     expect(written.get("index.ts")).toContain('export * from "./bodies.js";\nexport * from "./body-routes.js";');
   });
 
+  it("writes the body a route with a name in its path takes under the route's words", () => {
+    const revoking = {
+      title: "Revoking",
+      type: "object",
+      properties: { dry_run: { type: "boolean" } },
+      additionalProperties: false,
+    };
+    const named = sources(artefact({ pull: kind({ type: "string" }) }, { bodies: { "/api/keys/{name}": revoking } }));
+    expect(named.get("bodies/keys-name.ts")).toContain("export interface KeysNameBody {");
+    expect(named.get("body-routes.ts")).toContain('export type BodyRoute = "/api/keys/{name}";');
+  });
+
   it("writes an empty table, and no bodies at all, from a contract describing none", () => {
     const none = sources(artefact({ pull: kind({ type: "string" }) }));
     expect(none.get("body-routes.ts")).toContain("export type BodyRoute = never;");
@@ -157,6 +169,9 @@ describe("refusing a body that cannot be written one way", () => {
       "The vendored contract's bodies are [], and they are an object keyed by route.",
     );
     expect(refusal(artefact(pull, { bodies: { "/setup": plain } }))).toBe('The body route "/setup" is not a path under /api/.');
+    for (const route of ["/api/keys/{}", "/api/keys/{Name}", "/api/keys/{name"]) {
+      expect(refusal(artefact(pull, { bodies: { [route]: plain } }))).toBe(`The body route ${JSON.stringify(route)} is not a path under /api/.`);
+    }
     expect(refusal(artefact(pull, { bodies: { "/api/setup": 3 } }))).toBe(
       "The body of `/api/setup` is 3, which is not a schema.",
     );

@@ -6,8 +6,10 @@ import type { Instant } from "../shared/instant.js";
 
 /** One push endpoint as the listing shows it. */
 export interface ListedPushEndpoint {
-  /** The `https` address its distributor gave. */
-  endpoint: string;
+  /** The first sixteen lower-case hexadecimal digits of the SHA-256 of that address. */
+  fingerprint: string;
+  /** The host the address its distributor gave reaches. */
+  host: string;
   /** The name it was registered under. */
   name: string;
   /** When it was registered. */
