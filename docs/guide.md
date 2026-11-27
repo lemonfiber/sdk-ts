@@ -232,6 +232,46 @@ A challenge is good for one mint from the same token within a minute.
 `deviceKeys` lists the device keys and `revokeDeviceKey` revokes one; the keys
 it proved stay, each naming it as `proved_by` in the keys listing.
 
+## What a stack can do
+
+`capabilities` reads every request the stack serves, by the path it is served
+at, as `available`, `unconfigured` or `unpermitted` for this credential, with
+`scope` saying whose credential asked and `stack` which stack answered. A
+request the stack does not have is absent:
+
+```ts
+const can = await client.capabilities();
+if (can.ok && can.value.data.capabilities["/api/actions/restart"] === "available")
+  offerRestart();
+```
+
+## Work already begun
+
+An action that runs for minutes is answered with a job's name. `jobs.about`
+asks where it stands and `jobs.release` lets the name go, ending the work at
+the next moment it can be ended. The answer's kind says which: `job` is still
+going, `ended` ended before it finished (`released` or `let-go`), and the
+command's own kind finished:
+
+```ts
+const now = await client.jobs.release(name);
+if (now.ok && isKind(now.value, "ended")) say(now.value.data.ended);
+```
+
+## Phones that are woken
+
+`pushEndpoints.list`, `pushEndpoints.register` and `pushEndpoints.remove` keep
+the phones the stack wakes: every one for the operator, a member's own for a
+member's session, and none for a key. An endpoint's address lets whoever holds
+it wake the phone, so a screen shows its host alone:
+
+```ts
+const listed = await client.pushEndpoints.list();
+if (listed.ok)
+  for (const one of listed.value.data.endpoints) show(one.name, new URL(one.endpoint).host);
+await client.pushEndpoints.remove("a-phone");
+```
+
 ## Walking setup
 
 First-run setup is walked one request a step, each answered with where setup

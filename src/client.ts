@@ -4,6 +4,7 @@ Asking lemonfiber for something, and telling it to do something.
 Spec: 20-architecture/contracts/web-api.md
 */
 import { address } from "./address.js";
+import { answeredAs, blobOf, refusalOf } from "./answered.js";
 import type { ActingOn, DocumentRead, ReadAsking } from "./asked.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
@@ -16,7 +17,7 @@ import {
   type Asking,
   type Call,
 } from "./deadline.js";
-import { isKind, parse, type Envelope, type Reading } from "./envelope.js";
+import { parse, type Envelope, type Reading } from "./envelope.js";
 import {
   FILES,
   READS,
@@ -25,7 +26,6 @@ import {
   type Choice,
   type FileQuery,
   type KeysBody,
-  type Kind,
   type ReadAnswer,
   type SetupAnswerBody,
 } from "./generated/index.js";
@@ -37,7 +37,9 @@ import {
   registrationBody,
   type Registering,
 } from "./device-keys.js";
+import { jobs, type Jobs } from "./jobs.js";
 import { KEYS, type Minting } from "./keys.js";
+import { pushEndpoints, type PushEndpoints } from "./push-endpoints.js";
 import type { Answer, Sending } from "./sending.js";
 import {
   PICTURE_TYPES,
@@ -50,7 +52,6 @@ import {
 } from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
 import { filledIn, search } from "./query.js";
-import { refusalIn } from "./refusal.js";
 
 export type { Sending } from "./sending.js";
 
@@ -79,6 +80,11 @@ Where the first-run setup is walked, one request a step.
 const SETUP = "/api/setup";
 
 /**
+Where what this stack can do is read, as the credential that asked may do it.
+*/
+const CAPABILITIES = "/api/capabilities";
+
+/**
 Where setup stands after a step: the question it is on, the answers so far,
 and what it found.
 */
@@ -97,11 +103,24 @@ export class Client {
   readonly #sending: Sending;
   readonly #timeoutMs: number;
 
+  /**
+  The phones this credential may have woken, listed, registered and removed.
+  */
+  readonly pushEndpoints: PushEndpoints;
+
+  /**
+  Work already begun, asked about and released by its name.
+  */
+  readonly jobs: Jobs;
+
   private constructor(base: string, token: string, sending: Sending, timeoutMs: number) {
     this.#base = base;
     this.#token = token;
     this.#sending = sending;
     this.#timeoutMs = timeoutMs;
+    const ask = this.#ask.bind(this);
+    this.pushEndpoints = pushEndpoints(ask);
+    this.jobs = jobs(ask);
   }
 
   /**
@@ -170,6 +189,18 @@ export class Client {
       `/api/actions/${name}`,
       acting ?? {},
       JSON.stringify(acting?.body ?? {}),
+    );
+  }
+
+  /**
+  What this stack can do, each request by the path it is served at, as this
+  credential may do it, with whose credential asked and which stack answered.
+  A request the stack does not have is absent.
+  */
+  async capabilities(asking: Asking = {}): Promise<Reading<ByKind["capabilities"]>> {
+    return answeredAs(
+      await this.#ask("GET", CAPABILITIES, asking, undefined, true),
+      "capabilities",
     );
   }
 
@@ -494,33 +525,6 @@ export class Client {
       signal,
     );
   }
-}
-
-/**
-The problem a reply that was not a success is, its `Retry-After` included.
-*/
-function refusalOf(answer: Answer, said: string): Problem {
-  return refusalIn(answer.status, said, answer.headers?.get("Retry-After"));
-}
-
-/**
-A reply's body as the bytes that arrived, or nothing where it cannot be read
-as bytes.
-*/
-async function blobOf(answer: Answer): Promise<Reading<Blob> | undefined> {
-  const kept = await answer.blob?.();
-  return kept && { ok: true, value: kept };
-}
-
-/**
-An answer narrowed to the one kind its route answers with, or `unrecognised`
-where it came back as another.
-*/
-function answeredAs<K extends Kind>(answered: Reading<Envelope>, kind: K): Reading<ByKind[K]> {
-  if (!answered.ok) return answered;
-  return isKind(answered.value, kind)
-    ? { ok: true, value: answered.value }
-    : { ok: false, problem: unrecognised(answered.value.kind) };
 }
 
 /**
