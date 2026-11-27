@@ -20,6 +20,8 @@ export {
   type PasswordProof,
 } from "./keys.js";
 export { type Registering } from "./device-keys.js";
+export { type Jobs } from "./jobs.js";
+export { type PushEndpoints } from "./push-endpoints.js";
 export { Client, type Opened, type Sending, type Talking, type Walked } from "./client.js";
 export {
   API_VERSION,
