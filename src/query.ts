@@ -32,6 +32,21 @@ own folder or the one above it, and an empty one asks for the folder itself.
 const UNKEPT_SEGMENTS: ReadonlySet<string> = new Set(["", ".", ".."]);
 
 /**
+A name a caller hands over, written escaped as one path segment, or `misasked`
+before anything is sent where a URL would resolve it away.
+*/
+export function segmentOf(name: string): Reading<string> {
+  return UNKEPT_SEGMENTS.has(name)
+    ? {
+        ok: false,
+        problem: misasked(
+          `"${name}" names nothing a path can carry as one segment, so nothing was sent.`,
+        ),
+      }
+    : { ok: true, value: encodeURIComponent(name) };
+}
+
+/**
 A read's path with each segment the caller fills written in, and the rest of
 the query left to send as parameters.
 

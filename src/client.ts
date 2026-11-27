@@ -51,7 +51,7 @@ import {
   type Pictured,
 } from "./picture.js";
 import { unreachable, unrecognised, type Problem } from "./problem.js";
-import { filledIn, search } from "./query.js";
+import { filledIn, search, segmentOf } from "./query.js";
 
 export type { Sending } from "./sending.js";
 
@@ -253,10 +253,9 @@ export class Client {
   stand. The name is sent as one path segment.
   */
   async revoke(name: string, asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
-    return answeredAs(
-      await this.#ask("DELETE", `${KEYS}/${encodeURIComponent(name)}`, asking),
-      "keys",
-    );
+    const one = segmentOf(name);
+    if (!one.ok) return one;
+    return answeredAs(await this.#ask("DELETE", `${KEYS}/${one.value}`, asking), "keys");
   }
 
   /**
@@ -291,8 +290,10 @@ export class Client {
     name: string,
     asking: Asking = {},
   ): Promise<Reading<ByKind["device-challenge"]>> {
+    const one = segmentOf(name);
+    if (!one.ok) return one;
     return answeredAs(
-      await this.#ask("POST", deviceKeyChallenge(name), asking),
+      await this.#ask("POST", deviceKeyChallenge(one.value), asking),
       "device-challenge",
     );
   }
@@ -305,7 +306,9 @@ export class Client {
     name: string,
     asking: Asking = {},
   ): Promise<Reading<ByKind["device-keys"]>> {
-    return answeredAs(await this.#ask("DELETE", deviceKey(name), asking), "device-keys");
+    const one = segmentOf(name);
+    if (!one.ok) return one;
+    return answeredAs(await this.#ask("DELETE", deviceKey(one.value), asking), "device-keys");
   }
 
   /**
@@ -450,8 +453,9 @@ export class Client {
   written and is refused there by name.
   */
   async bundle(written: string | Written, asking: Asking = {}): Promise<Handed> {
-    const name = typeof written === "string" ? written : lastSegment(written.path);
-    return this.take(`bundle/${encodeURIComponent(name)}`, asking);
+    const one = segmentOf(typeof written === "string" ? written : lastSegment(written.path));
+    if (!one.ok) return one;
+    return this.take(`bundle/${one.value}`, asking);
   }
 
   /**

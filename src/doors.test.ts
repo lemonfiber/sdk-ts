@@ -120,6 +120,16 @@ describe("a job", () => {
     expect(got.ok && isKind(got.value, "ended") && got.value.data.ended).toBe("released");
   });
 
+  it("is forgotten by name, sent as one path segment, and answered as asking would be", async () => {
+    const seen: Seen[] = [];
+    const got = await open(answering(example("job"), seen, 202)).jobs.forget("a job/1");
+
+    expect(asked(seen)).toStrictEqual([
+      ["POST", "http://127.0.0.1:7777/api/jobs/a%20job%2F1/forget"],
+    ]);
+    expect(got.ok && isKind(got.value, "job")).toBe(true);
+  });
+
   it("is missing where this run never issued its name", async () => {
     const said = "No work in this run goes by that name.";
     const refused = JSON.stringify({
@@ -137,5 +147,43 @@ describe("a job", () => {
     const got = await open(answering(refused, [], 404)).jobs.release("gone");
 
     expect(got).toMatchObject({ ok: false, problem: { kind: "missing", message: said } });
+  });
+});
+
+describe("a name a caller hands over", () => {
+  it.each([
+    ["a slash", "../a/b", "..%2Fa%2Fb"],
+    ["a percent", "50%", "50%25"],
+    ["a question mark", "a?b=c", "a%3Fb%3Dc"],
+    ["a hash", "a#b", "a%23b"],
+  ])("holding %s is sent as one path segment", async (_, name, segment) => {
+    const seen: Seen[] = [];
+    const client = open(answering(example("job"), seen, 202));
+    await client.jobs.forget(name);
+    await client.pushEndpoints.remove(name);
+
+    expect(asked(seen)).toStrictEqual([
+      ["POST", `http://127.0.0.1:7777/api/jobs/${segment}/forget`],
+      ["DELETE", `http://127.0.0.1:7777/api/push-endpoints/${segment}`],
+    ]);
+  });
+
+  it.each([[""], ["."], [".."]])("%j is refused, and nothing is sent", async (name) => {
+    const seen: Seen[] = [];
+    const client = open(answering(example("job"), seen));
+    const calls = [
+      () => client.jobs.about(name),
+      () => client.jobs.release(name),
+      () => client.jobs.forget(name),
+      () => client.revoke(name),
+      () => client.deviceKeyChallenge(name),
+      () => client.revokeDeviceKey(name),
+      () => client.pushEndpoints.remove(name),
+      () => client.bundle(name),
+    ];
+    for (const call of calls) {
+      expect(await call()).toMatchObject({ ok: false, problem: { kind: "misasked" } });
+    }
+    expect(seen).toStrictEqual([]);
   });
 });
