@@ -7,6 +7,7 @@ Spec: 20-architecture/contracts/web-api-wire.md
 import type { Ask } from "./answered.js";
 import type { Asking } from "./deadline.js";
 import type { Envelope, Reading } from "./envelope.js";
+import { segmentOf } from "./query.js";
 
 /**
 Where the work one name stands for is asked about and released.
@@ -55,14 +56,21 @@ export interface Jobs {
 The jobs, asked about through `ask`.
 */
 export function jobs(ask: Ask): Jobs {
+  const at = async (
+    method: string,
+    job: string,
+    then: string,
+    asking: Asking,
+    isARead?: boolean,
+  ): Promise<Reading<Envelope>> => {
+    const one = segmentOf(job);
+    return one.ok
+      ? ask(method, `${JOBS}/${one.value}${then}`, asking, undefined, isARead)
+      : one;
+  };
   return {
-    about: (job, asking = {}) => ask("GET", named(job), asking, undefined, true),
-    release: (job, asking = {}) => ask("DELETE", named(job), asking),
-    forget: (job, asking = {}) => ask("POST", `${named(job)}${FORGET}`, asking),
+    about: (job, asking = {}) => at("GET", job, "", asking, true),
+    release: (job, asking = {}) => at("DELETE", job, "", asking),
+    forget: (job, asking = {}) => at("POST", job, FORGET, asking),
   };
 }
-
-/**
-The path one job is asked about at, its name sent as one path segment.
-*/
-const named = (job: string): string => `${JOBS}/${encodeURIComponent(job)}`;

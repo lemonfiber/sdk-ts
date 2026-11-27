@@ -13,14 +13,15 @@ Where device keys are listed and registered.
 export const DEVICE_KEYS = "/api/device-keys";
 
 /**
-Where the device key of that name is revoked, the name sent as one segment.
+Where the device key a path segment names is revoked.
 */
-export const deviceKey = (name: string): string => `${DEVICE_KEYS}/${encodeURIComponent(name)}`;
+export const deviceKey = (segment: string): string => `${DEVICE_KEYS}/${segment}`;
 
 /**
-Where a challenge for the device key of that name is asked for.
+Where a challenge for the device key a path segment names is asked for.
 */
-export const deviceKeyChallenge = (name: string): string => `${deviceKey(name)}/challenge`;
+export const deviceKeyChallenge = (segment: string): string =>
+  `${deviceKey(segment)}/challenge`;
 
 /**
 What one device key is registered with.

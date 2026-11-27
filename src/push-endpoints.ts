@@ -6,6 +6,7 @@ Spec: 20-architecture/contracts/web-api-live-state.md
 */
 import { answeredAs, type Ask } from "./answered.js";
 import type { Asking } from "./deadline.js";
+import { segmentOf } from "./query.js";
 import type { Reading } from "./envelope.js";
 import type { BodyRoute, ByKind, PushEndpointsBody } from "./generated/index.js";
 
@@ -58,10 +59,13 @@ export function pushEndpoints(ask: Ask): PushEndpoints {
         await ask("POST", PUSH_ENDPOINTS, asking, JSON.stringify(registering)),
         "push-endpoint",
       ),
-    remove: async (name, asking = {}) =>
-      answeredAs(
-        await ask("DELETE", `${PUSH_ENDPOINTS}/${encodeURIComponent(name)}`, asking),
+    remove: async (name, asking = {}) => {
+      const one = segmentOf(name);
+      if (!one.ok) return one;
+      return answeredAs(
+        await ask("DELETE", `${PUSH_ENDPOINTS}/${one.value}`, asking),
         "push-endpoints",
-      ),
+      );
+    },
   };
 }
