@@ -471,3 +471,47 @@ export function readsOf(artefact, kinds) {
   }
   return listed;
 }
+
+/** The methods a route is served at, as HTTP spells each. */
+export const METHODS = ["GET", "POST", "DELETE"];
+
+/** Everything the contract says of a route. Anything else is refused, not dropped. */
+const ROUTE_FIELDS = new Set(["method", "path", "body", "kinds"]);
+
+/** Why one route cannot be written, one reason at a time. */
+function* wrongWithRoute(entry, at, kinds) {
+  const where = `route ${String(at)}`;
+  if (!isRecord(entry)) {
+    yield `${where}: not an object`;
+    return;
+  }
+  for (const field of Object.keys(entry)) if (!ROUTE_FIELDS.has(field)) yield `${where}: carries ${field}, which this generator does not read`;
+  if (!METHODS.includes(entry.method)) yield `${where}: method ${JSON.stringify(entry.method)} is not one of ${METHODS.join(", ")}`;
+  if (typeof entry.path !== "string" || !ROUTE.test(entry.path)) yield `${where}: path ${JSON.stringify(entry.path)} is not one under /api`;
+  if (typeof entry.body !== "boolean") yield `${where}: body ${JSON.stringify(entry.body)} is not true or false`;
+  if (!Array.isArray(entry.kinds) || !entry.kinds.every((kind) => typeof kind === "string")) {
+    yield `${where}: kinds ${JSON.stringify(entry.kinds)} is not a list of kinds`;
+    return;
+  }
+  for (const kind of entry.kinds) if (!Object.hasOwn(kinds, kind)) yield `${where}: answers with ${kind}, which the contract describes no kind as`;
+}
+
+/** Every route the web API serves, as the contract lists them, or none for an artefact older than the list. */
+export function routesOf(artefact, kinds) {
+  const listed = Object.hasOwn(artefact, "routes") ? artefact.routes : [];
+  if (!Array.isArray(listed)) {
+    refuse(`The vendored contract's routes are ${JSON.stringify(listed)}, and they are a list.`);
+  }
+  const malformed = listed.flatMap((entry, at) => [...wrongWithRoute(entry, at, kinds)]);
+  const seen = new Set();
+  for (const entry of listed) {
+    if (!isRecord(entry)) continue;
+    const route = `${String(entry.method)} ${String(entry.path)}`;
+    if (seen.has(route)) malformed.push(`${route} is listed twice`);
+    seen.add(route);
+  }
+  if (malformed.length > 0) {
+    refuse("The vendored contract lists a route this generator cannot write:\n  " + malformed.join("\n  "));
+  }
+  return listed;
+}

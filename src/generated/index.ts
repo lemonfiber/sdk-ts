@@ -1,6 +1,6 @@
 // Generated from the lemonfiber contract. Do not edit.
 // The lemonfiber contract's types.
-// Source: a50946378c099dafd315eb3d72f31df64fe33459  ·  api_version 1
+// Source: ec0d2889781168843cb871addeb9e3eb6c76de37  ·  api_version 1
 // Regenerate with `npm run contract:generate`.
 
 export * from "./actions.js";
@@ -12,4 +12,5 @@ export * from "./key-callable.js";
 export * from "./kinds.js";
 export * from "./reads.js";
 export * from "./refusals.js";
+export * from "./routes.js";
 export * from "./shared.js";

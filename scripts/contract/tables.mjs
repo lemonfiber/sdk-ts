@@ -2,7 +2,7 @@
  * The modules written from the artefact's lists rather than its schemas: the
  * kinds and the refusal codes.
  */
-import { SPOKEN, actionRoute, bodyName, byCodePoint, documentNameOf, readNameOf, segmentsOf } from "./artefact.mjs";
+import { METHODS, SPOKEN, actionRoute, bodyName, byCodePoint, documentNameOf, readNameOf, segmentsOf } from "./artefact.mjs";
 import { pascal, property } from "./spelling.mjs";
 
 /** Where each kind's envelope, and the shapes only it carries, are written. */
@@ -286,6 +286,33 @@ export function bodyRoutesModule(bodies, whereIs) {
       ...(routes.length === 0
         ? ["export type BodyOf = Record<BodyRoute, never>;"]
         : ["export interface BodyOf {", ...routes.map((route) => `  ${JSON.stringify(route)}: ${bodyName(route)};`), "}"]),
+    ],
+  };
+}
+
+/** The module of every route the web API serves, by its method and its path. */
+export function routesModule(listed) {
+  const entry = ({ method, path, body, kinds }) =>
+    `  { method: ${JSON.stringify(method)}, path: ${JSON.stringify(path)}, body: ${String(body)}, kinds: [${kinds.map((kind) => JSON.stringify(kind)).join(", ")}] },`;
+  return {
+    path: ["routes"],
+    summary: "Every route the web API serves, by its method and its path, and what the contract says of each.",
+    imports: new Map([["envelope", new Set(["Kind"])]]),
+    body: [
+      "/** One route the web API serves, as the contract lists it. */",
+      "export interface Route {",
+      "  /** The method it is served at, as HTTP spells it. */",
+      `  readonly method: ${METHODS.map((method) => JSON.stringify(method)).join(" | ")};`,
+      "  /** Its path, each segment a caller fills written as `{name}`. */",
+      "  readonly path: string;",
+      "  /** Whether it takes a body. */",
+      "  readonly body: boolean;",
+      "  /** Every kind it may answer with; none for a route answering with a file. */",
+      "  readonly kinds: readonly Kind[];",
+      "}",
+      "",
+      "/** Every route the web API serves, in the order the contract lists them. */",
+      ...(listed.length === 0 ? ["export const ROUTES: readonly Route[] = [];"] : ["export const ROUTES: readonly Route[] = [", ...listed.map((route) => entry(route)), "];"]),
     ],
   };
 }

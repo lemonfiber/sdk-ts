@@ -20,6 +20,7 @@ import {
   keyCallableOf,
   kindsOf,
   readsOf,
+  routesOf,
   refusalsOf,
   usersOf,
 } from "./artefact.mjs";
@@ -37,6 +38,7 @@ import {
   householdWordsModule,
   keyCallableModule,
   readsModule,
+  routesModule,
   refusalsModule,
 } from "./tables.mjs";
 import { readArtefact } from "./vendored.mjs";
@@ -76,6 +78,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const actions = actionsOf(artefact);
   const householdWords = householdWordsOf(artefact);
   const reads = readsOf(artefact, kinds);
+  const routes = routesOf(artefact, kinds);
   const bodies = bodiesOf(artefact);
   for (const { action, body } of actions) {
     const route = actionRoute(action);
@@ -96,7 +99,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
   const modules = layout.modules();
   const groups = [...layout.groups.values()].map((group) => group.path);
   const under = (top) => groups.filter((path) => path[0] === top[0]).toSorted((a, b) => byCodePoint(a.join("/"), b.join("/")));
-  const members = [["actions"], ["body-routes"], ["envelope"], ["household-words"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"]];
+  const members = [["actions"], ["body-routes"], ["envelope"], ["household-words"], ["key-callable"], KINDS_MODULE, ["reads"], ["refusals"], ["routes"]];
   modules.push(
     actionsModule(actions, (name) => layout.whereIs(name)),
     bodyRoutesModule(bodies, (name) => layout.whereIs(name)),
@@ -104,6 +107,7 @@ export function generate(artefact, stamp, { cap = LINE_CAP } = {}) {
     householdWordsModule(householdWords),
     keyCallableModule(keyCallable),
     readsModule(reads),
+    routesModule(routes),
     refusalsModule(refusals),
     index(KINDS_MODULE, "Every kind's envelope, and the shapes only that kind carries.", under(KINDS_MODULE)),
   );

@@ -5,6 +5,7 @@ and removed.
 Spec: 20-architecture/contracts/web-api-live-state.md
 */
 import { answeredAs, type Ask } from "./answered.js";
+import { revokingBody, type Revoking } from "./asked.js";
 import type { Asking } from "./deadline.js";
 import { segmentOf } from "./query.js";
 import type { Reading } from "./envelope.js";
@@ -42,9 +43,10 @@ export interface PushEndpoints {
   /**
   Removes one push endpoint by its name, answered with the endpoints as they
   now stand, naming the one removed. The name is sent as one path segment.
-  Sent once.
+  Sent once. With `dryRun`, nothing is removed and the answer says what
+  removing would come to.
   */
-  remove(name: string, asking?: Asking): Promise<Reading<ByKind["push-endpoints"]>>;
+  remove(name: string, asking?: Revoking): Promise<Reading<ByKind["push-endpoints"]>>;
 }
 
 /**
@@ -63,7 +65,7 @@ export function pushEndpoints(ask: Ask): PushEndpoints {
       const one = segmentOf(name);
       if (!one.ok) return one;
       return answeredAs(
-        await ask("DELETE", `${PUSH_ENDPOINTS}/${one.value}`, asking),
+        await ask("DELETE", `${PUSH_ENDPOINTS}/${one.value}`, asking, revokingBody(asking)),
         "push-endpoints",
       );
     },

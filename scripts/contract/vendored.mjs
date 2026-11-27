@@ -42,7 +42,7 @@ export const BODIES = "bodies";
 const ACTIONS = "actions";
 
 /** The lists the index names a file for, or a file for each part of, each under the key the single document carries it by. */
-export const LISTS = ["key_callable", "reads", "refusals", "household_words"];
+export const LISTS = ["key_callable", "reads", "refusals", "routes", "household_words"];
 
 /** What the generated files say they came from when the pin is missing. */
 const UNKNOWN = "unknown";
