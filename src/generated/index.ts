@@ -12,4 +12,5 @@ export * from "./key-callable.js";
 export * from "./kinds.js";
 export * from "./reads.js";
 export * from "./refusals.js";
+export * from "./routes.js";
 export * from "./shared.js";

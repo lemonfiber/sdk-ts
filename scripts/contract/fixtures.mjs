@@ -88,6 +88,7 @@ export function directory(whole) {
   for (const [list, file] of [
     ["key_callable", "key-callable.json"],
     ["reads", "reads.json"],
+    ["routes", "routes.json"],
     ["household_words", "household-words.json"],
   ]) {
     if (!Object.hasOwn(whole, list)) continue;

@@ -5,7 +5,8 @@ Spec: 20-architecture/contracts/web-api.md
 */
 import { address } from "./address.js";
 import { answeredAs, blobOf, refusalOf } from "./answered.js";
-import type { ActingOn, DocumentRead, ReadAsking } from "./asked.js";
+import type { ActingOn, DocumentRead, ReadAsking, Revoking } from "./asked.js";
+import { revokingBody } from "./asked.js";
 import { askedAgain } from "./again.js";
 import { TOKEN_HEADER, tokenProblem } from "./credential.js";
 import {
@@ -250,12 +251,13 @@ export class Client {
 
   /**
   Revokes one integration key by its name, answered with the keys as they now
-  stand. The name is sent as one path segment.
+  stand. The name is sent as one path segment. `dryRun` rehearses it instead.
   */
-  async revoke(name: string, asking: Asking = {}): Promise<Reading<ByKind["keys"]>> {
+  async revoke(name: string, asking: Revoking = {}): Promise<Reading<ByKind["keys"]>> {
     const one = segmentOf(name);
     if (!one.ok) return one;
-    return answeredAs(await this.#ask("DELETE", `${KEYS}/${one.value}`, asking), "keys");
+    const sent = this.#ask("DELETE", `${KEYS}/${one.value}`, asking, revokingBody(asking));
+    return answeredAs(await sent, "keys");
   }
 
   /**
@@ -301,14 +303,16 @@ export class Client {
   /**
   Revokes one device key by its name, spending every challenge standing for it,
   answered with the device keys as they now stand. The keys it proved stay.
+  `dryRun` rehearses it instead.
   */
   async revokeDeviceKey(
     name: string,
-    asking: Asking = {},
+    asking: Revoking = {},
   ): Promise<Reading<ByKind["device-keys"]>> {
     const one = segmentOf(name);
     if (!one.ok) return one;
-    return answeredAs(await this.#ask("DELETE", deviceKey(one.value), asking), "device-keys");
+    const sent = this.#ask("DELETE", deviceKey(one.value), asking, revokingBody(asking));
+    return answeredAs(await sent, "device-keys");
   }
 
   /**

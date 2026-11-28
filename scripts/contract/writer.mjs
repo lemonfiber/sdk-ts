@@ -90,6 +90,8 @@ const OWNED = new Map([
   ["BodyRoute", "the union of every route that takes a body"],
   ["BODY_ROUTES", "every route that takes a body"],
   ["BodyOf", "the body each route takes"],
+  ["Route", "one route the web API serves"],
+  ["ROUTES", "every route the web API serves"],
 ]);
 
 /** A string literal inside an annotation, which names a value rather than a type. */

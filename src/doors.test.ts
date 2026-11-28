@@ -87,6 +87,29 @@ describe("the push endpoints", () => {
   });
 });
 
+describe("a revocation", () => {
+  it("is rehearsed with dry_run alone and carried out with no body, at each of the three", async () => {
+    const seen: Seen[] = [];
+    const client = open(answering(example("keys"), seen));
+    await client.revoke("ha", { dryRun: true });
+    await client.revoke("ha");
+    await client.revokeDeviceKey("pixel", { dryRun: true });
+    await client.revokeDeviceKey("pixel", { dryRun: false });
+    await client.pushEndpoints.remove("pixel", { dryRun: true });
+    await client.pushEndpoints.remove("pixel");
+
+    const rehearsing = JSON.stringify({ dry_run: true });
+    expect(seen.map(({ method, url, body }) => [method, url, body])).toStrictEqual([
+      ["DELETE", "http://127.0.0.1:7777/api/keys/ha", rehearsing],
+      ["DELETE", "http://127.0.0.1:7777/api/keys/ha", undefined],
+      ["DELETE", "http://127.0.0.1:7777/api/device-keys/pixel", rehearsing],
+      ["DELETE", "http://127.0.0.1:7777/api/device-keys/pixel", undefined],
+      ["DELETE", "http://127.0.0.1:7777/api/push-endpoints/pixel", rehearsing],
+      ["DELETE", "http://127.0.0.1:7777/api/push-endpoints/pixel", undefined],
+    ]);
+  });
+});
+
 describe("the capabilities", () => {
   it("are read as the contract's example says them, scoped to the credential", async () => {
     const seen: Seen[] = [];

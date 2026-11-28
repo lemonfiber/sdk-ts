@@ -192,6 +192,10 @@ if (made.ok) showOnce(made.value.data.secret, made.value.data.pin);
 await client.revoke("home"); // answered with the keys as they now stand
 ```
 
+`revoke`, `revokeDeviceKey` and `pushEndpoints.remove` each take `{ dryRun: true }`
+to rehearse: nothing is removed, and the answer is the listing as it would then
+stand, its `rehearsed` true.
+
 The password is sent in the mint's body and kept by nothing here, and the
 secret is in that one reply and no other.
 

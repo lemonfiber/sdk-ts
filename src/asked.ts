@@ -5,7 +5,13 @@ or the action's body, beside what any call may say.
 Spec: 20-architecture/contracts/web-api.md
 */
 import type { Asking } from "./deadline.js";
-import type { ActionName, ArgumentsOf, ReadName, ReadQuery } from "./generated/index.js";
+import type {
+  ActionName,
+  ArgumentsOf,
+  KeysNameBody,
+  ReadName,
+  ReadQuery,
+} from "./generated/index.js";
 
 /**
 The read answered with a line of its own for each envelope rather than with
@@ -48,3 +54,21 @@ a default, and what it is told otherwise.
 */
 export type ActingOn<N extends ActionName> =
   TakesNone<N> extends true ? [acting?: Acting<N>] : [acting: Acting<N>];
+
+/**
+What a revocation takes beside what any call may say: whether to rehearse it,
+removing nothing and answering with what removing would come to.
+*/
+export interface Revoking extends Asking {
+  /**
+  Sent as the body `{ "dry_run": true }` where true; no body is sent otherwise.
+  */
+  dryRun?: boolean;
+}
+
+/**
+The body a revocation is sent with: `dry_run` alone where it is rehearsed, and
+none where it is carried out.
+*/
+export const revokingBody = ({ dryRun = false }: Revoking): string | undefined =>
+  dryRun ? JSON.stringify({ dry_run: true } satisfies KeysNameBody) : undefined;
